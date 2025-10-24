@@ -1,0 +1,40 @@
+{
+    "image_directory": "E:/osgqtlib/osgEarthmy_osgb/images/",
+    "entities": [
+        {
+            "name": "F-15战斗机",
+            "filename": "F-15.PNG",
+            "description": "F-15鹰式战斗机"
+        },
+        {
+            "name": "F-16战斗机", 
+            "filename": "F-16.PNG",
+            "description": "F-16战隼战斗机"
+        },
+        {
+            "name": "F-35战斗机",
+            "filename": "F-35.PNG", 
+            "description": "F-35闪电II战斗机"
+        },
+        {
+            "name": "J-10战斗机",
+            "filename": "J-10.PNG",
+            "description": "歼-10战斗机"
+        },
+        {
+            "name": "J-15战斗机",
+            "filename": "J-15.PNG",
+            "description": "歼-15舰载战斗机"
+        },
+        {
+            "name": "J-16战斗机",
+            "filename": "J-16.PNG",
+            "description": "歼-16多用途战斗机"
+        },
+        {
+            "name": "J-20战斗机",
+            "filename": "J-20.PNG",
+            "description": "歼-20隐形战斗机"
+        }
+    ]
+}

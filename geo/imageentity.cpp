@@ -1,0 +1,139 @@
+#include "imageentity.h"
+#include <osgDB/ReadFile>
+#include <osg/Geometry>
+#include <osg/Geode>
+#include <osg/Texture2D>
+#include <osg/Image>
+#include <osg/StateSet>
+#include <osg/StateAttribute>
+#include <QDebug>
+#include <QFileInfo>
+
+ImageEntity::ImageEntity(const QString& id, const QString& name, const QString& imagePath,
+                         double longitude, double latitude, double altitude, QObject* parent)
+    : GeoEntity(id, name, "image", longitude, latitude, altitude, parent)
+    , imagePath_(imagePath)
+{
+    // 设置默认属性
+    setProperty("size", 3000.0);   
+    setProperty("opacity", 1.0);
+}
+
+void ImageEntity::initialize()
+{
+    // 创建渲染节点
+    node_ = createNode();
+    
+    // 设置初始状态
+    setVisible(true);
+    setSelected(false);
+    
+    qDebug() << "图片实体初始化完成:" << entityName_;
+}
+
+void ImageEntity::update()
+{
+    // 简单的更新逻辑
+    updateNode();
+}
+
+void ImageEntity::cleanup()
+{
+    // 简单的清理逻辑
+    if (node_) {
+        node_ = nullptr;
+    }
+}
+
+osg::ref_ptr<osg::Node> ImageEntity::createNode()
+{
+    try {
+        // 检查图片文件是否存在
+        QFileInfo fileInfo(imagePath_);
+        if (!fileInfo.exists()) {
+            qDebug() << "图片文件不存在:" << imagePath_;
+            return nullptr;
+        }
+        
+        // 加载图片
+        osg::ref_ptr<osg::Image> image = osgDB::readImageFile(imagePath_.toStdString());
+        if (!image.valid()) {
+            qDebug() << "无法加载图片:" << imagePath_;
+            return nullptr;
+        }
+        
+        // 创建纹理
+        osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
+        texture->setImage(image.get());
+        texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
+        texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
+        
+        // 使用PositionAttitudeTransform
+        osg::ref_ptr<osg::PositionAttitudeTransform> pat = new osg::PositionAttitudeTransform();
+        
+        // 创建带纹理的几何体
+        osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+        osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry;
+        
+        // 创建四边形顶点
+        osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
+        float size = getProperty("size").toFloat();
+        vertices->push_back(osg::Vec3(-size/2, 0, -size/2));  // 左下
+        vertices->push_back(osg::Vec3(size/2, 0, -size/2));   // 右下
+        vertices->push_back(osg::Vec3(size/2, 0, size/2));    // 右上
+        vertices->push_back(osg::Vec3(-size/2, 0, size/2));   // 左上
+        geometry->setVertexArray(vertices);
+        
+        // 设置纹理坐标
+        osg::ref_ptr<osg::Vec2Array> texCoords = new osg::Vec2Array;
+        texCoords->push_back(osg::Vec2(0.0f, 0.0f));  // 左下
+        texCoords->push_back(osg::Vec2(1.0f, 0.0f));  // 右下
+        texCoords->push_back(osg::Vec2(1.0f, 1.0f));  // 右上
+        texCoords->push_back(osg::Vec2(0.0f, 1.0f));  // 左上
+        geometry->setTexCoordArray(0, texCoords);
+        
+        // 设置法线
+        osg::ref_ptr<osg::Vec3Array> normals = new osg::Vec3Array;
+        normals->push_back(osg::Vec3(0.0f, 0.0f, 1.0f)); // 朝上
+        geometry->setNormalArray(normals);
+        geometry->setNormalBinding(osg::Geometry::BIND_OVERALL);
+        
+        // 设置绘制方式
+        geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4));
+        geode->addDrawable(geometry);
+        
+        // 设置纹理状态
+        osg::ref_ptr<osg::StateSet> stateSet = geode->getOrCreateStateSet();
+        texture->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
+        texture->setFilter(osg::Texture::MAG_FILTER, osg::Texture::LINEAR);
+        stateSet->setTextureAttributeAndModes(0, texture.get(), osg::StateAttribute::ON);
+        
+        // 设置渲染状态
+        stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+        stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+        stateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
+        stateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+        
+        // 将几何体添加到PAT
+        pat->addChild(geode);
+        
+        // 设置PAT的位置
+        osgEarth::GeoPoint geoPoint(osgEarth::SpatialReference::get("wgs84"), 
+                                   longitude_, latitude_, altitude_, osgEarth::ALTMODE_ABSOLUTE);
+        osg::Vec3d worldPos;
+        geoPoint.toWorld(worldPos);
+        pat->setPosition(worldPos);
+        
+        qDebug() << "图片实体创建成功:" << entityName_;
+        qDebug() << "图片路径:" << imagePath_;
+        qDebug() << "图片大小:" << image->s() << "x" << image->t();
+        qDebug() << "几何体大小:" << size;
+        qDebug() << "世界坐标:" << worldPos.x() << worldPos.y() << worldPos.z();
+        
+        return pat.get();
+        
+    } catch (...) {
+        qDebug() << "图片实体创建失败";
+        return nullptr;
+    }
+}
