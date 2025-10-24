@@ -254,6 +254,13 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
                 qDebug() << "取消实体选择";
             }
         }
+    } else if (event->button() == Qt::RightButton) {
+        // 右键点击显示上下文菜单
+        GeoEntity* entity = findEntityAtPosition(event->pos());
+        if (entity) {
+            emit entityRightClicked(entity, event->pos());
+            qDebug() << "右键点击实体:" << entity->getName();
+        }
     }
 }
 

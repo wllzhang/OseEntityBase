@@ -52,6 +52,7 @@ signals:
     void entityRemoved(const QString& entityId);
     void entitySelected(GeoEntity* entity);
     void entityDeselected();
+    void entityRightClicked(GeoEntity* entity, QPoint screenPos);
 
 private:
     osg::ref_ptr<osg::Group> root_;

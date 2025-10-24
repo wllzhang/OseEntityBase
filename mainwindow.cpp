@@ -186,6 +186,11 @@ void MainWindow::loadMap(const QString& earthFile)
                             selectedEntity_ = nullptr;
                             qDebug() << "MainWindow收到实体取消选择信号";
                         });
+                connect(entityManager_, &GeoEntityManager::entityRightClicked, 
+                        this, [this](GeoEntity* entity, QPoint screenPos) {
+                            showEntityContextMenu(screenPos, entity);
+                            qDebug() << "MainWindow收到实体右键点击信号:" << entity->getName();
+                        });
                 
                 loadEntityConfig();
             }
@@ -368,79 +373,85 @@ void MainWindow::showEntityContextMenu(QPoint screenPos, GeoEntity* entity)
 {
     if (!entity) return;
     
+    qDebug() << "显示实体上下文菜单:" << entity->getName() << "位置:" << screenPos;
+    
     // 创建或更新上下文菜单
     if (!entityContextMenu_) {
         entityContextMenu_ = new QMenu(this);
         
         // 设置Heading动作
         QAction* setHeadingAction = entityContextMenu_->addAction("设置航向角");
-        connect(setHeadingAction, &QAction::triggered, [this, entity]() {
+        connect(setHeadingAction, &QAction::triggered, [this]() {
+            if (!selectedEntity_) return;
             bool ok;
-            double currentHeading = entity->getHeading();
+            double currentHeading = selectedEntity_->getHeading();
             double newHeading = QInputDialog::getDouble(this, "设置航向角", 
                 QString("当前航向角: %1°\n请输入新的航向角:").arg(currentHeading), 
                 currentHeading, -360.0, 360.0, 1, &ok);
             if (ok) {
-                entity->setHeading(newHeading);
-                qDebug() << "设置实体航向角:" << entity->getName() << "->" << newHeading << "度";
+                selectedEntity_->setHeading(newHeading);
+                qDebug() << "设置实体航向角:" << selectedEntity_->getName() << "->" << newHeading << "度";
             }
         });
         
         // 设置高度动作
         QAction* setAltitudeAction = entityContextMenu_->addAction("设置高度");
-        connect(setAltitudeAction, &QAction::triggered, [this, entity]() {
+        connect(setAltitudeAction, &QAction::triggered, [this]() {
+            if (!selectedEntity_) return;
             double longitude, latitude, altitude;
-            entity->getPosition(longitude, latitude, altitude);
+            selectedEntity_->getPosition(longitude, latitude, altitude);
             
             bool ok;
             double newAltitude = QInputDialog::getDouble(this, "设置高度", 
                 QString("当前高度: %1米\n请输入新的高度:").arg(altitude), 
                 altitude, 0.0, 1000000.0, 1000, &ok);
             if (ok) {
-                entity->setPosition(longitude, latitude, newAltitude);
-                qDebug() << "设置实体高度:" << entity->getName() << "->" << newAltitude << "米";
+                selectedEntity_->setPosition(longitude, latitude, newAltitude);
+                qDebug() << "设置实体高度:" << selectedEntity_->getName() << "->" << newAltitude << "米";
             }
         });
         
         // 删除实体动作
         QAction* deleteAction = entityContextMenu_->addAction("删除实体");
-        connect(deleteAction, &QAction::triggered, [this, entity]() {
+        connect(deleteAction, &QAction::triggered, [this]() {
+            if (!selectedEntity_) return;
             QMessageBox::StandardButton reply = QMessageBox::question(this, "确认删除", 
-                QString("确定要删除实体 '%1' 吗？").arg(entity->getName()),
+                QString("确定要删除实体 '%1' 吗？").arg(selectedEntity_->getName()),
                 QMessageBox::Yes | QMessageBox::No);
             if (reply == QMessageBox::Yes) {
-                entityManager_->removeEntity(entity->getId());
-                if (selectedEntity_ == entity) {
-                    selectedEntity_ = nullptr;
-                }
-                qDebug() << "删除实体:" << entity->getName();
+                QString entityId = selectedEntity_->getId();
+                entityManager_->removeEntity(entityId);
+                selectedEntity_ = nullptr;
+                qDebug() << "删除实体:" << entityId;
             }
         });
         
         // 显示属性动作
         QAction* showPropertiesAction = entityContextMenu_->addAction("显示属性");
-        connect(showPropertiesAction, &QAction::triggered, [this, entity]() {
+        connect(showPropertiesAction, &QAction::triggered, [this]() {
+            if (!selectedEntity_) return;
             QString info = QString("实体信息:\n")
-                .append(QString("名称: %1\n").arg(entity->getName()))
-                .append(QString("类型: %1\n").arg(entity->getType()))
-                .append(QString("ID: %1\n").arg(entity->getId()));
+                .append(QString("名称: %1\n").arg(selectedEntity_->getName()))
+                .append(QString("类型: %1\n").arg(selectedEntity_->getType()))
+                .append(QString("ID: %1\n").arg(selectedEntity_->getId()));
             
             double longitude, latitude, altitude;
-            entity->getPosition(longitude, latitude, altitude);
+            selectedEntity_->getPosition(longitude, latitude, altitude);
             info.append(QString("位置: 经度%1°, 纬度%2°, 高度%3米\n")
                 .arg(longitude, 0, 'f', 6)
                 .arg(latitude, 0, 'f', 6)
                 .arg(altitude, 0, 'f', 2));
             
-            info.append(QString("航向角: %1°\n").arg(entity->getHeading()));
-            info.append(QString("可见性: %1\n").arg(entity->isVisible() ? "是" : "否"));
-            info.append(QString("选中状态: %1").arg(entity->isSelected() ? "是" : "否"));
+            info.append(QString("航向角: %1°\n").arg(selectedEntity_->getHeading()));
+            info.append(QString("可见性: %1\n").arg(selectedEntity_->isVisible() ? "是" : "否"));
+            info.append(QString("选中状态: %1").arg(selectedEntity_->isSelected() ? "是" : "否"));
             
             QMessageBox::information(this, "实体属性", info);
         });
     }
     
     // 显示菜单
+    qDebug() << "执行上下文菜单显示";
     entityContextMenu_->exec(mapToGlobal(screenPos));
 }
 
@@ -569,19 +580,5 @@ void MainWindow::onMousePositionChanged(double longitude, double latitude, doubl
 void MainWindow::onViewPositionChanged(double longitude, double latitude, double altitude)
 {
     // qDebug() << "视角位置变化 - 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::RightButton) {
-        // 右键显示上下文菜单
-        GeoEntity* entity = entityManager_->findEntityAtPosition(event->pos());
-        if (entity) {
-            showEntityContextMenu(event->pos(), entity);
-        }
-    }
-    
-    // 调用父类处理其他事件
-    QMainWindow::mousePressEvent(event);
 }
 
