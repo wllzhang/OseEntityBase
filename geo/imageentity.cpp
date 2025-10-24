@@ -6,6 +6,7 @@
 #include <osg/Image>
 #include <osg/StateSet>
 #include <osg/StateAttribute>
+#include <osg/LineWidth>
 #include <QDebug>
 #include <QFileInfo>
 
@@ -42,6 +43,36 @@ void ImageEntity::cleanup()
     // 简单的清理逻辑
     if (node_) {
         node_ = nullptr;
+    }
+    if (highlightNode_) {
+        highlightNode_ = nullptr;
+    }
+}
+
+void ImageEntity::setSelected(bool selected)
+{
+    // 调用基类方法
+    GeoEntity::setSelected(selected);
+    
+    if (selected) {
+        // 选中时创建高亮边框
+        if (!highlightNode_) {
+            osg::PositionAttitudeTransform* pat = dynamic_cast<osg::PositionAttitudeTransform*>(node_.get());
+            if (pat) {
+                addHighlightBorder(pat);
+            }
+        }
+        // 显示高亮边框
+        if (highlightNode_) {
+            highlightNode_->setNodeMask(0xffffffff);
+            qDebug() << "实体高亮状态:" << entityName_ << "->选中";
+        }
+    } else {
+        // 取消选中时隐藏高亮边框
+        if (highlightNode_) {
+            highlightNode_->setNodeMask(0x0);
+            qDebug() << "实体高亮状态:" << entityName_ << "->未选中";
+        }
     }
 }
 
@@ -117,6 +148,8 @@ osg::ref_ptr<osg::Node> ImageEntity::createNode()
         // 将几何体添加到PAT
         pat->addChild(geode);
         
+        // 高亮边框将在选中时动态创建
+        
         // 设置PAT的位置
         osgEarth::GeoPoint geoPoint(osgEarth::SpatialReference::get("wgs84"), 
                                    longitude_, latitude_, altitude_, osgEarth::ALTMODE_ABSOLUTE);
@@ -135,5 +168,62 @@ osg::ref_ptr<osg::Node> ImageEntity::createNode()
     } catch (...) {
         qDebug() << "图片实体创建失败";
         return nullptr;
+    }
+}
+
+void ImageEntity::addHighlightBorder(osg::PositionAttitudeTransform* pat)
+{
+    if (!pat) return;
+    
+    try {
+        // 创建高亮边框几何体
+        osg::ref_ptr<osg::Geode> borderGeode = new osg::Geode;
+        osg::ref_ptr<osg::Geometry> borderGeometry = new osg::Geometry;
+        
+        // 创建边框顶点（比原几何体稍大）
+        osg::ref_ptr<osg::Vec3Array> borderVertices = new osg::Vec3Array;
+        float size = getProperty("size").toFloat();
+        float borderSize = size * 1.1f; // 边框比原几何体大10%
+        
+        // 创建边框线条
+        borderVertices->push_back(osg::Vec3(-borderSize/2, 0, -borderSize/2));  // 左下
+        borderVertices->push_back(osg::Vec3(borderSize/2, 0, -borderSize/2));    // 右下
+        borderVertices->push_back(osg::Vec3(borderSize/2, 0, borderSize/2));     // 右上
+        borderVertices->push_back(osg::Vec3(-borderSize/2, 0, borderSize/2));   // 左上
+        borderVertices->push_back(osg::Vec3(-borderSize/2, 0, -borderSize/2));  // 闭合
+        
+        borderGeometry->setVertexArray(borderVertices);
+        
+        // 设置颜色为红色
+        osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f)); // 红色
+        borderGeometry->setColorArray(colors);
+        borderGeometry->setColorBinding(osg::Geometry::BIND_OVERALL);
+        
+        // 设置绘制方式为线条
+        borderGeometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, 5));
+        borderGeode->addDrawable(borderGeometry);
+        
+        // 设置边框渲染状态
+        osg::ref_ptr<osg::StateSet> borderStateSet = borderGeode->getOrCreateStateSet();
+        borderStateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+        borderStateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+        borderStateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
+        borderStateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+        
+        // 设置线条宽度
+        osg::ref_ptr<osg::LineWidth> lineWidth = new osg::LineWidth(3.0f);
+        borderStateSet->setAttributeAndModes(lineWidth.get(), osg::StateAttribute::ON);
+        
+        // 将边框添加到PAT
+        pat->addChild(borderGeode);
+        
+        // 保存高亮节点引用
+        highlightNode_ = borderGeode;
+        
+        qDebug() << "高亮边框创建成功";
+        
+    } catch (...) {
+        qDebug() << "高亮边框创建失败";
     }
 }

@@ -19,6 +19,10 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFile>
+#include <QMenu>
+#include <QAction>
+#include <QInputDialog>
+#include <QMessageBox>
 
 #include <osgDB/ReadFile>
 #include <osgEarth/MapNode>
@@ -63,6 +67,8 @@ MainWindow::MainWindow(QWidget *parent)
     imageViewerWindow_ = nullptr;
     entityManager_ = nullptr;
     mapStateManager_ = nullptr;
+    selectedEntity_ = nullptr;
+    entityContextMenu_ = nullptr;
     
     // 初始化查看器
     initializeViewer();
@@ -167,6 +173,20 @@ void MainWindow::loadMap(const QString& earthFile)
             // 初始化实体管理器
             if (!entityManager_) {
                 entityManager_ = new GeoEntityManager(root_.get(), mapNode_.get(), this);
+                entityManager_->setViewer(viewer_.get());
+                
+                // 连接实体管理器的信号
+                connect(entityManager_, &GeoEntityManager::entitySelected, 
+                        this, [this](GeoEntity* entity) {
+                            selectedEntity_ = entity;
+                            qDebug() << "MainWindow收到实体选择信号:" << entity->getName();
+                        });
+                connect(entityManager_, &GeoEntityManager::entityDeselected, 
+                        this, [this]() {
+                            selectedEntity_ = nullptr;
+                            qDebug() << "MainWindow收到实体取消选择信号";
+                        });
+                
                 loadEntityConfig();
             }
             
@@ -185,10 +205,15 @@ void MainWindow::loadMap(const QString& earthFile)
                 // 这样GLWidget的鼠标事件处理函数会直接调用MapStateManager
                 osgQt::GraphicsWindowQt* gw = dynamic_cast<osgQt::GraphicsWindowQt*>(viewer_->getCamera()->getGraphicsContext());
                 if (gw && gw->getGLWidget()) {
-                    // 设置GLWidget的地图状态管理器
-                    // 这样GLWidget在处理鼠标事件时会自动通知MapStateManager
-                    gw->getGLWidget()->setMapStateManager(mapStateManager_);
-                    qDebug() << "MapStateManager已设置到GLWidget";
+                // 设置GLWidget的地图状态管理器
+                // 这样GLWidget在处理鼠标事件时会自动通知MapStateManager
+                gw->getGLWidget()->setMapStateManager(mapStateManager_);
+                
+                // 设置GLWidget的实体管理器
+                // 这样GLWidget在处理鼠标事件时会自动通知GeoEntityManager
+                gw->getGLWidget()->setEntityManager(entityManager_);
+                
+                qDebug() << "MapStateManager和GeoEntityManager已设置到GLWidget";
                 } else {
                     qDebug() << "无法获取GLWidget，MapStateManager设置失败";
                 }
@@ -339,6 +364,86 @@ bool MainWindow::screenToGeoCoordinates(QPoint screenPos, double& longitude, dou
     }
 }
 
+void MainWindow::showEntityContextMenu(QPoint screenPos, GeoEntity* entity)
+{
+    if (!entity) return;
+    
+    // 创建或更新上下文菜单
+    if (!entityContextMenu_) {
+        entityContextMenu_ = new QMenu(this);
+        
+        // 设置Heading动作
+        QAction* setHeadingAction = entityContextMenu_->addAction("设置航向角");
+        connect(setHeadingAction, &QAction::triggered, [this, entity]() {
+            bool ok;
+            double currentHeading = entity->getHeading();
+            double newHeading = QInputDialog::getDouble(this, "设置航向角", 
+                QString("当前航向角: %1°\n请输入新的航向角:").arg(currentHeading), 
+                currentHeading, -360.0, 360.0, 1, &ok);
+            if (ok) {
+                entity->setHeading(newHeading);
+                qDebug() << "设置实体航向角:" << entity->getName() << "->" << newHeading << "度";
+            }
+        });
+        
+        // 设置高度动作
+        QAction* setAltitudeAction = entityContextMenu_->addAction("设置高度");
+        connect(setAltitudeAction, &QAction::triggered, [this, entity]() {
+            double longitude, latitude, altitude;
+            entity->getPosition(longitude, latitude, altitude);
+            
+            bool ok;
+            double newAltitude = QInputDialog::getDouble(this, "设置高度", 
+                QString("当前高度: %1米\n请输入新的高度:").arg(altitude), 
+                altitude, 0.0, 1000000.0, 1000, &ok);
+            if (ok) {
+                entity->setPosition(longitude, latitude, newAltitude);
+                qDebug() << "设置实体高度:" << entity->getName() << "->" << newAltitude << "米";
+            }
+        });
+        
+        // 删除实体动作
+        QAction* deleteAction = entityContextMenu_->addAction("删除实体");
+        connect(deleteAction, &QAction::triggered, [this, entity]() {
+            QMessageBox::StandardButton reply = QMessageBox::question(this, "确认删除", 
+                QString("确定要删除实体 '%1' 吗？").arg(entity->getName()),
+                QMessageBox::Yes | QMessageBox::No);
+            if (reply == QMessageBox::Yes) {
+                entityManager_->removeEntity(entity->getId());
+                if (selectedEntity_ == entity) {
+                    selectedEntity_ = nullptr;
+                }
+                qDebug() << "删除实体:" << entity->getName();
+            }
+        });
+        
+        // 显示属性动作
+        QAction* showPropertiesAction = entityContextMenu_->addAction("显示属性");
+        connect(showPropertiesAction, &QAction::triggered, [this, entity]() {
+            QString info = QString("实体信息:\n")
+                .append(QString("名称: %1\n").arg(entity->getName()))
+                .append(QString("类型: %1\n").arg(entity->getType()))
+                .append(QString("ID: %1\n").arg(entity->getId()));
+            
+            double longitude, latitude, altitude;
+            entity->getPosition(longitude, latitude, altitude);
+            info.append(QString("位置: 经度%1°, 纬度%2°, 高度%3米\n")
+                .arg(longitude, 0, 'f', 6)
+                .arg(latitude, 0, 'f', 6)
+                .arg(altitude, 0, 'f', 2));
+            
+            info.append(QString("航向角: %1°\n").arg(entity->getHeading()));
+            info.append(QString("可见性: %1\n").arg(entity->isVisible() ? "是" : "否"));
+            info.append(QString("选中状态: %1").arg(entity->isSelected() ? "是" : "否"));
+            
+            QMessageBox::information(this, "实体属性", info);
+        });
+    }
+    
+    // 显示菜单
+    entityContextMenu_->exec(mapToGlobal(screenPos));
+}
+
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasText()) {
@@ -386,7 +491,7 @@ void MainWindow::dropEvent(QDropEvent *event)
         osgEarth::Util::EarthManipulator* em = dynamic_cast<osgEarth::Util::EarthManipulator*>(viewer_->getCameraManipulator());
         if (em) {
             // 使用鼠标实际位置作为相机视点
-            osgEarth::Viewpoint vp("Entity", longitude, latitude, 0.0, 0.0, -45.0, 100000.0);
+            osgEarth::Viewpoint vp("Entity", longitude, latitude, 0.0, 0.0, -90.0, 1000000.0);
             em->setViewpoint(vp, 2.0);
             qDebug() << "相机已调整到实体位置:" << longitude << latitude;
         }
@@ -443,26 +548,40 @@ void MainWindow::testSetHeading()
 void MainWindow::onMapStateChanged(const MapStateInfo& state)
 {
     auto tuple = state.getTuple();
-    qDebug() << "=== 地图状态变化 ===";
-    qDebug() << "9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2):";
-    qDebug() << "a (Pitch俯仰角):" << std::get<0>(tuple);
-    qDebug() << "b (Heading航向角):" << std::get<1>(tuple);
-    qDebug() << "c (Range距离):" << std::get<2>(tuple);
-    qDebug() << "x1 (视角经度):" << std::get<3>(tuple);
-    qDebug() << "y1 (视角纬度):" << std::get<4>(tuple);
-    qDebug() << "z1 (视角高度):" << std::get<5>(tuple);
-    qDebug() << "x2 (鼠标经度):" << std::get<6>(tuple);
-    qDebug() << "y2 (鼠标纬度):" << std::get<7>(tuple);
-    qDebug() << "z2 (鼠标高度):" << std::get<8>(tuple);
+    // qDebug() << "=== 地图状态变化 ===";
+    // qDebug() << "9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2):";
+    // qDebug() << "a (Pitch俯仰角):" << std::get<0>(tuple);
+    // qDebug() << "b (Heading航向角):" << std::get<1>(tuple);
+    // qDebug() << "c (Range距离):" << std::get<2>(tuple);
+    // qDebug() << "x1 (视角经度):" << std::get<3>(tuple);
+    // qDebug() << "y1 (视角纬度):" << std::get<4>(tuple);
+    // qDebug() << "z1 (视角高度):" << std::get<5>(tuple);
+    // qDebug() << "x2 (鼠标经度):" << std::get<6>(tuple);
+    // qDebug() << "y2 (鼠标纬度):" << std::get<7>(tuple);
+    // qDebug() << "z2 (鼠标高度):" << std::get<8>(tuple);
 }
 
 void MainWindow::onMousePositionChanged(double longitude, double latitude, double altitude)
 {
-    qDebug() << "鼠标位置变化 - 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
+    // qDebug() << "鼠标位置变化 - 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
 }
 
 void MainWindow::onViewPositionChanged(double longitude, double latitude, double altitude)
 {
-    qDebug() << "视角位置变化 - 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
+    // qDebug() << "视角位置变化 - 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton) {
+        // 右键显示上下文菜单
+        GeoEntity* entity = entityManager_->findEntityAtPosition(event->pos());
+        if (entity) {
+            showEntityContextMenu(event->pos(), entity);
+        }
+    }
+    
+    // 调用父类处理其他事件
+    QMainWindow::mousePressEvent(event);
 }
 

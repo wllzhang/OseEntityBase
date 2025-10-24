@@ -42,7 +42,7 @@ public:
     void setVisible(bool visible);
     bool isVisible() const { return visible_; }
     
-    void setSelected(bool selected);
+    virtual void setSelected(bool selected);
     bool isSelected() const { return selected_; }
     
     // 渲染节点管理 - 自我管理

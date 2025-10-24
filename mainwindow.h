@@ -17,9 +17,12 @@ QT_END_NAMESPACE
 class QLabel;
 class QPushButton;
 class QResizeEvent;
+class QMenu;
+class QMouseEvent;
 class ImageViewerWindow;
 class GeoEntityManager;
 class MapStateManager;
+class GeoEntity;
 
 // 地图模式枚举
 enum MapMode {
@@ -47,6 +50,7 @@ protected:
     void resizeEvent(QResizeEvent* event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 private:
     void initializeViewer();
@@ -55,6 +59,7 @@ private:
     void setupManipulator(MapMode mode);
     void loadEntityConfig();
     bool screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude);
+    void showEntityContextMenu(QPoint screenPos, GeoEntity* entity);
 
 private:
     Ui::MainWindow *ui;
@@ -80,5 +85,9 @@ private:
     
     // 地图状态管理器
     MapStateManager* mapStateManager_;
+    
+    // 实体选择管理
+    GeoEntity* selectedEntity_;
+    QMenu* entityContextMenu_;
 };
 #endif // MAINWINDOW_H

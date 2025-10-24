@@ -18,8 +18,9 @@
 #include <QtOpenGL/QGLWidget>
 #include <osg/Version>
 
-// 前向声明MapStateManager类
+// 前向声明MapStateManager类和GeoEntityManager类
 class MapStateManager;
+class GeoEntityManager;
 
 //#include <osgViewer/CompositeViewer>
 //#include <QtCore/QMutexLocker>
@@ -79,6 +80,9 @@ public:
 
 	// ===== 地图状态管理器接口 =====
 	void setMapStateManager(MapStateManager* manager);
+	
+	// ===== 实体管理器接口 =====
+	void setEntityManager(GeoEntityManager* manager);
 
 	void setKeyboardModifiers( QInputEvent* event );
 	virtual void keyPressEvent( QKeyEvent* event );
@@ -132,6 +136,9 @@ protected:
 
 	// ===== 地图状态管理器支持 =====
 	MapStateManager* _mapStateManager;  // 地图状态管理器指针
+	
+	// ===== 实体管理器支持 =====
+	GeoEntityManager* _entityManager;  // 实体管理器指针
 
 	virtual void resizeEvent( QResizeEvent* event );
 	virtual void moveEvent( QMoveEvent* event );

@@ -6,8 +6,9 @@
 #include <QtGui/QInputEvent>
 #include <QtCore/QPointer>
 
-// 包含MapStateManager的完整定义
+// 包含MapStateManager和GeoEntityManager的完整定义
 #include "geo/mapstatemanager.h"
+#include "geo/geoentitymanager.h"
 
 using namespace osgQt;
 
@@ -205,6 +206,13 @@ void GLWidget::setMapStateManager(MapStateManager* manager)
 	_mapStateManager = manager;
 }
 
+void GLWidget::setEntityManager(GeoEntityManager* manager)
+{
+	// 设置实体管理器指针
+	// 这个方法允许外部设置实体管理器，用于处理实体选择等事件
+	_entityManager = manager;
+}
+
 void GLWidget::processDeferredEvents()
 {
 	QQueue<QEvent::Type> deferredEventQueueCopy;
@@ -372,6 +380,13 @@ void GLWidget::mousePressEvent( QMouseEvent* event )
 	// 这样可以让地图状态管理器获取鼠标位置和状态信息
 	if (_mapStateManager) {
 		_mapStateManager->onMousePress(event);
+	}
+	
+	// ===== 实体管理器通知 =====
+	// 如果设置了实体管理器，则通知它鼠标按下事件
+	// 这样可以让实体管理器处理实体选择等事件
+	if (_entityManager) {
+		_entityManager->onMousePress(event);
 	}
 }
 

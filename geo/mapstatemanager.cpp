@@ -72,7 +72,7 @@ osgEarth::GeoPoint MapStateManager::getMouseGeoPosition() const
 
 void MapStateManager::onMousePress(QMouseEvent* event)
 {
-    qDebug() << "MapStateManager::onMousePress 被调用" << event->pos();
+    // qDebug() << "MapStateManager::onMousePress 被调用" << event->pos();
     // 更新鼠标地理坐标
     updateMouseGeoPosition(event->pos());
     // 更新状态
@@ -81,7 +81,7 @@ void MapStateManager::onMousePress(QMouseEvent* event)
 
 void MapStateManager::onMouseMove(QMouseEvent* event)
 {
-    qDebug() << "MapStateManager::onMouseMove 被调用" << event->pos();
+    // qDebug() << "MapStateManager::onMouseMove 被调用" << event->pos();
     // 更新鼠标地理坐标
     updateMouseGeoPosition(event->pos());
     // 更新状态
@@ -93,7 +93,7 @@ void MapStateManager::onMouseMove(QMouseEvent* event)
 
 void MapStateManager::onMouseRelease(QMouseEvent* event)
 {
-    qDebug() << "MapStateManager::onMouseRelease 被调用" << event->pos();
+    // qDebug() << "MapStateManager::onMouseRelease 被调用" << event->pos();
     // 更新鼠标地理坐标
     updateMouseGeoPosition(event->pos());
     // 更新状态
@@ -109,7 +109,7 @@ void MapStateManager::onWheelEvent(QWheelEvent* event)
     // 发出状态变化信号
     emit stateChanged(currentState_);
     
-    qDebug() << "滚轮事件，当前距离:" << currentState_.range;
+    // qDebug() << "滚轮事件，当前距离:" << currentState_.range;
 }
 
 // 更新所有状态信息
@@ -209,7 +209,7 @@ void MapStateManager::updateMouseGeoPosition(QPoint mousePos)
                 // 发出鼠标位置变化信号
                 emit mousePositionChanged(currentState_.mouseLongitude, currentState_.mouseLatitude, currentState_.mouseAltitude);
                 
-                qDebug() << "鼠标地理坐标更新:" << currentState_.mouseLongitude << currentState_.mouseLatitude << currentState_.mouseAltitude;
+                // qDebug() << "鼠标地理坐标更新:" << currentState_.mouseLongitude << currentState_.mouseLatitude << currentState_.mouseAltitude;
             } else {
                 qDebug() << "世界坐标转换为地理坐标失败";
                 // 使用视角坐标作为默认值

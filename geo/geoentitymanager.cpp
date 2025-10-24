@@ -3,12 +3,18 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
+#include <osgUtil/LineSegmentIntersector>
+#include <osgViewer/Viewer>
+#include <cmath>
+#include <limits>
 
 GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode, QObject *parent)
     : QObject(parent)
     , root_(root)
     , mapNode_(mapNode)
     , entityCounter_(0)
+    , selectedEntity_(nullptr)
+    , viewer_(nullptr)
 {
     // 创建实体组节点
     entityGroup_ = new osg::Group;
@@ -213,4 +219,116 @@ QString GeoEntityManager::getImagePathFromConfig(const QString& entityName)
     
     qDebug() << "未找到实体对应的图片路径:" << entityName;
     return QString();
+}
+
+void GeoEntityManager::onMousePress(QMouseEvent* event)
+{
+    qDebug() << "=== GeoEntityManager::onMousePress 被调用 ===";
+    qDebug() << "鼠标位置:" << event->pos();
+    qDebug() << "鼠标按钮:" << event->button();
+    
+    if (event->button() == Qt::LeftButton) {
+        // 左键点击选择实体
+        GeoEntity* entity = findEntityAtPosition(event->pos());
+        qDebug() << "找到的实体:" << (entity ? entity->getName() : "无");
+        
+        if (entity) {
+            // 取消之前的选择
+            if (selectedEntity_ && selectedEntity_ != entity) {
+                selectedEntity_->setSelected(false);
+                emit entityDeselected();
+            }
+            
+            // 选择新实体
+            selectedEntity_ = entity;
+            entity->setSelected(true);
+            emit entitySelected(entity);
+            
+            qDebug() << "选择实体:" << entity->getName() << "ID:" << entity->getId();
+        } else {
+            // 点击空白处，取消选择
+            if (selectedEntity_) {
+                selectedEntity_->setSelected(false);
+                selectedEntity_ = nullptr;
+                emit entityDeselected();
+                qDebug() << "取消实体选择";
+            }
+        }
+    }
+}
+
+GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
+{
+    if (!viewer_ || !viewer_->getCamera() || !mapNode_) {
+        qDebug() << "Viewer、Camera或MapNode未初始化";
+        return nullptr;
+    }
+    
+    try {
+        // 创建射线相交检测器
+        osgUtil::LineSegmentIntersector::Intersections intersections;
+        
+        // 计算鼠标位置与地球表面的交点
+        if (viewer_->computeIntersections(screenPos.x(), screenPos.y(), intersections)) {
+            // 获取第一个交点
+            const osgUtil::LineSegmentIntersector::Intersection& intersection = *intersections.begin();
+            osg::Vec3 worldPos = intersection.getWorldIntersectPoint();
+            
+            // 将世界坐标转换为地理坐标
+            osg::Vec3d geoVec;
+            if (mapNode_->getMapSRS()->transformFromWorld(worldPos, geoVec)) {
+                double mouseLongitude = geoVec.x();
+                double mouseLatitude = geoVec.y();
+                
+                qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude;
+                
+                // 遍历所有实体，找到距离最近的
+                GeoEntity* closestEntity = nullptr;
+                double minDistance = std::numeric_limits<double>::max();
+                
+                QStringList entityIds = getEntityIds();
+                for (const QString& entityId : entityIds) {
+                    GeoEntity* entity = getEntity(entityId);
+                    if (entity) {
+                        double entityLongitude, entityLatitude, entityAltitude;
+                        entity->getPosition(entityLongitude, entityLatitude, entityAltitude);
+                        
+                        // 计算距离（简单的欧几里得距离）
+                        double distance = sqrt(pow(mouseLongitude - entityLongitude, 2) + 
+                                             pow(mouseLatitude - entityLatitude, 2));
+                        
+                        qDebug() << "实体" << entity->getName() << "距离:" << distance;
+                        
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestEntity = entity;
+                        }
+                    }
+                }
+                
+                // 设置一个合理的距离阈值（例如0.01度，约1公里）
+                double threshold = 0.1;
+                if (closestEntity && minDistance < threshold) {
+                    qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance;
+                    return closestEntity;
+                } else {
+                    qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance;
+                }
+            } else {
+                qDebug() << "世界坐标转换为地理坐标失败";
+            }
+        } else {
+            qDebug() << "未找到与地球表面的交点";
+        }
+    } catch (const std::exception& e) {
+        qDebug() << "查找实体时发生异常:" << e.what();
+    }
+    
+    return nullptr;
+}
+
+void GeoEntityManager::setViewer(osgViewer::Viewer* viewer)
+{
+    viewer_ = viewer;
+    qDebug() << "GeoEntityManager设置Viewer完成";
 }
