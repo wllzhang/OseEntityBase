@@ -3,6 +3,7 @@
 #include "OsgQt/GraphicsWindowQt.h"
 #include "imageviewerwindow.h"
 #include "geo/geoentitymanager.h"
+#include "geo/mapstatemanager.h"
 
 #include <QDebug>
 #include <QTimer>
@@ -61,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
     viewer_ = new osgViewer::Viewer;
     imageViewerWindow_ = nullptr;
     entityManager_ = nullptr;
+    mapStateManager_ = nullptr;
     
     // 初始化查看器
     initializeViewer();
@@ -167,6 +169,33 @@ void MainWindow::loadMap(const QString& earthFile)
                 entityManager_ = new GeoEntityManager(root_.get(), mapNode_.get(), this);
                 loadEntityConfig();
             }
+            
+            // 初始化地图状态管理器
+            if (!mapStateManager_) {
+                mapStateManager_ = new MapStateManager(viewer_.get(), this);
+                connect(mapStateManager_, &MapStateManager::stateChanged, 
+                        this, &MainWindow::onMapStateChanged);
+                connect(mapStateManager_, &MapStateManager::viewPositionChanged, 
+                        this, &MainWindow::onViewPositionChanged);
+                connect(mapStateManager_, &MapStateManager::mousePositionChanged, 
+                        this, &MainWindow::onMousePositionChanged);
+                
+                // ===== 设置GLWidget的MapStateManager =====
+                // 获取GLWidget并设置MapStateManager
+                // 这样GLWidget的鼠标事件处理函数会直接调用MapStateManager
+                osgQt::GraphicsWindowQt* gw = dynamic_cast<osgQt::GraphicsWindowQt*>(viewer_->getCamera()->getGraphicsContext());
+                if (gw && gw->getGLWidget()) {
+                    // 设置GLWidget的地图状态管理器
+                    // 这样GLWidget在处理鼠标事件时会自动通知MapStateManager
+                    gw->getGLWidget()->setMapStateManager(mapStateManager_);
+                    qDebug() << "MapStateManager已设置到GLWidget";
+                } else {
+                    qDebug() << "无法获取GLWidget，MapStateManager设置失败";
+                }
+                
+                qDebug() << "地图状态管理器初始化完成";
+            }
+            
             qDebug() << "地图加载成功";
         } else {
             qDebug() << "未找到MapNode";
@@ -186,11 +215,12 @@ void MainWindow::setupManipulator(MapMode mode)
     
     // 设置操作器参数
     osgEarth::Util::EarthManipulator::Settings* settings = em->getSettings();
-    settings->setMinMaxDistance(1000.0, 10000000.0);  // 设置缩放范围
+    settings->setMinMaxDistance(1000.0, 10000000000.0);  // 设置缩放范围
     settings->setMinMaxPitch(-89.0, 89.0);            // 设置俯仰角范围
     
     // 设置初始视点，看向北京（红色立方体位置）
-    osgEarth::Viewpoint vp("Beijing", 116.4, 39.9, 0.0, 0.0, -45.0, 100000.0);
+    // 参数：名称, 经度, 纬度, 高度, 航向角, 俯仰角, 距离
+    osgEarth::Viewpoint vp("Beijing", 116.4, 39.9, 0.0, 0.0, -90.0, 100000.0);
     em->setHomeViewpoint(vp);
     
     viewer_->setCameraManipulator(em.get());
@@ -335,5 +365,31 @@ void MainWindow::testSetHeading()
     } else {
         qDebug() << "没有找到任何实体";
     }
+}
+
+void MainWindow::onMapStateChanged(const MapStateInfo& state)
+{
+    auto tuple = state.getTuple();
+    qDebug() << "=== 地图状态变化 ===";
+    qDebug() << "9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2):";
+    qDebug() << "a (Pitch俯仰角):" << std::get<0>(tuple);
+    qDebug() << "b (Heading航向角):" << std::get<1>(tuple);
+    qDebug() << "c (Range距离):" << std::get<2>(tuple);
+    qDebug() << "x1 (视角经度):" << std::get<3>(tuple);
+    qDebug() << "y1 (视角纬度):" << std::get<4>(tuple);
+    qDebug() << "z1 (视角高度):" << std::get<5>(tuple);
+    qDebug() << "x2 (鼠标经度):" << std::get<6>(tuple);
+    qDebug() << "y2 (鼠标纬度):" << std::get<7>(tuple);
+    qDebug() << "z2 (鼠标高度):" << std::get<8>(tuple);
+}
+
+void MainWindow::onMousePositionChanged(double longitude, double latitude, double altitude)
+{
+    qDebug() << "鼠标位置变化 - 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
+}
+
+void MainWindow::onViewPositionChanged(double longitude, double latitude, double altitude)
+{
+    qDebug() << "视角位置变化 - 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
 }
 

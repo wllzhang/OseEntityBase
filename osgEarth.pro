@@ -100,7 +100,8 @@ SOURCES += \
     draggablelistwidget.cpp \
     geo/geoentitymanager.cpp \
     geo/geoentity.cpp \
-    geo/imageentity.cpp
+    geo/imageentity.cpp \
+    geo/mapstatemanager.cpp
 
 HEADERS += \
     OsgQt/GraphicsWindowQt.h \
@@ -111,7 +112,8 @@ HEADERS += \
     draggablelistwidget.h \
     geo/geoentitymanager.h \
     geo/geoentity.h \
-    geo/imageentity.h
+    geo/imageentity.h \
+    geo/mapstatemanager.h
 
 FORMS += \
     mainwindow.ui

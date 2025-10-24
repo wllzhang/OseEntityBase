@@ -7,6 +7,7 @@
 #include <osgGA/OrbitManipulator>
 #include <osgGA/TerrainManipulator>
 #include <osgEarth/MapNode>
+#include "geo/mapstatemanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,6 +18,7 @@ class QLabel;
 class QResizeEvent;
 class ImageViewerWindow;
 class GeoEntityManager;
+class MapStateManager;
 
 // 地图模式枚举
 enum MapMode {
@@ -36,6 +38,9 @@ public slots:
     void switchTo3DMode();
     void openImageViewer();
     void testSetHeading();  // 测试设置实体旋转角度
+    void onMapStateChanged(const MapStateInfo& state);  // 地图状态变化
+    void onViewPositionChanged(double longitude, double latitude, double altitude);   // 视角位置变化
+    void onMousePositionChanged(double longitude, double latitude, double altitude);  // 鼠标位置变化
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -67,5 +72,8 @@ private:
     
     // 实体管理器
     GeoEntityManager* entityManager_;
+    
+    // 地图状态管理器
+    MapStateManager* mapStateManager_;
 };
 #endif // MAINWINDOW_H

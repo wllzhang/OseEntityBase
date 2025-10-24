@@ -6,6 +6,9 @@
 #include <QtGui/QInputEvent>
 #include <QtCore/QPointer>
 
+// 包含MapStateManager的完整定义
+#include "geo/mapstatemanager.h"
+
 using namespace osgQt;
 
 class QtKeyboardMap
@@ -136,7 +139,8 @@ GLWidget::GLWidget( QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFla
 	: QGLWidget(parent, shareWidget, f),
 	_gw( NULL ),
 	_touchEventsEnabled( false ),
-	_forwardKeyEvents( forwardKeyEvents )
+	_forwardKeyEvents( forwardKeyEvents ),
+	_mapStateManager( NULL )  // 初始化地图状态管理器指针为空
 {
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }
@@ -146,7 +150,8 @@ GLWidget::GLWidget( QGLContext* context, QWidget* parent, const QGLWidget* share
 	: QGLWidget(context, parent, shareWidget, f),
 	_gw( NULL ),
 	_touchEventsEnabled( false ),
-	_forwardKeyEvents( forwardKeyEvents )
+	_forwardKeyEvents( forwardKeyEvents ),
+	_mapStateManager( NULL )  // 初始化地图状态管理器指针为空
 {
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }
@@ -156,7 +161,8 @@ GLWidget::GLWidget( const QGLFormat& format, QWidget* parent, const QGLWidget* s
 	: QGLWidget(format, parent, shareWidget, f),
 	_gw( NULL ),
 	_touchEventsEnabled( false ),
-	_forwardKeyEvents( forwardKeyEvents )
+	_forwardKeyEvents( forwardKeyEvents ),
+	_mapStateManager( NULL )  // 初始化地图状态管理器指针为空
 {
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }
@@ -189,6 +195,14 @@ void GLWidget::setTouchEventsEnabled(bool e)
 		ungrabGesture(Qt::PinchGesture);
 	}
 #endif
+}
+
+// ===== 地图状态管理器相关方法 =====
+void GLWidget::setMapStateManager(MapStateManager* manager)
+{
+	// 设置地图状态管理器指针
+	// 这个方法允许外部设置地图状态管理器，用于监听鼠标事件
+	_mapStateManager = manager;
 }
 
 void GLWidget::processDeferredEvents()
@@ -334,32 +348,60 @@ void GLWidget::keyReleaseEvent( QKeyEvent* event )
 
 void GLWidget::mousePressEvent( QMouseEvent* event )
 {
+	// ===== OSG鼠标事件处理 =====
+	// 将Qt鼠标按钮映射到OSG按钮编号
 	int button = 0;
 	switch ( event->button() )
 	{
-	case Qt::LeftButton: button = 1; break;
-	case Qt::MidButton: button = 2; break;
-	case Qt::RightButton: button = 3; break;
-	case Qt::NoButton: button = 0; break;
+	case Qt::LeftButton: button = 1; break;    // 左键 = 1
+	case Qt::MidButton: button = 2; break;     // 中键 = 2  
+	case Qt::RightButton: button = 3; break;   // 右键 = 3
+	case Qt::NoButton: button = 0; break;      // 无按钮 = 0
 	default: button = 0; break;
 	}
+	
+	// 设置键盘修饰键状态 (Shift、Ctrl、Alt等)
 	setKeyboardModifiers( event );
+	
+	// 将鼠标按下事件发送到OSG事件队列
+	// 注意：坐标需要乘以设备像素比以处理高DPI显示器
 	_gw->getEventQueue()->mouseButtonPress( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio, button );
+	
+	// ===== 地图状态管理器通知 =====
+	// 如果设置了地图状态管理器，则通知它鼠标按下事件
+	// 这样可以让地图状态管理器获取鼠标位置和状态信息
+	if (_mapStateManager) {
+		_mapStateManager->onMousePress(event);
+	}
 }
 
 void GLWidget::mouseReleaseEvent( QMouseEvent* event )
 {
+	// ===== OSG鼠标事件处理 =====
+	// 将Qt鼠标按钮映射到OSG按钮编号
 	int button = 0;
 	switch ( event->button() )
 	{
-	case Qt::LeftButton: button = 1; break;
-	case Qt::MidButton: button = 2; break;
-	case Qt::RightButton: button = 3; break;
-	case Qt::NoButton: button = 0; break;
+	case Qt::LeftButton: button = 1; break;    // 左键 = 1
+	case Qt::MidButton: button = 2; break;     // 中键 = 2  
+	case Qt::RightButton: button = 3; break;   // 右键 = 3
+	case Qt::NoButton: button = 0; break;      // 无按钮 = 0
 	default: button = 0; break;
 	}
+	
+	// 设置键盘修饰键状态 (Shift、Ctrl、Alt等)
 	setKeyboardModifiers( event );
+	
+	// 将鼠标释放事件发送到OSG事件队列
+	// 注意：坐标需要乘以设备像素比以处理高DPI显示器
 	_gw->getEventQueue()->mouseButtonRelease( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio, button );
+	
+	// ===== 地图状态管理器通知 =====
+	// 如果设置了地图状态管理器，则通知它鼠标释放事件
+	// 这样可以让地图状态管理器获取鼠标位置和状态信息
+	if (_mapStateManager) {
+		_mapStateManager->onMouseRelease(event);
+	}
 }
 
 void GLWidget::mouseDoubleClickEvent( QMouseEvent* event )
@@ -380,17 +422,42 @@ void GLWidget::mouseDoubleClickEvent( QMouseEvent* event )
 
 void GLWidget::mouseMoveEvent( QMouseEvent* event )
 {
+	// ===== OSG鼠标事件处理 =====
+	// 设置键盘修饰键状态 (Shift、Ctrl、Alt等)
 	setKeyboardModifiers( event );
+	
+	// 将鼠标移动事件发送到OSG事件队列
+	// 注意：坐标需要乘以设备像素比以处理高DPI显示器
 	_gw->getEventQueue()->mouseMotion( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio );
+	
+	// ===== 地图状态管理器通知 =====
+	// 如果设置了地图状态管理器，则通知它鼠标移动事件
+	// 这样可以让地图状态管理器实时获取鼠标位置和状态信息
+	if (_mapStateManager) {
+		_mapStateManager->onMouseMove(event);
+	}
 }
 
 void GLWidget::wheelEvent( QWheelEvent* event )
 {
+	// ===== OSG鼠标事件处理 =====
+	// 设置键盘修饰键状态 (Shift、Ctrl、Alt等)
 	setKeyboardModifiers( event );
+	
+	// 将滚轮事件发送到OSG事件队列
+	// 根据滚轮方向判断是垂直滚动还是水平滚动
+	// 根据delta值判断滚动方向 (向上/向下 或 向左/向右)
 	_gw->getEventQueue()->mouseScroll(
 		event->orientation() == Qt::Vertical ?
         (event->delta()>0 ? osgGA::GUIEventAdapter::SCROLL_DOWN : osgGA::GUIEventAdapter::SCROLL_UP) :
 		(event->delta()>0 ? osgGA::GUIEventAdapter::SCROLL_LEFT : osgGA::GUIEventAdapter::SCROLL_RIGHT) );
+	
+	// ===== 地图状态管理器通知 =====
+	// 如果设置了地图状态管理器，则通知它滚轮事件
+	// 这样可以让地图状态管理器获取缩放等状态信息
+	if (_mapStateManager) {
+		_mapStateManager->onWheelEvent(event);
+	}
 }
 
 

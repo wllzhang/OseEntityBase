@@ -18,6 +18,9 @@
 #include <QtOpenGL/QGLWidget>
 #include <osg/Version>
 
+// 前向声明MapStateManager类
+class MapStateManager;
+
 //#include <osgViewer/CompositeViewer>
 //#include <QtCore/QMutexLocker>
 
@@ -74,6 +77,9 @@ public:
 	inline bool getTouchEventsEnabled() const { return _touchEventsEnabled; }
 	void setTouchEventsEnabled( bool e );
 
+	// ===== 地图状态管理器接口 =====
+	void setMapStateManager(MapStateManager* manager);
+
 	void setKeyboardModifiers( QInputEvent* event );
 	virtual void keyPressEvent( QKeyEvent* event );
 	virtual void keyReleaseEvent( QKeyEvent* event );
@@ -123,6 +129,9 @@ protected:
 
 	bool _forwardKeyEvents;
 	qreal _devicePixelRatio;
+
+	// ===== 地图状态管理器支持 =====
+	MapStateManager* _mapStateManager;  // 地图状态管理器指针
 
 	virtual void resizeEvent( QResizeEvent* event );
 	virtual void moveEvent( QMoveEvent* event );
