@@ -78,15 +78,15 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget* controlWidget = new QWidget;
     QHBoxLayout* layout = new QHBoxLayout(controlWidget);
     
-    QPushButton* btn3D = new QPushButton("3D模式");
+    toggleButton_ = new QPushButton("切换到2D");
     QPushButton* btnImages = new QPushButton("战斗机");
     QPushButton* btnTestHeading = new QPushButton("测试旋转");
     
-    connect(btn3D, &QPushButton::clicked, this, &MainWindow::switchTo3DMode);
+    connect(toggleButton_, &QPushButton::clicked, this, &MainWindow::toggle2D3DMode);
     connect(btnImages, &QPushButton::clicked, this, &MainWindow::openImageViewer);
     connect(btnTestHeading, &QPushButton::clicked, this, &MainWindow::testSetHeading);
     
-    layout->addWidget(btn3D);
+    layout->addWidget(toggleButton_);
     layout->addWidget(btnImages);
     layout->addWidget(btnTestHeading);
     layout->addStretch();
@@ -215,12 +215,23 @@ void MainWindow::setupManipulator(MapMode mode)
     
     // 设置操作器参数
     osgEarth::Util::EarthManipulator::Settings* settings = em->getSettings();
-    settings->setMinMaxDistance(1000.0, 10000000000.0);  // 设置缩放范围
-    settings->setMinMaxPitch(-89.0, 89.0);            // 设置俯仰角范围
+ 
+    // 根据模式设置不同的视点
+    osgEarth::Viewpoint vp;
+    if (mode == MAP_MODE_2D) {
+        // 2D视角：俯仰角-89.9度，航向角-0.916737度，距离540978，经度116.347，纬度40.0438，高度-1.70909
+        vp = osgEarth::Viewpoint("2D View", 116.347, 40.0438, -1.70909, -0.916737, -90, 540978.0);
+        settings->setMinMaxPitch(-90.0, -89.0);            // 设置俯仰角范围
+        settings->setMinMaxDistance(1000.0, 4605500.0);  // 设置缩放范围
+        qDebug() << "设置2D视角：俯仰角-89.9度，航向角-0.916737度，距离540978";
+    } else {
+        // 3D视角：俯仰角-76.466度，航向角0度，距离1.27252e+07，经度109.257，纬度41.82，高度-38.5648
+        vp = osgEarth::Viewpoint("3D View", 109.257, 41.82, -38.5648, 0.0, -76.466, 12725200.0);
+        settings->setMinMaxPitch(-90, 90);            // 设置俯仰角范围
+        settings->setMinMaxDistance(1000.0, 50000000.0);  // 设置缩放范围
+        qDebug() << "设置3D视角：俯仰角-76.466度，航向角0度，距离12725200";
+    }
     
-    // 设置初始视点，看向北京（红色立方体位置）
-    // 参数：名称, 经度, 纬度, 高度, 航向角, 俯仰角, 距离
-    osgEarth::Viewpoint vp("Beijing", 116.4, 39.9, 0.0, 0.0, -90.0, 100000.0);
     em->setHomeViewpoint(vp);
     
     viewer_->setCameraManipulator(em.get());
@@ -229,10 +240,21 @@ void MainWindow::setupManipulator(MapMode mode)
     qDebug() << "操作器设置完成";
 }
 
-void MainWindow::switchTo3DMode()
+void MainWindow::toggle2D3DMode()
 {
-    loadMap(earth3DPath_);
-    setupManipulator(MAP_MODE_3D);
+    if (currentMode_ == MAP_MODE_3D) {
+        // 切换到2D模式
+        currentMode_ = MAP_MODE_2D;
+        toggleButton_->setText("切换到3D");
+        setupManipulator(MAP_MODE_2D);
+        qDebug() << "切换到2D模式";
+    } else {
+        // 切换到3D模式
+        currentMode_ = MAP_MODE_3D;
+        toggleButton_->setText("切换到2D");
+        setupManipulator(MAP_MODE_3D);
+        qDebug() << "切换到3D模式";
+    }
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)

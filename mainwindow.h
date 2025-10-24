@@ -15,6 +15,7 @@ QT_END_NAMESPACE
 
 // 前置声明
 class QLabel;
+class QPushButton;
 class QResizeEvent;
 class ImageViewerWindow;
 class GeoEntityManager;
@@ -35,7 +36,7 @@ public:
     ~MainWindow();
 
 public slots:
-    void switchTo3DMode();
+    void toggle2D3DMode();  // 2D/3D切换
     void openImageViewer();
     void testSetHeading();  // 测试设置实体旋转角度
     void onMapStateChanged(const MapStateInfo& state);  // 地图状态变化
@@ -65,6 +66,9 @@ private:
     MapMode currentMode_;
     QString earth2DPath_;
     QString earth3DPath_;
+    
+    // 切换按钮
+    QPushButton* toggleButton_;
 
     
     // 图片查看器窗口
