@@ -299,6 +299,46 @@ void MainWindow::loadEntityConfig()
     }
 }
 
+bool MainWindow::screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude)
+{
+    if (!viewer_ || !viewer_->getCamera() || !mapNode_) {
+        qDebug() << "Viewer、Camera或MapNode未初始化";
+        return false;
+    }
+    
+    try {
+        // 创建射线相交检测器
+        osgUtil::LineSegmentIntersector::Intersections intersections;
+        
+        // 计算鼠标位置与地球表面的交点
+        if (viewer_->computeIntersections(screenPos.x(), screenPos.y(), intersections)) {
+            // 获取第一个交点
+            const osgUtil::LineSegmentIntersector::Intersection& intersection = *intersections.begin();
+            osg::Vec3 worldPos = intersection.getWorldIntersectPoint();
+            
+            // 将世界坐标转换为地理坐标
+            osg::Vec3d geoVec;
+            if (mapNode_->getMapSRS()->transformFromWorld(worldPos, geoVec)) {
+                longitude = geoVec.x();
+                latitude = geoVec.y();
+                altitude = geoVec.z();
+                
+                qDebug() << "屏幕坐标转换成功:" << screenPos << "-> 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
+                return true;
+            } else {
+                qDebug() << "世界坐标转换为地理坐标失败";
+                return false;
+            }
+        } else {
+            qDebug() << "未找到与地球表面的交点";
+            return false;
+        }
+    } catch (const std::exception& e) {
+        qDebug() << "屏幕坐标转换时发生异常:" << e.what();
+        return false;
+    }
+}
+
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasText()) {
@@ -326,21 +366,32 @@ void MainWindow::dropEvent(QDropEvent *event)
     }
     
     QPoint dropPos = event->pos();
-    double longitude = 116.4 + (dropPos.x() - this->width()/2) * 0.01;
-    double latitude = 39.9 + (this->height()/2 - dropPos.y()) * 0.01;
-    double altitude = 100000.0;
+    double longitude, latitude, altitude;
+    
+    // 使用正确的屏幕坐标转地理坐标方法
+    if (!screenToGeoCoordinates(dropPos, longitude, latitude, altitude)) {
+        qDebug() << "无法将拖拽位置转换为地理坐标，使用默认位置";
+        // 如果转换失败，使用默认位置
+        longitude = 116.4;
+        latitude = 39.9;
+        altitude = 100000.0;
+    }
+    
+    // 设置实体高度为合理值
+    altitude = 100000.0;
     
     if (entityManager_->addEntityFromDrag(text, longitude, latitude, altitude)) {
         
-        // 调整相机到实体位置
+        // 调整相机到实体位置，使用鼠标实际位置
         osgEarth::Util::EarthManipulator* em = dynamic_cast<osgEarth::Util::EarthManipulator*>(viewer_->getCameraManipulator());
         if (em) {
-            osgEarth::Viewpoint vp("Entity", longitude, latitude, 0.0, 0.0, -45.0, 50000.0);
+            // 使用鼠标实际位置作为相机视点
+            osgEarth::Viewpoint vp("Entity", longitude, latitude, 0.0, 0.0, -45.0, 100000.0);
             em->setViewpoint(vp, 2.0);
             qDebug() << "相机已调整到实体位置:" << longitude << latitude;
         }
         
-        qDebug() << "实体添加完成";
+        qDebug() << "实体添加完成，位置:" << longitude << latitude << altitude;
         event->acceptProposedAction();
     } else {
         event->ignore();

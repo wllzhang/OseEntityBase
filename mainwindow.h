@@ -54,6 +54,7 @@ private:
     void setupCamera();
     void setupManipulator(MapMode mode);
     void loadEntityConfig();
+    bool screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude);
 
 private:
     Ui::MainWindow *ui;
