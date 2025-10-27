@@ -1,0 +1,269 @@
+<!-- HTML header for doxygen 1.9.1-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>数字地图脚手架库: OsgQt/QGraphicsViewAdapter.h 源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('QGraphicsViewAdapter_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">QGraphicsViewAdapter.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="QGraphicsViewAdapter_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#ifndef QGRAPHICSVIEWADAPTER_H</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno"><a class="line" href="QGraphicsViewAdapter_8h.html#a3baeaec7eea0d8b902ab433f100de4c8">    4</a></span><span class="preprocessor">#define QGRAPHICSVIEWADAPTER_H</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;QGLWidget&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;osg/Image&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;osg/observer_ptr&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;QPointer&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;QGraphicsScene&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;QGraphicsView&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;QApplication&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;QPainter&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;QtEvents&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceosgQt.html">osgQt</a></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">extern</span> QCoreApplication* <a class="code hl_function" href="namespaceosgQt.html#ad187fe5bf48d6b19496ef9dcd11e85cd">getOrCreateQApplication</a>();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classosgQt_1_1QGraphicsViewAdapter.html">QGraphicsViewAdapter</a> : <span class="keyword">public</span> QObject</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    Q_OBJECT</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_class" href="classosgQt_1_1QGraphicsViewAdapter.html">QGraphicsViewAdapter</a>(osg::Image* image, QWidget* widget);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a8893f176873e7b617c7e9bb4b7024e81">   31</a></span>    <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a8893f176873e7b617c7e9bb4b7024e81">~QGraphicsViewAdapter</a>(<span class="keywordtype">void</span>){};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#af48b4863fb561469fd62216731684e91">setUpKeyMap</a>();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a54dab2a5ac3ad21fe932e10632fc96aa">sendPointerEvent</a>(<span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y, <span class="keywordtype">int</span> buttonMask);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#ab3cbd41358654cae246373679b9df377">sendKeyEvent</a>(<span class="keywordtype">int</span> key, <span class="keywordtype">bool</span> keyDown);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a3da9ab3edfee060cd037041445a5d3fb">setFrameLastRendered</a>(<span class="keyword">const</span> osg::FrameStamp* frameStamp);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#ab74fcc667c5bee8af6efa7f7463c0c4e">clearWriteBuffer</a>();</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a86cd883e4c490271f0a0642329c93382">   43</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a86cd883e4c490271f0a0642329c93382">requiresRendering</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a220bf39bd79d3dbe1607c247fcfbac24">_requiresRendering</a>; }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a7f2ada6c7a591084aa34d958696572d1">render</a>();</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#aea9e0564cb233a88f80955e59e82e6d8">assignImage</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#af87cf32ea411d191c1b3da7ffd59e17e">resize</a>(<span class="keywordtype">int</span> width, <span class="keywordtype">int</span> height);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#aa221021aa3124d53029fb3b09f48c11b">   51</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#aa221021aa3124d53029fb3b09f48c11b">setBackgroundColor</a>(QColor color) { <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a38cc2acc2f2b9c4e2d188973497cbf6a">_backgroundColor</a> = color; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a03b791a307da193d800d58c9434278b9">   52</a></span>    QColor <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a03b791a307da193d800d58c9434278b9">getBackgroundColor</a>()<span class="keyword"> const     </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a38cc2acc2f2b9c4e2d188973497cbf6a">_backgroundColor</a>; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a98841aca717f4180b0f75b5a59310926">   57</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a98841aca717f4180b0f75b5a59310926">setBackgroundWidget</a>(QWidget* w) { <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#adc4ae3680e458ee999bbfbb326c0ed54">_backgroundWidget</a> = w; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a2652308b30357e70449ac407d3c4cae6">   58</a></span>    QWidget* <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a2652308b30357e70449ac407d3c4cae6">getBackgroundWidget</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#adc4ae3680e458ee999bbfbb326c0ed54">_backgroundWidget</a>; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#aac0c54caa79808c24d1584e6ba647c46">   60</a></span>    QGraphicsView* <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#aac0c54caa79808c24d1584e6ba647c46">getQGraphicsView</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#ab4cf0c2d06fd26609ad5da8ed8490a03">_graphicsView</a>; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#aacefe94d32fd5bb969c78b78817010fa">   61</a></span>    QGraphicsScene* <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#aacefe94d32fd5bb969c78b78817010fa">getQGraphicsScene</a>() { <span class="keywordflow">return</span> <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#afc7ab40600a7484ada84053419c9b697">_graphicsScene</a>; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a42d951bcbe6ead77b370aaec934e41cb">handlePointerEvent</a>(<span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y, <span class="keywordtype">int</span> buttonMask);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a3c640ee679ab60b0b418a9086e50b11f">handleKeyEvent</a>(<span class="keywordtype">int</span> key, <span class="keywordtype">bool</span> keyDown);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    QWidget* <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#a8589a2a9375d8565e22490c3a4dac8c0">getWidgetAt</a>(<span class="keyword">const</span> QPoint&amp; pos);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a9686bcc381e99bb4557b8a18f63002bf">   69</a></span>    osg::observer_ptr&lt;osg::Image&gt;   <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a9686bcc381e99bb4557b8a18f63002bf">_image</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#adc4ae3680e458ee999bbfbb326c0ed54">   70</a></span>    QWidget*                        <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#adc4ae3680e458ee999bbfbb326c0ed54">_backgroundWidget</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#aee3a7e03156d0e2c684fc863afdcfa11">   72</a></span>    <span class="keywordtype">int</span>                             <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#aee3a7e03156d0e2c684fc863afdcfa11">_previousButtonMask</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a56eb3cef6b547e6719393b04f7bd0818">   73</a></span>    <span class="keywordtype">int</span>                             <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a56eb3cef6b547e6719393b04f7bd0818">_previousMouseX</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a704072d9a5c705654f6df6adbea48512">   74</a></span>    <span class="keywordtype">int</span>                             <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a704072d9a5c705654f6df6adbea48512">_previousMouseY</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a62a998c8fddaf8ac5c77332095be6bd2">   75</a></span>    <span class="keywordtype">int</span>                             <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a62a998c8fddaf8ac5c77332095be6bd2">_previousQtMouseX</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a59085d0e7d5d808ca32a796a78da2577">   76</a></span>    <span class="keywordtype">int</span>                             <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a59085d0e7d5d808ca32a796a78da2577">_previousQtMouseY</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#afbe7983d95448b081efb608b1550e202">   77</a></span>    <span class="keywordtype">bool</span>                            <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#afbe7983d95448b081efb608b1550e202">_previousSentEvent</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a220bf39bd79d3dbe1607c247fcfbac24">   78</a></span>    <span class="keywordtype">bool</span>                            <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a220bf39bd79d3dbe1607c247fcfbac24">_requiresRendering</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a3558d38ee738098fe3221c8bae5498dc">   80</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a3558d38ee738098fe3221c8bae5498dc">_width</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a7f102e2f3e23ff096dbce120dedd129b">   81</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a7f102e2f3e23ff096dbce120dedd129b">_height</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a4af576e19ff52a8727fa4fb55913e432">   83</a></span>    <span class="keyword">typedef</span> std::map&lt;int, Qt::Key&gt; <a class="code hl_typedef" href="classosgQt_1_1QGraphicsViewAdapter.html#a4af576e19ff52a8727fa4fb55913e432">KeyMap</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#ad7c87165819261ebf552bc2a6e9d36ed">   84</a></span>    <a class="code hl_typedef" href="classosgQt_1_1QGraphicsViewAdapter.html#a4af576e19ff52a8727fa4fb55913e432">KeyMap</a>                          <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#ad7c87165819261ebf552bc2a6e9d36ed">_keyMap</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#ab2b83844f9eb736c210dc15f658c225e">   85</a></span>    Qt::KeyboardModifiers           <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#ab2b83844f9eb736c210dc15f658c225e">_qtKeyModifiers</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a38cc2acc2f2b9c4e2d188973497cbf6a">   87</a></span>    QColor                          <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a38cc2acc2f2b9c4e2d188973497cbf6a">_backgroundColor</a>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#ab4cf0c2d06fd26609ad5da8ed8490a03">   88</a></span>    QPointer&lt;QGraphicsView&gt;         <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#ab4cf0c2d06fd26609ad5da8ed8490a03">_graphicsView</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#afc7ab40600a7484ada84053419c9b697">   89</a></span>    QPointer&lt;QGraphicsScene&gt;        <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#afc7ab40600a7484ada84053419c9b697">_graphicsScene</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#aeb327ba5d08ec1c22476022c0a52698c">   90</a></span>    QPointer&lt;QWidget&gt;               <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#aeb327ba5d08ec1c22476022c0a52698c">_widget</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#aeb41ebd98654a94cc235f4786692d376">   92</a></span>    OpenThreads::Mutex              <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#aeb41ebd98654a94cc235f4786692d376">_qimagesMutex</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#adb69b2c04388ae183c7f29674d3a6635">   93</a></span>    OpenThreads::Mutex              <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#adb69b2c04388ae183c7f29674d3a6635">_qresizeMutex</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a539eb5e5f32441e2c9622b996b4c6755">   94</a></span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>                    <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a539eb5e5f32441e2c9622b996b4c6755">_previousFrameNumber</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a0f74d9bf72c04d2ffec83ae96645e1f7">   95</a></span>    <span class="keywordtype">bool</span>                            <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a0f74d9bf72c04d2ffec83ae96645e1f7">_newImageAvailable</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a583edd65b828f089214e726df998a140">   96</a></span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>                    <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a583edd65b828f089214e726df998a140">_currentRead</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#af3263255b1071c2336ee4be89ad38ca5">   97</a></span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>                    <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#af3263255b1071c2336ee4be89ad38ca5">_currentWrite</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#acdda79db0d04d06af0e5793b591b45e6">   98</a></span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>                    <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#acdda79db0d04d06af0e5793b591b45e6">_previousWrite</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classosgQt_1_1QGraphicsViewAdapter.html#a18cc5faf82f1008bc777c1d46125950e">   99</a></span>    QImage                          <a class="code hl_variable" href="classosgQt_1_1QGraphicsViewAdapter.html#a18cc5faf82f1008bc777c1d46125950e">_qimages</a>[3];</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classosgQt_1_1QGraphicsViewAdapter.html#ad98b39f1dfbfa84388e83e3c2b23147a">customEvent</a> ( QEvent * event ) ;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">private</span> slots:</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordtype">void</span> <a class="code hl_slot" href="classosgQt_1_1QGraphicsViewAdapter.html#a4a2e2c19e37bc79300499f427bb32f85">repaintRequestedSlot</a>(<span class="keyword">const</span> QList&lt;QRectF&gt; &amp;regions);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordtype">void</span> <a class="code hl_slot" href="classosgQt_1_1QGraphicsViewAdapter.html#a4a2e2c19e37bc79300499f427bb32f85">repaintRequestedSlot</a>(<span class="keyword">const</span> QRectF &amp;region);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>};</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html">osgQt::QGraphicsViewAdapter</a></div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:25</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a03b791a307da193d800d58c9434278b9"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a03b791a307da193d800d58c9434278b9">osgQt::QGraphicsViewAdapter::getBackgroundColor</a></div><div class="ttdeci">QColor getBackgroundColor() const</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:52</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a0f74d9bf72c04d2ffec83ae96645e1f7"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a0f74d9bf72c04d2ffec83ae96645e1f7">osgQt::QGraphicsViewAdapter::_newImageAvailable</a></div><div class="ttdeci">bool _newImageAvailable</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:95</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a18cc5faf82f1008bc777c1d46125950e"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a18cc5faf82f1008bc777c1d46125950e">osgQt::QGraphicsViewAdapter::_qimages</a></div><div class="ttdeci">QImage _qimages[3]</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:99</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a220bf39bd79d3dbe1607c247fcfbac24"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a220bf39bd79d3dbe1607c247fcfbac24">osgQt::QGraphicsViewAdapter::_requiresRendering</a></div><div class="ttdeci">bool _requiresRendering</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:78</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a2652308b30357e70449ac407d3c4cae6"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a2652308b30357e70449ac407d3c4cae6">osgQt::QGraphicsViewAdapter::getBackgroundWidget</a></div><div class="ttdeci">QWidget * getBackgroundWidget()</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:58</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a3558d38ee738098fe3221c8bae5498dc"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a3558d38ee738098fe3221c8bae5498dc">osgQt::QGraphicsViewAdapter::_width</a></div><div class="ttdeci">int _width</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:80</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a38cc2acc2f2b9c4e2d188973497cbf6a"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a38cc2acc2f2b9c4e2d188973497cbf6a">osgQt::QGraphicsViewAdapter::_backgroundColor</a></div><div class="ttdeci">QColor _backgroundColor</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:87</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a3c640ee679ab60b0b418a9086e50b11f"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a3c640ee679ab60b0b418a9086e50b11f">osgQt::QGraphicsViewAdapter::handleKeyEvent</a></div><div class="ttdeci">bool handleKeyEvent(int key, bool keyDown)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:430</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a3da9ab3edfee060cd037041445a5d3fb"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a3da9ab3edfee060cd037041445a5d3fb">osgQt::QGraphicsViewAdapter::setFrameLastRendered</a></div><div class="ttdeci">void setFrameLastRendered(const osg::FrameStamp *frameStamp)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:476</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a42d951bcbe6ead77b370aaec934e41cb"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a42d951bcbe6ead77b370aaec934e41cb">osgQt::QGraphicsViewAdapter::handlePointerEvent</a></div><div class="ttdeci">bool handlePointerEvent(int x, int y, int buttonMask)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:332</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a4a2e2c19e37bc79300499f427bb32f85"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a4a2e2c19e37bc79300499f427bb32f85">osgQt::QGraphicsViewAdapter::repaintRequestedSlot</a></div><div class="ttdeci">void repaintRequestedSlot(const QList&lt; QRectF &gt; &amp;regions)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:108</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a4af576e19ff52a8727fa4fb55913e432"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a4af576e19ff52a8727fa4fb55913e432">osgQt::QGraphicsViewAdapter::KeyMap</a></div><div class="ttdeci">std::map&lt; int, Qt::Key &gt; KeyMap</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:83</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a539eb5e5f32441e2c9622b996b4c6755"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a539eb5e5f32441e2c9622b996b4c6755">osgQt::QGraphicsViewAdapter::_previousFrameNumber</a></div><div class="ttdeci">unsigned int _previousFrameNumber</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:94</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a54dab2a5ac3ad21fe932e10632fc96aa"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a54dab2a5ac3ad21fe932e10632fc96aa">osgQt::QGraphicsViewAdapter::sendPointerEvent</a></div><div class="ttdeci">bool sendPointerEvent(int x, int y, int buttonMask)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:302</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a56eb3cef6b547e6719393b04f7bd0818"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a56eb3cef6b547e6719393b04f7bd0818">osgQt::QGraphicsViewAdapter::_previousMouseX</a></div><div class="ttdeci">int _previousMouseX</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:73</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a583edd65b828f089214e726df998a140"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a583edd65b828f089214e726df998a140">osgQt::QGraphicsViewAdapter::_currentRead</a></div><div class="ttdeci">unsigned int _currentRead</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:96</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a59085d0e7d5d808ca32a796a78da2577"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a59085d0e7d5d808ca32a796a78da2577">osgQt::QGraphicsViewAdapter::_previousQtMouseY</a></div><div class="ttdeci">int _previousQtMouseY</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:76</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a62a998c8fddaf8ac5c77332095be6bd2"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a62a998c8fddaf8ac5c77332095be6bd2">osgQt::QGraphicsViewAdapter::_previousQtMouseX</a></div><div class="ttdeci">int _previousQtMouseX</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:75</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a704072d9a5c705654f6df6adbea48512"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a704072d9a5c705654f6df6adbea48512">osgQt::QGraphicsViewAdapter::_previousMouseY</a></div><div class="ttdeci">int _previousMouseY</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:74</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a7f102e2f3e23ff096dbce120dedd129b"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a7f102e2f3e23ff096dbce120dedd129b">osgQt::QGraphicsViewAdapter::_height</a></div><div class="ttdeci">int _height</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:81</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a7f2ada6c7a591084aa34d958696572d1"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a7f2ada6c7a591084aa34d958696572d1">osgQt::QGraphicsViewAdapter::render</a></div><div class="ttdeci">void render()</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:511</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a8589a2a9375d8565e22490c3a4dac8c0"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a8589a2a9375d8565e22490c3a4dac8c0">osgQt::QGraphicsViewAdapter::getWidgetAt</a></div><div class="ttdeci">QWidget * getWidgetAt(const QPoint &amp;pos)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:268</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a86cd883e4c490271f0a0642329c93382"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a86cd883e4c490271f0a0642329c93382">osgQt::QGraphicsViewAdapter::requiresRendering</a></div><div class="ttdeci">bool requiresRendering() const</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:43</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a8893f176873e7b617c7e9bb4b7024e81"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a8893f176873e7b617c7e9bb4b7024e81">osgQt::QGraphicsViewAdapter::~QGraphicsViewAdapter</a></div><div class="ttdeci">~QGraphicsViewAdapter(void)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:31</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a9686bcc381e99bb4557b8a18f63002bf"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a9686bcc381e99bb4557b8a18f63002bf">osgQt::QGraphicsViewAdapter::_image</a></div><div class="ttdeci">osg::observer_ptr&lt; osg::Image &gt; _image</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:69</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_a98841aca717f4180b0f75b5a59310926"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#a98841aca717f4180b0f75b5a59310926">osgQt::QGraphicsViewAdapter::setBackgroundWidget</a></div><div class="ttdeci">void setBackgroundWidget(QWidget *w)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:57</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_aa221021aa3124d53029fb3b09f48c11b"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#aa221021aa3124d53029fb3b09f48c11b">osgQt::QGraphicsViewAdapter::setBackgroundColor</a></div><div class="ttdeci">void setBackgroundColor(QColor color)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:51</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_aac0c54caa79808c24d1584e6ba647c46"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#aac0c54caa79808c24d1584e6ba647c46">osgQt::QGraphicsViewAdapter::getQGraphicsView</a></div><div class="ttdeci">QGraphicsView * getQGraphicsView()</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:60</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_aacefe94d32fd5bb969c78b78817010fa"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#aacefe94d32fd5bb969c78b78817010fa">osgQt::QGraphicsViewAdapter::getQGraphicsScene</a></div><div class="ttdeci">QGraphicsScene * getQGraphicsScene()</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:61</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_ab2b83844f9eb736c210dc15f658c225e"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#ab2b83844f9eb736c210dc15f658c225e">osgQt::QGraphicsViewAdapter::_qtKeyModifiers</a></div><div class="ttdeci">Qt::KeyboardModifiers _qtKeyModifiers</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:85</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_ab3cbd41358654cae246373679b9df377"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#ab3cbd41358654cae246373679b9df377">osgQt::QGraphicsViewAdapter::sendKeyEvent</a></div><div class="ttdeci">bool sendKeyEvent(int key, bool keyDown)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:410</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_ab4cf0c2d06fd26609ad5da8ed8490a03"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#ab4cf0c2d06fd26609ad5da8ed8490a03">osgQt::QGraphicsViewAdapter::_graphicsView</a></div><div class="ttdeci">QPointer&lt; QGraphicsView &gt; _graphicsView</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:88</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_ab74fcc667c5bee8af6efa7f7463c0c4e"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#ab74fcc667c5bee8af6efa7f7463c0c4e">osgQt::QGraphicsViewAdapter::clearWriteBuffer</a></div><div class="ttdeci">void clearWriteBuffer()</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:498</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_acdda79db0d04d06af0e5793b591b45e6"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#acdda79db0d04d06af0e5793b591b45e6">osgQt::QGraphicsViewAdapter::_previousWrite</a></div><div class="ttdeci">unsigned int _previousWrite</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:98</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_ad7c87165819261ebf552bc2a6e9d36ed"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#ad7c87165819261ebf552bc2a6e9d36ed">osgQt::QGraphicsViewAdapter::_keyMap</a></div><div class="ttdeci">KeyMap _keyMap</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:84</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_ad98b39f1dfbfa84388e83e3c2b23147a"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#ad98b39f1dfbfa84388e83e3c2b23147a">osgQt::QGraphicsViewAdapter::customEvent</a></div><div class="ttdeci">virtual void customEvent(QEvent *event)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:120</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_adb69b2c04388ae183c7f29674d3a6635"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#adb69b2c04388ae183c7f29674d3a6635">osgQt::QGraphicsViewAdapter::_qresizeMutex</a></div><div class="ttdeci">OpenThreads::Mutex _qresizeMutex</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:93</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_adc4ae3680e458ee999bbfbb326c0ed54"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#adc4ae3680e458ee999bbfbb326c0ed54">osgQt::QGraphicsViewAdapter::_backgroundWidget</a></div><div class="ttdeci">QWidget * _backgroundWidget</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:70</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_aea9e0564cb233a88f80955e59e82e6d8"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#aea9e0564cb233a88f80955e59e82e6d8">osgQt::QGraphicsViewAdapter::assignImage</a></div><div class="ttdeci">void assignImage(unsigned int i)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:579</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_aeb327ba5d08ec1c22476022c0a52698c"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#aeb327ba5d08ec1c22476022c0a52698c">osgQt::QGraphicsViewAdapter::_widget</a></div><div class="ttdeci">QPointer&lt; QWidget &gt; _widget</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:90</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_aeb41ebd98654a94cc235f4786692d376"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#aeb41ebd98654a94cc235f4786692d376">osgQt::QGraphicsViewAdapter::_qimagesMutex</a></div><div class="ttdeci">OpenThreads::Mutex _qimagesMutex</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:92</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_aee3a7e03156d0e2c684fc863afdcfa11"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#aee3a7e03156d0e2c684fc863afdcfa11">osgQt::QGraphicsViewAdapter::_previousButtonMask</a></div><div class="ttdeci">int _previousButtonMask</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:72</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_af3263255b1071c2336ee4be89ad38ca5"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#af3263255b1071c2336ee4be89ad38ca5">osgQt::QGraphicsViewAdapter::_currentWrite</a></div><div class="ttdeci">unsigned int _currentWrite</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:97</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_af48b4863fb561469fd62216731684e91"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#af48b4863fb561469fd62216731684e91">osgQt::QGraphicsViewAdapter::setUpKeyMap</a></div><div class="ttdeci">void setUpKeyMap()</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:135</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_af87cf32ea411d191c1b3da7ffd59e17e"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#af87cf32ea411d191c1b3da7ffd59e17e">osgQt::QGraphicsViewAdapter::resize</a></div><div class="ttdeci">void resize(int width, int height)</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:591</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_afbe7983d95448b081efb608b1550e202"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#afbe7983d95448b081efb608b1550e202">osgQt::QGraphicsViewAdapter::_previousSentEvent</a></div><div class="ttdeci">bool _previousSentEvent</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:77</div></div>
+<div class="ttc" id="aclassosgQt_1_1QGraphicsViewAdapter_html_afc7ab40600a7484ada84053419c9b697"><div class="ttname"><a href="classosgQt_1_1QGraphicsViewAdapter.html#afc7ab40600a7484ada84053419c9b697">osgQt::QGraphicsViewAdapter::_graphicsScene</a></div><div class="ttdeci">QPointer&lt; QGraphicsScene &gt; _graphicsScene</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.h:89</div></div>
+<div class="ttc" id="anamespaceosgQt_html"><div class="ttname"><a href="namespaceosgQt.html">osgQt</a></div><div class="ttdef"><b>Definition</b> GraphicsWindowQt.h:37</div></div>
+<div class="ttc" id="anamespaceosgQt_html_ad187fe5bf48d6b19496ef9dcd11e85cd"><div class="ttname"><a href="namespaceosgQt.html#ad187fe5bf48d6b19496ef9dcd11e85cd">osgQt::getOrCreateQApplication</a></div><div class="ttdeci">QCoreApplication * getOrCreateQApplication()</div><div class="ttdef"><b>Definition</b> QGraphicsViewAdapter.cpp:20</div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_fd198c586c9190c0867090fe01ae3f06.html">OsgQt</a></li><li class="navelem"><a class="el" href="QGraphicsViewAdapter_8h.html">QGraphicsViewAdapter.h</a></li>
+    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>
