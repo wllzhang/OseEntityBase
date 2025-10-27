@@ -16,6 +16,18 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+/**
+ * @brief 通用地理实体基类
+ * 
+ * 所有地理实体的基类，提供实体管理的基础功能：
+ * - 位置管理（经纬度和高度）
+ * - 朝向管理（航向角）
+ * - 状态管理（可见性和选中状态）
+ * - 属性管理（动态属性设置）
+ * - 节点管理（OSG渲染节点）
+ * 
+ * @note 子类必须实现 initialize(), update(), cleanup() 和 createNode()
+ */
 class GeoEntity : public QObject
 {
     Q_OBJECT

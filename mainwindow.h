@@ -24,12 +24,29 @@ class GeoEntityManager;
 class MapStateManager;
 class GeoEntity;
 
-// 地图模式枚举
+/**
+ * @brief 地图模式枚举
+ */
 enum MapMode {
-    MAP_MODE_2D,
-    MAP_MODE_3D
+    MAP_MODE_2D,  ///< 2D地图模式
+    MAP_MODE_3D   ///< 3D地图模式
 };
 
+/**
+ * @brief 主窗口类
+ * 
+ * 应用程序的主窗口，负责UI显示和用户交互。
+ * 集成了Qt和OSG，提供3D地图显示和实体管理功能。
+ * 
+ * 主要功能：
+ * - 3D地图显示和视角控制
+ * - 2D/3D模式切换
+ * - 实体拖拽添加
+ * - 实体右键菜单
+ * - 地图状态监控
+ * 
+ * @note 通过信号槽机制与 GeoEntityManager 和 MapStateManager 通信
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

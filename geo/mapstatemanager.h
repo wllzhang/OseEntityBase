@@ -15,7 +15,14 @@
 #include <osgEarth/MapNode>
 #include <osgUtil/LineSegmentIntersector>
 
-// 地图状态信息结构体 - 9元组信息
+/**
+ * @brief 地图状态信息结构体
+ * 
+ * 包含地图的9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2)：
+ * - a,b,c: 相机参数（俯仰角、航向角、距离）
+ * - x1,y1,z1: 视角位置（经度、纬度、高度）
+ * - x2,y2,z2: 鼠标位置（经度、纬度、高度）
+ */
 struct MapStateInfo {
     double pitch;           // a: 俯仰角 (pitch) - 相机上下倾斜角度
     double heading;         // b: 航向角 (heading) - 相机左右旋转角度
@@ -40,6 +47,21 @@ struct MapStateInfo {
     }
 };
 
+/**
+ * @brief 地图状态管理器
+ * 
+ * 监控和管理地图的状态信息，包括相机参数和鼠标位置。
+ * 通过信号槽机制实时通知状态变化。
+ * 
+ * 主要功能：
+ * - 监控相机参数（俯仰角、航向角、距离）
+ * - 监控视角位置（经纬度和高度）
+ * - 监控鼠标位置（经纬度和高度）
+ * - 提供9元组状态信息
+ * - 处理鼠标事件和滚轮事件
+ * 
+ * @note 使用定时器定期更新状态信息
+ */
 class MapStateManager : public QObject
 {
     Q_OBJECT

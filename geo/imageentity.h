@@ -4,6 +4,20 @@
 #include "geoentity.h"
 #include <QString>
 
+/**
+ * @brief 图片实体类
+ * 
+ * 基于图片的地理实体实现，支持从图片文件创建实体。
+ * 实现了实体选择时的高亮显示功能。
+ * 
+ * 特性：
+ * - 从图片文件加载和显示
+ * - 选中时显示红色边框高亮
+ * - 支持实体的位置、朝向、大小设置
+ * - 多态支持，重写 setSelected() 方法
+ * 
+ * @note 图片路径从配置文件中获取
+ */
 class ImageEntity : public GeoEntity
 {
     Q_OBJECT

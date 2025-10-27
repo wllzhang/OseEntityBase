@@ -1,0 +1,41 @@
+name: Generate Documentation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'geo/**'
+      - 'mainwindow.*'
+      - 'README.md'
+      - 'Doxyfile'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Setup Doxygen
+      uses: doxygen/doxygen-action@v1.2.1
+      with:
+        working-directory: .
+        version: 1.9.2
+        
+    - name: Generate documentation
+      run: doxygen Doxyfile
+      
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/html
+        destination_dir: docs
+
