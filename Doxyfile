@@ -6,18 +6,19 @@ PROJECT_BRIEF          = "基于Qt和OSG的数字地图库"
 PROJECT_LOGO           = 
 OUTPUT_DIRECTORY       = docs
 OUTPUT_LANGUAGE        = Chinese
-INPUT                  = . \
-                         geo \
+INPUT                  = geo \
                          OsgQt \
                          mainwindow.cpp \
                          mainwindow.h \
-                         docs/mainpage.md \
-                         README.md
+                         docs/mainpage.md
 FILE_PATTERNS          = *.h \
                          *.cpp \
                          *.hpp \
                          *.md
 RECURSIVE              = YES
+EXAMPLE_PATH           = 
+EXAMPLE_PATTERNS       = 
+EXAMPLE_RECURSIVE      = NO
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE         = YES
 EXTRACT_STATIC          = YES
@@ -46,10 +47,13 @@ EXCLUDE                 = build \
                            CMakeLists.txt \
                            *.pro.user \
                            *.qrc \
-                           *_autogen
+                           *_autogen \
+                           doxygen-awesome-css
 EXCLUDE_PATTERNS        = */moc_* \
                           */qrc_* \
-                          */ui_*
+                          */ui_* \
+                          */doxygen-awesome-css/*
+EXCLUDE_SYMBOLS         = 
 HAVE_DOT                = NO
 CALL_GRAPH              = NO
 CALLER_GRAPH            = NO
