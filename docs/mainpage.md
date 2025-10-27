@@ -166,6 +166,6 @@ connect(mapStateManager, &MapStateManager::mapStateChanged,
 
 ## 联系方式
 
-- **项目地址**: https://github.com/your-repo/osgEarthmy_osgb
-- **问题反馈**: https://github.com/your-repo/osgEarthmy_osgb/issues
+- **项目地址**: https://github.com/OseEntityBase/osgEarthmy_osgb
+- **问题反馈**: https://github.com/OseEntityBase/osgEarthmy_osgb/issues
 
