@@ -1,0 +1,42 @@
+# Doxygen生成的文档
+docs/html/
+docs/latex/
+
+# doxygen-awesome-css主题（从GitHub下载）
+doxygen-awesome-css/
+
+# 复制到根目录的主题文件
+doxygen-awesome.css
+doxygen-awesome-sidebar-only.css
+doxygen-awesome-darkmode-toggle.js
+doxygen-awesome-fragment-copy-button.js
+doxygen-awesome-paragraph-link.js
+
+# Qt项目文件
+*.pro.user
+*.pro.user.*
+*.autosave
+
+# 编译输出
+build/
+debug/
+release/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 临时文件
+*.tmp
+*.bak
+*.log
+

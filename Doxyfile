@@ -10,10 +10,13 @@ INPUT                  = . \
                          geo \
                          OsgQt \
                          mainwindow.cpp \
-                         mainwindow.h
+                         mainwindow.h \
+                         docs/mainpage.md \
+                         README.md
 FILE_PATTERNS          = *.h \
                          *.cpp \
-                         *.hpp
+                         *.hpp \
+                         *.md
 RECURSIVE              = YES
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE         = YES
@@ -24,8 +27,15 @@ GENERATE_LATEX          = NO
 GENERATE_HTML           = YES
 GENERATE_TREEVIEW       = YES
 HTML_OUTPUT             = html
-HTML_COLORSTYLE_HUE     = 220
-HTML_COLORSTYLE_SAT     = 100
+HTML_EXTRA_STYLESHEET   = doxygen-awesome.css \
+                          doxygen-awesome-sidebar-only.css
+HTML_COLORSTYLE_HUE     = 209
+HTML_COLORSTYLE_SAT     = 255
+HTML_COLORSTYLE_GAMMA   = 113
+HTML_EXTRA_FILES        = doxygen-awesome-darkmode-toggle.js \
+                          doxygen-awesome-fragment-copy-button.js \
+                          doxygen-awesome-paragraph-link.js
+HTML_HEADER             = docs/header.html 
 USE_MDFILE_AS_MAINPAGE  = docs/mainpage.md
 ENABLE_PREPROCESSING    = YES
 MACRO_EXPANSION         = YES

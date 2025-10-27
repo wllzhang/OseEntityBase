@@ -29,6 +29,16 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y doxygen graphviz
+    
+    - name: Clone and setup doxygen-awesome-css theme
+      run: |
+        git clone https://github.com/jothepro/doxygen-awesome-css.git
+        # 复制主题文件到项目根目录，以便Doxygen可以找到
+        cp doxygen-awesome-css/doxygen-awesome.css .
+        cp doxygen-awesome-css/doxygen-awesome-sidebar-only.css .
+        cp doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js .
+        cp doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js .
+        cp doxygen-awesome-css/doxygen-awesome-paragraph-link.js .
         
     - name: Generate documentation
       run: doxygen Doxyfile
