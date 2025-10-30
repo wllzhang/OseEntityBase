@@ -20,7 +20,7 @@ var searchData=
   ['setgraphicswindow_17',['setGraphicsWindow',['../classosgQt_1_1GLWidget.html#aebaa3b490e8e7ff864483618db3bb4c7',1,'osgQt::GLWidget']]],
   ['setheading_18',['setHeading',['../classGeoEntity.html#afb69481a6f212a7a7cb059f324d3c02c',1,'GeoEntity']]],
   ['setkeyboardmodifiers_19',['setKeyboardModifiers',['../classosgQt_1_1GLWidget.html#adfd0da2b4fee59d50b03ee5b6f401101',1,'osgQt::GLWidget']]],
-  ['setmapstatemanager_20',['setMapStateManager',['../classosgQt_1_1GLWidget.html#a4c3c5f4fcf68d85dd7739d581ff78621',1,'osgQt::GLWidget']]],
+  ['setmapstatemanager_20',['setmapstatemanager',['../classosgQt_1_1GLWidget.html#a4c3c5f4fcf68d85dd7739d581ff78621',1,'osgQt::GLWidget::setMapStateManager()'],['../classGeoEntityManager.html#aed299b1e38310a07b5a4cb472a6afb5e',1,'GeoEntityManager::setMapStateManager()']]],
   ['setposition_21',['setPosition',['../classGeoEntity.html#afa0a63c0033ca53b4b7d210e7bc80887',1,'GeoEntity']]],
   ['setproperty_22',['setProperty',['../classGeoEntity.html#abc1ac7cae5f0f72791b17d24025cf7d6',1,'GeoEntity']]],
   ['setscreensettings_23',['setScreenSettings',['../classQtWindowingSystem.html#a6e10bc389f6e929a43fda50c97d8a621',1,'QtWindowingSystem']]],

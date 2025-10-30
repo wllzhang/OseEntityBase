@@ -161,6 +161,9 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:a2f19737deaaa70d5cef41b71ae35a165" id="r_a2f19737deaaa70d5cef41b71ae35a165"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a2f19737deaaa70d5cef41b71ae35a165">setViewer</a> (osgViewer::Viewer *viewer)</td></tr>
 <tr class="memdesc:a2f19737deaaa70d5cef41b71ae35a165"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置Viewer用于射线相交检测  <br /></td></tr>
 <tr class="separator:a2f19737deaaa70d5cef41b71ae35a165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed299b1e38310a07b5a4cb472a6afb5e" id="r_aed299b1e38310a07b5a4cb472a6afb5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#aed299b1e38310a07b5a4cb472a6afb5e">setMapStateManager</a> (<a class="el" href="classMapStateManager.html">MapStateManager</a> *mapStateManager)</td></tr>
+<tr class="memdesc:aed299b1e38310a07b5a4cb472a6afb5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置MapStateManager用于读取相机range  <br /></td></tr>
+<tr class="separator:aed299b1e38310a07b5a4cb472a6afb5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa37d1ad81e3692ba5bab05031ffcf948" id="r_aa37d1ad81e3692ba5bab05031ffcf948"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#aa37d1ad81e3692ba5bab05031ffcf948">processPendingDeletions</a> ()</td></tr>
 <tr class="memdesc:aa37d1ad81e3692ba5bab05031ffcf948"><td class="mdescLeft">&#160;</td><td class="mdescRight">处理延迟删除队列（应该在frame()完成后调用） 公共方法，供外部在渲染完成后调用  <br /></td></tr>
 <tr class="separator:aa37d1ad81e3692ba5bab05031ffcf948"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -185,6 +188,8 @@ Private 属性</h2></td></tr>
 <tr class="separator:af67e55149d20b154b049d5816bc222ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0aa9ef2b19d147ad47538b7279dd93f8" id="r_a0aa9ef2b19d147ad47538b7279dd93f8"><td class="memItemLeft" align="right" valign="top">osgViewer::Viewer *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a0aa9ef2b19d147ad47538b7279dd93f8">viewer_</a></td></tr>
 <tr class="separator:a0aa9ef2b19d147ad47538b7279dd93f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa9a983a8ce647b32dfdcaac123e899b" id="r_afa9a983a8ce647b32dfdcaac123e899b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classMapStateManager.html">MapStateManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#afa9a983a8ce647b32dfdcaac123e899b">mapStateManager_</a></td></tr>
+<tr class="separator:afa9a983a8ce647b32dfdcaac123e899b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99c0794be4e6ca087a4f3771d5e69133" id="r_a99c0794be4e6ca087a4f3771d5e69133"><td class="memItemLeft" align="right" valign="top">QJsonObject&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a99c0794be4e6ca087a4f3771d5e69133">entityConfig_</a></td></tr>
 <tr class="separator:a99c0794be4e6ca087a4f3771d5e69133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12fc936c5c3376b8df85ad948fae63ef" id="r_a12fc936c5c3376b8df85ad948fae63ef"><td class="memItemLeft" align="right" valign="top">QMap&lt; QString, <a class="el" href="classGeoEntity.html">GeoEntity</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a12fc936c5c3376b8df85ad948fae63ef">entities_</a></td></tr>
@@ -834,6 +839,26 @@ Private 属性</h2></td></tr>
 
 </div>
 </div>
+<a id="aed299b1e38310a07b5a4cb472a6afb5e" name="aed299b1e38310a07b5a4cb472a6afb5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed299b1e38310a07b5a4cb472a6afb5e">&#9670;&#160;</a></span>setMapStateManager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GeoEntityManager::setMapStateManager </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMapStateManager.html">MapStateManager</a> *&#160;</td>
+          <td class="paramname"><em>mapStateManager</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置MapStateManager用于读取相机range </p>
+
+</div>
+</div>
 <a id="a2f19737deaaa70d5cef41b71ae35a165" name="a2f19737deaaa70d5cef41b71ae35a165"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2f19737deaaa70d5cef41b71ae35a165">&#9670;&#160;</a></span>setViewer()</h2>
 
@@ -960,6 +985,28 @@ Private 属性</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">osg::ref_ptr&lt;osgEarth::MapNode&gt; GeoEntityManager::mapNode_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afa9a983a8ce647b32dfdcaac123e899b" name="afa9a983a8ce647b32dfdcaac123e899b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa9a983a8ce647b32dfdcaac123e899b">&#9670;&#160;</a></span>mapStateManager_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classMapStateManager.html">MapStateManager</a>* GeoEntityManager::mapStateManager_</td>
         </tr>
       </table>
   </td>

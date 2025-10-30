@@ -13,7 +13,7 @@ var searchData=
   ['mapstatemanager_10',['mapstatemanager',['../classMapStateManager.html#af8845bc3795072e96f0e6457d1142b26',1,'MapStateManager::MapStateManager()'],['../classMapStateManager.html',1,'MapStateManager']]],
   ['mapstatemanager_2ecpp_11',['mapstatemanager.cpp',['../mapstatemanager_8cpp.html',1,'']]],
   ['mapstatemanager_2eh_12',['mapstatemanager.h',['../mapstatemanager_8h.html',1,'']]],
-  ['mapstatemanager_5f_13',['mapStateManager_',['../classMainWindow.html#a5041e3fe33bbe0a3c135bf80964532e1',1,'MainWindow']]],
+  ['mapstatemanager_5f_13',['mapstatemanager_',['../classGeoEntityManager.html#afa9a983a8ce647b32dfdcaac123e899b',1,'GeoEntityManager::mapStateManager_'],['../classMainWindow.html#a5041e3fe33bbe0a3c135bf80964532e1',1,'MainWindow::mapStateManager_']]],
   ['mkeymap_14',['mKeyMap',['../classQtKeyboardMap.html#ad825307613481d3ed0f58b317e64da1b',1,'QtKeyboardMap']]],
   ['mousealtitude_15',['mouseAltitude',['../structMapStateInfo.html#af23be3da85e16e5892e9a8d80a764e2a',1,'MapStateInfo']]],
   ['mousedoubleclickevent_16',['mouseDoubleClickEvent',['../classosgQt_1_1GLWidget.html#a0495fe7afc77e7782111f5816405abc0',1,'osgQt::GLWidget']]],

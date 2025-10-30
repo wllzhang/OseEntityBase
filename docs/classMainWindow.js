@@ -16,7 +16,6 @@ var classMainWindow =
     [ "setupCamera", "classMainWindow.html#a302ead687ae0f8f941f3cf42d427fdc0", null ],
     [ "setupManipulator", "classMainWindow.html#ae9d82f3c94bf34abb6d9094355021090", null ],
     [ "showEntityContextMenu", "classMainWindow.html#a4286aaf1a8f62d72dc72d69e5d78f5ac", null ],
-    [ "testSetHeading", "classMainWindow.html#a8cacd769bf14221e8e2d42847d8914e7", null ],
     [ "toggle2D3DMode", "classMainWindow.html#a14eedbaebc566cbe0e4223bad8350df9", null ],
     [ "currentMode_", "classMainWindow.html#a48fba42d7a56782d180bb76ee9cf4684", null ],
     [ "earth2DPath_", "classMainWindow.html#a1865c81b200e36aa4b8f01dc224f0390", null ],
