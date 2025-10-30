@@ -69,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
     mapStateManager_ = nullptr;
     selectedEntity_ = nullptr;
     entityContextMenu_ = nullptr;
+    currentWaypointGroupId_.clear();
     
     // 初始化查看器
     initializeViewer();
@@ -86,12 +87,37 @@ MainWindow::MainWindow(QWidget *parent)
     
     toggleButton_ = new QPushButton("切换到2D");
     QPushButton* btnImages = new QPushButton("战斗机");
+    QPushButton* btnPlotPoint = new QPushButton("点标绘");
+    QPushButton* btnPlotRoute = new QPushButton("航线标绘");
     
     connect(toggleButton_, &QPushButton::clicked, this, &MainWindow::toggle2D3DMode);
     connect(btnImages, &QPushButton::clicked, this, &MainWindow::openImageViewer);
+    connect(btnPlotPoint, &QPushButton::clicked, this, [this]() {
+        if (!entityManager_) return;
+        bool ok=false;
+        QString label = QInputDialog::getText(this, "点标绘", "请输入标签，然后在地图上点击位置放置:", QLineEdit::Normal, "标注", &ok);
+        if (!ok) return;
+        if (label.trimmed().isEmpty()) label = "标注";
+        pendingWaypointLabel_ = label.trimmed();
+        isPlacingWaypoint_ = true;
+        statusBar()->showMessage("点标绘：请在地图上点击以放置点...", 3000);
+    });
+
+    connect(btnPlotRoute, &QPushButton::clicked, this, [this]() {
+        if (!entityManager_) return;
+        if (isPlacingRoute_) {
+            statusBar()->showMessage("航线标绘已在进行中，左键添加点，右键结束。", 2000);
+            return;
+        }
+        currentWaypointGroupId_ = entityManager_->createWaypointGroup("route");
+        isPlacingRoute_ = true;
+        statusBar()->showMessage("航线标绘：左键依次添加航点，右键结束。", 3000);
+    });
     
     layout->addWidget(toggleButton_);
     layout->addWidget(btnImages);
+    layout->addWidget(btnPlotPoint);
+    layout->addWidget(btnPlotRoute);
     layout->addStretch();
     
     // 将控制面板添加到状态栏
@@ -231,6 +257,55 @@ void MainWindow::loadMap(const QString& earthFile)
             // 将MapStateManager注入到实体管理器，供其读取当前range
             if (entityManager_ && mapStateManager_) {
                 entityManager_->setMapStateManager(mapStateManager_);
+            }
+
+            // 订阅空白处点击，用于点标绘放置
+            if (entityManager_) {
+                // 点标绘：一次性
+                connect(entityManager_, &GeoEntityManager::mapLeftClicked, this, [this](QPoint screenPos) {
+                    if (isPlacingWaypoint_) {
+                        double lon=0, lat=0, alt=0;
+                        if (!screenToGeoCoordinates(screenPos, lon, lat, alt)) {
+                            QMessageBox::warning(this, "点标绘", "无法将屏幕坐标转换为地理坐标。");
+                            isPlacingWaypoint_ = false;
+                            return;
+                        }
+                        auto wp = entityManager_->addStandaloneWaypoint(lon, lat, alt, pendingWaypointLabel_);
+                        if (!wp) QMessageBox::warning(this, "点标绘", "创建失败。");
+                        isPlacingWaypoint_ = false;
+                    }
+
+                    // 航线标绘：左键连加
+                    if (isPlacingRoute_ && !currentWaypointGroupId_.isEmpty()) {
+                        double lon=0, lat=0, alt=0;
+                        if (!screenToGeoCoordinates(screenPos, lon, lat, alt)) return;
+                        auto wp = entityManager_->addWaypointToGroup(currentWaypointGroupId_, lon, lat, alt);
+                        qDebug() << "[Route] 添加航点:" << lon << lat << alt << (wp?"成功":"失败");
+                    }
+                });
+
+                // 航线标绘：右键结束并生成路线
+                connect(entityManager_, &GeoEntityManager::mapRightClicked, this, [this](QPoint /*screenPos*/) {
+                    if (isPlacingRoute_ && !currentWaypointGroupId_.isEmpty()) {
+                        qDebug() << "[Route] 右键结束，准备生成路线，groupId=" << currentWaypointGroupId_;
+                        // 选择路径算法
+                        QStringList items; items << "linear" << "bezier";
+                        bool okSel = false;
+                        QString choice = QInputDialog::getItem(this, "生成航线", "选择生成算法:", items, 0, false, &okSel);
+                        if (!okSel || choice.isEmpty()) choice = "linear";
+
+                        bool ok = entityManager_->generateRouteForGroup(currentWaypointGroupId_, choice);
+                        if (!ok) {
+                            QMessageBox::warning(this, "航线标绘", "生成路线失败（点数不足或错误）。");
+                            qDebug() << "[Route] 生成路线失败";
+                        } else {
+                            statusBar()->showMessage(QString("航线生成完成（%1）").arg(choice), 2000);
+                            qDebug() << "[Route] 生成路线成功";
+                        }
+                        isPlacingRoute_ = false;
+                        currentWaypointGroupId_.clear();
+                    }
+                });
             }
             
             qDebug() << "地图加载成功";
@@ -462,6 +537,8 @@ void MainWindow::showEntityContextMenu(QPoint screenPos, GeoEntity* entity)
             
             QMessageBox::information(this, "实体属性", info);
         });
+
+      
     }
     
     // 显示菜单
@@ -544,17 +621,17 @@ void MainWindow::openImageViewer()
 void MainWindow::onMapStateChanged(const MapStateInfo& state)
 {
     auto tuple = state.getTuple();
-    // qDebug() << "=== 地图状态变化 ===";
-    // qDebug() << "9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2):";
-    // qDebug() << "a (Pitch俯仰角):" << std::get<0>(tuple);
-    // qDebug() << "b (Heading航向角):" << std::get<1>(tuple);
-    // qDebug() << "c (Range距离):" << std::get<2>(tuple);
-    // qDebug() << "x1 (视角经度):" << std::get<3>(tuple);
-    // qDebug() << "y1 (视角纬度):" << std::get<4>(tuple);
-    // qDebug() << "z1 (视角高度):" << std::get<5>(tuple);
-    // qDebug() << "x2 (鼠标经度):" << std::get<6>(tuple);
-    // qDebug() << "y2 (鼠标纬度):" << std::get<7>(tuple);
-    // qDebug() << "z2 (鼠标高度):" << std::get<8>(tuple);
+    qDebug() << "=== 地图状态变化 ===";
+    qDebug() << "9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2):";
+    qDebug() << "a (Pitch俯仰角):" << std::get<0>(tuple);
+    qDebug() << "b (Heading航向角):" << std::get<1>(tuple);
+    qDebug() << "c (Range距离):" << std::get<2>(tuple);
+    qDebug() << "x1 (视角经度):" << std::get<3>(tuple);
+    qDebug() << "y1 (视角纬度):" << std::get<4>(tuple);
+    qDebug() << "z1 (视角高度):" << std::get<5>(tuple);
+    qDebug() << "x2 (鼠标经度):" << std::get<6>(tuple);
+    qDebug() << "y2 (鼠标纬度):" << std::get<7>(tuple);
+    qDebug() << "z2 (鼠标高度):" << std::get<8>(tuple);
 }
 
 void MainWindow::onMousePositionChanged(double longitude, double latitude, double altitude)

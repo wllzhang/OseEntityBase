@@ -9,6 +9,8 @@
 #include <osgViewer/Viewer>
 #include <cmath>
 #include <limits>
+#include "waypointentity.h"
+#include <osg/LineWidth>
 
 GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode, QObject *parent)
     : QObject(parent)
@@ -285,13 +287,18 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
                 emit entityDeselected();
                 qDebug() << "取消实体选择";
             }
+            // 通知空白处左键点击（用于点标绘放置）
+            emit mapLeftClicked(event->pos());
         }
     } else if (event->button() == Qt::RightButton) {
-        // 右键点击显示上下文菜单
+        // 右键：先发结束标绘信号，再按需发实体菜单
+        emit mapRightClicked(event->pos());
         GeoEntity* entity = findEntityAtPosition(event->pos());
         if (entity) {
             emit entityRightClicked(entity, event->pos());
             qDebug() << "右键点击实体:" << entity->getName();
+        } else {
+            qDebug() << "右键点击地图空白处";
         }
     }
 }
@@ -375,6 +382,183 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
     }
     
     return nullptr;
+}
+
+// ===== 航点/航线实现 =====
+
+QString GeoEntityManager::createWaypointGroup(const QString& name)
+{
+    QString gid = QString("wpgroup_%1").arg(++entityCounter_);
+    WaypointGroupInfo info; info.groupId = gid; info.name = name; info.routeNode = nullptr;
+    waypointGroups_.insert(gid, info);
+    return gid;
+}
+
+WaypointEntity* GeoEntityManager::addWaypointToGroup(const QString& groupId, double lon, double lat, double alt)
+{
+    auto it = waypointGroups_.find(groupId);
+    if (it == waypointGroups_.end()) return nullptr;
+
+    WaypointEntity* wp = new WaypointEntity(generateEntityId("waypoint", groupId),
+                                            QString("WP-%1").arg(it->waypoints.size()+1),
+                                            lon, lat, alt, this);
+    // 优先绑定 MapNode，确保 PlaceNode 立即可见
+    wp->setMapNode(mapNode_.get());
+    wp->initialize();
+    // 标记序号
+    wp->setOrderLabel(QString::number(it->waypoints.size()+1));
+
+    if (wp->getNode()) {
+        entityGroup_->addChild(wp->getNode());
+    }
+    it->waypoints.push_back(wp);
+
+    // 也注册到通用实体表（可选）
+    entities_.insert(wp->getId(), wp);
+    emit entityCreated(wp);
+
+    return wp;
+}
+
+bool GeoEntityManager::removeWaypointFromGroup(const QString& groupId, int index)
+{
+    auto it = waypointGroups_.find(groupId);
+    if (it == waypointGroups_.end()) return false;
+    if (index < 0 || index >= it->waypoints.size()) return false;
+    WaypointEntity* wp = it->waypoints.at(index);
+    if (wp) {
+        if (wp->getNode()) entityGroup_->removeChild(wp->getNode());
+        wp->cleanup();
+        entities_.remove(wp->getId());
+        delete wp;
+    }
+    it->waypoints.remove(index);
+    // 重新编号
+    for (int i=0;i<it->waypoints.size();++i) it->waypoints[i]->setOrderLabel(QString::number(i+1));
+    return true;
+}
+
+osg::ref_ptr<osg::Geode> GeoEntityManager::buildLinearRoute(const QVector<WaypointEntity*>& wps)
+{
+    if (wps.size() < 2) return nullptr;
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+    osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
+    osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array();
+    const double routeAltMeters = 4000.0; // 固定航线高度（米）
+
+    for (auto* wp : wps) {
+        double lon, lat, alt; wp->getPosition(lon, lat, alt);
+        osgEarth::GeoPoint gp(osgEarth::SpatialReference::get("wgs84"), lon, lat, routeAltMeters, osgEarth::ALTMODE_ABSOLUTE);
+        osg::Vec3d world; gp.toWorld(world);
+        verts->push_back(world);
+    }
+    geom->setVertexArray(verts.get());
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, verts->size()));
+
+    osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array();
+    colors->push_back(osg::Vec4(0.2f, 0.8f, 1.0f, 1.0f));
+    geom->setColorArray(colors.get(), osg::Array::BIND_OVERALL);
+
+    geode->addDrawable(geom.get());
+    // 提高可见性：加粗线宽、关闭光照、可选关闭深度测试
+    osg::ref_ptr<osg::LineWidth> lw = new osg::LineWidth(4.0f);
+    osg::StateSet* ss = geode->getOrCreateStateSet();
+    ss->setAttributeAndModes(lw.get(), osg::StateAttribute::ON);
+    ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    ss->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+    ss->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
+    // 提前到最前层渲染，避免被其它对象覆盖
+    ss->setRenderBinDetails(9999, "RenderBin");
+    return geode.get();
+}
+
+osg::ref_ptr<osg::Geode> GeoEntityManager::buildBezierRoute(const QVector<WaypointEntity*>& wps)
+{
+    // 简化：将每对相邻点间插入若干中间点进行平滑
+    if (wps.size() < 2) return buildLinearRoute(wps);
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+    osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
+    osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array();
+    const double routeAltMeters = 4000.0; // 固定航线高度（米）
+
+    auto toWorld = [routeAltMeters](double lon,double lat,double /*alt*/){
+        osgEarth::GeoPoint gp(osgEarth::SpatialReference::get("wgs84"), lon, lat, routeAltMeters, osgEarth::ALTMODE_ABSOLUTE);
+        osg::Vec3d w; gp.toWorld(w); return w; };
+
+    for (int i=0;i<wps.size()-1;++i){
+        double lon1,lat1,alt1; wps[i]->getPosition(lon1,lat1,alt1);
+        double lon2,lat2,alt2; wps[i+1]->getPosition(lon2,lat2,alt2);
+        // 控制点：使用中点作为近似控制
+        double cx = (lon1+lon2)/2.0; double cy=(lat1+lat2)/2.0; double cz=routeAltMeters;
+        const int steps = 16;
+        for (int t=0;t<=steps;++t){
+            double u = double(t)/steps;
+            // 二次贝塞尔插值
+            double lon = (1-u)*(1-u)*lon1 + 2*u*(1-u)*cx + u*u*lon2;
+            double lat = (1-u)*(1-u)*lat1 + 2*u*(1-u)*cy + u*u*lat2;
+            double alt = routeAltMeters;
+            verts->push_back(toWorld(lon,lat,alt));
+        }
+    }
+
+    geom->setVertexArray(verts.get());
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, verts->size()));
+    osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array();
+    colors->push_back(osg::Vec4(1.0f, 0.6f, 0.2f, 1.0f));
+    geom->setColorArray(colors.get(), osg::Array::BIND_OVERALL);
+    geode->addDrawable(geom.get());
+    osg::ref_ptr<osg::LineWidth> lw = new osg::LineWidth(4.0f);
+    osg::StateSet* ss = geode->getOrCreateStateSet();
+    ss->setAttributeAndModes(lw.get(), osg::StateAttribute::ON);
+    ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    ss->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+    ss->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
+    ss->setRenderBinDetails(9999, "RenderBin");
+    return geode.get();
+}
+
+bool GeoEntityManager::generateRouteForGroup(const QString& groupId, const QString& model)
+{
+    qDebug() << "[Route] 请求生成路线 groupId=" << groupId << ", model=" << model;
+    auto it = waypointGroups_.find(groupId);
+    if (it == waypointGroups_.end()) return false;
+    qDebug() << "[Route] 航点数量=" << it->waypoints.size();
+    if (it->routeNode.valid()) {
+        entityGroup_->removeChild(it->routeNode.get());
+        it->routeNode = nullptr;
+    }
+    osg::ref_ptr<osg::Geode> route = (model == "bezier") ? buildBezierRoute(it->waypoints)
+                                                           : buildLinearRoute(it->waypoints);
+    if (!route) return false;
+    it->routeNode = route;
+    entityGroup_->addChild(route.get());
+    qDebug() << "[Route] 路线已生成并添加到场景";
+    return true;
+}
+
+bool GeoEntityManager::bindRouteToEntity(const QString& groupId, const QString& targetEntityId)
+{
+    if (!entities_.contains(targetEntityId)) return false;
+    if (!waypointGroups_.contains(groupId)) return false;
+    routeBinding_[groupId] = targetEntityId;
+    return true;
+}
+
+WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText)
+{
+    WaypointEntity* wp = new WaypointEntity(generateEntityId("waypoint", "plot"),
+                                            QString("WP-%1").arg(entityCounter_),
+                                            lon, lat, alt, this);
+    // 优先绑定 MapNode，确保 PlaceNode 立即可见
+    wp->setMapNode(mapNode_.get());
+    wp->initialize();
+    wp->setOrderLabel(labelText);
+    if (wp->getNode()) {
+        entityGroup_->addChild(wp->getNode());
+    }
+    entities_.insert(wp->getId(), wp);
+    emit entityCreated(wp);
+    return wp;
 }
 
 void GeoEntityManager::setViewer(osgViewer::Viewer* viewer)

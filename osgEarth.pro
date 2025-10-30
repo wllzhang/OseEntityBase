@@ -101,7 +101,8 @@ SOURCES += \
     geo/geoentitymanager.cpp \
     geo/geoentity.cpp \
     geo/imageentity.cpp \
-    geo/mapstatemanager.cpp
+    geo/mapstatemanager.cpp \
+    geo/waypointentity.cpp
 
 HEADERS += \
     OsgQt/GraphicsWindowQt.h \
@@ -113,7 +114,8 @@ HEADERS += \
     geo/geoentitymanager.h \
     geo/geoentity.h \
     geo/imageentity.h \
-    geo/mapstatemanager.h
+    geo/mapstatemanager.h \
+    geo/waypointentity.h
 
 FORMS += \
     mainwindow.ui

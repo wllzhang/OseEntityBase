@@ -104,5 +104,15 @@ private:
     // 实体选择管理
     GeoEntity* selectedEntity_;
     QMenu* entityContextMenu_;
+
+    // 航线规划：当前选中的航点组ID
+    QString currentWaypointGroupId_;
+
+    // 点标绘：是否进入放置模式与待放置标签
+    bool isPlacingWaypoint_ = false;
+    QString pendingWaypointLabel_;
+
+    // 航线标绘：是否处于连点模式
+    bool isPlacingRoute_ = false;
 };
 #endif // MAINWINDOW_H

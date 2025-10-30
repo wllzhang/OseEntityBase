@@ -14,6 +14,7 @@
 #include <QQueue>
 #include <osgViewer/Viewer>
 #include "geoentity.h"
+#include <QVector>
 
 // 前置声明，避免头文件循环依赖
 class MapStateManager;
@@ -136,6 +137,23 @@ public:
      */
     GeoEntity* findEntityAtPosition(QPoint screenPos);
 
+    // ===== 航点/航线 API =====
+    struct WaypointGroupInfo {
+        QString groupId;
+        QString name;
+        QVector<class WaypointEntity*> waypoints;
+        osg::ref_ptr<osg::Geode> routeNode; // 航线绘制节点
+    };
+
+    QString createWaypointGroup(const QString& name);
+    class WaypointEntity* addWaypointToGroup(const QString& groupId, double lon, double lat, double alt);
+    bool removeWaypointFromGroup(const QString& groupId, int index);
+    bool generateRouteForGroup(const QString& groupId, const QString& model /* 'linear' | 'bezier' */);
+    bool bindRouteToEntity(const QString& groupId, const QString& targetEntityId);
+
+    // 点标绘：直接添加一个带自定义标签的航点（不依赖组）
+    class WaypointEntity* addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText);
+
 signals:
     /**
      * @brief 实体创建信号
@@ -167,6 +185,16 @@ signals:
      */
     void entityRightClicked(GeoEntity* entity, QPoint screenPos);
 
+    /**
+     * @brief 地图左键点击（空白处）
+     */
+    void mapLeftClicked(QPoint screenPos);
+
+    /**
+     * @brief 地图右键点击（空白处）
+     */
+    void mapRightClicked(QPoint screenPos);
+
 private:
     osg::ref_ptr<osg::Group> root_;
     osg::ref_ptr<osgEarth::MapNode> mapNode_;
@@ -191,6 +219,13 @@ private:
     
     QString generateEntityId(const QString& entityType, const QString& entityName);
     QString getImagePathFromConfig(const QString& entityName);
+
+    // 航点/航线数据
+    QMap<QString, WaypointGroupInfo> waypointGroups_;
+    QMap<QString, QString> routeBinding_; // groupId -> targetEntityId
+
+    osg::ref_ptr<osg::Geode> buildLinearRoute(const QVector<class WaypointEntity*>& wps);
+    osg::ref_ptr<osg::Geode> buildBezierRoute(const QVector<class WaypointEntity*>& wps);
 };
 
 #endif // GEOENTITYMANAGER_H
