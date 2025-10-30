@@ -16,6 +16,7 @@ var classGeoEntityManager =
     [ "getEntityIdsByType", "classGeoEntityManager.html#a3f4b149ab8bb85e0762cf997dad48d2b", null ],
     [ "getImagePathFromConfig", "classGeoEntityManager.html#a419318fb473e031bc9d870cd62fd70c8", null ],
     [ "onMousePress", "classGeoEntityManager.html#ad9cbcb2a80eb716c0112feab412b6e5d", null ],
+    [ "processPendingDeletions", "classGeoEntityManager.html#aa37d1ad81e3692ba5bab05031ffcf948", null ],
     [ "removeEntity", "classGeoEntityManager.html#ae91c1a957907a514c925c6c6f1156315", null ],
     [ "setEntityConfig", "classGeoEntityManager.html#a977d47adb2b6e8d8cf306a4166be7b7b", null ],
     [ "setViewer", "classGeoEntityManager.html#a2f19737deaaa70d5cef41b71ae35a165", null ],
@@ -24,6 +25,8 @@ var classGeoEntityManager =
     [ "entityCounter_", "classGeoEntityManager.html#add0104e8bc121b3af05f60793f8928dc", null ],
     [ "entityGroup_", "classGeoEntityManager.html#af67e55149d20b154b049d5816bc222ee", null ],
     [ "mapNode_", "classGeoEntityManager.html#aa3abbb34241f160333b28ae5d896849a", null ],
+    [ "pendingDeletions_", "classGeoEntityManager.html#a2f50b3a83b1ebcb6567aaae98d665810", null ],
+    [ "pendingEntities_", "classGeoEntityManager.html#ae5c5e7b332c7b749f60621336bc0b8ca", null ],
     [ "root_", "classGeoEntityManager.html#a83c98d4b797856b3f7160fec27c3d1ae", null ],
     [ "selectedEntity_", "classGeoEntityManager.html#aca98f9a6b90d117584f76b9295bf41e7", null ],
     [ "viewer_", "classGeoEntityManager.html#a0aa9ef2b19d147ad47538b7279dd93f8", null ]
