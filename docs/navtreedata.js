@@ -25,6 +25,7 @@
 var NAVTREE =
 [
   [ "数字地图脚手架库", "index.html", [
+    [ "数字地图脚手架库 API文档", "index.html", "index" ],
     [ "命名空间", "namespaces.html", [
       [ "命名空间列表", "namespaces.html", "namespaces_dup" ],
       [ "命名空间成员", "namespacemembers.html", [
@@ -63,7 +64,7 @@ var NAVTREEINDEX =
 [
 "GraphicsWindowQt_8cpp.html",
 "classosgQt_1_1GLWidget.html#a9e585800d047a59d1cff71570839a80c",
-"functions_f.html"
+"functions_e.html"
 ];
 
 var SYNCONMSG = '点击 关闭 面板同步';
