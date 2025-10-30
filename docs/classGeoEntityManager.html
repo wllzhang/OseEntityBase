@@ -94,7 +94,7 @@ $(document).ready(function(){initNavTree('classGeoEntityManager.html',''); initR
 <a href="#pri-methods">Private 成员函数</a> &#124;
 <a href="#pri-attribs">Private 属性</a> &#124;
 <a href="classGeoEntityManager-members.html">所有成员列表</a>  </div>
-  <div class="headertitle"><div class="title">GeoEntityManager类 参考</div></div>
+  <div class="headertitle"><div class="title">GeoEntityManager类 参考<div class="ingroups"><a class="el" href="group__managers.html">Managers</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -112,6 +112,7 @@ $(document).ready(function(){initNavTree('classGeoEntityManager.html',''); initR
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 类</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGeoEntityManager_1_1WaypointGroupInfo.html">WaypointGroupInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">航点组信息结构  <a href="structGeoEntityManager_1_1WaypointGroupInfo.html#details">更多...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="signals" name="signals"></a>
@@ -183,27 +184,37 @@ Public 成员函数</h2></td></tr>
 <tr class="memdesc:a5999d837cc2260cf7a9b88f66a8e2aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">查找指定位置的实体  <br /></td></tr>
 <tr class="separator:a5999d837cc2260cf7a9b88f66a8e2aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4317c1529ab9d02ef84fa55ce91b142c" id="r_a4317c1529ab9d02ef84fa55ce91b142c"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a4317c1529ab9d02ef84fa55ce91b142c">createWaypointGroup</a> (const QString &amp;name)</td></tr>
+<tr class="memdesc:a4317c1529ab9d02ef84fa55ce91b142c"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建航点组  <br /></td></tr>
 <tr class="separator:a4317c1529ab9d02ef84fa55ce91b142c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bb45dd93fa43c7b977fb2aad0da43f7" id="r_a0bb45dd93fa43c7b977fb2aad0da43f7"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a0bb45dd93fa43c7b977fb2aad0da43f7">addWaypointToGroup</a> (const QString &amp;groupId, double lon, double lat, double alt)</td></tr>
+<tr class="memdesc:a0bb45dd93fa43c7b977fb2aad0da43f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">在指定组中添加航点  <br /></td></tr>
 <tr class="separator:a0bb45dd93fa43c7b977fb2aad0da43f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3437b4819a56e1fca25c27d3fe313be" id="r_aa3437b4819a56e1fca25c27d3fe313be"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#aa3437b4819a56e1fca25c27d3fe313be">removeWaypointFromGroup</a> (const QString &amp;groupId, int index)</td></tr>
+<tr class="memdesc:aa3437b4819a56e1fca25c27d3fe313be"><td class="mdescLeft">&#160;</td><td class="mdescRight">从组中按序号删除航点  <br /></td></tr>
 <tr class="separator:aa3437b4819a56e1fca25c27d3fe313be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b333e25d047237e1469443cfb7ab19b" id="r_a5b333e25d047237e1469443cfb7ab19b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a5b333e25d047237e1469443cfb7ab19b">generateRouteForGroup</a> (const QString &amp;groupId, const QString &amp;model)</td></tr>
+<tr class="memdesc:a5b333e25d047237e1469443cfb7ab19b"><td class="mdescLeft">&#160;</td><td class="mdescRight">依据模型生成组内航线（linear|bezier）  <br /></td></tr>
 <tr class="separator:a5b333e25d047237e1469443cfb7ab19b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad85197a953618aedc21fea07b999a1c3" id="r_ad85197a953618aedc21fea07b999a1c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#ad85197a953618aedc21fea07b999a1c3">bindRouteToEntity</a> (const QString &amp;groupId, const QString &amp;targetEntityId)</td></tr>
+<tr class="memdesc:ad85197a953618aedc21fea07b999a1c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">将生成的航线绑定到实体（随实体移动/显示）  <br /></td></tr>
 <tr class="separator:ad85197a953618aedc21fea07b999a1c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49188d65e5b30b1e3bea41946f85186e" id="r_a49188d65e5b30b1e3bea41946f85186e"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a49188d65e5b30b1e3bea41946f85186e">addStandaloneWaypoint</a> (double lon, double lat, double alt, const QString &amp;labelText)</td></tr>
+<tr class="memdesc:a49188d65e5b30b1e3bea41946f85186e"><td class="mdescLeft">&#160;</td><td class="mdescRight">添加独立航点（带标签），用于快速标绘  <br /></td></tr>
 <tr class="separator:a49188d65e5b30b1e3bea41946f85186e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private 成员函数</h2></td></tr>
 <tr class="memitem:a2bd0095c1c30ecb58bbf16c965c9f1ca" id="r_a2bd0095c1c30ecb58bbf16c965c9f1ca"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a2bd0095c1c30ecb58bbf16c965c9f1ca">generateEntityId</a> (const QString &amp;entityType, const QString &amp;entityName)</td></tr>
+<tr class="memdesc:a2bd0095c1c30ecb58bbf16c965c9f1ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">生成唯一实体ID  <br /></td></tr>
 <tr class="separator:a2bd0095c1c30ecb58bbf16c965c9f1ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a419318fb473e031bc9d870cd62fd70c8" id="r_a419318fb473e031bc9d870cd62fd70c8"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a419318fb473e031bc9d870cd62fd70c8">getImagePathFromConfig</a> (const QString &amp;entityName)</td></tr>
+<tr class="memdesc:a419318fb473e031bc9d870cd62fd70c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据实体名从配置获取图片路径  <br /></td></tr>
 <tr class="separator:a419318fb473e031bc9d870cd62fd70c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a655edae02f33b2e5cdb9a15ef2861334" id="r_a655edae02f33b2e5cdb9a15ef2861334"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Geode &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a655edae02f33b2e5cdb9a15ef2861334">buildLinearRoute</a> (const QVector&lt; class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> * &gt; &amp;wps)</td></tr>
+<tr class="memdesc:a655edae02f33b2e5cdb9a15ef2861334"><td class="mdescLeft">&#160;</td><td class="mdescRight">生成线性航线节点  <br /></td></tr>
 <tr class="separator:a655edae02f33b2e5cdb9a15ef2861334"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7356a5527f869b7ca3ee4eccc114392f" id="r_a7356a5527f869b7ca3ee4eccc114392f"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Geode &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a7356a5527f869b7ca3ee4eccc114392f">buildBezierRoute</a> (const QVector&lt; class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> * &gt; &amp;wps)</td></tr>
+<tr class="memdesc:a7356a5527f869b7ca3ee4eccc114392f"><td class="mdescLeft">&#160;</td><td class="mdescRight">生成贝塞尔航线节点  <br /></td></tr>
 <tr class="separator:a7356a5527f869b7ca3ee4eccc114392f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
@@ -390,6 +401,8 @@ Private 属性</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>添加独立航点（带标签），用于快速标绘 </p>
+
 </div>
 </div>
 <a id="a0bb45dd93fa43c7b977fb2aad0da43f7" name="a0bb45dd93fa43c7b977fb2aad0da43f7"></a>
@@ -430,6 +443,8 @@ Private 属性</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>在指定组中添加航点 </p>
+
 </div>
 </div>
 <a id="ad85197a953618aedc21fea07b999a1c3" name="ad85197a953618aedc21fea07b999a1c3"></a>
@@ -458,6 +473,8 @@ Private 属性</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>将生成的航线绑定到实体（随实体移动/显示） </p>
+
 </div>
 </div>
 <a id="a7356a5527f869b7ca3ee4eccc114392f" name="a7356a5527f869b7ca3ee4eccc114392f"></a>
@@ -484,6 +501,8 @@ Private 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>生成贝塞尔航线节点 </p>
+
 </div>
 </div>
 <a id="a655edae02f33b2e5cdb9a15ef2861334" name="a655edae02f33b2e5cdb9a15ef2861334"></a>
@@ -509,6 +528,8 @@ Private 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>生成线性航线节点 </p>
 
 </div>
 </div>
@@ -612,6 +633,8 @@ Private 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>创建航点组 </p>
 
 </div>
 </div>
@@ -850,6 +873,8 @@ Private 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>生成唯一实体ID </p>
+
 </div>
 </div>
 <a id="a5b333e25d047237e1469443cfb7ab19b" name="a5b333e25d047237e1469443cfb7ab19b"></a>
@@ -877,6 +902,8 @@ Private 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>依据模型生成组内航线（linear|bezier） </p>
 
 </div>
 </div>
@@ -977,6 +1004,8 @@ Private 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>根据实体名从配置获取图片路径 </p>
 
 </div>
 </div>
@@ -1132,6 +1161,8 @@ Private 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>从组中按序号删除航点 </p>
 
 </div>
 </div>

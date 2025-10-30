@@ -5,9 +5,9 @@ var dir_2bcd72cd0b092dad44d5d2bb06eea6c2 =
     [ "geoentitymanager.cpp", "geoentitymanager_8cpp.html", null ],
     [ "geoentitymanager.h", "geoentitymanager_8h.html", "geoentitymanager_8h" ],
     [ "imageentity.cpp", "imageentity_8cpp.html", null ],
-    [ "imageentity.h", "imageentity_8h.html", "imageentity_8h" ],
+    [ "imageentity.h", "imageentity_8h.html", null ],
     [ "mapstatemanager.cpp", "mapstatemanager_8cpp.html", null ],
-    [ "mapstatemanager.h", "mapstatemanager_8h.html", "mapstatemanager_8h" ],
+    [ "mapstatemanager.h", "mapstatemanager_8h.html", null ],
     [ "waypointentity.cpp", "waypointentity_8cpp.html", null ],
-    [ "waypointentity.h", "waypointentity_8h.html", "waypointentity_8h" ]
+    [ "waypointentity.h", "waypointentity_8h.html", null ]
 ];

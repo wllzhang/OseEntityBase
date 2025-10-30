@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['地图状态监控_0',['地图状态监控',['../index.html#autotoc_md18',1,'']]]
+  ['创建实体管理器_0',['1) 创建实体管理器',['../index.html#autotoc_md12',1,'']]],
+  ['创建实体_1',['2) 创建实体',['../index.html#autotoc_md13',1,'']]]
 ];

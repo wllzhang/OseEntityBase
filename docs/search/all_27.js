@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['职责分离_0',['职责分离',['../index.html#autotoc_md7',1,'']]]
+  ['添加新交互功能_0',['添加新交互功能',['../index.html#autotoc_md18',1,'']]],
+  ['添加新实体类型_1',['添加新实体类型',['../index.html#autotoc_md17',1,'']]]
 ];

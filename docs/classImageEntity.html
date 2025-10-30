@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('classImageEntity.html',''); initResiza
 <a href="#pri-methods">Private 成员函数</a> &#124;
 <a href="#pri-attribs">Private 属性</a> &#124;
 <a href="classImageEntity-members.html">所有成员列表</a>  </div>
-  <div class="headertitle"><div class="title">ImageEntity类 参考</div></div>
+  <div class="headertitle"><div class="title">ImageEntity类 参考<div class="ingroups"><a class="el" href="group__geo__entities.html">Geo Entities</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -115,12 +115,16 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:abfd588715513cfe27e6d7fb9c6392fba" id="r_abfd588715513cfe27e6d7fb9c6392fba"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#abfd588715513cfe27e6d7fb9c6392fba">ImageEntity</a> (const QString &amp;id, const QString &amp;name, const QString &amp;imagePath, double longitude, double latitude, double altitude, QObject *parent=nullptr)</td></tr>
 <tr class="separator:abfd588715513cfe27e6d7fb9c6392fba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac989e34961165cf385b58ff05802a583" id="r_ac989e34961165cf385b58ff05802a583"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#ac989e34961165cf385b58ff05802a583">initialize</a> () override</td></tr>
+<tr class="memdesc:ac989e34961165cf385b58ff05802a583"><td class="mdescLeft">&#160;</td><td class="mdescRight">初始化实体资源与节点  <br /></td></tr>
 <tr class="separator:ac989e34961165cf385b58ff05802a583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a358769b69a33b2bf33343997aeab1e7f" id="r_a358769b69a33b2bf33343997aeab1e7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#a358769b69a33b2bf33343997aeab1e7f">update</a> () override</td></tr>
+<tr class="memdesc:a358769b69a33b2bf33343997aeab1e7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据业务状态更新实体  <br /></td></tr>
 <tr class="separator:a358769b69a33b2bf33343997aeab1e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dd2098b688a64a5b256347c776a56bb" id="r_a9dd2098b688a64a5b256347c776a56bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#a9dd2098b688a64a5b256347c776a56bb">cleanup</a> () override</td></tr>
+<tr class="memdesc:a9dd2098b688a64a5b256347c776a56bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">释放资源与场景引用  <br /></td></tr>
 <tr class="separator:a9dd2098b688a64a5b256347c776a56bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3423d60fec93dd484d3f0ec879968f3c" id="r_a3423d60fec93dd484d3f0ec879968f3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#a3423d60fec93dd484d3f0ec879968f3c">setSelected</a> (bool selected) override</td></tr>
+<tr class="memdesc:a3423d60fec93dd484d3f0ec879968f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置选中状态（子类可重写用于高亮等效果）  <br /></td></tr>
 <tr class="separator:a3423d60fec93dd484d3f0ec879968f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGeoEntity"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGeoEntity')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classGeoEntity.html">GeoEntity</a></td></tr>
 <tr class="memitem:a69e6778428094edac2586c048b079cd1 inherit pub_methods_classGeoEntity" id="r_a69e6778428094edac2586c048b079cd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a69e6778428094edac2586c048b079cd1">GeoEntity</a> (const QString &amp;id, const QString &amp;name, const QString &amp;type, double longitude, double latitude, double altitude, QObject *parent=nullptr)</td></tr>
@@ -134,26 +138,34 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:a595ddae945baa66a6b938f82e9569aa3 inherit pub_methods_classGeoEntity" id="r_a595ddae945baa66a6b938f82e9569aa3"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a595ddae945baa66a6b938f82e9569aa3">getType</a> () const</td></tr>
 <tr class="separator:a595ddae945baa66a6b938f82e9569aa3 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa0a63c0033ca53b4b7d210e7bc80887 inherit pub_methods_classGeoEntity" id="r_afa0a63c0033ca53b4b7d210e7bc80887"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#afa0a63c0033ca53b4b7d210e7bc80887">setPosition</a> (double longitude, double latitude, double altitude)</td></tr>
+<tr class="memdesc:afa0a63c0033ca53b4b7d210e7bc80887 inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置实体的地理位置  <br /></td></tr>
 <tr class="separator:afa0a63c0033ca53b4b7d210e7bc80887 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cf31f2eea5a30f11187bd00545cd315 inherit pub_methods_classGeoEntity" id="r_a5cf31f2eea5a30f11187bd00545cd315"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a5cf31f2eea5a30f11187bd00545cd315">getPosition</a> (double &amp;longitude, double &amp;latitude, double &amp;altitude) const</td></tr>
+<tr class="memdesc:a5cf31f2eea5a30f11187bd00545cd315 inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取实体的地理位置  <br /></td></tr>
 <tr class="separator:a5cf31f2eea5a30f11187bd00545cd315 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb69481a6f212a7a7cb059f324d3c02c inherit pub_methods_classGeoEntity" id="r_afb69481a6f212a7a7cb059f324d3c02c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#afb69481a6f212a7a7cb059f324d3c02c">setHeading</a> (double headingDegrees)</td></tr>
+<tr class="memdesc:afb69481a6f212a7a7cb059f324d3c02c inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置航向角  <br /></td></tr>
 <tr class="separator:afb69481a6f212a7a7cb059f324d3c02c inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac667aeccfc0ea26129a61502aab39b63 inherit pub_methods_classGeoEntity" id="r_ac667aeccfc0ea26129a61502aab39b63"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ac667aeccfc0ea26129a61502aab39b63">getHeading</a> () const</td></tr>
 <tr class="separator:ac667aeccfc0ea26129a61502aab39b63 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ea24102579a7f0b3bdad180599e45a5 inherit pub_methods_classGeoEntity" id="r_a6ea24102579a7f0b3bdad180599e45a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a6ea24102579a7f0b3bdad180599e45a5">setVisible</a> (bool visible)</td></tr>
+<tr class="memdesc:a6ea24102579a7f0b3bdad180599e45a5 inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置可见性  <br /></td></tr>
 <tr class="separator:a6ea24102579a7f0b3bdad180599e45a5 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7415442f3e6f751cefa9636194a2f3e0 inherit pub_methods_classGeoEntity" id="r_a7415442f3e6f751cefa9636194a2f3e0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a7415442f3e6f751cefa9636194a2f3e0">isVisible</a> () const</td></tr>
 <tr class="separator:a7415442f3e6f751cefa9636194a2f3e0 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a702fb0d3febe1ee981d74111ed07fb24 inherit pub_methods_classGeoEntity" id="r_a702fb0d3febe1ee981d74111ed07fb24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a702fb0d3febe1ee981d74111ed07fb24">isSelected</a> () const</td></tr>
 <tr class="separator:a702fb0d3febe1ee981d74111ed07fb24 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac504d7ba5d8ef6e777a5f14c6b5ab8fc inherit pub_methods_classGeoEntity" id="r_ac504d7ba5d8ef6e777a5f14c6b5ab8fc"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ac504d7ba5d8ef6e777a5f14c6b5ab8fc">getNode</a> () const</td></tr>
+<tr class="memdesc:ac504d7ba5d8ef6e777a5f14c6b5ab8fc inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取渲染节点  <br /></td></tr>
 <tr class="separator:ac504d7ba5d8ef6e777a5f14c6b5ab8fc inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7848e03ee53be03c71ffe675bb357cf inherit pub_methods_classGeoEntity" id="r_aa7848e03ee53be03c71ffe675bb357cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf">updateNode</a> ()</td></tr>
+<tr class="memdesc:aa7848e03ee53be03c71ffe675bb357cf inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据当前状态刷新渲染节点  <br /></td></tr>
 <tr class="separator:aa7848e03ee53be03c71ffe675bb357cf inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc1ac7cae5f0f72791b17d24025cf7d6 inherit pub_methods_classGeoEntity" id="r_abc1ac7cae5f0f72791b17d24025cf7d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#abc1ac7cae5f0f72791b17d24025cf7d6">setProperty</a> (const QString &amp;key, const QVariant &amp;value)</td></tr>
+<tr class="memdesc:abc1ac7cae5f0f72791b17d24025cf7d6 inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置自定义属性（可用于外挂业务数据）  <br /></td></tr>
 <tr class="separator:abc1ac7cae5f0f72791b17d24025cf7d6 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f9297fc1e04f5a59bd06931473a2477 inherit pub_methods_classGeoEntity" id="r_a0f9297fc1e04f5a59bd06931473a2477"><td class="memItemLeft" align="right" valign="top">QVariant&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a0f9297fc1e04f5a59bd06931473a2477">getProperty</a> (const QString &amp;key) const</td></tr>
+<tr class="memdesc:a0f9297fc1e04f5a59bd06931473a2477 inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">读取自定义属性  <br /></td></tr>
 <tr class="separator:a0f9297fc1e04f5a59bd06931473a2477 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac320715315aec5d714c5004b7280e237 inherit pub_methods_classGeoEntity" id="r_ac320715315aec5d714c5004b7280e237"><td class="memItemLeft" align="right" valign="top">QMap&lt; QString, QVariant &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ac320715315aec5d714c5004b7280e237">getAllProperties</a> () const</td></tr>
 <tr class="separator:ac320715315aec5d714c5004b7280e237 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -211,14 +223,14 @@ Private 属性</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>图片实体类 </p>
-<p>基于图片的地理实体实现，支持从图片文件创建实体。 实现了实体选择时的高亮显示功能。</p>
+<p>基于图片的地理实体实现，支持从图片文件创建实体。 实体被选中时支持高亮边框显示。</p>
 <p>特性：</p><ul>
 <li>从图片文件加载和显示</li>
 <li>选中时显示红色边框高亮</li>
 <li>支持实体的位置、朝向、大小设置</li>
-<li>多态支持，重写 <a class="el" href="classImageEntity.html#a3423d60fec93dd484d3f0ec879968f3c">setSelected()</a> 方法</li>
+<li>多态支持，重写 <a class="el" href="classImageEntity.html#a3423d60fec93dd484d3f0ec879968f3c" title="设置选中状态（子类可重写用于高亮等效果）">setSelected()</a> 方法</li>
 </ul>
-<dl class="section note"><dt>注解</dt><dd>图片路径从配置文件中获取 </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>图片路径通常从配置（如 JSON）中获取 </dd></dl>
 </div><h2 class="groupheader">构造及析构函数说明</h2>
 <a id="abfd588715513cfe27e6d7fb9c6392fba" name="abfd588715513cfe27e6d7fb9c6392fba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abfd588715513cfe27e6d7fb9c6392fba">&#9670;&#160;</a></span>ImageEntity()</h2>
@@ -328,6 +340,8 @@ Private 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>释放资源与场景引用 </p>
+
 <p>实现了 <a class="el" href="classGeoEntity.html#afa8d935947e30c521d9974068aaddf82">GeoEntity</a>.</p>
 
 </div>
@@ -382,6 +396,8 @@ Private 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>初始化实体资源与节点 </p>
+
 <p>实现了 <a class="el" href="classGeoEntity.html#ad47e5b366f7cfdf629139f9b3e5948b5">GeoEntity</a>.</p>
 
 </div>
@@ -410,6 +426,8 @@ Private 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>设置选中状态（子类可重写用于高亮等效果） </p>
+
 <p>重载 <a class="el" href="classGeoEntity.html#a8e9a30c04f8173c0e66ee7697b13775e">GeoEntity</a> .</p>
 
 </div>
@@ -436,6 +454,8 @@ Private 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>根据业务状态更新实体 </p>
 
 <p>实现了 <a class="el" href="classGeoEntity.html#ab63a5ae169c4e53cf0c6573e6c261957">GeoEntity</a>.</p>
 

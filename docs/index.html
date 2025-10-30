@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>数字地图脚手架库: 数字地图脚手架库 API文档</title>
+<title>数字地图脚手架库: 数字地图脚手架库 (API 文档)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -87,103 +87,79 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">数字地图脚手架库 API文档 </div></div>
+  <div class="headertitle"><div class="title">数字地图脚手架库 (API 文档) </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_docs_2mainpage"></a> </p>
-<h1><a class="anchor" id="autotoc_md1"></a>
-项目概述</h1>
-<p>数字地图脚手架库是一个基于Qt和OSG的3D数字地图应用框架，提供地理实体管理、地图状态监控、实体交互等功能。</p>
-<h1><a class="anchor" id="autotoc_md2"></a>
-核心模块</h1>
-<h2><a class="anchor" id="autotoc_md3"></a>
-实体管理模块 (geo/)</h2>
+<div class="textblock"><p>欢迎使用数字地图脚手架库。本项目基于 Qt、OpenSceneGraph (OSG) 与 osgEarth，围绕“实体（Geo Entities）- 管理器（Managers）- 视图（OSG/Qt 集成）”的分层架构，提供标准化的实体生命周期管理、地图状态监控与交互扩展能力。</p>
+<h2><a class="anchor" id="autotoc_md0"></a>
+核心模块</h2>
+<h3><a class="anchor" id="autotoc_md1"></a>
+实体管理模块 (geo/)</h3>
 <ul>
 <li><b><a class="el" href="classGeoEntity.html" title="通用地理实体基类">GeoEntity</a></b> - 通用地理实体基类</li>
 <li><b><a class="el" href="classImageEntity.html" title="图片实体类">ImageEntity</a></b> - 图片实体实现</li>
 <li><b><a class="el" href="classGeoEntityManager.html" title="地理实体管理器">GeoEntityManager</a></b> - 实体管理器</li>
 <li><b><a class="el" href="classMapStateManager.html" title="地图状态管理器">MapStateManager</a></b> - 地图状态管理器</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md4"></a>
-主窗口模块</h2>
+<h3><a class="anchor" id="autotoc_md2"></a>
+主窗口模块</h3>
 <ul>
 <li><b><a class="el" href="classMainWindow.html" title="主窗口类">MainWindow</a></b> - 应用程序主窗口</li>
 <li><b>ImageViewerWindow</b> - 图片查看器窗口</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md5"></a>
-OSG-Qt集成模块 (OsgQt/)</h2>
+<h3><a class="anchor" id="autotoc_md3"></a>
+OSG-Qt集成模块 (OsgQt/)</h3>
 <ul>
 <li><b>GraphicsWindowQt</b> - Qt与OSG的集成组件</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md6"></a>
-架构设计</h1>
-<h2><a class="anchor" id="autotoc_md7"></a>
-职责分离</h2>
+<h2><a class="anchor" id="autotoc_md4"></a>
+模块分组（Doxygen Groups）</h2>
+<p>以下章节与代码中的 Doxygen 分组一致，便于在生成文档中快速导航：</p>
 <ul>
-<li><b><a class="el" href="classGeoEntityManager.html" title="地理实体管理器">GeoEntityManager</a></b> - 负责实体管理和鼠标事件处理</li>
-<li><b><a class="el" href="classMainWindow.html" title="主窗口类">MainWindow</a></b> - 负责UI显示和用户交互</li>
-<li><b><a class="el" href="classGeoEntity.html" title="通用地理实体基类">GeoEntity</a></b> - 负责实体自身的状态管理</li>
+<li><a class="el" href="group__geo__entities.html">Geo Entities</a> — 通用地理实体与实现（<code><a class="el" href="classGeoEntity.html" title="通用地理实体基类">GeoEntity</a></code>、<code><a class="el" href="classImageEntity.html" title="图片实体类">ImageEntity</a></code>、<code><a class="el" href="classWaypointEntity.html" title="航点实体">WaypointEntity</a></code>）</li>
+<li><a class="el" href="group__managers.html">Managers</a> — 实体与地图管理（<code><a class="el" href="classGeoEntityManager.html" title="地理实体管理器">GeoEntityManager</a></code>、<code><a class="el" href="classMapStateManager.html" title="地图状态管理器">MapStateManager</a></code>）</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md8"></a>
-信号槽通信</h2>
-<p>组件间通过Qt信号槽机制通信，保持松耦合：</p>
-<div class="fragment"><div class="line"><span class="comment">// 实体选择信号</span></div>
-<div class="line">connect(entityManager_, &amp;<a class="code hl_signal" href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">GeoEntityManager::entitySelected</a>, </div>
-<div class="line">        <span class="keyword">this</span>, [<span class="keyword">this</span>](<a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* entity) {</div>
-<div class="line">            selectedEntity_ = entity;</div>
-<div class="line">        });</div>
+<h2><a class="anchor" id="autotoc_md5"></a>
+架构概览</h2>
+<div class="fragment"><div class="line">Qt UI (MainWindow)</div>
+<div class="line">   │</div>
+<div class="line">   ├─ Managers</div>
+<div class="line">   │    ├─ GeoEntityManager  ── 实体创建/查询/选择/右键/延时删除/路线API</div>
+<div class="line">   │    └─ MapStateManager   ── 俯仰/航向/距离/鼠标与视角地理状态</div>
+<div class="line">   │</div>
+<div class="line">   └─ Geo Entities</div>
+<div class="line">        ├─ GeoEntity (抽象基类)</div>
+<div class="line">        ├─ ImageEntity (图片实体，高亮)</div>
+<div class="line">        └─ WaypointEntity (航点/标绘/序号标签)</div>
 <div class="line"> </div>
-<div class="line"><span class="comment">// 右键菜单信号</span></div>
-<div class="line">connect(entityManager_, &amp;<a class="code hl_signal" href="classGeoEntityManager.html#af084398c6a492baa68a1cce1a1ce936a">GeoEntityManager::entityRightClicked</a>, </div>
-<div class="line">        <span class="keyword">this</span>, [<span class="keyword">this</span>](<a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* entity, QPoint screenPos) {</div>
-<div class="line">            showEntityContextMenu(screenPos, entity);</div>
-<div class="line">        });</div>
-<div class="ttc" id="aclassGeoEntityManager_html_a40b02c62296b712b7c154e91a04bd52e"><div class="ttname"><a href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">GeoEntityManager::entitySelected</a></div><div class="ttdeci">void entitySelected(GeoEntity *entity)</div><div class="ttdoc">实体选中信号</div></div>
-<div class="ttc" id="aclassGeoEntityManager_html_af084398c6a492baa68a1cce1a1ce936a"><div class="ttname"><a href="classGeoEntityManager.html#af084398c6a492baa68a1cce1a1ce936a">GeoEntityManager::entityRightClicked</a></div><div class="ttdeci">void entityRightClicked(GeoEntity *entity, QPoint screenPos)</div><div class="ttdoc">实体右键点击信号</div></div>
-<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:32</div></div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md9"></a>
-多态设计</h2>
-<div class="fragment"><div class="line"><span class="comment">// 基类虚函数</span></div>
-<div class="line"><span class="keyword">class </span><a class="code hl_class" href="classGeoEntity.html">GeoEntity</a> {</div>
-<div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classGeoEntity.html#a8e9a30c04f8173c0e66ee7697b13775e">setSelected</a>(<span class="keywordtype">bool</span> selected);</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// 子类重写</span></div>
-<div class="line"><span class="keyword">class </span><a class="code hl_class" href="classImageEntity.html">ImageEntity</a> : <span class="keyword">public</span> <a class="code hl_class" href="classGeoEntity.html">GeoEntity</a> {</div>
-<div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    <span class="keywordtype">void</span> <a class="code hl_function" href="classImageEntity.html#a3423d60fec93dd484d3f0ec879968f3c">setSelected</a>(<span class="keywordtype">bool</span> selected) <span class="keyword">override</span>;</div>
-<div class="line">};</div>
-<div class="ttc" id="aclassGeoEntity_html_a8e9a30c04f8173c0e66ee7697b13775e"><div class="ttname"><a href="classGeoEntity.html#a8e9a30c04f8173c0e66ee7697b13775e">GeoEntity::setSelected</a></div><div class="ttdeci">virtual void setSelected(bool selected)</div><div class="ttdef"><b>Definition</b> geoentity.cpp:68</div></div>
-<div class="ttc" id="aclassImageEntity_html"><div class="ttname"><a href="classImageEntity.html">ImageEntity</a></div><div class="ttdoc">图片实体类</div><div class="ttdef"><b>Definition</b> imageentity.h:22</div></div>
-<div class="ttc" id="aclassImageEntity_html_a3423d60fec93dd484d3f0ec879968f3c"><div class="ttname"><a href="classImageEntity.html#a3423d60fec93dd484d3f0ec879968f3c">ImageEntity::setSelected</a></div><div class="ttdeci">void setSelected(bool selected) override</div><div class="ttdef"><b>Definition</b> imageentity.cpp:62</div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md10"></a>
-主要功能</h1>
-<h2><a class="anchor" id="autotoc_md11"></a>
-3D地图显示</h2>
+<div class="line">OSG SceneGraph + osgEarth MapNode</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
+主要功能</h2>
+<h3><a class="anchor" id="autotoc_md7"></a>
+3D地图显示</h3>
 <ul>
 <li>基于osgEarth的3D地球渲染</li>
 <li>高德地图瓦片集成</li>
 <li>地球漫游控制（缩放、旋转、平移）</li>
 <li>相机视角管理</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md12"></a>
-实体管理</h2>
+<h3><a class="anchor" id="autotoc_md8"></a>
+实体管理</h3>
 <ul>
 <li>实体的创建、删除、查询</li>
 <li>拖拽添加实体</li>
 <li>实体位置和朝向控制</li>
 <li>实体属性管理</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md13"></a>
-2D/3D视图切换</h2>
+<h3><a class="anchor" id="autotoc_md9"></a>
+2D/3D视图切换</h3>
 <ul>
 <li>动态切换地图显示模式</li>
 <li>自定义视角配置</li>
 <li>视角自动跳转</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md14"></a>
-实体交互</h2>
+<h3><a class="anchor" id="autotoc_md10"></a>
+实体交互</h3>
 <ul>
 <li>实体选择系统（点击选择）</li>
 <li>实体高亮显示（红色边框）</li>
@@ -191,83 +167,79 @@ OSG-Qt集成模块 (OsgQt/)</h2>
 <li>航向角和高度设置</li>
 <li>实体删除和属性查看</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md15"></a>
-快速开始</h1>
-<h2><a class="anchor" id="autotoc_md16"></a>
-创建实体</h2>
-<div class="fragment"><div class="line"><span class="comment">// 创建实体管理器</span></div>
-<div class="line"><a class="code hl_class" href="classGeoEntityManager.html">GeoEntityManager</a>* entityManager = <span class="keyword">new</span> <a class="code hl_class" href="classGeoEntityManager.html">GeoEntityManager</a>(root, mapNode, <span class="keyword">this</span>);</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// 创建实体</span></div>
-<div class="line"><a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* entity = entityManager-&gt;<a class="code hl_function" href="classGeoEntityManager.html#a27c1f1bf7e33c65c4f7d869c53b9c56d">createEntity</a>(</div>
-<div class="line">    <span class="stringliteral">&quot;aircraft&quot;</span>,           <span class="comment">// 实体类型</span></div>
-<div class="line">    <span class="stringliteral">&quot;F-15战斗机&quot;</span>,         <span class="comment">// 实体名称</span></div>
-<div class="line">    QJsonObject(),        <span class="comment">// 属性</span></div>
-<div class="line">    116.4,                <span class="comment">// 经度</span></div>
-<div class="line">    39.9,                 <span class="comment">// 纬度</span></div>
-<div class="line">    1000.0                <span class="comment">// 高度</span></div>
+<h2><a class="anchor" id="autotoc_md11"></a>
+快速开始</h2>
+<h3><a class="anchor" id="autotoc_md12"></a>
+1) 创建实体管理器</h3>
+<div class="fragment"><div class="line"><span class="comment">// root: osg::Group*; mapNode: osgEarth::MapNode*</span></div>
+<div class="line"><span class="keyword">auto</span>* entityManager = <span class="keyword">new</span> <a class="code hl_class" href="classGeoEntityManager.html">GeoEntityManager</a>(root, mapNode, <span class="keyword">this</span>);</div>
+<div class="ttc" id="aclassGeoEntityManager_html"><div class="ttname"><a href="classGeoEntityManager.html">GeoEntityManager</a></div><div class="ttdoc">地理实体管理器</div><div class="ttdef"><b>Definition</b> geoentitymanager.h:44</div></div>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md13"></a>
+2) 创建实体</h3>
+<div class="fragment"><div class="line"><a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* aircraft = entityManager-&gt;createEntity(</div>
+<div class="line">    <span class="stringliteral">&quot;aircraft&quot;</span>,            <span class="comment">// 实体类型</span></div>
+<div class="line">    <span class="stringliteral">&quot;F-15&quot;</span>,                <span class="comment">// 实体名称</span></div>
+<div class="line">    QJsonObject{},          <span class="comment">// 属性</span></div>
+<div class="line">    116.4, 39.9, 1000.0     <span class="comment">// 经度、纬度、高度</span></div>
 <div class="line">);</div>
-<div class="ttc" id="aclassGeoEntityManager_html"><div class="ttname"><a href="classGeoEntityManager.html">GeoEntityManager</a></div><div class="ttdoc">地理实体管理器</div><div class="ttdef"><b>Definition</b> geoentitymanager.h:38</div></div>
-<div class="ttc" id="aclassGeoEntityManager_html_a27c1f1bf7e33c65c4f7d869c53b9c56d"><div class="ttname"><a href="classGeoEntityManager.html#a27c1f1bf7e33c65c4f7d869c53b9c56d">GeoEntityManager::createEntity</a></div><div class="ttdeci">GeoEntity * createEntity(const QString &amp;entityType, const QString &amp;entityName, const QJsonObject &amp;properties, double longitude, double latitude, double altitude)</div><div class="ttdoc">创建实体</div><div class="ttdef"><b>Definition</b> geoentitymanager.cpp:32</div></div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md17"></a>
-实体交互</h2>
-<div class="fragment"><div class="line"><span class="comment">// 连接实体选择信号</span></div>
-<div class="line">connect(entityManager, &amp;<a class="code hl_signal" href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">GeoEntityManager::entitySelected</a>, </div>
-<div class="line">        <span class="keyword">this</span>, [](<a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* entity) {</div>
-<div class="line">            qDebug() &lt;&lt; <span class="stringliteral">&quot;选中实体:&quot;</span> &lt;&lt; entity-&gt;<a class="code hl_function" href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">getName</a>();</div>
-<div class="line">        });</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// 连接右键菜单信号</span></div>
-<div class="line">connect(entityManager, &amp;<a class="code hl_signal" href="classGeoEntityManager.html#af084398c6a492baa68a1cce1a1ce936a">GeoEntityManager::entityRightClicked</a>, </div>
-<div class="line">        <span class="keyword">this</span>, [](<a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* entity, QPoint pos) {</div>
-<div class="line">            <span class="comment">// 显示右键菜单</span></div>
-<div class="line">        });</div>
-<div class="ttc" id="aclassGeoEntity_html_a245b06bf476b8d9dbee5d4f0d074a7eb"><div class="ttname"><a href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">GeoEntity::getName</a></div><div class="ttdeci">QString getName() const</div><div class="ttdef"><b>Definition</b> geoentity.h:42</div></div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md18"></a>
-地图状态监控</h2>
-<div class="fragment"><div class="line"><span class="comment">// 创建地图状态管理器</span></div>
-<div class="line"><a class="code hl_class" href="classMapStateManager.html">MapStateManager</a>* mapStateManager = <span class="keyword">new</span> <a class="code hl_class" href="classMapStateManager.html">MapStateManager</a>(viewer, <span class="keyword">this</span>);</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// 连接状态变化信号</span></div>
-<div class="line">connect(mapStateManager, &amp;MapStateManager::mapStateChanged, </div>
-<div class="line">        <span class="keyword">this</span>, [](<span class="keyword">const</span> <a class="code hl_struct" href="structMapStateInfo.html">MapStateInfo</a>&amp; state) {</div>
-<div class="line">            qDebug() &lt;&lt; <span class="stringliteral">&quot;俯仰角:&quot;</span> &lt;&lt; state.<a class="code hl_variable" href="structMapStateInfo.html#a156b699ac83c3811315947517cc63b01">pitch</a>;</div>
-<div class="line">            qDebug() &lt;&lt; <span class="stringliteral">&quot;航向角:&quot;</span> &lt;&lt; state.<a class="code hl_variable" href="structMapStateInfo.html#ab907b39a63403f0eee0eb32e6eb25553">heading</a>;</div>
-<div class="line">            qDebug() &lt;&lt; <span class="stringliteral">&quot;距离:&quot;</span> &lt;&lt; state.<a class="code hl_variable" href="structMapStateInfo.html#af83c22e926353d6f2afab516efd535a2">range</a>;</div>
-<div class="line">        });</div>
-<div class="ttc" id="aclassMapStateManager_html"><div class="ttname"><a href="classMapStateManager.html">MapStateManager</a></div><div class="ttdoc">地图状态管理器</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:66</div></div>
-<div class="ttc" id="astructMapStateInfo_html"><div class="ttname"><a href="structMapStateInfo.html">MapStateInfo</a></div><div class="ttdoc">地图状态信息结构体</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:26</div></div>
-<div class="ttc" id="astructMapStateInfo_html_a156b699ac83c3811315947517cc63b01"><div class="ttname"><a href="structMapStateInfo.html#a156b699ac83c3811315947517cc63b01">MapStateInfo::pitch</a></div><div class="ttdeci">double pitch</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:27</div></div>
-<div class="ttc" id="astructMapStateInfo_html_ab907b39a63403f0eee0eb32e6eb25553"><div class="ttname"><a href="structMapStateInfo.html#ab907b39a63403f0eee0eb32e6eb25553">MapStateInfo::heading</a></div><div class="ttdeci">double heading</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:28</div></div>
-<div class="ttc" id="astructMapStateInfo_html_af83c22e926353d6f2afab516efd535a2"><div class="ttname"><a href="structMapStateInfo.html#af83c22e926353d6f2afab516efd535a2">MapStateInfo::range</a></div><div class="ttdeci">double range</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:29</div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md19"></a>
-扩展指南</h1>
-<h2><a class="anchor" id="autotoc_md20"></a>
-添加新实体类型</h2>
+<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:44</div></div>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md14"></a>
+3) 连接交互信号</h3>
+<div class="fragment"><div class="line">connect(entityManager, &amp;<a class="code hl_signal" href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">GeoEntityManager::entitySelected</a>, <span class="keyword">this</span>, [](<a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* e){</div>
+<div class="line">    qDebug() &lt;&lt; <span class="stringliteral">&quot;selected:&quot;</span> &lt;&lt; e-&gt;<a class="code hl_function" href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">getName</a>();</div>
+<div class="line">});</div>
+<div class="line">connect(entityManager, &amp;<a class="code hl_signal" href="classGeoEntityManager.html#af084398c6a492baa68a1cce1a1ce936a">GeoEntityManager::entityRightClicked</a>, <span class="keyword">this</span>, [](<a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* e, QPoint p){</div>
+<div class="line">    <span class="comment">// 展示右键菜单</span></div>
+<div class="line">});</div>
+<div class="ttc" id="aclassGeoEntityManager_html_a40b02c62296b712b7c154e91a04bd52e"><div class="ttname"><a href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">GeoEntityManager::entitySelected</a></div><div class="ttdeci">void entitySelected(GeoEntity *entity)</div><div class="ttdoc">实体选中信号</div></div>
+<div class="ttc" id="aclassGeoEntityManager_html_af084398c6a492baa68a1cce1a1ce936a"><div class="ttname"><a href="classGeoEntityManager.html#af084398c6a492baa68a1cce1a1ce936a">GeoEntityManager::entityRightClicked</a></div><div class="ttdeci">void entityRightClicked(GeoEntity *entity, QPoint screenPos)</div><div class="ttdoc">实体右键点击信号</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a245b06bf476b8d9dbee5d4f0d074a7eb"><div class="ttname"><a href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">GeoEntity::getName</a></div><div class="ttdeci">QString getName() const</div><div class="ttdef"><b>Definition</b> geoentity.h:54</div></div>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md15"></a>
+4) 地图状态监控</h3>
+<div class="fragment"><div class="line"><span class="keyword">auto</span>* mapStateManager = <span class="keyword">new</span> <a class="code hl_class" href="classMapStateManager.html">MapStateManager</a>(viewer, <span class="keyword">this</span>);</div>
+<div class="line">connect(mapStateManager, &amp;<a class="code hl_signal" href="classMapStateManager.html#a6e6d87a50432896f561751a3df4e2551">MapStateManager::stateChanged</a>, <span class="keyword">this</span>, [](<span class="keyword">const</span> <a class="code hl_struct" href="structMapStateInfo.html">MapStateInfo</a>&amp; s){</div>
+<div class="line">    qDebug() &lt;&lt; s.<a class="code hl_variable" href="structMapStateInfo.html#a156b699ac83c3811315947517cc63b01">pitch</a> &lt;&lt; s.<a class="code hl_variable" href="structMapStateInfo.html#ab907b39a63403f0eee0eb32e6eb25553">heading</a> &lt;&lt; s.<a class="code hl_variable" href="structMapStateInfo.html#af83c22e926353d6f2afab516efd535a2">range</a>;</div>
+<div class="line">});</div>
+<div class="ttc" id="aclassMapStateManager_html"><div class="ttname"><a href="classMapStateManager.html">MapStateManager</a></div><div class="ttdoc">地图状态管理器</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:68</div></div>
+<div class="ttc" id="aclassMapStateManager_html_a6e6d87a50432896f561751a3df4e2551"><div class="ttname"><a href="classMapStateManager.html#a6e6d87a50432896f561751a3df4e2551">MapStateManager::stateChanged</a></div><div class="ttdeci">void stateChanged(const MapStateInfo &amp;state)</div><div class="ttdoc">状态整体变化通知（含相机与鼠标）</div></div>
+<div class="ttc" id="astructMapStateInfo_html"><div class="ttname"><a href="structMapStateInfo.html">MapStateInfo</a></div><div class="ttdoc">地图状态信息结构体</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:27</div></div>
+<div class="ttc" id="astructMapStateInfo_html_a156b699ac83c3811315947517cc63b01"><div class="ttname"><a href="structMapStateInfo.html#a156b699ac83c3811315947517cc63b01">MapStateInfo::pitch</a></div><div class="ttdeci">double pitch</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:28</div></div>
+<div class="ttc" id="astructMapStateInfo_html_ab907b39a63403f0eee0eb32e6eb25553"><div class="ttname"><a href="structMapStateInfo.html#ab907b39a63403f0eee0eb32e6eb25553">MapStateInfo::heading</a></div><div class="ttdeci">double heading</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:29</div></div>
+<div class="ttc" id="astructMapStateInfo_html_af83c22e926353d6f2afab516efd535a2"><div class="ttname"><a href="structMapStateInfo.html#af83c22e926353d6f2afab516efd535a2">MapStateInfo::range</a></div><div class="ttdeci">double range</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:30</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md16"></a>
+扩展指南</h2>
+<h3><a class="anchor" id="autotoc_md17"></a>
+添加新实体类型</h3>
 <ol type="1">
 <li>继承<code><a class="el" href="classGeoEntity.html" title="通用地理实体基类">GeoEntity</a></code>基类</li>
 <li>实现纯虚函数：<code>initialize()</code>, <code>update()</code>, <code>cleanup()</code></li>
 <li>重写<code>setSelected()</code>方法（可选）</li>
 <li>在<code><a class="el" href="classGeoEntityManager.html#a27c1f1bf7e33c65c4f7d869c53b9c56d" title="创建实体">GeoEntityManager::createEntity()</a></code>中添加类型判断</li>
 </ol>
-<h2><a class="anchor" id="autotoc_md21"></a>
-添加新交互功能</h2>
+<h3><a class="anchor" id="autotoc_md18"></a>
+添加新交互功能</h3>
 <ol type="1">
 <li>在<code><a class="el" href="classGeoEntityManager.html#ad9cbcb2a80eb716c0112feab412b6e5d" title="处理鼠标按下事件">GeoEntityManager::onMousePress()</a></code>中添加事件处理</li>
 <li>定义新的信号（如需要）</li>
 <li>在<code><a class="el" href="classMainWindow.html" title="主窗口类">MainWindow</a></code>中连接信号并实现UI响应</li>
 </ol>
-<h1><a class="anchor" id="autotoc_md22"></a>
-版本信息</h1>
+<h2><a class="anchor" id="autotoc_md19"></a>
+版本信息</h2>
 <ul>
-<li><b>当前版本</b>: 1.3.0</li>
+<li><b>当前版本</b>: 2.0.0</li>
 <li><b>发布日期</b>: 2025-10-24</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md23"></a>
-许可证</h1>
+<h2><a class="anchor" id="autotoc_md20"></a>
+生成文档</h2>
+<ul>
+<li>保持 Doxyfile 默认配置，运行 doxygen 即可生成文档。</li>
+<li>分组导航位于 “Modules”，或通过上文分组链接快速进入。</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md21"></a>
+许可证</h2>
 <p>请参考项目根目录的LICENSE文件。</p>
-<h1><a class="anchor" id="autotoc_md24"></a>
-联系方式</h1>
+<h2><a class="anchor" id="autotoc_md22"></a>
+联系方式</h2>
 <ul>
 <li><b>项目地址</b>: <a href="https://github.com/OseEntityBase/osgEarthmy_osgb">https://github.com/OseEntityBase/osgEarthmy_osgb</a></li>
 <li><b>问题反馈</b>: <a href="https://github.com/OseEntityBase/osgEarthmy_osgb/issues">https://github.com/OseEntityBase/osgEarthmy_osgb/issues</a> </li>

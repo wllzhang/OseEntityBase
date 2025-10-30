@@ -1,13 +1,11 @@
 var searchData=
 [
-  ['_7egeoentity_0',['~GeoEntity',['../classGeoEntity.html#ab2c887fce8784f32b877ceb485203b05',1,'GeoEntity']]],
-  ['_7eglwidget_1',['~GLWidget',['../classosgQt_1_1GLWidget.html#a535192a4262b4501e5493303834f45d3',1,'osgQt::GLWidget']]],
-  ['_7egraphicswindowqt_2',['~GraphicsWindowQt',['../classosgQt_1_1GraphicsWindowQt.html#a7a2a6ae63654d5ee1f8796232e88b542',1,'osgQt::GraphicsWindowQt']]],
-  ['_7eheartbeat_3',['~HeartBeat',['../classHeartBeat.html#a0c9cbc4b415ac43ad31d91dc038ace73',1,'HeartBeat']]],
-  ['_7emainwindow_4',['~MainWindow',['../classMainWindow.html#ae98d00a93bc118200eeef9f9bba1dba7',1,'MainWindow']]],
-  ['_7emapstatemanager_5',['~MapStateManager',['../classMapStateManager.html#af620fb087049571249d7f9f8fa0cff19',1,'MapStateManager']]],
-  ['_7eqgraphicsviewadapter_6',['~QGraphicsViewAdapter',['../classosgQt_1_1QGraphicsViewAdapter.html#a8893f176873e7b617c7e9bb4b7024e81',1,'osgQt::QGraphicsViewAdapter']]],
-  ['_7eqtkeyboardmap_7',['~QtKeyboardMap',['../classQtKeyboardMap.html#ae456b40a992689b24bc475d02512f3cf',1,'QtKeyboardMap']]],
-  ['_7eqtwindowingsystem_8',['~QtWindowingSystem',['../classQtWindowingSystem.html#af2015a84f33aa84747fe99e33e6a1dd5',1,'QtWindowingSystem']]],
-  ['_7eqwidgetimage_9',['~QWidgetImage',['../classosgQt_1_1QWidgetImage.html#a7cdb83066b7a866e7304254db805b1d9',1,'osgQt::QWidgetImage']]]
+  ['valid_0',['valid',['../classosgQt_1_1GraphicsWindowQt.html#a4f5dba3d3681126a78547a377e8a6206',1,'osgQt::GraphicsWindowQt']]],
+  ['viewaltitude_1',['viewAltitude',['../structMapStateInfo.html#a4d77389d43e7bf82f51e70c077610a2a',1,'MapStateInfo']]],
+  ['viewer_5f_2',['viewer_',['../classGeoEntityManager.html#a0aa9ef2b19d147ad47538b7279dd93f8',1,'GeoEntityManager::viewer_'],['../classMapStateManager.html#ae660e4bcdc6b72dfb3df0b254aad839f',1,'MapStateManager::viewer_'],['../classMainWindow.html#ac3b949fcfd73e347b8724412c2f17eec',1,'MainWindow::viewer_']]],
+  ['viewlatitude_3',['viewLatitude',['../structMapStateInfo.html#a4ef9bed8f355751eee313ddc43584b51',1,'MapStateInfo']]],
+  ['viewlongitude_4',['viewLongitude',['../structMapStateInfo.html#aac2d5f9174e2144e8953164bcb0fe31f',1,'MapStateInfo']]],
+  ['viewpositionchanged_5',['viewPositionChanged',['../classMapStateManager.html#adad70f1954e3b44c3cc7520802c9bf24',1,'MapStateManager']]],
+  ['visibilitychanged_6',['visibilityChanged',['../classGeoEntity.html#a34bcccbf69f11d28c2abb36877c1dc56',1,'GeoEntity']]],
+  ['visible_5f_7',['visible_',['../classGeoEntity.html#a168ca55410f5fb94b74f4931e7ab7501',1,'GeoEntity']]]
 ];
