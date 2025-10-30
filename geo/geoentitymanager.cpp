@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QTimer>
+#include "mapstatemanager.h"
 #include <osgUtil/LineSegmentIntersector>
 #include <osgViewer/Viewer>
 #include <cmath>
@@ -16,6 +17,7 @@ GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode,
     , entityCounter_(0)
     , selectedEntity_(nullptr)
     , viewer_(nullptr)
+    , mapStateManager_(nullptr)
 {
     // 创建实体组节点
     entityGroup_ = new osg::Group;
@@ -343,8 +345,19 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
                     }
                 }
                 
-                // 设置一个合理的距离阈值（例如0.01度，约1公里）
-                double threshold = 0.1;
+                // 基于当前相机距离动态调整选中阈值
+                double threshold = 0.1; // 默认阈值
+                if (mapStateManager_) {
+                    double rangeMeters = mapStateManager_->getRange();
+                    const double baseThreshold = 0.01;      // 度，基础阈值（约1km）
+                    const double scaleFactor = 1000000.0;   // 米，缩放因子
+                    const double minThreshold = 0.005;      // 最小阈值（约0.5km）
+                    const double maxThreshold = 1.0;        // 最大阈值（约100km）
+                    double dynamicThreshold = baseThreshold * (1.0 + rangeMeters / scaleFactor);
+                    if (dynamicThreshold < minThreshold) dynamicThreshold = minThreshold;
+                    if (dynamicThreshold > maxThreshold) dynamicThreshold = maxThreshold;
+                    threshold = dynamicThreshold;
+                }
                 if (closestEntity && minDistance < threshold) {
                     qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance;
                     return closestEntity;
@@ -368,6 +381,11 @@ void GeoEntityManager::setViewer(osgViewer::Viewer* viewer)
 {
     viewer_ = viewer;
     qDebug() << "GeoEntityManager设置Viewer完成";
+}
+
+void GeoEntityManager::setMapStateManager(MapStateManager* mapStateManager)
+{
+    mapStateManager_ = mapStateManager;
 }
 
 void GeoEntityManager::processPendingDeletions()

@@ -58,7 +58,6 @@ public:
 public slots:
     void toggle2D3DMode();  // 2D/3D切换
     void openImageViewer();
-    void testSetHeading();  // 测试设置实体旋转角度
     void onMapStateChanged(const MapStateInfo& state);  // 地图状态变化
     void onViewPositionChanged(double longitude, double latitude, double altitude);   // 视角位置变化
     void onMousePositionChanged(double longitude, double latitude, double altitude);  // 鼠标位置变化

@@ -15,6 +15,9 @@
 #include <osgViewer/Viewer>
 #include "geoentity.h"
 
+// 前置声明，避免头文件循环依赖
+class MapStateManager;
+
 /**
  * @brief 地理实体管理器
  * 
@@ -116,6 +119,11 @@ public:
     void setViewer(osgViewer::Viewer* viewer);
     
     /**
+     * @brief 设置MapStateManager用于读取相机range
+     */
+    void setMapStateManager(MapStateManager* mapStateManager);
+    
+    /**
      * @brief 处理延迟删除队列（应该在frame()完成后调用）
      * 公共方法，供外部在渲染完成后调用
      */
@@ -166,6 +174,9 @@ private:
     
     // 用于射线相交检测
     osgViewer::Viewer* viewer_;
+    
+    // 用于读取当前相机距离range
+    MapStateManager* mapStateManager_;
     
     QJsonObject entityConfig_;
     QMap<QString, GeoEntity*> entities_;

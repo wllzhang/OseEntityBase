@@ -86,15 +86,12 @@ MainWindow::MainWindow(QWidget *parent)
     
     toggleButton_ = new QPushButton("切换到2D");
     QPushButton* btnImages = new QPushButton("战斗机");
-    QPushButton* btnTestHeading = new QPushButton("测试旋转");
     
     connect(toggleButton_, &QPushButton::clicked, this, &MainWindow::toggle2D3DMode);
     connect(btnImages, &QPushButton::clicked, this, &MainWindow::openImageViewer);
-    connect(btnTestHeading, &QPushButton::clicked, this, &MainWindow::testSetHeading);
     
     layout->addWidget(toggleButton_);
     layout->addWidget(btnImages);
-    layout->addWidget(btnTestHeading);
     layout->addStretch();
     
     // 将控制面板添加到状态栏
@@ -229,6 +226,11 @@ void MainWindow::loadMap(const QString& earthFile)
                 }
                 
                 qDebug() << "地图状态管理器初始化完成";
+            }
+
+            // 将MapStateManager注入到实体管理器，供其读取当前range
+            if (entityManager_ && mapStateManager_) {
+                entityManager_->setMapStateManager(mapStateManager_);
             }
             
             qDebug() << "地图加载成功";
@@ -537,36 +539,7 @@ void MainWindow::openImageViewer()
     imageViewerWindow_->activateWindow();
 }
 
-void MainWindow::testSetHeading()
-{
-    qDebug() << "=== 测试设置实体旋转角度 ===";
-    
-    if (!entityManager_) {
-        qDebug() << "实体管理器未初始化";
-        return;
-    }
-    
-    // 测试设置第一个实体的旋转角度
-    QStringList entityList = entityManager_->getEntityIds();
-    if (!entityList.isEmpty()) {
-        QString entityId = entityList.first();
-        double headingDegrees = 45.0;  // 设置45度旋转角度
-        
-        qDebug() << "设置实体旋转角度:";
-        qDebug() << "实体ID:" << entityId;
-        qDebug() << "旋转角度:" << headingDegrees << "度";
-        
-        GeoEntity* entity = entityManager_->getEntity(entityId);
-        if (entity) {
-            entity->setHeading(headingDegrees);
-            qDebug() << "实体旋转角度设置完成";
-        } else {
-            qDebug() << "未找到指定的实体:" << entityId;
-        }
-    } else {
-        qDebug() << "没有找到任何实体";
-    }
-}
+ 
 
 void MainWindow::onMapStateChanged(const MapStateInfo& state)
 {
