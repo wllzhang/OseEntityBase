@@ -16,6 +16,7 @@
 #include <osgUtil/LineSegmentIntersector>
 
 /**
+ * @ingroup managers
  * @brief 地图状态信息结构体
  * 
  * 包含地图的9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2)：
@@ -48,6 +49,7 @@ struct MapStateInfo {
 };
 
 /**
+ * @ingroup managers
  * @brief 地图状态管理器
  * 
  * 监控和管理地图的状态信息，包括相机参数和鼠标位置。
@@ -86,8 +88,11 @@ public:
     const MapStateInfo& getCurrentState() const { return currentState_; }
 
 signals:
+    /** @brief 状态整体变化通知（含相机与鼠标） */
     void stateChanged(const MapStateInfo& state);
+    /** @brief 视角位置变化通知 */
     void viewPositionChanged(double longitude, double latitude, double altitude);
+    /** @brief 鼠标地理位置变化通知 */
     void mousePositionChanged(double longitude, double latitude, double altitude);
 
 public slots:

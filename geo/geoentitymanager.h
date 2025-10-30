@@ -20,6 +20,12 @@
 class MapStateManager;
 
 /**
+ * @defgroup managers Managers
+ * 管理器模块：用于协调实体、地图与应用交互。
+ */
+
+/**
+ * @ingroup managers
  * @brief 地理实体管理器
  * 
  * 统一管理所有地理实体的创建、删除、查询和交互。
@@ -138,6 +144,9 @@ public:
     GeoEntity* findEntityAtPosition(QPoint screenPos);
 
     // ===== 航点/航线 API =====
+    /**
+     * @brief 航点组信息结构
+     */
     struct WaypointGroupInfo {
         QString groupId;
         QString name;
@@ -145,13 +154,19 @@ public:
         osg::ref_ptr<osg::Geode> routeNode; // 航线绘制节点
     };
 
+    /** @brief 创建航点组 */
     QString createWaypointGroup(const QString& name);
+    /** @brief 在指定组中添加航点 */
     class WaypointEntity* addWaypointToGroup(const QString& groupId, double lon, double lat, double alt);
+    /** @brief 从组中按序号删除航点 */
     bool removeWaypointFromGroup(const QString& groupId, int index);
+    /** @brief 依据模型生成组内航线（linear|bezier） */
     bool generateRouteForGroup(const QString& groupId, const QString& model /* 'linear' | 'bezier' */);
+    /** @brief 将生成的航线绑定到实体（随实体移动/显示） */
     bool bindRouteToEntity(const QString& groupId, const QString& targetEntityId);
 
     // 点标绘：直接添加一个带自定义标签的航点（不依赖组）
+    /** @brief 添加独立航点（带标签），用于快速标绘 */
     class WaypointEntity* addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText);
 
 signals:
@@ -217,14 +232,18 @@ private:
     QQueue<QString> pendingDeletions_;  // 待删除的实体ID队列
     QMap<QString, GeoEntity*> pendingEntities_;  // 待删除的实体对象（保持引用直到真正删除）
     
+    /** @brief 生成唯一实体ID */
     QString generateEntityId(const QString& entityType, const QString& entityName);
+    /** @brief 根据实体名从配置获取图片路径 */
     QString getImagePathFromConfig(const QString& entityName);
 
     // 航点/航线数据
     QMap<QString, WaypointGroupInfo> waypointGroups_;
     QMap<QString, QString> routeBinding_; // groupId -> targetEntityId
 
+    /** @brief 生成线性航线节点 */
     osg::ref_ptr<osg::Geode> buildLinearRoute(const QVector<class WaypointEntity*>& wps);
+    /** @brief 生成贝塞尔航线节点 */
     osg::ref_ptr<osg::Geode> buildBezierRoute(const QVector<class WaypointEntity*>& wps);
 };
 

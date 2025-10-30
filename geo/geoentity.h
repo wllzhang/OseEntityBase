@@ -17,6 +17,17 @@
 #endif
 
 /**
+ * @file geoentity.h
+ * @brief 通用地理实体抽象接口与基础实现。
+ *
+ * @defgroup geo_entities Geo Entities
+ * 地理实体模块：包含通用实体抽象与具体实体实现。
+ *  - 基类：GeoEntity
+ *  - 示例实现：ImageEntity、WaypointEntity
+ */
+
+/**
+ * @ingroup geo_entities
  * @brief 通用地理实体基类
  * 
  * 所有地理实体的基类，提供实体管理的基础功能：
@@ -26,7 +37,8 @@
  * - 属性管理（动态属性设置）
  * - 节点管理（OSG渲染节点）
  * 
- * @note 子类必须实现 initialize(), update(), cleanup() 和 createNode()
+ * 子类必须实现生命周期与节点构建：
+ * - initialize(), update(), cleanup(), createNode()
  */
 class GeoEntity : public QObject
 {
@@ -42,34 +54,54 @@ public:
     QString getName() const { return entityName_; }
     QString getType() const { return entityType_; }
     
-    // 位置管理 - 自我管理
+    /**
+     * @brief 设置实体的地理位置
+     * @param longitude 经度（度）
+     * @param latitude  纬度（度）
+     * @param altitude  高度（米）
+     */
     void setPosition(double longitude, double latitude, double altitude);
+    /**
+     * @brief 获取实体的地理位置
+     * @param longitude 输出经度
+     * @param latitude  输出纬度
+     * @param altitude  输出高度
+     */
     void getPosition(double& longitude, double& latitude, double& altitude) const;
     
-    // 朝向管理 - 自我管理  
+    /**
+     * @brief 设置航向角
+     * @param headingDegrees 航向角（度），0表示正北，顺时针为正
+     */
     void setHeading(double headingDegrees);
     double getHeading() const { return heading_; }
     
-    // 状态管理 - 自我管理
+    /** @brief 设置可见性 */
     void setVisible(bool visible);
     bool isVisible() const { return visible_; }
     
+    /** @brief 设置选中状态（子类可重写用于高亮等效果） */
     virtual void setSelected(bool selected);
     bool isSelected() const { return selected_; }
     
-    // 渲染节点管理 - 自我管理
+    /** @brief 获取渲染节点 */
     osg::ref_ptr<osg::Node> getNode() const { return node_; }
-    void updateNode(); // 更新渲染节点
+    /** @brief 根据当前状态刷新渲染节点 */
+    void updateNode();
     
-    // 属性管理 - 自我管理
+    /** @brief 设置自定义属性（可用于外挂业务数据） */
     void setProperty(const QString& key, const QVariant& value);
+    /** @brief 读取自定义属性 */
     QVariant getProperty(const QString& key) const;
     QMap<QString, QVariant> getAllProperties() const { return properties_; }
     
-    // 生命周期管理 - 自我管理
-    virtual void initialize() = 0;  // 子类实现初始化
-    virtual void update() = 0;      // 子类实现更新逻辑
-    virtual void cleanup() = 0;     // 子类实现清理
+    // 生命周期（子类实现）
+    /** @brief 初始化实体资源与节点 */
+    virtual void initialize() = 0;
+    /** @brief 根据业务状态更新实体 */
+    virtual void update() = 0;
+    /** @brief 释放资源与场景引用 */
+    virtual void cleanup() = 0;
 
 signals:
     void positionChanged(double longitude, double latitude, double altitude);

@@ -5,10 +5,11 @@
 #include <QString>
 
 /**
+ * @ingroup geo_entities
  * @brief 图片实体类
  * 
  * 基于图片的地理实体实现，支持从图片文件创建实体。
- * 实现了实体选择时的高亮显示功能。
+ * 实体被选中时支持高亮边框显示。
  * 
  * 特性：
  * - 从图片文件加载和显示
@@ -16,7 +17,7 @@
  * - 支持实体的位置、朝向、大小设置
  * - 多态支持，重写 setSelected() 方法
  * 
- * @note 图片路径从配置文件中获取
+ * @note 图片路径通常从配置（如 JSON）中获取
  */
 class ImageEntity : public GeoEntity
 {

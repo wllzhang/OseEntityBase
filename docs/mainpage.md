@@ -1,8 +1,6 @@
-# 数字地图脚手架库 API文档
+@mainpage 数字地图脚手架库 (API 文档)
 
-## 项目概述
-
-数字地图脚手架库是一个基于Qt和OSG的3D数字地图应用框架，提供地理实体管理、地图状态监控、实体交互等功能。
+欢迎使用数字地图脚手架库。本项目基于 Qt、OpenSceneGraph (OSG) 与 osgEarth，围绕“实体（Geo Entities）- 管理器（Managers）- 视图（OSG/Qt 集成）”的分层架构，提供标准化的实体生命周期管理、地图状态监控与交互扩展能力。
 
 ## 核心模块
 
@@ -22,46 +20,28 @@
 
 - **GraphicsWindowQt** - Qt与OSG的集成组件
 
-## 架构设计
+## 模块分组（Doxygen Groups）
 
-### 职责分离
+以下章节与代码中的 Doxygen 分组一致，便于在生成文档中快速导航：
 
-- **GeoEntityManager** - 负责实体管理和鼠标事件处理
-- **MainWindow** - 负责UI显示和用户交互
-- **GeoEntity** - 负责实体自身的状态管理
+- \ref geo_entities "Geo Entities" — 通用地理实体与实现（`GeoEntity`、`ImageEntity`、`WaypointEntity`）
+- \ref managers "Managers" — 实体与地图管理（`GeoEntityManager`、`MapStateManager`）
 
-### 信号槽通信
+## 架构概览
 
-组件间通过Qt信号槽机制通信，保持松耦合：
-
-```cpp
-// 实体选择信号
-connect(entityManager_, &GeoEntityManager::entitySelected, 
-        this, [this](GeoEntity* entity) {
-            selectedEntity_ = entity;
-        });
-
-// 右键菜单信号
-connect(entityManager_, &GeoEntityManager::entityRightClicked, 
-        this, [this](GeoEntity* entity, QPoint screenPos) {
-            showEntityContextMenu(screenPos, entity);
-        });
 ```
+Qt UI (MainWindow)
+   │
+   ├─ Managers
+   │    ├─ GeoEntityManager  ── 实体创建/查询/选择/右键/延时删除/路线API
+   │    └─ MapStateManager   ── 俯仰/航向/距离/鼠标与视角地理状态
+   │
+   └─ Geo Entities
+        ├─ GeoEntity (抽象基类)
+        ├─ ImageEntity (图片实体，高亮)
+        └─ WaypointEntity (航点/标绘/序号标签)
 
-### 多态设计
-
-```cpp
-// 基类虚函数
-class GeoEntity {
-public:
-    virtual void setSelected(bool selected);
-};
-
-// 子类重写
-class ImageEntity : public GeoEntity {
-public:
-    void setSelected(bool selected) override;
-};
+OSG SceneGraph + osgEarth MapNode
 ```
 
 ## 主要功能
@@ -92,52 +72,38 @@ public:
 
 ## 快速开始
 
-### 创建实体
-
+### 1) 创建实体管理器
 ```cpp
-// 创建实体管理器
-GeoEntityManager* entityManager = new GeoEntityManager(root, mapNode, this);
+// root: osg::Group*; mapNode: osgEarth::MapNode*
+auto* entityManager = new GeoEntityManager(root, mapNode, this);
+```
 
-// 创建实体
-GeoEntity* entity = entityManager->createEntity(
-    "aircraft",           // 实体类型
-    "F-15战斗机",         // 实体名称
-    QJsonObject(),        // 属性
-    116.4,                // 经度
-    39.9,                 // 纬度
-    1000.0                // 高度
+### 2) 创建实体
+```cpp
+GeoEntity* aircraft = entityManager->createEntity(
+    "aircraft",            // 实体类型
+    "F-15",                // 实体名称
+    QJsonObject{},          // 属性
+    116.4, 39.9, 1000.0     // 经度、纬度、高度
 );
 ```
 
-### 实体交互
-
+### 3) 连接交互信号
 ```cpp
-// 连接实体选择信号
-connect(entityManager, &GeoEntityManager::entitySelected, 
-        this, [](GeoEntity* entity) {
-            qDebug() << "选中实体:" << entity->getName();
-        });
-
-// 连接右键菜单信号
-connect(entityManager, &GeoEntityManager::entityRightClicked, 
-        this, [](GeoEntity* entity, QPoint pos) {
-            // 显示右键菜单
-        });
+connect(entityManager, &GeoEntityManager::entitySelected, this, [](GeoEntity* e){
+    qDebug() << "selected:" << e->getName();
+});
+connect(entityManager, &GeoEntityManager::entityRightClicked, this, [](GeoEntity* e, QPoint p){
+    // 展示右键菜单
+});
 ```
 
-### 地图状态监控
-
+### 4) 地图状态监控
 ```cpp
-// 创建地图状态管理器
-MapStateManager* mapStateManager = new MapStateManager(viewer, this);
-
-// 连接状态变化信号
-connect(mapStateManager, &MapStateManager::mapStateChanged, 
-        this, [](const MapStateInfo& state) {
-            qDebug() << "俯仰角:" << state.pitch;
-            qDebug() << "航向角:" << state.heading;
-            qDebug() << "距离:" << state.range;
-        });
+auto* mapStateManager = new MapStateManager(viewer, this);
+connect(mapStateManager, &MapStateManager::stateChanged, this, [](const MapStateInfo& s){
+    qDebug() << s.pitch << s.heading << s.range;
+});
 ```
 
 ## 扩展指南
@@ -157,8 +123,13 @@ connect(mapStateManager, &MapStateManager::mapStateChanged,
 
 ## 版本信息
 
-- **当前版本**: 1.3.0
+- **当前版本**: 2.0.0
 - **发布日期**: 2025-10-24
+
+## 生成文档
+
+- 保持 Doxyfile 默认配置，运行 doxygen 即可生成文档。
+- 分组导航位于 “Modules”，或通过上文分组链接快速进入。
 
 ## 许可证
 
