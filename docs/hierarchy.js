@@ -19,7 +19,8 @@ var hierarchy =
     ] ],
     [ "QObject", null, [
       [ "GeoEntity", "classGeoEntity.html", [
-        [ "ImageEntity", "classImageEntity.html", null ]
+        [ "ImageEntity", "classImageEntity.html", null ],
+        [ "WaypointEntity", "classWaypointEntity.html", null ]
       ] ],
       [ "GeoEntityManager", "classGeoEntityManager.html", null ],
       [ "HeartBeat", "classHeartBeat.html", null ],
@@ -30,6 +31,7 @@ var hierarchy =
     [ "osg::Referenced", null, [
       [ "osgQt::GraphicsWindowQt::WindowData", "structosgQt_1_1GraphicsWindowQt_1_1WindowData.html", null ]
     ] ],
+    [ "GeoEntityManager::WaypointGroupInfo", "structGeoEntityManager_1_1WaypointGroupInfo.html", null ],
     [ "osg::GraphicsContext::WindowingSystemInterface", null, [
       [ "QtWindowingSystem", "classQtWindowingSystem.html", null ]
     ] ]

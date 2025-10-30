@@ -7,5 +7,7 @@ var dir_2bcd72cd0b092dad44d5d2bb06eea6c2 =
     [ "imageentity.cpp", "imageentity_8cpp.html", null ],
     [ "imageentity.h", "imageentity_8h.html", "imageentity_8h" ],
     [ "mapstatemanager.cpp", "mapstatemanager_8cpp.html", null ],
-    [ "mapstatemanager.h", "mapstatemanager_8h.html", "mapstatemanager_8h" ]
+    [ "mapstatemanager.h", "mapstatemanager_8h.html", "mapstatemanager_8h" ],
+    [ "waypointentity.cpp", "waypointentity_8cpp.html", null ],
+    [ "waypointentity.h", "waypointentity_8h.html", "waypointentity_8h" ]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['联系方式_0',['联系方式',['../index.html#autotoc_md24',1,'']]]
+  ['职责分离_0',['职责分离',['../index.html#autotoc_md7',1,'']]]
 ];

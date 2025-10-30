@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['数字地图脚手架库_20api文档_0',['数字地图脚手架库 API文档',['../index.html',1,'']]]
+  ['扩展指南_0',['扩展指南',['../index.html#autotoc_md19',1,'']]]
 ];

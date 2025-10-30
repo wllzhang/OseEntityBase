@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['创建实体_0',['创建实体',['../index.html#autotoc_md16',1,'']]]
+  ['信号槽通信_0',['信号槽通信',['../index.html#autotoc_md8',1,'']]]
 ];

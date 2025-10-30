@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['架构设计_0',['架构设计',['../index.html#autotoc_md6',1,'']]]
+  ['数字地图脚手架库_20api文档_0',['数字地图脚手架库 API文档',['../index.html',1,'']]]
 ];

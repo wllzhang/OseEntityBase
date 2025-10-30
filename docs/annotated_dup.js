@@ -16,5 +16,6 @@ var annotated_dup =
     [ "MapStateInfo", "structMapStateInfo.html", "structMapStateInfo" ],
     [ "MapStateManager", "classMapStateManager.html", "classMapStateManager" ],
     [ "QtKeyboardMap", "classQtKeyboardMap.html", "classQtKeyboardMap" ],
-    [ "QtWindowingSystem", "classQtWindowingSystem.html", "classQtWindowingSystem" ]
+    [ "QtWindowingSystem", "classQtWindowingSystem.html", "classQtWindowingSystem" ],
+    [ "WaypointEntity", "classWaypointEntity.html", "classWaypointEntity" ]
 ];
