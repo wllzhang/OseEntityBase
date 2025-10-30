@@ -43,7 +43,6 @@ MACRO_EXPANSION         = YES
 EXPAND_ONLY_PREDEF      = YES
 PREDEFINED              = "Q_OBJECT"
 EXCLUDE                 = build \
-                           docs \
                            CMakeLists.txt \
                            *.pro.user \
                            *.qrc \
