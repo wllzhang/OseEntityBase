@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
+#include <QTimer>
 #include <osgUtil/LineSegmentIntersector>
 #include <osgViewer/Viewer>
 #include <cmath>
@@ -131,49 +132,78 @@ QStringList GeoEntityManager::getEntityIdsByType(const QString& entityType) cons
 
 void GeoEntityManager::removeEntity(const QString& entityId)
 {
-    qDebug() << "移除实体:" << entityId;
+    qDebug() << "标记实体待删除:" << entityId;
     
     GeoEntity* entity = entities_.value(entityId);
-    if (entity) {
-        // 清理实体
-        entity->cleanup();
-        
-        // 从场景中移除
-        if (entity->getNode()) {
-            entityGroup_->removeChild(entity->getNode());
-        }
-        
-        // 从映射中移除
-        entities_.remove(entityId);
-        
-        // 删除实体
-        delete entity;
-        
-        emit entityRemoved(entityId);
-        qDebug() << "实体移除成功:" << entityId;
-    } else {
+    if (!entity) {
         qDebug() << "未找到要移除的实体:" << entityId;
+        return;
     }
+    
+    // 立即清除选中引用（避免悬空指针，但不调用setSelected避免触发updateNode）
+    if (selectedEntity_ == entity) {
+        // 直接清除状态，不调用setSelected(false)避免在删除过程中修改节点
+        selectedEntity_ = nullptr;
+        emit entityDeselected();
+        qDebug() << "清除选中实体引用";
+    }
+    
+    // 立即从场景中移除节点（禁用节点，防止渲染时访问）
+    // 这是安全的，因为removeChild不会访问节点内容，只是移除引用
+    if (entity->getNode()) {
+        // 先禁用节点，防止渲染时访问
+        entity->getNode()->setNodeMask(0x0);
+        // 从场景中移除（这个操作在渲染过程中也是相对安全的）
+        entityGroup_->removeChild(entity->getNode());
+        qDebug() << "从场景中移除实体节点";
+    }
+    
+    // 从映射中移除（但不删除entity对象）
+    entities_.remove(entityId);
+    
+    // 保存到待删除队列，延迟真正删除（避免在渲染过程中删除对象）
+    pendingEntities_[entityId] = entity;
+    if (!pendingDeletions_.contains(entityId)) {
+        pendingDeletions_.enqueue(entityId);
+    }
+    
+    // 立即发出删除信号（UI可以立即更新）
+    emit entityRemoved(entityId);
+    qDebug() << "实体已标记为待删除:" << entityId << "将在下一帧渲染后真正删除";
 }
 
 void GeoEntityManager::clearAllEntities()
 {
     qDebug() << "清空所有实体";
     
-    // 清理所有实体
-    for (auto it = entities_.begin(); it != entities_.end(); ++it) {
-        if (it.value()) {
-            it.value()->cleanup();
-            delete it.value();
+    // 清除选中实体引用
+    if (selectedEntity_) {
+        selectedEntity_ = nullptr;
+        emit entityDeselected();
+    }
+    
+    // 将所有实体添加到延迟删除队列
+    QStringList entityIds = getEntityIds();
+    for (const QString& entityId : entityIds) {
+        GeoEntity* entity = entities_.value(entityId);
+        if (entity) {
+            // 禁用并移除节点
+            if (entity->getNode()) {
+                entity->getNode()->setNodeMask(0x0);
+                entityGroup_->removeChild(entity->getNode());
+            }
+            
+            // 从映射中移除，添加到待删除队列
+            entities_.remove(entityId);
+            pendingEntities_[entityId] = entity;
+            if (!pendingDeletions_.contains(entityId)) {
+                pendingDeletions_.enqueue(entityId);
+            }
         }
     }
     
-    // 清空场景
-    entityGroup_->removeChildren(0, entityGroup_->getNumChildren());
-    
-    // 清空映射
-    entities_.clear();
     entityCounter_ = 0;
+    qDebug() << "所有实体已标记为待删除，将在下一帧渲染后真正删除";
 }
 
 void GeoEntityManager::setEntityConfig(const QJsonObject& config)
@@ -338,4 +368,34 @@ void GeoEntityManager::setViewer(osgViewer::Viewer* viewer)
 {
     viewer_ = viewer;
     qDebug() << "GeoEntityManager设置Viewer完成";
+}
+
+void GeoEntityManager::processPendingDeletions()
+{
+    // qDebug() << "处理延迟删除队列，共有" << pendingDeletions_.size() << "个实体待删除";
+    
+    while (!pendingDeletions_.isEmpty()) {
+        QString entityId = pendingDeletions_.dequeue();
+        
+        // 从待删除映射中获取实体
+        GeoEntity* entity = pendingEntities_.take(entityId);
+        if (!entity) {
+            qDebug() << "警告：待删除实体不存在:" << entityId;
+            continue;
+        }
+        
+        qDebug() << "开始真正删除实体:" << entityId;
+        
+        // 现在可以安全地清理和删除实体了
+        // 此时节点已经从场景中移除，且不在渲染过程中
+        entity->cleanup();
+        
+        // 删除实体对象
+        delete entity;
+        entity = nullptr;
+        
+        qDebug() << "实体完全删除完成:" << entityId;
+    }
+    
+    // qDebug() << "所有延迟删除完成";
 }

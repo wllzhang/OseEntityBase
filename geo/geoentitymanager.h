@@ -10,6 +10,8 @@
 #include <QJsonArray>
 #include <QMap>
 #include <QMouseEvent>
+#include <QTimer>
+#include <QQueue>
 #include <osgViewer/Viewer>
 #include "geoentity.h"
 
@@ -114,6 +116,12 @@ public:
     void setViewer(osgViewer::Viewer* viewer);
     
     /**
+     * @brief 处理延迟删除队列（应该在frame()完成后调用）
+     * 公共方法，供外部在渲染完成后调用
+     */
+    void processPendingDeletions();
+    
+    /**
      * @brief 查找指定位置的实体
      * @param screenPos 屏幕坐标
      * @return 找到的实体指针，未找到返回nullptr
@@ -165,6 +173,10 @@ private:
     
     // 当前选中的实体
     GeoEntity* selectedEntity_;
+    
+    // 延迟删除机制：避免在渲染过程中删除节点
+    QQueue<QString> pendingDeletions_;  // 待删除的实体ID队列
+    QMap<QString, GeoEntity*> pendingEntities_;  // 待删除的实体对象（保持引用直到真正删除）
     
     QString generateEntityId(const QString& entityType, const QString& entityName);
     QString getImagePathFromConfig(const QString& entityName);

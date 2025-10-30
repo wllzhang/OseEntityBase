@@ -40,13 +40,23 @@ void ImageEntity::update()
 
 void ImageEntity::cleanup()
 {
-    // 简单的清理逻辑
+    qDebug() << "清理图片实体:" << entityName_;
+    
+    // 关键修复：必须先从PAT中移除高亮节点，不能只置空引用
     if (node_) {
-        node_ = nullptr;
+        osg::PositionAttitudeTransform* pat = dynamic_cast<osg::PositionAttitudeTransform*>(node_.get());
+        if (pat && highlightNode_) {
+            // 从PAT中移除高亮节点（这才是正确的清理方式）
+            pat->removeChild(highlightNode_);
+            qDebug() << "从PAT中移除高亮节点";
+        }
     }
-    if (highlightNode_) {
-        highlightNode_ = nullptr;
-    }
+    
+    // 然后清除引用（ref_ptr会自动管理）
+    highlightNode_ = nullptr;
+    node_ = nullptr;
+    
+    qDebug() << "图片实体清理完成";
 }
 
 void ImageEntity::setSelected(bool selected)

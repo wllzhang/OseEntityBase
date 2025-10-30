@@ -101,9 +101,14 @@ MainWindow::MainWindow(QWidget *parent)
     this->statusBar()->addWidget(controlWidget);
     
     // 渲染定时器
+    // 在frame()完成后立即处理延迟删除队列，确保删除在渲染完成后执行
     QTimer *renderTimer = new QTimer(this);
     connect(renderTimer, &QTimer::timeout, [&](){
         viewer_->frame();
+        // frame()完成后，立即处理延迟删除队列，确保不在渲染过程中删除
+        if (entityManager_) {
+            entityManager_->processPendingDeletions();
+        }
     });
     renderTimer->start(1000/60);
     
@@ -415,13 +420,20 @@ void MainWindow::showEntityContextMenu(QPoint screenPos, GeoEntity* entity)
         QAction* deleteAction = entityContextMenu_->addAction("删除实体");
         connect(deleteAction, &QAction::triggered, [this]() {
             if (!selectedEntity_) return;
+            
+            // 关键修复：先保存ID和名称，避免在对话框显示后访问已删除的实体
+            QString entityId = selectedEntity_->getId();
+            QString entityName = selectedEntity_->getName();
+            
             QMessageBox::StandardButton reply = QMessageBox::question(this, "确认删除", 
-                QString("确定要删除实体 '%1' 吗？").arg(selectedEntity_->getName()),
+                QString("确定要删除实体 '%1' 吗？").arg(entityName),
                 QMessageBox::Yes | QMessageBox::No);
             if (reply == QMessageBox::Yes) {
-                QString entityId = selectedEntity_->getId();
-                entityManager_->removeEntity(entityId);
+                // 关键修复：先清除MainWindow中的引用，避免在删除过程中访问已删除的实体
                 selectedEntity_ = nullptr;
+                
+                // 然后删除实体（removeEntity内部会处理GeoEntityManager中的selectedEntity_）
+                entityManager_->removeEntity(entityId);
                 qDebug() << "删除实体:" << entityId;
             }
         });
