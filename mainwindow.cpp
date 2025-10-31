@@ -4,6 +4,7 @@
 #include "imageviewerwindow.h"
 #include "geo/geoentitymanager.h"
 #include "geo/mapstatemanager.h"
+#include "geo/geoutils.h"
 
 #include <QDebug>
 #include <QTimer>
@@ -413,42 +414,10 @@ void MainWindow::loadEntityConfig()
 
 bool MainWindow::screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude)
 {
-    if (!viewer_ || !viewer_->getCamera() || !mapNode_) {
-        qDebug() << "Viewer、Camera或MapNode未初始化";
-        return false;
-    }
+    // 注意：screenPos 必须是相对于 OSG GLWidget 的本地坐标，不是 MainWindow 坐标
+    // 如果是 MainWindow 坐标，需要先转换为 GLWidget 坐标：glWidget->mapFrom(this, windowPos)
     
-    try {
-        // 创建射线相交检测器
-        osgUtil::LineSegmentIntersector::Intersections intersections;
-        
-        // 计算鼠标位置与地球表面的交点
-        if (viewer_->computeIntersections(screenPos.x(), screenPos.y(), intersections)) {
-            // 获取第一个交点
-            const osgUtil::LineSegmentIntersector::Intersection& intersection = *intersections.begin();
-            osg::Vec3 worldPos = intersection.getWorldIntersectPoint();
-            
-            // 将世界坐标转换为地理坐标
-            osg::Vec3d geoVec;
-            if (mapNode_->getMapSRS()->transformFromWorld(worldPos, geoVec)) {
-                longitude = geoVec.x();
-                latitude = geoVec.y();
-                altitude = geoVec.z();
-                
-                qDebug() << "屏幕坐标转换成功:" << screenPos << "-> 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
-                return true;
-            } else {
-                qDebug() << "世界坐标转换为地理坐标失败";
-                return false;
-            }
-        } else {
-            qDebug() << "未找到与地球表面的交点";
-            return false;
-        }
-    } catch (const std::exception& e) {
-        qDebug() << "屏幕坐标转换时发生异常:" << e.what();
-        return false;
-    }
+    return GeoUtils::screenToGeoCoordinates(viewer_.get(), mapNode_.get(), screenPos, longitude, latitude, altitude);
 }
 
 void MainWindow::showEntityContextMenu(QPoint screenPos, GeoEntity* entity)
@@ -572,11 +541,33 @@ void MainWindow::dropEvent(QDropEvent *event)
         return;
     }
     
+    // 获取 OSG GLWidget 用于坐标转换
+    osgQt::GraphicsWindowQt* gw = dynamic_cast<osgQt::GraphicsWindowQt*>(
+        viewer_->getCamera()->getGraphicsContext());
+    if (!gw || !gw->getGLWidget()) {
+        qDebug() << "无法获取 GLWidget，拖拽操作失败";
+        event->ignore();
+        return;
+    }
+    
+    QWidget* glWidget = gw->getGLWidget();
+    
+    // 将 MainWindow 坐标转换为 GLWidget 的本地坐标
+    // event->pos() 是相对于 MainWindow 的坐标，需要转换为 GLWidget 坐标
     QPoint dropPos = event->pos();
+    QPoint glWidgetPos = glWidget->mapFrom(this, dropPos);
+    
+    // 检查坐标是否在 GLWidget 范围内
+    if (!glWidget->rect().contains(glWidgetPos)) {
+        qDebug() << "拖拽位置不在 GLWidget 范围内:" << dropPos << "->" << glWidgetPos;
+        event->ignore();
+        return;
+    }
+    
     double longitude, latitude, altitude;
     
-    // 使用正确的屏幕坐标转地理坐标方法
-    if (!screenToGeoCoordinates(dropPos, longitude, latitude, altitude)) {
+    // 使用 GLWidget 的本地坐标进行地理坐标转换
+    if (!screenToGeoCoordinates(glWidgetPos, longitude, latitude, altitude)) {
         qDebug() << "无法将拖拽位置转换为地理坐标，使用默认位置";
         // 如果转换失败，使用默认位置
         longitude = 116.4;

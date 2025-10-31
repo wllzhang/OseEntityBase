@@ -1,4 +1,5 @@
 #include "mapstatemanager.h"
+#include "geoutils.h"
 #include <QDebug>
 #include <QApplication>
 #include <osgEarth/SpatialReference>
@@ -185,47 +186,17 @@ void MapStateManager::initializeMapNode()
 // 更新鼠标地理坐标 (简化实现)
 void MapStateManager::updateMouseGeoPosition(QPoint mousePos)
 {
-    if (!viewer_ || !viewer_->getCamera() || !mapNode_) {
-        return;
-    }
-    
-    try {
-        // 创建射线相交检测器
-        osgUtil::LineSegmentIntersector::Intersections intersections;
-        
-        // 计算鼠标位置与地球表面的交点
-        if (viewer_->computeIntersections(mousePos.x(), mousePos.y(), intersections)) {
-            // 获取第一个交点
-            const osgUtil::LineSegmentIntersector::Intersection& intersection = *intersections.begin();
-            osg::Vec3 worldPos = intersection.getWorldIntersectPoint();
-            
-            // 将世界坐标转换为地理坐标
-            osg::Vec3d geoVec;
-            if (mapNode_->getMapSRS()->transformFromWorld(worldPos, geoVec)) {
-                currentState_.mouseLongitude = geoVec.x();
-                currentState_.mouseLatitude = geoVec.y();
-                currentState_.mouseAltitude = geoVec.z();
-                
-                // 发出鼠标位置变化信号
-                emit mousePositionChanged(currentState_.mouseLongitude, currentState_.mouseLatitude, currentState_.mouseAltitude);
-                
-                // qDebug() << "鼠标地理坐标更新:" << currentState_.mouseLongitude << currentState_.mouseLatitude << currentState_.mouseAltitude;
-            } else {
-                qDebug() << "世界坐标转换为地理坐标失败";
-                // 使用视角坐标作为默认值
-                currentState_.mouseLongitude = currentState_.viewLongitude;
-                currentState_.mouseLatitude = currentState_.viewLatitude;
-                currentState_.mouseAltitude = currentState_.viewAltitude;
-            }
-        } else {
-            // 如果没有交点，使用视角坐标作为默认值
-            currentState_.mouseLongitude = currentState_.viewLongitude;
-            currentState_.mouseLatitude = currentState_.viewLatitude;
-            currentState_.mouseAltitude = currentState_.viewAltitude;
-        }
-    } catch (const std::exception& e) {
-        qDebug() << "更新鼠标地理坐标时发生异常:" << e.what();
-        // 使用视角坐标作为默认值
+    // 使用工具函数进行坐标转换
+    if (GeoUtils::screenToGeoCoordinates(viewer_, mapNode_, mousePos, 
+                                         currentState_.mouseLongitude, 
+                                         currentState_.mouseLatitude, 
+                                         currentState_.mouseAltitude)) {
+        // 发出鼠标位置变化信号
+        emit mousePositionChanged(currentState_.mouseLongitude, 
+                                  currentState_.mouseLatitude, 
+                                  currentState_.mouseAltitude);
+    } else {
+        // 如果转换失败，使用视角坐标作为默认值
         currentState_.mouseLongitude = currentState_.viewLongitude;
         currentState_.mouseLatitude = currentState_.viewLatitude;
         currentState_.mouseAltitude = currentState_.viewAltitude;
