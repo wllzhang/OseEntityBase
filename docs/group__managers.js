@@ -52,6 +52,9 @@ var group__managers =
       [ "viewer_", "classGeoEntityManager.html#a0aa9ef2b19d147ad47538b7279dd93f8", null ],
       [ "waypointGroups_", "classGeoEntityManager.html#afc71b634bf09e567101820a85e077e2b", null ]
     ] ],
+    [ "GeoUtils", "classGeoUtils.html", [
+      [ "screenToGeoCoordinates", "classGeoUtils.html#a60a85d8c7799bcfb9e1b729fa9fad53a", null ]
+    ] ],
     [ "MapStateInfo", "structMapStateInfo.html", [
       [ "MapStateInfo", "structMapStateInfo.html#a19450069173302ef9da5eabf0deb398b", null ],
       [ "getTuple", "structMapStateInfo.html#a77e481cedac8354542f4b988f85393d7", null ],

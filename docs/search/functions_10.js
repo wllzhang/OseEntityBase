@@ -1,7 +1,7 @@
 var searchData=
 [
   ['scaleimage_0',['scaleImage',['../classosgQt_1_1QWidgetImage.html#a33c874aee699a97c726b2ab3bf726fe4',1,'osgQt::QWidgetImage']]],
-  ['screentogeocoordinates_1',['screenToGeoCoordinates',['../classMainWindow.html#a2ebf4310e43e7abff367929fbd6e7ca3',1,'MainWindow']]],
+  ['screentogeocoordinates_1',['screentogeocoordinates',['../classGeoUtils.html#a60a85d8c7799bcfb9e1b729fa9fad53a',1,'GeoUtils::screenToGeoCoordinates()'],['../classMainWindow.html#a2ebf4310e43e7abff367929fbd6e7ca3',1,'MainWindow::screenToGeoCoordinates()']]],
   ['selectionchanged_2',['selectionChanged',['../classGeoEntity.html#accb9f4c2e2510f41109f367d2f6bb5ae',1,'GeoEntity']]],
   ['sendfocushint_3',['sendFocusHint',['../classosgQt_1_1QWidgetImage.html#a6b0d4138e73715571dc02d0be213a03c',1,'osgQt::QWidgetImage']]],
   ['sendkeyevent_4',['sendkeyevent',['../classosgQt_1_1QGraphicsViewAdapter.html#ab3cbd41358654cae246373679b9df377',1,'osgQt::QGraphicsViewAdapter::sendKeyEvent()'],['../classosgQt_1_1QWidgetImage.html#a9c1296a0e6a0775f84b84034a3ea4a83',1,'osgQt::QWidgetImage::sendKeyEvent()']]],

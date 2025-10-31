@@ -10,6 +10,7 @@ var annotated_dup =
     ] ],
     [ "GeoEntity", "classGeoEntity.html", "classGeoEntity" ],
     [ "GeoEntityManager", "classGeoEntityManager.html", "classGeoEntityManager" ],
+    [ "GeoUtils", "classGeoUtils.html", "classGeoUtils" ],
     [ "HeartBeat", "classHeartBeat.html", "classHeartBeat" ],
     [ "ImageEntity", "classImageEntity.html", "classImageEntity" ],
     [ "MainWindow", "classMainWindow.html", "classMainWindow" ],

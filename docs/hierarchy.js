@@ -1,5 +1,6 @@
 var hierarchy =
 [
+    [ "GeoUtils", "classGeoUtils.html", null ],
     [ "osgViewer::GraphicsWindow", null, [
       [ "osgQt::GraphicsWindowQt", "classosgQt_1_1GraphicsWindowQt.html", null ]
     ] ],
