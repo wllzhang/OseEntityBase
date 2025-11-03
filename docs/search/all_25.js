@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['核心模块_0',['核心模块',['../index.html#autotoc_md0',1,'']]]
+  ['架构概览_0',['架构概览',['../index.html#autotoc_md5',1,'']]]
 ];

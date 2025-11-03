@@ -97,6 +97,9 @@ $(document).ready(function(){initNavTree('classosgQt_1_1GLWidget.html',''); init
 </div><!--header-->
 <div class="contents">
 
+<p>GLWidget类：基于QGLWidget的OpenGL Widget  
+ <a href="classosgQt_1_1GLWidget.html#details">更多...</a></p>
+
 <p><code>#include &lt;<a class="el" href="GraphicsWindowQt_8h_source.html">GraphicsWindowQt.h</a>&gt;</code></p>
 <div class="dynheader">
 类 osgQt::GLWidget 继承关系图:</div>
@@ -108,10 +111,13 @@ $(document).ready(function(){initNavTree('classosgQt_1_1GLWidget.html',''); init
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
 <tr class="memitem:add94118fbb6f4958e7ef7e9ba354d724" id="r_add94118fbb6f4958e7ef7e9ba354d724"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#add94118fbb6f4958e7ef7e9ba354d724">GLWidget</a> (QWidget *parent=NULL, const QGLWidget *shareWidget=NULL, Qt::WindowFlags f=0, bool forwardKeyEvents=false)</td></tr>
+<tr class="memdesc:add94118fbb6f4958e7ef7e9ba354d724"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数：使用默认GL格式  <br /></td></tr>
 <tr class="separator:add94118fbb6f4958e7ef7e9ba354d724"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b327860bb459c646114c93b96e8ec66" id="r_a4b327860bb459c646114c93b96e8ec66"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a4b327860bb459c646114c93b96e8ec66">GLWidget</a> (QGLContext *context, QWidget *parent=NULL, const QGLWidget *shareWidget=NULL, Qt::WindowFlags f=0, bool forwardKeyEvents=false)</td></tr>
+<tr class="memdesc:a4b327860bb459c646114c93b96e8ec66"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数：使用指定的GL上下文  <br /></td></tr>
 <tr class="separator:a4b327860bb459c646114c93b96e8ec66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90154e22d4187a62441da90ea3d8cca8" id="r_a90154e22d4187a62441da90ea3d8cca8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a90154e22d4187a62441da90ea3d8cca8">GLWidget</a> (const QGLFormat &amp;format, QWidget *parent=NULL, const QGLWidget *shareWidget=NULL, Qt::WindowFlags f=0, bool forwardKeyEvents=false)</td></tr>
+<tr class="memdesc:a90154e22d4187a62441da90ea3d8cca8"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数：使用指定的GL格式  <br /></td></tr>
 <tr class="separator:a90154e22d4187a62441da90ea3d8cca8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a535192a4262b4501e5493303834f45d3" id="r_a535192a4262b4501e5493303834f45d3"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a535192a4262b4501e5493303834f45d3">~GLWidget</a> ()</td></tr>
 <tr class="separator:a535192a4262b4501e5493303834f45d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,28 +134,35 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:a4626a33695e93fd18bceeeaf7946a51c" id="r_a4626a33695e93fd18bceeeaf7946a51c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a4626a33695e93fd18bceeeaf7946a51c">getTouchEventsEnabled</a> () const</td></tr>
 <tr class="separator:a4626a33695e93fd18bceeeaf7946a51c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11ecf594fe8a3428f2745157908ac216" id="r_a11ecf594fe8a3428f2745157908ac216"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a11ecf594fe8a3428f2745157908ac216">setTouchEventsEnabled</a> (bool e)</td></tr>
+<tr class="memdesc:a11ecf594fe8a3428f2745157908ac216"><td class="mdescLeft">&#160;</td><td class="mdescRight">启用或禁用触摸事件（如缩放手势）  <br /></td></tr>
 <tr class="separator:a11ecf594fe8a3428f2745157908ac216"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c3c5f4fcf68d85dd7739d581ff78621" id="r_a4c3c5f4fcf68d85dd7739d581ff78621"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a4c3c5f4fcf68d85dd7739d581ff78621">setMapStateManager</a> (<a class="el" href="classMapStateManager.html">MapStateManager</a> *manager)</td></tr>
 <tr class="separator:a4c3c5f4fcf68d85dd7739d581ff78621"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3003ef310e52a663fa78a7417481217" id="r_ac3003ef310e52a663fa78a7417481217"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#ac3003ef310e52a663fa78a7417481217">setEntityManager</a> (<a class="el" href="classGeoEntityManager.html">GeoEntityManager</a> *manager)</td></tr>
 <tr class="separator:ac3003ef310e52a663fa78a7417481217"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfd0da2b4fee59d50b03ee5b6f401101" id="r_adfd0da2b4fee59d50b03ee5b6f401101"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#adfd0da2b4fee59d50b03ee5b6f401101">setKeyboardModifiers</a> (QInputEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
+<tr class="memdesc:adfd0da2b4fee59d50b03ee5b6f401101"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置键盘修饰键状态（Shift、Ctrl、Alt等）  <br /></td></tr>
 <tr class="separator:adfd0da2b4fee59d50b03ee5b6f401101"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43dfdc9164dfacb939a173e725651fa9" id="r_a43dfdc9164dfacb939a173e725651fa9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a43dfdc9164dfacb939a173e725651fa9">keyPressEvent</a> (QKeyEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
+<tr class="memdesc:a43dfdc9164dfacb939a173e725651fa9"><td class="mdescLeft">&#160;</td><td class="mdescRight">键盘按下事件处理  <br /></td></tr>
 <tr class="separator:a43dfdc9164dfacb939a173e725651fa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53e9b408bfffea55c313b47139aab25f" id="r_a53e9b408bfffea55c313b47139aab25f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a53e9b408bfffea55c313b47139aab25f">keyReleaseEvent</a> (QKeyEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
+<tr class="memdesc:a53e9b408bfffea55c313b47139aab25f"><td class="mdescLeft">&#160;</td><td class="mdescRight">键盘释放事件处理  <br /></td></tr>
 <tr class="separator:a53e9b408bfffea55c313b47139aab25f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab144cc8064c1bbf6d0ef0646ca0bd06c" id="r_ab144cc8064c1bbf6d0ef0646ca0bd06c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#ab144cc8064c1bbf6d0ef0646ca0bd06c">mousePressEvent</a> (QMouseEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
 <tr class="separator:ab144cc8064c1bbf6d0ef0646ca0bd06c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab992c4c25439a5ef23031991015451c1" id="r_ab992c4c25439a5ef23031991015451c1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#ab992c4c25439a5ef23031991015451c1">mouseReleaseEvent</a> (QMouseEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
 <tr class="separator:ab992c4c25439a5ef23031991015451c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0495fe7afc77e7782111f5816405abc0" id="r_a0495fe7afc77e7782111f5816405abc0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a0495fe7afc77e7782111f5816405abc0">mouseDoubleClickEvent</a> (QMouseEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
+<tr class="memdesc:a0495fe7afc77e7782111f5816405abc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">鼠标双击事件处理  <br /></td></tr>
 <tr class="separator:a0495fe7afc77e7782111f5816405abc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9043bac13d6f0a5307ea5c7f9b3caa50" id="r_a9043bac13d6f0a5307ea5c7f9b3caa50"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a9043bac13d6f0a5307ea5c7f9b3caa50">mouseMoveEvent</a> (QMouseEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
+<tr class="memdesc:a9043bac13d6f0a5307ea5c7f9b3caa50"><td class="mdescLeft">&#160;</td><td class="mdescRight">鼠标移动事件处理  <br /></td></tr>
 <tr class="separator:a9043bac13d6f0a5307ea5c7f9b3caa50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5702a23f7cf42d05fe55a417d810a4b6" id="r_a5702a23f7cf42d05fe55a417d810a4b6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a5702a23f7cf42d05fe55a417d810a4b6">wheelEvent</a> (QWheelEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
 <tr class="separator:a5702a23f7cf42d05fe55a417d810a4b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17fb73d59f1c0da3feddcbc78162a06b" id="r_a17fb73d59f1c0da3feddcbc78162a06b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a17fb73d59f1c0da3feddcbc78162a06b">gestureEvent</a> (QGestureEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
+<tr class="memdesc:a17fb73d59f1c0da3feddcbc78162a06b"><td class="mdescLeft">&#160;</td><td class="mdescRight">手势事件处理（如捏合缩放）  <br /></td></tr>
 <tr class="separator:a17fb73d59f1c0da3feddcbc78162a06b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
@@ -159,14 +172,19 @@ Protected 成员函数</h2></td></tr>
 <tr class="memitem:a75e22c6108187c9bfd6f531ff6d54c4c" id="r_a75e22c6108187c9bfd6f531ff6d54c4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a75e22c6108187c9bfd6f531ff6d54c4c">enqueueDeferredEvent</a> (QEvent::Type eventType, QEvent::Type removeEventType=QEvent::None)</td></tr>
 <tr class="separator:a75e22c6108187c9bfd6f531ff6d54c4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1be0822cd1411f3318c4c07950ff626" id="r_ad1be0822cd1411f3318c4c07950ff626"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#ad1be0822cd1411f3318c4c07950ff626">processDeferredEvents</a> ()</td></tr>
+<tr class="memdesc:ad1be0822cd1411f3318c4c07950ff626"><td class="mdescLeft">&#160;</td><td class="mdescRight">处理延迟事件队列 用于在多线程环境中安全处理某些需要在主线程中执行的事件  <br /></td></tr>
 <tr class="separator:ad1be0822cd1411f3318c4c07950ff626"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99ad2325f3d1418241bb4f38f1cd2db6" id="r_a99ad2325f3d1418241bb4f38f1cd2db6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a99ad2325f3d1418241bb4f38f1cd2db6">resizeEvent</a> (QResizeEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
+<tr class="memdesc:a99ad2325f3d1418241bb4f38f1cd2db6"><td class="mdescLeft">&#160;</td><td class="mdescRight">窗口大小改变事件处理  <br /></td></tr>
 <tr class="separator:a99ad2325f3d1418241bb4f38f1cd2db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e585800d047a59d1cff71570839a80c" id="r_a9e585800d047a59d1cff71570839a80c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a9e585800d047a59d1cff71570839a80c">moveEvent</a> (QMoveEvent *<a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a>)</td></tr>
+<tr class="memdesc:a9e585800d047a59d1cff71570839a80c"><td class="mdescLeft">&#160;</td><td class="mdescRight">窗口移动事件处理  <br /></td></tr>
 <tr class="separator:a9e585800d047a59d1cff71570839a80c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a916732faa6629f6ef2e0c3955f76cb7b" id="r_a916732faa6629f6ef2e0c3955f76cb7b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a916732faa6629f6ef2e0c3955f76cb7b">glDraw</a> ()</td></tr>
+<tr class="memdesc:a916732faa6629f6ef2e0c3955f76cb7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">请求重绘  <br /></td></tr>
 <tr class="separator:a916732faa6629f6ef2e0c3955f76cb7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54d8b5cf44e7368d71bed233b78405e7" id="r_a54d8b5cf44e7368d71bed233b78405e7"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a54d8b5cf44e7368d71bed233b78405e7">event</a> (QEvent *event)</td></tr>
+<tr class="memdesc:a54d8b5cf44e7368d71bed233b78405e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">事件处理函数  <br /></td></tr>
 <tr class="separator:a54d8b5cf44e7368d71bed233b78405e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
@@ -195,7 +213,15 @@ Protected 属性</h2></td></tr>
 <tr class="memitem:a38f9f2650296ace6a91f6dab45412536" id="r_a38f9f2650296ace6a91f6dab45412536"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html#a38f9f2650296ace6a91f6dab45412536">GraphicsWindowQt</a></td></tr>
 <tr class="separator:a38f9f2650296ace6a91f6dab45412536"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">构造及析构函数说明</h2>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>GLWidget类：基于QGLWidget的OpenGL Widget </p>
+<p>功能：</p><ul>
+<li>将Qt事件转发到OSG事件队列</li>
+<li>支持多线程环境下的延迟事件处理</li>
+<li>提供地图状态管理和实体管理接口</li>
+<li>处理高DPI显示器的设备像素比 </li>
+</ul>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
 <a id="add94118fbb6f4958e7ef7e9ba354d724" name="add94118fbb6f4958e7ef7e9ba354d724"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#add94118fbb6f4958e7ef7e9ba354d724">&#9670;&#160;</a></span>GLWidget() <span class="overload">[1/3]</span></h2>
 
@@ -233,6 +259,17 @@ Protected 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>构造函数：使用默认GL格式 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>父widget </td></tr>
+    <tr><td class="paramname">shareWidget</td><td>共享的GL widget </td></tr>
+    <tr><td class="paramname">f</td><td>窗口标志 </td></tr>
+    <tr><td class="paramname">forwardKeyEvents</td><td>是否转发键盘事件到Qt </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -280,6 +317,18 @@ Protected 属性</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>构造函数：使用指定的GL上下文 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>GL上下文 </td></tr>
+    <tr><td class="paramname">parent</td><td>父widget </td></tr>
+    <tr><td class="paramname">shareWidget</td><td>共享的GL widget </td></tr>
+    <tr><td class="paramname">f</td><td>窗口标志 </td></tr>
+    <tr><td class="paramname">forwardKeyEvents</td><td>是否转发键盘事件到Qt </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a90154e22d4187a62441da90ea3d8cca8" name="a90154e22d4187a62441da90ea3d8cca8"></a>
@@ -325,6 +374,18 @@ Protected 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>构造函数：使用指定的GL格式 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">format</td><td>GL格式 </td></tr>
+    <tr><td class="paramname">parent</td><td>父widget </td></tr>
+    <tr><td class="paramname">shareWidget</td><td>共享的GL widget </td></tr>
+    <tr><td class="paramname">f</td><td>窗口标志 </td></tr>
+    <tr><td class="paramname">forwardKeyEvents</td><td>是否转发键盘事件到Qt </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -414,6 +475,16 @@ Protected 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>事件处理函数 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>Qt事件 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>是否处理了该事件</dd></dl>
+<p>说明： QEvent::Hide - 处理Qt在隐藏widget前调用glFinish的workaround 在OSG多线程环境中，context可能在另一个线程中活动 QEvent::ParentChange - 处理重新父级化时可能创建的新的GL context 这些事件需要在正确的线程中延迟执行 </p>
+
 </div>
 </div>
 <a id="a17fb73d59f1c0da3feddcbc78162a06b" name="a17fb73d59f1c0da3feddcbc78162a06b"></a>
@@ -429,7 +500,7 @@ Protected 属性</h2></td></tr>
           <td class="memname">bool GLWidget::gestureEvent </td>
           <td>(</td>
           <td class="paramtype">QGestureEvent *&#160;</td>
-          <td class="paramname"><em>event</em></td><td>)</td>
+          <td class="paramname"><em>qevent</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -439,6 +510,15 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>手势事件处理（如捏合缩放） </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">qevent</td><td>手势事件 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>是否处理了该事件 </dd></dl>
 
 </div>
 </div>
@@ -590,6 +670,8 @@ Protected 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>请求重绘 </p>
+
 </div>
 </div>
 <a id="a43dfdc9164dfacb939a173e725651fa9" name="a43dfdc9164dfacb939a173e725651fa9"></a>
@@ -615,6 +697,14 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>键盘按下事件处理 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>键盘事件 </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -642,6 +732,14 @@ Protected 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>键盘释放事件处理 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>键盘事件 </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a0495fe7afc77e7782111f5816405abc0" name="a0495fe7afc77e7782111f5816405abc0"></a>
@@ -668,6 +766,14 @@ Protected 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>鼠标双击事件处理 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>鼠标事件 </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a9043bac13d6f0a5307ea5c7f9b3caa50" name="a9043bac13d6f0a5307ea5c7f9b3caa50"></a>
@@ -693,6 +799,14 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>鼠标移动事件处理 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>鼠标事件 </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -772,6 +886,14 @@ Protected 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>窗口移动事件处理 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>移动事件 </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="ad1be0822cd1411f3318c4c07950ff626" name="ad1be0822cd1411f3318c4c07950ff626"></a>
@@ -796,6 +918,8 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>处理延迟事件队列 用于在多线程环境中安全处理某些需要在主线程中执行的事件 </p>
 
 </div>
 </div>
@@ -822,6 +946,14 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>窗口大小改变事件处理 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>大小改变事件 </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -911,6 +1043,14 @@ Protected 属性</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>设置键盘修饰键状态（Shift、Ctrl、Alt等） </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">event</td><td>Qt输入事件 </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="a4c3c5f4fcf68d85dd7739d581ff78621" name="a4c3c5f4fcf68d85dd7739d581ff78621"></a>
@@ -946,6 +1086,14 @@ Protected 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>启用或禁用触摸事件（如缩放手势） </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">e</td><td>是否启用 </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

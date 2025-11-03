@@ -26,6 +26,7 @@ var NAVTREE =
 [
   [ "数字地图脚手架库", "index.html", [
     [ "数字地图脚手架库 (API 文档)", "index.html", null ],
+    [ "弃用列表", "deprecated.html", null ],
     [ "Topics", "topics.html", "topics" ],
     [ "命名空间", "namespaces.html", [
       [ "命名空间列表", "namespaces.html", "namespaces_dup" ],

@@ -95,6 +95,9 @@ $(document).ready(function(){initNavTree('GraphicsWindowQt_8h.html',''); initRes
   <div class="headertitle"><div class="title">GraphicsWindowQt.h 文件参考</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>OSG图形窗口的Qt实现头文件  
+<a href="#details">更多...</a></p>
 <div class="textblock"><code>#include &lt;osgViewer/GraphicsWindow&gt;</code><br />
 <code>#include &lt;QtCore/QMutex&gt;</code><br />
 <code>#include &lt;QtGui/QtEvents&gt;</code><br />
@@ -108,10 +111,13 @@ $(document).ready(function(){initNavTree('GraphicsWindowQt_8h.html',''); initRes
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 类</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GLWidget.html">osgQt::GLWidget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GLWidget类：基于QGLWidget的OpenGL Widget  <a href="classosgQt_1_1GLWidget.html#details">更多...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GraphicsWindowQt.html">osgQt::GraphicsWindowQt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GraphicsWindowQt类：OSG图形窗口的Qt实现  <a href="classosgQt_1_1GraphicsWindowQt.html#details">更多...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structosgQt_1_1GraphicsWindowQt_1_1WindowData.html">osgQt::GraphicsWindowQt::WindowData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">WindowData结构体：用于传递窗口数据  <a href="structosgQt_1_1GraphicsWindowQt_1_1WindowData.html#details">更多...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -131,9 +137,16 @@ $(document).ready(function(){initNavTree('GraphicsWindowQt_8h.html',''); initRes
 <tr class="memitem:a30c127c81c6fdf6fc6b4b01d44348565" id="r_a30c127c81c6fdf6fc6b4b01d44348565"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceosgQt.html#a30c127c81c6fdf6fc6b4b01d44348565">osgQt::initQtWindowingSystem</a> ()</td></tr>
 <tr class="separator:a30c127c81c6fdf6fc6b4b01d44348565"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02fc1b09a3965c4f55fa10ca364a311f" id="r_a02fc1b09a3965c4f55fa10ca364a311f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceosgQt.html#a02fc1b09a3965c4f55fa10ca364a311f">osgQt::setViewer</a> (osgViewer::ViewerBase *viewer)</td></tr>
+<tr class="memdesc:a02fc1b09a3965c4f55fa10ca364a311f"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置OSG查看器  <br /></td></tr>
 <tr class="separator:a02fc1b09a3965c4f55fa10ca364a311f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">宏定义说明</h2>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>OSG图形窗口的Qt实现头文件 </p>
+<p>功能：提供基于Qt的OpenGL图形窗口，集成OSG场景渲染到Qt应用程序中 主要类：</p><ul>
+<li>GLWidget: 基于QGLWidget的OpenGL Widget，处理Qt事件并转发到OSG</li>
+<li>GraphicsWindowQt: OSG图形窗口的Qt实现，管理窗口生命周期和渲染 </li>
+</ul>
+</div><h2 class="groupheader">宏定义说明</h2>
 <a id="a047bec91ee5d13a6044558e45d63b416" name="a047bec91ee5d13a6044558e45d63b416"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a047bec91ee5d13a6044558e45d63b416">&#9670;&#160;</a></span>OSGVIEWER_GRAPHICSWINDOWQT</h2>
 

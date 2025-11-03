@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['添加新交互功能_0',['添加新交互功能',['../index.html#autotoc_md18',1,'']]],
-  ['添加新实体类型_1',['添加新实体类型',['../index.html#autotoc_md17',1,'']]]
+  ['模块分组（doxygen_20groups）_0',['模块分组（Doxygen Groups）',['../index.html#autotoc_md4',1,'']]]
 ];

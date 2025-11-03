@@ -95,6 +95,9 @@ $(document).ready(function(){initNavTree('classosgQt_1_1QWidgetImage.html',''); 
 </div><!--header-->
 <div class="contents">
 
+<p>QWidgetImage类：将Qt Widget渲染为OSG Image  
+ <a href="classosgQt_1_1QWidgetImage.html#details">更多...</a></p>
+
 <p><code>#include &lt;<a class="el" href="QWidgetImage_8h_source.html">QWidgetImage.h</a>&gt;</code></p>
 <div class="dynheader">
 类 osgQt::QWidgetImage 继承关系图:</div>
@@ -106,6 +109,7 @@ $(document).ready(function(){initNavTree('classosgQt_1_1QWidgetImage.html',''); 
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
 <tr class="memitem:a8aa5e54dced52ffd5605fe6f8eab73d4" id="r_a8aa5e54dced52ffd5605fe6f8eab73d4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#a8aa5e54dced52ffd5605fe6f8eab73d4">QWidgetImage</a> (QWidget *widget=0)</td></tr>
+<tr class="memdesc:a8aa5e54dced52ffd5605fe6f8eab73d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数  <br /></td></tr>
 <tr class="separator:a8aa5e54dced52ffd5605fe6f8eab73d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cdb83066b7a866e7304254db805b1d9" id="r_a7cdb83066b7a866e7304254db805b1d9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#a7cdb83066b7a866e7304254db805b1d9">~QWidgetImage</a> (void)</td></tr>
 <tr class="separator:a7cdb83066b7a866e7304254db805b1d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,18 +122,25 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:ac41c05ffe90346a9e6676c7fba6fc96f" id="r_ac41c05ffe90346a9e6676c7fba6fc96f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#ac41c05ffe90346a9e6676c7fba6fc96f">update</a> (osg::NodeVisitor *)</td></tr>
 <tr class="separator:ac41c05ffe90346a9e6676c7fba6fc96f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af97249b2f28a0e06c8d754dcdc836fc2" id="r_af97249b2f28a0e06c8d754dcdc836fc2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#af97249b2f28a0e06c8d754dcdc836fc2">clearWriteBuffer</a> ()</td></tr>
+<tr class="memdesc:af97249b2f28a0e06c8d754dcdc836fc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空写缓冲区  <br /></td></tr>
 <tr class="separator:af97249b2f28a0e06c8d754dcdc836fc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1abc56df060adf6f218823d8b328c73e" id="r_a1abc56df060adf6f218823d8b328c73e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#a1abc56df060adf6f218823d8b328c73e">render</a> ()</td></tr>
+<tr class="memdesc:a1abc56df060adf6f218823d8b328c73e"><td class="mdescLeft">&#160;</td><td class="mdescRight">渲染widget到图像  <br /></td></tr>
 <tr class="separator:a1abc56df060adf6f218823d8b328c73e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33c874aee699a97c726b2ab3bf726fe4" id="r_a33c874aee699a97c726b2ab3bf726fe4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#a33c874aee699a97c726b2ab3bf726fe4">scaleImage</a> (int s, int t, int r, GLenum newDataType)</td></tr>
+<tr class="memdesc:a33c874aee699a97c726b2ab3bf726fe4"><td class="mdescLeft">&#160;</td><td class="mdescRight">缩放图像  <br /></td></tr>
 <tr class="separator:a33c874aee699a97c726b2ab3bf726fe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b0d4138e73715571dc02d0be213a03c" id="r_a6b0d4138e73715571dc02d0be213a03c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#a6b0d4138e73715571dc02d0be213a03c">sendFocusHint</a> (bool focus)</td></tr>
+<tr class="memdesc:a6b0d4138e73715571dc02d0be213a03c"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送焦点提示  <br /></td></tr>
 <tr class="separator:a6b0d4138e73715571dc02d0be213a03c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2e55c439757f609b0e46d3dd333ffae" id="r_ad2e55c439757f609b0e46d3dd333ffae"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#ad2e55c439757f609b0e46d3dd333ffae">sendPointerEvent</a> (int x, int y, int buttonMask)</td></tr>
+<tr class="memdesc:ad2e55c439757f609b0e46d3dd333ffae"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送指针事件  <br /></td></tr>
 <tr class="separator:ad2e55c439757f609b0e46d3dd333ffae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c1296a0e6a0775f84b84034a3ea4a83" id="r_a9c1296a0e6a0775f84b84034a3ea4a83"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#a9c1296a0e6a0775f84b84034a3ea4a83">sendKeyEvent</a> (int key, bool keyDown)</td></tr>
+<tr class="memdesc:a9c1296a0e6a0775f84b84034a3ea4a83"><td class="mdescLeft">&#160;</td><td class="mdescRight">发送键盘事件  <br /></td></tr>
 <tr class="separator:a9c1296a0e6a0775f84b84034a3ea4a83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af132c724dd210c8621fcd52da9754b5d" id="r_af132c724dd210c8621fcd52da9754b5d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#af132c724dd210c8621fcd52da9754b5d">setFrameLastRendered</a> (const osg::FrameStamp *frameStamp)</td></tr>
+<tr class="memdesc:af132c724dd210c8621fcd52da9754b5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置最后渲染的帧  <br /></td></tr>
 <tr class="separator:af132c724dd210c8621fcd52da9754b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
@@ -139,7 +150,10 @@ Protected 属性</h2></td></tr>
 <tr class="memitem:a8ec34ae7ded0f171444e25c90d85cc65" id="r_a8ec34ae7ded0f171444e25c90d85cc65"><td class="memItemLeft" align="right" valign="top">QPointer&lt; QWidget &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QWidgetImage.html#a8ec34ae7ded0f171444e25c90d85cc65">_widget</a></td></tr>
 <tr class="separator:a8ec34ae7ded0f171444e25c90d85cc65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">构造及析构函数说明</h2>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>QWidgetImage类：将Qt Widget渲染为OSG Image </p>
+<p>继承自osg::Image，提供在OSG场景中渲染Qt Widget的能力 </p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
 <a id="a8aa5e54dced52ffd5605fe6f8eab73d4" name="a8aa5e54dced52ffd5605fe6f8eab73d4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8aa5e54dced52ffd5605fe6f8eab73d4">&#9670;&#160;</a></span>QWidgetImage()</h2>
 
@@ -155,6 +169,15 @@ Protected 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>构造函数 </p>
+<p>QWidgetImage构造函数</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">widget</td><td>要渲染的Qt Widget </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -191,6 +214,8 @@ Protected 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>清空写缓冲区 </p>
 
 </div>
 </div>
@@ -258,6 +283,9 @@ Protected 属性</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>渲染widget到图像 </p>
+<p>如果适配器需要渲染，则调用渲染函数 </p>
 
 </div>
 </div>
@@ -331,7 +359,18 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Overridden scaleImage used to catch cases where the image is fullscreen and the window is resized. </p>
+
+<p>缩放图像 </p>
+<p>Overridden scaleImage used to catch cases where the image is fullscreen and the window is resized.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>宽度 </td></tr>
+    <tr><td class="paramname">t</td><td>高度 </td></tr>
+    <tr><td class="paramname">r</td><td>深度（未使用） </td></tr>
+    <tr><td class="paramname">newDataType</td><td>数据类型（未使用） </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -358,6 +397,15 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>发送焦点提示 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">focus</td><td>是否有焦点 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>是否成功 </dd></dl>
 
 </div>
 </div>
@@ -394,6 +442,16 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>发送键盘事件 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>按键码 </td></tr>
+    <tr><td class="paramname">keyDown</td><td>是否按下 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>是否成功 </dd></dl>
 
 </div>
 </div>
@@ -437,6 +495,17 @@ Protected 属性</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>发送指针事件 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>X坐标 </td></tr>
+    <tr><td class="paramname">y</td><td>Y坐标 </td></tr>
+    <tr><td class="paramname">buttonMask</td><td>按钮掩码 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>是否成功 </dd></dl>
+
 </div>
 </div>
 <a id="af132c724dd210c8621fcd52da9754b5d" name="af132c724dd210c8621fcd52da9754b5d"></a>
@@ -462,6 +531,14 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>设置最后渲染的帧 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frameStamp</td><td>帧戳 </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
