@@ -205,9 +205,6 @@ void MapStateManager::updateMouseGeoPosition(QPoint mousePos)
 
 osgEarth::Util::EarthManipulator* MapStateManager::getEarthManipulator() const
 {
-    if (!viewer_ || !viewer_->getCameraManipulator()) {
-        return nullptr;
-    }
-    
-    return dynamic_cast<osgEarth::Util::EarthManipulator*>(viewer_->getCameraManipulator());
+    // 使用工具函数统一获取EarthManipulator
+    return GeoUtils::getEarthManipulator(viewer_);
 }

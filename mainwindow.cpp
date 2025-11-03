@@ -387,25 +387,16 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 void MainWindow::loadEntityConfig()
 {
     QString configPath = "E:/osgqtlib/osgEarthmy_osgb/images_config.json";
-    QFile file(configPath);
     
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "无法打开实体配置文件:" << configPath;
+    // 使用工具函数加载JSON配置
+    QString errorMsg;
+    QJsonObject config = GeoUtils::loadJsonFile(configPath, &errorMsg);
+    
+    if (config.isEmpty()) {
+        qDebug() << "实体配置加载失败:" << errorMsg;
         return;
     }
     
-    QByteArray data = file.readAll();
-    file.close();
-    
-    QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
-    
-    if (error.error != QJsonParseError::NoError) {
-        qDebug() << "JSON解析错误:" << error.errorString();
-        return;
-    }
-    
-    QJsonObject config = doc.object();
     if (entityManager_) {
         entityManager_->setEntityConfig(config);
         qDebug() << "实体配置加载完成";
@@ -581,7 +572,7 @@ void MainWindow::dropEvent(QDropEvent *event)
     if (entityManager_->addEntityFromDrag(text, longitude, latitude, altitude)) {
         
         // 调整相机到实体位置，使用鼠标实际位置
-        osgEarth::Util::EarthManipulator* em = dynamic_cast<osgEarth::Util::EarthManipulator*>(viewer_->getCameraManipulator());
+        osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer_.get());
         if (em) {
             // 使用鼠标实际位置作为相机视点
             osgEarth::Viewpoint vp("Entity", longitude, latitude, 0.0, 0.0, -90.0, 1000000.0);

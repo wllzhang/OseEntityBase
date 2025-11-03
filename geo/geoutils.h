@@ -2,8 +2,11 @@
 #define GEOUTILS_H
 
 #include <QPoint>
+#include <QString>
+#include <QJsonObject>
 #include <osgViewer/Viewer>
 #include <osgEarth/MapNode>
+#include <osgEarthUtil/EarthManipulator>
 #include <osg/Vec3d>
 
 /**
@@ -54,6 +57,68 @@ public:
         double latitude,
         double altitude,
         osgEarth::AltitudeMode altMode = osgEarth::ALTMODE_ABSOLUTE);
+    
+    /**
+     * @brief 加载JSON配置文件
+     * 
+     * 统一处理JSON文件的读取和解析，提供统一的错误处理。
+     * 
+     * @param filePath 文件路径
+     * @param errorMessage 输出错误信息（如果失败）
+     * @return 成功返回QJsonObject，失败返回空的QJsonObject（可通过isEmpty()检查）
+     */
+    static QJsonObject loadJsonFile(const QString& filePath, QString* errorMessage = nullptr);
+    
+    /**
+     * @brief 计算两点间的欧几里得距离（2D，经纬度）
+     * 
+     * 用于简单的距离计算，适用于小范围区域。
+     * 
+     * @param lon1 点1经度
+     * @param lat1 点1纬度
+     * @param lon2 点2经度
+     * @param lat2 点2纬度
+     * @return 距离（度）
+     */
+    static double calculateDistance2D(double lon1, double lat1, double lon2, double lat2);
+    
+    /**
+     * @brief 计算两点间的欧几里得距离（3D，包含高度）
+     * 
+     * @param lon1 点1经度
+     * @param lat1 点1纬度
+     * @param alt1 点1高度
+     * @param lon2 点2经度
+     * @param lat2 点2纬度
+     * @param alt2 点2高度
+     * @return 距离（度，高度单位为米）
+     */
+    static double calculateDistance3D(double lon1, double lat1, double alt1,
+                                      double lon2, double lat2, double alt2);
+    
+    /**
+     * @brief 计算两点间的地理距离（大圆弧距离，Haversine公式）
+     * 
+     * 使用Haversine公式计算地球表面两点间的最短距离（大圆弧）。
+     * 比简单的欧几里得距离更准确，适用于任意距离。
+     * 
+     * @param lon1 点1经度（度）
+     * @param lat1 点1纬度（度）
+     * @param lon2 点2经度（度）
+     * @param lat2 点2纬度（度）
+     * @return 距离（米）
+     */
+    static double calculateGeographicDistance(double lon1, double lat1, double lon2, double lat2);
+    
+    /**
+     * @brief 获取Viewer的EarthManipulator
+     * 
+     * 统一获取并转换EarthManipulator，提供统一的空指针检查。
+     * 
+     * @param viewer OSG Viewer指针
+     * @return EarthManipulator指针，失败返回nullptr
+     */
+    static osgEarth::Util::EarthManipulator* getEarthManipulator(osgViewer::Viewer* viewer);
 };
 
 #endif // GEOUTILS_H

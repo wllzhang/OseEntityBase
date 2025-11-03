@@ -1,9 +1,17 @@
 #include "geoutils.h"
 #include <QDebug>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonParseError>
 #include <osg/Viewport>
 #include <osgUtil/LineSegmentIntersector>
 #include <osgEarth/GeoData>
 #include <osgEarth/SpatialReference>
+#include <cmath>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 bool GeoUtils::screenToGeoCoordinates(
     osgViewer::Viewer* viewer,
@@ -93,3 +101,93 @@ osg::Vec3d GeoUtils::geoToWorldCoordinates(
     }
 }
 
+QJsonObject GeoUtils::loadJsonFile(const QString& filePath, QString* errorMessage)
+{
+    QJsonObject result;
+    
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QString error = QString("无法打开文件: %1").arg(filePath);
+        if (errorMessage) {
+            *errorMessage = error;
+        } else {
+            qDebug() << "GeoUtils::loadJsonFile:" << error;
+        }
+        return result; // 返回空的QJsonObject
+    }
+    
+    QByteArray data = file.readAll();
+    file.close();
+    
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &parseError);
+    
+    if (parseError.error != QJsonParseError::NoError) {
+        QString error = QString("JSON解析错误: %1").arg(parseError.errorString());
+        if (errorMessage) {
+            *errorMessage = error;
+        } else {
+            qDebug() << "GeoUtils::loadJsonFile:" << error;
+        }
+        return result; // 返回空的QJsonObject
+    }
+    
+    result = doc.object();
+    return result;
+}
+
+double GeoUtils::calculateDistance2D(double lon1, double lat1, double lon2, double lat2)
+{
+    double dx = lon2 - lon1;
+    double dy = lat2 - lat1;
+    return sqrt(dx * dx + dy * dy);
+}
+
+double GeoUtils::calculateDistance3D(double lon1, double lat1, double alt1,
+                                      double lon2, double lat2, double alt2)
+{
+    double dx = lon2 - lon1;
+    double dy = lat2 - lat1;
+    double dz = alt2 - alt1;
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+double GeoUtils::calculateGeographicDistance(double lon1, double lat1, double lon2, double lat2)
+{
+    // Haversine公式计算大圆弧距离
+    const double R = 6378137.0; // 地球半径（米）
+    
+    double dLat = (lat2 - lat1) * M_PI / 180.0;
+    double dLon = (lon2 - lon1) * M_PI / 180.0;
+    
+    double a = sin(dLat / 2.0) * sin(dLat / 2.0) +
+               cos(lat1 * M_PI / 180.0) * cos(lat2 * M_PI / 180.0) *
+               sin(dLon / 2.0) * sin(dLon / 2.0);
+    
+    double c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a));
+    
+    return R * c; // 返回米
+}
+
+osgEarth::Util::EarthManipulator* GeoUtils::getEarthManipulator(osgViewer::Viewer* viewer)
+{
+    if (!viewer) {
+        qDebug() << "GeoUtils::getEarthManipulator: Viewer为空";
+        return nullptr;
+    }
+    
+    osgGA::CameraManipulator* manipulator = viewer->getCameraManipulator();
+    if (!manipulator) {
+        qDebug() << "GeoUtils::getEarthManipulator: CameraManipulator为空";
+        return nullptr;
+    }
+    
+    osgEarth::Util::EarthManipulator* em = 
+        dynamic_cast<osgEarth::Util::EarthManipulator*>(manipulator);
+    
+    if (!em) {
+        qDebug() << "GeoUtils::getEarthManipulator: CameraManipulator不是EarthManipulator类型";
+    }
+    
+    return em;
+}

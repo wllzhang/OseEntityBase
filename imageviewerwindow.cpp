@@ -1,4 +1,5 @@
 #include "imageviewerwindow.h"
+#include "geo/geoutils.h"
 #include <QApplication>
 #include <QDir>
 #include <QDebug>
@@ -84,36 +85,18 @@ void ImageViewerWindow::loadImageConfig()
 {
     // 直接使用绝对路径
     QString configPath = "E:/osgqtlib/osgEarthmy_osgb/images_config.json";
-    QFileInfo configFile(configPath);
     
-    if (!configFile.exists()) {
-        qDebug() << "配置文件不存在:" << configPath;
+    // 使用工具函数加载JSON配置
+    QString errorMsg;
+    config_ = GeoUtils::loadJsonFile(configPath, &errorMsg);
+    
+    if (config_.isEmpty()) {
+        qDebug() << "配置文件加载失败:" << errorMsg;
         return;
     }
     
-    qDebug() << "找到配置文件:" << configPath;
-    
-    QFile file(configPath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "无法打开配置文件:" << configPath;
-        return;
-    }
-    
-    QByteArray data = file.readAll();
-    file.close();
-    
-    QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
-    
-    if (error.error != QJsonParseError::NoError) {
-        qDebug() << "JSON解析错误:" << error.errorString();
-        return;
-    }
-    
-    config_ = doc.object();
     imageDirectory_ = config_["image_directory"].toString();
-    
-    qDebug() << "图片目录:" << imageDirectory_;
+    qDebug() << "配置文件加载成功，图片目录:" << imageDirectory_;
 }
 
 void ImageViewerWindow::populateImageList()
