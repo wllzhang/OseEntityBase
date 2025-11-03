@@ -182,7 +182,7 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 <div class="line">    QJsonObject{},          <span class="comment">// 属性</span></div>
 <div class="line">    116.4, 39.9, 1000.0     <span class="comment">// 经度、纬度、高度</span></div>
 <div class="line">);</div>
-<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:44</div></div>
+<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:52</div></div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md14"></a>
 3) 连接交互信号</h3>
 <div class="fragment"><div class="line">connect(entityManager, &amp;<a class="code hl_signal" href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">GeoEntityManager::entitySelected</a>, <span class="keyword">this</span>, [](<a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* e){</div>
@@ -193,7 +193,7 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 <div class="line">});</div>
 <div class="ttc" id="aclassGeoEntityManager_html_a40b02c62296b712b7c154e91a04bd52e"><div class="ttname"><a href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">GeoEntityManager::entitySelected</a></div><div class="ttdeci">void entitySelected(GeoEntity *entity)</div><div class="ttdoc">实体选中信号</div></div>
 <div class="ttc" id="aclassGeoEntityManager_html_af084398c6a492baa68a1cce1a1ce936a"><div class="ttname"><a href="classGeoEntityManager.html#af084398c6a492baa68a1cce1a1ce936a">GeoEntityManager::entityRightClicked</a></div><div class="ttdeci">void entityRightClicked(GeoEntity *entity, QPoint screenPos)</div><div class="ttdoc">实体右键点击信号</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a245b06bf476b8d9dbee5d4f0d074a7eb"><div class="ttname"><a href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">GeoEntity::getName</a></div><div class="ttdeci">QString getName() const</div><div class="ttdef"><b>Definition</b> geoentity.h:54</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a245b06bf476b8d9dbee5d4f0d074a7eb"><div class="ttname"><a href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">GeoEntity::getName</a></div><div class="ttdeci">QString getName() const</div><div class="ttdef"><b>Definition</b> geoentity.h:62</div></div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md15"></a>
 4) 地图状态监控</h3>
 <div class="fragment"><div class="line"><span class="keyword">auto</span>* mapStateManager = <span class="keyword">new</span> <a class="code hl_class" href="classMapStateManager.html">MapStateManager</a>(viewer, <span class="keyword">this</span>);</div>

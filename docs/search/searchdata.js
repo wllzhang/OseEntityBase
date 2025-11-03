@@ -1,16 +1,16 @@
 var indexSectionsWithContent =
 {
   0: "1234_abcdefghiklmnopqrstuvw~主创地实弃快扩数文架核模添版生联许连",
-  1: "ghimqw",
+  1: "gimqw",
   2: "ou",
   3: "gimqw",
   4: "abcdefghiklmopqrstuvw~",
-  5: "_aceghilmnprstuvw",
+  5: "_aeghlmnprsvw",
   6: "k",
   7: "m",
   8: "m",
   9: "g",
-  10: "gmoq",
+  10: "moq",
   11: "egm",
   12: "a弃数文"
 };

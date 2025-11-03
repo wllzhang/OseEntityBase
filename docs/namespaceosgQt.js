@@ -2,8 +2,6 @@ var namespaceosgQt =
 [
     [ "GLWidget", "classosgQt_1_1GLWidget.html", "classosgQt_1_1GLWidget" ],
     [ "GraphicsWindowQt", "classosgQt_1_1GraphicsWindowQt.html", "classosgQt_1_1GraphicsWindowQt" ],
-    [ "MyQKeyEvent", "classosgQt_1_1MyQKeyEvent.html", "classosgQt_1_1MyQKeyEvent" ],
-    [ "MyQPointerEvent", "structosgQt_1_1MyQPointerEvent.html", "structosgQt_1_1MyQPointerEvent" ],
     [ "QGraphicsViewAdapter", "classosgQt_1_1QGraphicsViewAdapter.html", "classosgQt_1_1QGraphicsViewAdapter" ],
     [ "QWidgetImage", "classosgQt_1_1QWidgetImage.html", "classosgQt_1_1QWidgetImage" ],
     [ "getOrCreateQApplication", "namespaceosgQt.html#ad187fe5bf48d6b19496ef9dcd11e85cd", null ],

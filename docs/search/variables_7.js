@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['labelgeode_5f_0',['labelGeode_',['../classWaypointEntity.html#a809fca7ec325d016ea3b9372b0b98523',1,'WaypointEntity']]],
-  ['labelstring_5f_1',['labelString_',['../classWaypointEntity.html#a0ba527dde050b7ca0ab808aa6145f460',1,'WaypointEntity']]],
-  ['labeltext_5f_2',['labelText_',['../classWaypointEntity.html#aa1dc32547fd209c2af4c5a8aedd38c24',1,'WaypointEntity']]],
-  ['latitude_5f_3',['latitude_',['../classGeoEntity.html#a99c192552234098b00e3293d97ca9f7c',1,'GeoEntity']]],
-  ['longitude_5f_4',['longitude_',['../classGeoEntity.html#a1b4c07cd86aff844e0a6f136f84cabc3',1,'GeoEntity']]]
+  ['name_0',['name',['../structGeoEntityManager_1_1WaypointGroupInfo.html#a9cb9cf58d1b511c7434272343c985566',1,'GeoEntityManager::WaypointGroupInfo']]],
+  ['node_5f_1',['node_',['../classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a',1,'GeoEntity']]]
 ];

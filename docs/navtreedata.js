@@ -52,8 +52,6 @@ var NAVTREE =
       [ "文件列表", "files.html", "files_dup" ],
       [ "文件成员", "globals.html", [
         [ "全部", "globals.html", null ],
-        [ "函数", "globals_func.html", null ],
-        [ "变量", "globals_vars.html", null ],
         [ "枚举", "globals_enum.html", null ],
         [ "枚举值", "globals_eval.html", null ],
         [ "宏定义", "globals_defs.html", null ]
@@ -66,8 +64,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "GraphicsWindowQt_8cpp.html",
-"classosgQt_1_1GLWidget.html#a0892712018e52967c0a6c1e70e108ac1",
-"classosgQt_1_1QGraphicsViewAdapter.html#af3263255b1071c2336ee4be89ad38ca5"
+"classosgQt_1_1GraphicsWindowQt.html#a35fb15a9cd0678f0f0bd158edd3ad6b8",
+"geoutils_8cpp.html"
 ];
 
 var SYNCONMSG = '点击 关闭 面板同步';

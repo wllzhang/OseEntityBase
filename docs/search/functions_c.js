@@ -11,6 +11,5 @@ var searchData=
   ['onupdated_8',['onupdated',['../classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe',1,'GeoEntity::onUpdated()'],['../classWaypointEntity.html#af5f0fd1a1c3f529d94577513cc7a8940',1,'WaypointEntity::onUpdated()']]],
   ['onviewpositionchanged_9',['onViewPositionChanged',['../classMainWindow.html#a89643d19b183d4e23be3cc2c903b1c46',1,'MainWindow']]],
   ['onwheelevent_10',['onWheelEvent',['../classMapStateManager.html#ad62d75b35803b99c4291dc7eefc482c5',1,'MapStateManager']]],
-  ['openimageviewer_11',['openImageViewer',['../classMainWindow.html#a8efc3ff18fb07f911ddc05b033ab3f30',1,'MainWindow']]],
-  ['operator_3d_12',['operator=',['../classQtWindowingSystem.html#ab55feca46d94623b0073378713272de3',1,'QtWindowingSystem']]]
+  ['openimageviewer_11',['openImageViewer',['../classMainWindow.html#a8efc3ff18fb07f911ddc05b033ab3f30',1,'MainWindow']]]
 ];

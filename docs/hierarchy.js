@@ -8,10 +8,6 @@ var hierarchy =
       [ "osgQt::QWidgetImage", "classosgQt_1_1QWidgetImage.html", null ]
     ] ],
     [ "MapStateInfo", "structMapStateInfo.html", null ],
-    [ "QEvent", null, [
-      [ "osgQt::MyQKeyEvent", "classosgQt_1_1MyQKeyEvent.html", null ],
-      [ "osgQt::MyQPointerEvent", "structosgQt_1_1MyQPointerEvent.html", null ]
-    ] ],
     [ "QGLWidget", null, [
       [ "osgQt::GLWidget", "classosgQt_1_1GLWidget.html", null ]
     ] ],
@@ -24,16 +20,11 @@ var hierarchy =
         [ "WaypointEntity", "classWaypointEntity.html", null ]
       ] ],
       [ "GeoEntityManager", "classGeoEntityManager.html", null ],
-      [ "HeartBeat", "classHeartBeat.html", null ],
       [ "MapStateManager", "classMapStateManager.html", null ],
       [ "osgQt::QGraphicsViewAdapter", "classosgQt_1_1QGraphicsViewAdapter.html", null ]
     ] ],
-    [ "QtKeyboardMap", "classQtKeyboardMap.html", null ],
     [ "osg::Referenced", null, [
       [ "osgQt::GraphicsWindowQt::WindowData", "structosgQt_1_1GraphicsWindowQt_1_1WindowData.html", null ]
     ] ],
-    [ "GeoEntityManager::WaypointGroupInfo", "structGeoEntityManager_1_1WaypointGroupInfo.html", null ],
-    [ "osg::GraphicsContext::WindowingSystemInterface", null, [
-      [ "QtWindowingSystem", "classQtWindowingSystem.html", null ]
-    ] ]
+    [ "GeoEntityManager::WaypointGroupInfo", "structGeoEntityManager_1_1WaypointGroupInfo.html", null ]
 ];

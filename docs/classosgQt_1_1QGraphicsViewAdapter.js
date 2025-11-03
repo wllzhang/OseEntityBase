@@ -14,8 +14,6 @@ var classosgQt_1_1QGraphicsViewAdapter =
     [ "handleKeyEvent", "classosgQt_1_1QGraphicsViewAdapter.html#a3c640ee679ab60b0b418a9086e50b11f", null ],
     [ "handlePointerEvent", "classosgQt_1_1QGraphicsViewAdapter.html#a42d951bcbe6ead77b370aaec934e41cb", null ],
     [ "render", "classosgQt_1_1QGraphicsViewAdapter.html#a7f2ada6c7a591084aa34d958696572d1", null ],
-    [ "repaintRequestedSlot", "classosgQt_1_1QGraphicsViewAdapter.html#a4a2e2c19e37bc79300499f427bb32f85", null ],
-    [ "repaintRequestedSlot", "classosgQt_1_1QGraphicsViewAdapter.html#aa14db2770cf517b2e607a980c40c3192", null ],
     [ "requiresRendering", "classosgQt_1_1QGraphicsViewAdapter.html#a86cd883e4c490271f0a0642329c93382", null ],
     [ "resize", "classosgQt_1_1QGraphicsViewAdapter.html#af87cf32ea411d191c1b3da7ffd59e17e", null ],
     [ "sendKeyEvent", "classosgQt_1_1QGraphicsViewAdapter.html#ab3cbd41358654cae246373679b9df377", null ],

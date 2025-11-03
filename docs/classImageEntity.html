@@ -90,8 +90,6 @@ $(document).ready(function(){initNavTree('classImageEntity.html',''); initResiza
   <div class="summary">
 <a href="#pub-methods">Public 成员函数</a> &#124;
 <a href="#pro-methods">Protected 成员函数</a> &#124;
-<a href="#pri-methods">Private 成员函数</a> &#124;
-<a href="#pri-attribs">Private 属性</a> &#124;
 <a href="classImageEntity-members.html">所有成员列表</a>  </div>
   <div class="headertitle"><div class="title">ImageEntity类 参考<div class="ingroups"><a class="el" href="group__geo__entities.html">Geo Entities</a></div></div></div>
 </div><!--header-->
@@ -193,21 +191,6 @@ Protected 成员函数</h2></td></tr>
 <tr class="memdesc:a5657253025363aaaf5c01e53d01a7908 inherit pro_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建并初始化PositionAttitudeTransform节点  <br /></td></tr>
 <tr class="separator:a5657253025363aaaf5c01e53d01a7908 inherit pro_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
-Private 成员函数</h2></td></tr>
-<tr class="memitem:aea0615044d453806891083f270246b2d" id="r_aea0615044d453806891083f270246b2d"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#aea0615044d453806891083f270246b2d">createNode</a> () override</td></tr>
-<tr class="memdesc:aea0615044d453806891083f270246b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建图片实体的渲染节点  <br /></td></tr>
-<tr class="separator:aea0615044d453806891083f270246b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae57b97cf72be6ddce8eb6e575ee9350d" id="r_ae57b97cf72be6ddce8eb6e575ee9350d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#ae57b97cf72be6ddce8eb6e575ee9350d">addHighlightBorder</a> (osg::PositionAttitudeTransform *pat)</td></tr>
-<tr class="separator:ae57b97cf72be6ddce8eb6e575ee9350d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
-Private 属性</h2></td></tr>
-<tr class="memitem:aee69cb223fcf5df638c301f4678ce0ae" id="r_aee69cb223fcf5df638c301f4678ce0ae"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#aee69cb223fcf5df638c301f4678ce0ae">imagePath_</a></td></tr>
-<tr class="separator:aee69cb223fcf5df638c301f4678ce0ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaf4a4ce991d6347ee11195b1f7f8905" id="r_aaaf4a4ce991d6347ee11195b1f7f8905"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classImageEntity.html#aaaf4a4ce991d6347ee11195b1f7f8905">highlightNode_</a></td></tr>
-<tr class="separator:aaaf4a4ce991d6347ee11195b1f7f8905"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 额外继承的成员函数</h2></td></tr>
 <tr class="inherit_header signals_classGeoEntity"><td colspan="2" onclick="javascript:toggleInherit('signals_classGeoEntity')"><img src="closed.png" alt="-"/>&#160;信号 继承自 <a class="el" href="classGeoEntity.html">GeoEntity</a></td></tr>
@@ -247,8 +230,13 @@ Private 属性</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>图片实体类 </p>
-<p>基于图片的地理实体实现，支持从图片文件创建实体。 实体被选中时支持高亮边框显示。</p>
-<p>特性：</p><ul>
+<p>继承自GeoEntity，基于图片的地理实体实现，支持从图片文件创建实体。 实体被选中时支持高亮边框显示。</p>
+<p><b>继承关系：</b> </p><div class="fragment"><div class="line">QObject</div>
+<div class="line">  └─ <a class="code hl_class" href="classGeoEntity.html">GeoEntity</a></div>
+<div class="line">      └─ <a class="code hl_class" href="classImageEntity.html">ImageEntity</a></div>
+<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:52</div></div>
+<div class="ttc" id="aclassImageEntity_html"><div class="ttname"><a href="classImageEntity.html">ImageEntity</a></div><div class="ttdoc">图片实体类</div><div class="ttdef"><b>Definition</b> imageentity.h:30</div></div>
+</div><!-- fragment --><p>特性：</p><ul>
 <li>从图片文件加载和显示</li>
 <li>选中时显示红色边框高亮</li>
 <li>支持实体的位置、朝向、大小设置</li>
@@ -315,32 +303,6 @@ Private 属性</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">成员函数说明</h2>
-<a id="ae57b97cf72be6ddce8eb6e575ee9350d" name="ae57b97cf72be6ddce8eb6e575ee9350d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae57b97cf72be6ddce8eb6e575ee9350d">&#9670;&#160;</a></span>addHighlightBorder()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ImageEntity::addHighlightBorder </td>
-          <td>(</td>
-          <td class="paramtype">osg::PositionAttitudeTransform *&#160;</td>
-          <td class="paramname"><em>pat</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a9dd2098b688a64a5b256347c776a56bb" name="a9dd2098b688a64a5b256347c776a56bb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9dd2098b688a64a5b256347c776a56bb">&#9670;&#160;</a></span>cleanup()</h2>
 
@@ -375,45 +337,6 @@ Private 属性</h2></td></tr>
 
 </div>
 </div>
-<a id="aea0615044d453806891083f270246b2d" name="aea0615044d453806891083f270246b2d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea0615044d453806891083f270246b2d">&#9670;&#160;</a></span>createNode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">osg::ref_ptr&lt; osg::Node &gt; ImageEntity::createNode </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">private</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>创建图片实体的渲染节点 </p>
-<p>创建流程：</p><ol type="1">
-<li>检查并加载图片文件</li>
-<li>创建纹理对象并绑定图片</li>
-<li>使用基类 <a class="el" href="classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908" title="创建并初始化PositionAttitudeTransform节点">createPATNode()</a> 创建已初始化的 PAT 节点</li>
-<li>创建带纹理的四边形几何体（根据 size 属性确定大小）</li>
-<li>设置纹理坐标、法线和渲染状态</li>
-<li>将几何体添加到 PAT 节点</li>
-</ol>
-<dl class="section return"><dt>返回</dt><dd>返回包含图片几何体的 PAT 节点，失败返回 nullptr</dd></dl>
-<dl class="section note"><dt>注解</dt><dd>PAT 节点的位置和旋转已由 <a class="el" href="classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908" title="创建并初始化PositionAttitudeTransform节点">createPATNode()</a> 根据实体地理位置和航向角设置。 高亮边框节点将在选中时动态添加，不在 <a class="el" href="classImageEntity.html#aea0615044d453806891083f270246b2d" title="创建图片实体的渲染节点">createNode()</a> 中创建。 </dd></dl>
-
-<p>实现了 <a class="el" href="classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0">GeoEntity</a>.</p>
-
-</div>
-</div>
 <a id="ac989e34961165cf385b58ff05802a583" name="ac989e34961165cf385b58ff05802a583"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac989e34961165cf385b58ff05802a583">&#9670;&#160;</a></span>initialize()</h2>
 
@@ -438,7 +361,7 @@ Private 属性</h2></td></tr>
 </div><div class="memdoc">
 
 <p>初始化图片实体 </p>
-<p>使用基类默认实现，创建节点并设置初始状态。 图片的特定初始化逻辑（如加载图片、创建纹理、创建几何体）在 <a class="el" href="classImageEntity.html#aea0615044d453806891083f270246b2d" title="创建图片实体的渲染节点">createNode()</a> 中完成。</p>
+<p>使用基类默认实现，创建节点并设置初始状态。 图片的特定初始化逻辑（如加载图片、创建纹理、创建几何体）在 createNode() 中完成。</p>
 <dl class="section note"><dt>注解</dt><dd>初始化完成后会记录日志，便于调试。 </dd></dl>
 
 <p>重载 <a class="el" href="classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f">GeoEntity</a> .</p>
@@ -566,51 +489,6 @@ Private 属性</h2></td></tr>
 <p>使用基类默认实现更新节点变换（位置和旋转）。 图片实体没有需要额外更新的内容，所以直接使用基类实现。 </p>
 
 <p>重载 <a class="el" href="classGeoEntity.html#ad9348d4bdf3955e77482da960d334158">GeoEntity</a> .</p>
-
-</div>
-</div>
-<h2 class="groupheader">类成员变量说明</h2>
-<a id="aaaf4a4ce991d6347ee11195b1f7f8905" name="aaaf4a4ce991d6347ee11195b1f7f8905"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaaf4a4ce991d6347ee11195b1f7f8905">&#9670;&#160;</a></span>highlightNode_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">osg::ref_ptr&lt;osg::Node&gt; ImageEntity::highlightNode_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aee69cb223fcf5df638c301f4678ce0ae" name="aee69cb223fcf5df638c301f4678ce0ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee69cb223fcf5df638c301f4678ce0ae">&#9670;&#160;</a></span>imagePath_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">QString ImageEntity::imagePath_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>

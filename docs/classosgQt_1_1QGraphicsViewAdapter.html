@@ -92,7 +92,6 @@ $(document).ready(function(){initNavTree('classosgQt_1_1QGraphicsViewAdapter.htm
 <a href="#pro-types">Protected 类型</a> &#124;
 <a href="#pro-methods">Protected 成员函数</a> &#124;
 <a href="#pro-attribs">Protected 属性</a> &#124;
-<a href="#pri-slots">Private 槽</a> &#124;
 <a href="classosgQt_1_1QGraphicsViewAdapter-members.html">所有成员列表</a>  </div>
   <div class="headertitle"><div class="title">osgQt::QGraphicsViewAdapter类 参考</div></div>
 </div><!--header-->
@@ -216,15 +215,6 @@ Protected 属性</h2></td></tr>
 <tr class="separator:acdda79db0d04d06af0e5793b591b45e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18cc5faf82f1008bc777c1d46125950e" id="r_a18cc5faf82f1008bc777c1d46125950e"><td class="memItemLeft" align="right" valign="top">QImage&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QGraphicsViewAdapter.html#a18cc5faf82f1008bc777c1d46125950e">_qimages</a> [3]</td></tr>
 <tr class="separator:a18cc5faf82f1008bc777c1d46125950e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-slots" name="pri-slots"></a>
-Private 槽</h2></td></tr>
-<tr class="memitem:a4a2e2c19e37bc79300499f427bb32f85" id="r_a4a2e2c19e37bc79300499f427bb32f85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QGraphicsViewAdapter.html#a4a2e2c19e37bc79300499f427bb32f85">repaintRequestedSlot</a> (const QList&lt; QRectF &gt; &amp;regions)</td></tr>
-<tr class="memdesc:a4a2e2c19e37bc79300499f427bb32f85"><td class="mdescLeft">&#160;</td><td class="mdescRight">重绘请求槽函数（区域列表）  <br /></td></tr>
-<tr class="separator:a4a2e2c19e37bc79300499f427bb32f85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa14db2770cf517b2e607a980c40c3192" id="r_aa14db2770cf517b2e607a980c40c3192"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QGraphicsViewAdapter.html#aa14db2770cf517b2e607a980c40c3192">repaintRequestedSlot</a> (const QRectF &amp;region)</td></tr>
-<tr class="memdesc:aa14db2770cf517b2e607a980c40c3192"><td class="mdescLeft">&#160;</td><td class="mdescRight">重绘请求槽函数（单个区域）  <br /></td></tr>
-<tr class="separator:aa14db2770cf517b2e607a980c40c3192"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>QGraphicsViewAdapter类：QGraphicsView适配器 </p>
@@ -605,76 +595,6 @@ Private 槽</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4a2e2c19e37bc79300499f427bb32f85" name="a4a2e2c19e37bc79300499f427bb32f85"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a2e2c19e37bc79300499f427bb32f85">&#9670;&#160;</a></span>repaintRequestedSlot <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void osgQt::QGraphicsViewAdapter::repaintRequestedSlot </td>
-          <td>(</td>
-          <td class="paramtype">const QList&lt; QRectF &gt; &amp;&#160;</td>
-          <td class="paramname"><em>regions</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>重绘请求槽函数（区域列表） </p>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">区域列表（未使用）</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<p>当QGraphicsScene发生变化时触发 </p>
-
-</div>
-</div>
-<a id="aa14db2770cf517b2e607a980c40c3192" name="aa14db2770cf517b2e607a980c40c3192"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa14db2770cf517b2e607a980c40c3192">&#9670;&#160;</a></span>repaintRequestedSlot <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void osgQt::QGraphicsViewAdapter::repaintRequestedSlot </td>
-          <td>(</td>
-          <td class="paramtype">const QRectF &amp;&#160;</td>
-          <td class="paramname"><em>region</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span><span class="mlabel">slot</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>重绘请求槽函数（单个区域） </p>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">区域（未使用）</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<p>当QGraphicsScene大小改变时触发 </p>
 
 </div>
 </div>

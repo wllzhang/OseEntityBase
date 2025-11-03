@@ -91,8 +91,6 @@ $(document).ready(function(){initNavTree('classMapStateManager.html',''); initRe
 <a href="#pub-slots">Public 槽</a> &#124;
 <a href="#signals">信号</a> &#124;
 <a href="#pub-methods">Public 成员函数</a> &#124;
-<a href="#pri-methods">Private 成员函数</a> &#124;
-<a href="#pri-attribs">Private 属性</a> &#124;
 <a href="classMapStateManager-members.html">所有成员列表</a>  </div>
   <div class="headertitle"><div class="title">MapStateManager类 参考<div class="ingroups"><a class="el" href="group__managers.html">Managers</a></div></div></div>
 </div><!--header-->
@@ -156,26 +154,6 @@ Public 成员函数</h2></td></tr>
 <tr class="separator:ade65c086dd26fe4ee1faafd1a8958c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40beb99443ae8831e3419a63aee4ff51" id="r_a40beb99443ae8831e3419a63aee4ff51"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structMapStateInfo.html">MapStateInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a40beb99443ae8831e3419a63aee4ff51">getCurrentState</a> () const</td></tr>
 <tr class="separator:a40beb99443ae8831e3419a63aee4ff51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
-Private 成员函数</h2></td></tr>
-<tr class="memitem:a2f7e4310a0fb20a36db00569f74871c4" id="r_a2f7e4310a0fb20a36db00569f74871c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a2f7e4310a0fb20a36db00569f74871c4">updateState</a> ()</td></tr>
-<tr class="separator:a2f7e4310a0fb20a36db00569f74871c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1eca19271ebd556dcd9e4a0b12517044" id="r_a1eca19271ebd556dcd9e4a0b12517044"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a1eca19271ebd556dcd9e4a0b12517044">updateMouseGeoPosition</a> (QPoint mousePos)</td></tr>
-<tr class="separator:a1eca19271ebd556dcd9e4a0b12517044"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabf0641b2bab6a14d7137907599a027c" id="r_aabf0641b2bab6a14d7137907599a027c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#aabf0641b2bab6a14d7137907599a027c">initializeMapNode</a> ()</td></tr>
-<tr class="separator:aabf0641b2bab6a14d7137907599a027c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a094086e25fdb9ac273d8a415333f4097" id="r_a094086e25fdb9ac273d8a415333f4097"><td class="memItemLeft" align="right" valign="top">osgEarth::Util::EarthManipulator *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a094086e25fdb9ac273d8a415333f4097">getEarthManipulator</a> () const</td></tr>
-<tr class="separator:a094086e25fdb9ac273d8a415333f4097"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
-Private 属性</h2></td></tr>
-<tr class="memitem:ae660e4bcdc6b72dfb3df0b254aad839f" id="r_ae660e4bcdc6b72dfb3df0b254aad839f"><td class="memItemLeft" align="right" valign="top">osgViewer::Viewer *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#ae660e4bcdc6b72dfb3df0b254aad839f">viewer_</a></td></tr>
-<tr class="separator:ae660e4bcdc6b72dfb3df0b254aad839f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52937668a3aa38d953162112f03bd653" id="r_a52937668a3aa38d953162112f03bd653"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structMapStateInfo.html">MapStateInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a52937668a3aa38d953162112f03bd653">currentState_</a></td></tr>
-<tr class="separator:a52937668a3aa38d953162112f03bd653"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2de946db6d81f3dd0a26b3e91eeec84d" id="r_a2de946db6d81f3dd0a26b3e91eeec84d"><td class="memItemLeft" align="right" valign="top">osgEarth::MapNode *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a2de946db6d81f3dd0a26b3e91eeec84d">mapNode_</a></td></tr>
-<tr class="separator:a2de946db6d81f3dd0a26b3e91eeec84d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>地图状态管理器 </p>
@@ -262,31 +240,6 @@ Private 属性</h2></td></tr>
   </td>
   <td class="mlabels-right">
 <span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a094086e25fdb9ac273d8a415333f4097" name="a094086e25fdb9ac273d8a415333f4097"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a094086e25fdb9ac273d8a415333f4097">&#9670;&#160;</a></span>getEarthManipulator()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">osgEarth::Util::EarthManipulator * MapStateManager::getEarthManipulator </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -425,31 +378,6 @@ Private 属性</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="aabf0641b2bab6a14d7137907599a027c" name="aabf0641b2bab6a14d7137907599a027c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabf0641b2bab6a14d7137907599a027c">&#9670;&#160;</a></span>initializeMapNode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MapStateManager::initializeMapNode </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>
@@ -630,57 +558,6 @@ Private 属性</h2></td></tr>
 
 </div>
 </div>
-<a id="a1eca19271ebd556dcd9e4a0b12517044" name="a1eca19271ebd556dcd9e4a0b12517044"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1eca19271ebd556dcd9e4a0b12517044">&#9670;&#160;</a></span>updateMouseGeoPosition()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MapStateManager::updateMouseGeoPosition </td>
-          <td>(</td>
-          <td class="paramtype">QPoint&#160;</td>
-          <td class="paramname"><em>mousePos</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2f7e4310a0fb20a36db00569f74871c4" name="a2f7e4310a0fb20a36db00569f74871c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f7e4310a0fb20a36db00569f74871c4">&#9670;&#160;</a></span>updateState()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MapStateManager::updateState </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="adad70f1954e3b44c3cc7520802c9bf24" name="adad70f1954e3b44c3cc7520802c9bf24"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adad70f1954e3b44c3cc7520802c9bf24">&#9670;&#160;</a></span>viewPositionChanged</h2>
 
@@ -722,73 +599,6 @@ Private 属性</h2></td></tr>
 </div><div class="memdoc">
 
 <p>视角位置变化通知 </p>
-
-</div>
-</div>
-<h2 class="groupheader">类成员变量说明</h2>
-<a id="a52937668a3aa38d953162112f03bd653" name="a52937668a3aa38d953162112f03bd653"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a52937668a3aa38d953162112f03bd653">&#9670;&#160;</a></span>currentState_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structMapStateInfo.html">MapStateInfo</a> MapStateManager::currentState_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a2de946db6d81f3dd0a26b3e91eeec84d" name="a2de946db6d81f3dd0a26b3e91eeec84d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2de946db6d81f3dd0a26b3e91eeec84d">&#9670;&#160;</a></span>mapNode_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">osgEarth::MapNode* MapStateManager::mapNode_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ae660e4bcdc6b72dfb3df0b254aad839f" name="ae660e4bcdc6b72dfb3df0b254aad839f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae660e4bcdc6b72dfb3df0b254aad839f">&#9670;&#160;</a></span>viewer_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">osgViewer::Viewer* MapStateManager::viewer_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>

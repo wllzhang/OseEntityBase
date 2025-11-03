@@ -103,12 +103,6 @@ $(document).ready(function(){initNavTree('namespaceosgQt.html',''); initResizabl
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1GraphicsWindowQt.html">GraphicsWindowQt</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GraphicsWindowQt类：OSG图形窗口的Qt实现  <a href="classosgQt_1_1GraphicsWindowQt.html#details">更多...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1MyQKeyEvent.html">MyQKeyEvent</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">MyQKeyEvent类：自定义键盘事件  <a href="classosgQt_1_1MyQKeyEvent.html#details">更多...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structosgQt_1_1MyQPointerEvent.html">MyQPointerEvent</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">MyQPointerEvent结构体：自定义指针事件  <a href="structosgQt_1_1MyQPointerEvent.html#details">更多...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classosgQt_1_1QGraphicsViewAdapter.html">QGraphicsViewAdapter</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">QGraphicsViewAdapter类：QGraphicsView适配器  <a href="classosgQt_1_1QGraphicsViewAdapter.html#details">更多...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,7 +182,9 @@ $(document).ready(function(){initNavTree('namespaceosgQt.html',''); initResizabl
 </div><div class="memdoc">
 
 <p>设置OSG查看器 </p>
-<dl class="params"><dt>参数</dt><dd>
+<p>declare C entry point for static compilation. extern "C" void graphicswindow_Qt(void) { osg::GraphicsContext::setWindowingSystemInterface(QtWindowingSystem::getInterface()); }</p>
+<p>void <a class="el" href="namespaceosgQt.html#a30c127c81c6fdf6fc6b4b01d44348565">osgQt::initQtWindowingSystem()</a> { graphicswindow_Qt(); }</p>
+<p>/** </p><dl class="params"><dt>参数</dt><dd>
   <table class="params">
     <tr><td class="paramname">viewer</td><td>OSG查看器 </td></tr>
   </table>

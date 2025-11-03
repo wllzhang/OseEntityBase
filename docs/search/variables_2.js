@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['currentmode_5f_0',['currentMode_',['../classMainWindow.html#a48fba42d7a56782d180bb76ee9cf4684',1,'MainWindow']]],
-  ['currentstate_5f_1',['currentState_',['../classMapStateManager.html#a52937668a3aa38d953162112f03bd653',1,'MapStateManager']]],
-  ['currentwaypointgroupid_5f_2',['currentWaypointGroupId_',['../classMainWindow.html#abf97c6fe98a5d730e4ef3f33c775649c',1,'MainWindow']]]
+  ['entityid_5f_0',['entityId_',['../classGeoEntity.html#a815aa68dbac662b53cca04e3cdeaf7bc',1,'GeoEntity']]],
+  ['entityname_5f_1',['entityName_',['../classGeoEntity.html#a46fcb51df99e5aeb0ed80b5f0a1fde95',1,'GeoEntity']]],
+  ['entitytype_5f_2',['entityType_',['../classGeoEntity.html#ac7fea1dda82d851845ab54cd50740970',1,'GeoEntity']]]
 ];
