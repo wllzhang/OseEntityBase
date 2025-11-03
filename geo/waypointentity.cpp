@@ -26,22 +26,34 @@ WaypointEntity::WaypointEntity(const QString& id,
 
 void WaypointEntity::initialize()
 {
-    node_ = createNode();
-    setVisible(true);
+    // 调用基类默认实现（创建节点、设置可见性等）
+    GeoEntity::initialize();
+}
+
+void WaypointEntity::onUpdated()
+{
+    // 更新标签（特定逻辑）
+    updateLabel();
 }
 
 void WaypointEntity::update()
 {
-    updateNode();
-    updateLabel();
+    // 使用基类默认实现（调用updateNode），然后通过onUpdated更新标签
+    GeoEntity::update();
+}
+
+void WaypointEntity::onBeforeCleanup()
+{
+    // 清理特定的节点引用
+    pointGeode_ = nullptr;
+    labelText_ = nullptr;
+    labelGeode_ = nullptr;
 }
 
 void WaypointEntity::cleanup()
 {
-    pointGeode_ = nullptr;
-    labelText_ = nullptr;
-    labelGeode_ = nullptr;
-    node_ = nullptr;
+    // 调用基类清理（会调用onBeforeCleanup）
+    GeoEntity::cleanup();
 }
 
 void WaypointEntity::setOrderLabel(const QString& text)

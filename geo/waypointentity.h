@@ -36,6 +36,11 @@ public:
     /** @brief 绑定 MapNode（优先使用，避免运行时查找失败） */
     void setMapNode(osgEarth::MapNode* mapNode) { mapNodeRef_ = mapNode; }
 
+protected:
+    // 生命周期回调重写
+    void onUpdated() override;
+    void onBeforeCleanup() override;
+
 private:
     osg::ref_ptr<osg::Node> createNode() override;
     void updateLabel();

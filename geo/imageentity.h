@@ -35,6 +35,11 @@ public:
     // 重写选择状态设置
     void setSelected(bool selected) override;
 
+protected:
+    // 生命周期回调重写
+    void onBeforeCleanup() override;
+    void onAfterCleanup() override;
+
 private:
     osg::ref_ptr<osg::Node> createNode() override;
     void addHighlightBorder(osg::PositionAttitudeTransform* pat);

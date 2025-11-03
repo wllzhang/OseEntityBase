@@ -95,13 +95,28 @@ public:
     QVariant getProperty(const QString& key) const;
     QMap<QString, QVariant> getAllProperties() const { return properties_; }
     
-    // 生命周期（子类实现）
-    /** @brief 初始化实体资源与节点 */
-    virtual void initialize() = 0;
-    /** @brief 根据业务状态更新实体 */
-    virtual void update() = 0;
-    /** @brief 释放资源与场景引用 */
-    virtual void cleanup() = 0;
+    // 生命周期（基类提供默认实现，子类可重写扩展）
+    /** 
+     * @brief 初始化实体资源与节点
+     * 
+     * 默认实现：创建节点、设置可见性、设置初始变换。
+     * 子类可重写扩展特定初始化逻辑，或重写 onInitialized() 回调。
+     */
+    virtual void initialize();
+    /** 
+     * @brief 根据业务状态更新实体
+     * 
+     * 默认实现：更新节点变换。
+     * 子类可重写扩展特定更新逻辑，或重写 onUpdated() 回调。
+     */
+    virtual void update();
+    /** 
+     * @brief 释放资源与场景引用
+     * 
+     * 默认实现：调用 onBeforeCleanup()，清除节点引用，调用 onAfterCleanup()。
+     * 子类可重写扩展特定清理逻辑，或重写回调方法。
+     */
+    virtual void cleanup();
 
 signals:
     void positionChanged(double longitude, double latitude, double altitude);
@@ -125,6 +140,36 @@ protected:
     
     // 子类需要实现的纯虚函数
     virtual osg::ref_ptr<osg::Node> createNode() = 0;
+    
+    // 生命周期回调（子类可重写扩展）
+    /** @brief 节点创建完成后的回调，子类可重写添加特定初始化逻辑 */
+    virtual void onInitialized() {}
+    /** @brief 更新完成后的回调，子类可重写添加特定更新逻辑 */
+    virtual void onUpdated() {}
+    /** @brief 清理前的回调，子类可重写清理特定资源（如高亮节点） */
+    virtual void onBeforeCleanup() {}
+    /** @brief 清理后的回调，子类可重写做额外清理 */
+    virtual void onAfterCleanup() {}
+    
+    // 节点变换辅助方法
+    /** 
+     * @brief 设置节点的位置和旋转变换
+     * 
+     * 如果节点是PositionAttitudeTransform，自动设置位置和旋转。
+     * 通常在createNode()后调用，或用于更新节点变换。
+     * 
+     * @param node 要设置的节点（如果是PAT则设置，否则忽略）
+     */
+    void setupNodeTransform(osg::Node* node);
+    
+    /** 
+     * @brief 创建并初始化PositionAttitudeTransform节点
+     * 
+     * 创建PAT节点并设置初始位置和旋转，子类可直接使用。
+     * 
+     * @return 已设置好变换的PAT节点
+     */
+    osg::ref_ptr<osg::PositionAttitudeTransform> createPATNode();
 };
 
 #endif // GEOENTITY_H

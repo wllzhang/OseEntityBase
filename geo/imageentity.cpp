@@ -23,27 +23,23 @@ ImageEntity::ImageEntity(const QString& id, const QString& name, const QString& 
 
 void ImageEntity::initialize()
 {
-    // 创建渲染节点
-    node_ = createNode();
-    
-    // 设置初始状态
-    setVisible(true);
-    setSelected(false);
+    // 调用基类默认实现（创建节点、设置可见性等）
+    GeoEntity::initialize();
     
     qDebug() << "图片实体初始化完成:" << entityName_;
 }
 
 void ImageEntity::update()
 {
-    // 简单的更新逻辑
-    updateNode();
+    // 使用基类默认实现（调用updateNode）
+    GeoEntity::update();
 }
 
-void ImageEntity::cleanup()
+void ImageEntity::onBeforeCleanup()
 {
     qDebug() << "清理图片实体:" << entityName_;
     
-    // 关键修复：必须先从PAT中移除高亮节点，不能只置空引用
+    // 清理前：从PAT中移除高亮节点
     if (node_) {
         osg::PositionAttitudeTransform* pat = dynamic_cast<osg::PositionAttitudeTransform*>(node_.get());
         if (pat && highlightNode_) {
@@ -53,11 +49,19 @@ void ImageEntity::cleanup()
         }
     }
     
-    // 然后清除引用（ref_ptr会自动管理）
+    // 清除高亮节点引用
     highlightNode_ = nullptr;
-    node_ = nullptr;
-    
+}
+
+void ImageEntity::onAfterCleanup()
+{
     qDebug() << "图片实体清理完成";
+}
+
+void ImageEntity::cleanup()
+{
+    // 调用基类清理（会调用onBeforeCleanup和onAfterCleanup）
+    GeoEntity::cleanup();
 }
 
 void ImageEntity::setSelected(bool selected)
@@ -110,8 +114,8 @@ osg::ref_ptr<osg::Node> ImageEntity::createNode()
         texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
         texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
         
-        // 使用PositionAttitudeTransform
-        osg::ref_ptr<osg::PositionAttitudeTransform> pat = new osg::PositionAttitudeTransform();
+        // 使用基类辅助方法创建PAT节点（已设置初始位置和旋转）
+        osg::ref_ptr<osg::PositionAttitudeTransform> pat = createPATNode();
         
         // 创建带纹理的几何体
         osg::ref_ptr<osg::Geode> geode = new osg::Geode;
@@ -160,15 +164,13 @@ osg::ref_ptr<osg::Node> ImageEntity::createNode()
         pat->addChild(geode);
         
         // 高亮边框将在选中时动态创建
-        
-        // 设置PAT的位置：使用工具函数进行地理坐标到世界坐标的转换
-        osg::Vec3d worldPos = GeoUtils::geoToWorldCoordinates(longitude_, latitude_, altitude_);
-        pat->setPosition(worldPos);
+        // 注意：PAT的位置和旋转已在createPATNode()中设置
         
         qDebug() << "图片实体创建成功:" << entityName_;
         qDebug() << "图片路径:" << imagePath_;
         qDebug() << "图片大小:" << image->s() << "x" << image->t();
         qDebug() << "几何体大小:" << size;
+        osg::Vec3d worldPos = pat->getPosition();
         qDebug() << "世界坐标:" << worldPos.x() << worldPos.y() << worldPos.z();
         
         return pat.get();
