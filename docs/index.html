@@ -173,7 +173,7 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 1) 创建实体管理器</h3>
 <div class="fragment"><div class="line"><span class="comment">// root: osg::Group*; mapNode: osgEarth::MapNode*</span></div>
 <div class="line"><span class="keyword">auto</span>* entityManager = <span class="keyword">new</span> <a class="code hl_class" href="classGeoEntityManager.html">GeoEntityManager</a>(root, mapNode, <span class="keyword">this</span>);</div>
-<div class="ttc" id="aclassGeoEntityManager_html"><div class="ttname"><a href="classGeoEntityManager.html">GeoEntityManager</a></div><div class="ttdoc">地理实体管理器</div><div class="ttdef"><b>Definition</b> geoentitymanager.h:44</div></div>
+<div class="ttc" id="aclassGeoEntityManager_html"><div class="ttname"><a href="classGeoEntityManager.html">GeoEntityManager</a></div><div class="ttdoc">地理实体管理器</div><div class="ttdef"><b>Definition</b> geoentitymanager.h:51</div></div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md13"></a>
 2) 创建实体</h3>
 <div class="fragment"><div class="line"><a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* aircraft = entityManager-&gt;createEntity(</div>
@@ -200,12 +200,12 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 <div class="line">connect(mapStateManager, &amp;<a class="code hl_signal" href="classMapStateManager.html#a6e6d87a50432896f561751a3df4e2551">MapStateManager::stateChanged</a>, <span class="keyword">this</span>, [](<span class="keyword">const</span> <a class="code hl_struct" href="structMapStateInfo.html">MapStateInfo</a>&amp; s){</div>
 <div class="line">    qDebug() &lt;&lt; s.<a class="code hl_variable" href="structMapStateInfo.html#a156b699ac83c3811315947517cc63b01">pitch</a> &lt;&lt; s.<a class="code hl_variable" href="structMapStateInfo.html#ab907b39a63403f0eee0eb32e6eb25553">heading</a> &lt;&lt; s.<a class="code hl_variable" href="structMapStateInfo.html#af83c22e926353d6f2afab516efd535a2">range</a>;</div>
 <div class="line">});</div>
-<div class="ttc" id="aclassMapStateManager_html"><div class="ttname"><a href="classMapStateManager.html">MapStateManager</a></div><div class="ttdoc">地图状态管理器</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:68</div></div>
+<div class="ttc" id="aclassMapStateManager_html"><div class="ttname"><a href="classMapStateManager.html">MapStateManager</a></div><div class="ttdoc">地图状态管理器</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:75</div></div>
 <div class="ttc" id="aclassMapStateManager_html_a6e6d87a50432896f561751a3df4e2551"><div class="ttname"><a href="classMapStateManager.html#a6e6d87a50432896f561751a3df4e2551">MapStateManager::stateChanged</a></div><div class="ttdeci">void stateChanged(const MapStateInfo &amp;state)</div><div class="ttdoc">状态整体变化通知（含相机与鼠标）</div></div>
-<div class="ttc" id="astructMapStateInfo_html"><div class="ttname"><a href="structMapStateInfo.html">MapStateInfo</a></div><div class="ttdoc">地图状态信息结构体</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:27</div></div>
-<div class="ttc" id="astructMapStateInfo_html_a156b699ac83c3811315947517cc63b01"><div class="ttname"><a href="structMapStateInfo.html#a156b699ac83c3811315947517cc63b01">MapStateInfo::pitch</a></div><div class="ttdeci">double pitch</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:28</div></div>
-<div class="ttc" id="astructMapStateInfo_html_ab907b39a63403f0eee0eb32e6eb25553"><div class="ttname"><a href="structMapStateInfo.html#ab907b39a63403f0eee0eb32e6eb25553">MapStateInfo::heading</a></div><div class="ttdeci">double heading</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:29</div></div>
-<div class="ttc" id="astructMapStateInfo_html_af83c22e926353d6f2afab516efd535a2"><div class="ttname"><a href="structMapStateInfo.html#af83c22e926353d6f2afab516efd535a2">MapStateInfo::range</a></div><div class="ttdeci">double range</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:30</div></div>
+<div class="ttc" id="astructMapStateInfo_html"><div class="ttname"><a href="structMapStateInfo.html">MapStateInfo</a></div><div class="ttdoc">地图状态信息结构体</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:34</div></div>
+<div class="ttc" id="astructMapStateInfo_html_a156b699ac83c3811315947517cc63b01"><div class="ttname"><a href="structMapStateInfo.html#a156b699ac83c3811315947517cc63b01">MapStateInfo::pitch</a></div><div class="ttdeci">double pitch</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:35</div></div>
+<div class="ttc" id="astructMapStateInfo_html_ab907b39a63403f0eee0eb32e6eb25553"><div class="ttname"><a href="structMapStateInfo.html#ab907b39a63403f0eee0eb32e6eb25553">MapStateInfo::heading</a></div><div class="ttdeci">double heading</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:36</div></div>
+<div class="ttc" id="astructMapStateInfo_html_af83c22e926353d6f2afab516efd535a2"><div class="ttname"><a href="structMapStateInfo.html#af83c22e926353d6f2afab516efd535a2">MapStateInfo::range</a></div><div class="ttdeci">double range</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:37</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md16"></a>
 扩展指南</h2>
 <h3><a class="anchor" id="autotoc_md17"></a>
