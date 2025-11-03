@@ -10,9 +10,16 @@
 /**
  * @ingroup geo_entities
  * @brief 航点实体
- *
- * 用于路线规划与点标绘的基础实体，支持显示序号标签，并可结合
- * 航线生成功能（线性/贝塞尔）使用。
+ * 
+ * 继承自GeoEntity，用于路线规划与点标绘的基础实体，支持显示序号标签，
+ * 并可结合航线生成功能（线性/贝塞尔）使用。
+ * 
+ * **继承关系：**
+ * ```
+ * QObject
+ *   └─ GeoEntity
+ *       └─ WaypointEntity
+ * ```
  */
 class WaypointEntity : public GeoEntity
 {

@@ -12,11 +12,15 @@
 
 using namespace osgQt;
 
+// @cond INTERNAL
+// 以下类和结构是内部实现，不在公开文档中
+
 // ============================================================================
-// QtKeyboardMap类：Qt键盘按键映射到OSG按键
+// QtKeyboardMap类：Qt键盘按键映射到OSG按键（内部实现）
 // ============================================================================
 // 功能：将Qt的键盘事件转换为OSG的键盘事件
 // 用途：在Qt和OSG之间建立键盘事件映射关系
+// 注意：这是内部工具类，不对外暴露
 // ============================================================================
 
 class QtKeyboardMap
@@ -121,7 +125,7 @@ private:
 static QtKeyboardMap s_QtKeyboardMap;
 
 // ============================================================================
-// HeartBeat类：场景重渲染定时器
+// HeartBeat类：场景重渲染定时器（内部实现）
 // ============================================================================
 // 功能：负责在Qt事件循环中驱动OSG场景的渲染
 // 用途：将OSG的渲染循环集成到Qt的事件循环中
@@ -1179,101 +1183,57 @@ void GraphicsWindowQt::requestWarpPointer( float x, float y )
 }
 
 // ============================================================================
-// QtWindowingSystem类：Qt窗口系统接口
+// QtWindowingSystem类：Qt窗口系统接口（内部实现）
 // ============================================================================
 // 功能：实现OSG窗口系统接口，用于创建和管理Qt图形上下文
 // ============================================================================
 class QtWindowingSystem : public osg::GraphicsContext::WindowingSystemInterface
 {
 public:
-	// 构造函数
 	QtWindowingSystem()
 	{
 		OSG_INFO << "QtWindowingSystemInterface()" << std::endl;
 	}
 
-	// 析构函数
 	~QtWindowingSystem()
 	{
 		if (osg::Referenced::getDeleteHandler())
 		{
-			// 刷新所有延迟删除的对象
 			osg::Referenced::getDeleteHandler()->setNumFramesToRetainObjects(0);
 			osg::Referenced::getDeleteHandler()->flushAll();
 		}
 	}
 
-	/**
-	 * @brief 获取单例实例
-	 * @return 窗口系统接口指针
-	 * 
-	 * 通过此单例类访问Qt窗口系统
-	 */
 	static QtWindowingSystem* getInterface()
 	{
 		static QtWindowingSystem* qtInterface = new QtWindowingSystem;
 		return qtInterface;
 	}
 
-	/**
-	 * @brief 获取系统中的屏幕数量
-	 * @param si 屏幕标识符
-	 * @return 屏幕数量
-	 * 
-	 * 注意：尚未实现
-	 */
 	virtual unsigned int getNumScreens( const osg::GraphicsContext::ScreenIdentifier& /*si*/ )
 	{
 		OSG_WARN << "osgQt: getNumScreens() not implemented yet." << std::endl;
 		return 0;
 	}
 
-	/**
-	 * @brief 获取指定屏幕的分辨率
-	 * @param si 屏幕标识符
-	 * @param resolution 分辨率（输出）
-	 * 
-	 * 注意：如果屏幕未知则返回(0,0)
-	 */
 	virtual void getScreenSettings( const osg::GraphicsContext::ScreenIdentifier& /*si*/, osg::GraphicsContext::ScreenSettings & /*resolution*/ )
 	{
 		OSG_WARN << "osgQt: getScreenSettings() not implemented yet." << std::endl;
 	}
 
-	/**
-	 * @brief 设置指定屏幕的分辨率
-	 * @param si 屏幕标识符
-	 * @param resolution 分辨率
-	 * @return 是否成功
-	 * 
-	 * 注意：尚未实现
-	 */
 	virtual bool setScreenSettings( const osg::GraphicsContext::ScreenIdentifier& /*si*/, const osg::GraphicsContext::ScreenSettings & /*resolution*/ )
 	{
 		OSG_WARN << "osgQt: setScreenSettings() not implemented yet." << std::endl;
 		return false;
 	}
 
-	/**
-	 * @brief 枚举可用分辨率
-	 * @param screenIdentifier 屏幕标识符
-	 * @param resolution 分辨率列表（输出）
-	 * 
-	 * 注意：尚未实现
-	 */
 	virtual void enumerateScreenSettings( const osg::GraphicsContext::ScreenIdentifier& /*screenIdentifier*/, osg::GraphicsContext::ScreenSettingsList & /*resolution*/ )
 	{
 		OSG_WARN << "osgQt: enumerateScreenSettings() not implemented yet." << std::endl;
 	}
 
-	/**
-	 * @brief 创建带给定特性的图形上下文
-	 * @param traits 图形上下文特性
-	 * @return 图形上下文指针
-	 */
 	virtual osg::GraphicsContext* createGraphicsContext( osg::GraphicsContext::Traits* traits )
 	{
-		// 检查是否是pbuffer（像素缓冲区）
 		if (traits->pbuffer)
 		{
 			OSG_WARN << "osgQt: createGraphicsContext - pbuffer not implemented yet." << std::endl;
@@ -1281,7 +1241,6 @@ public:
 		}
 		else
 		{
-			// 创建Qt图形窗口
 			osg::ref_ptr< GraphicsWindowQt > window = new GraphicsWindowQt( traits );
 			if (window->valid()) return window.release();
 			else return NULL;
@@ -1289,11 +1248,11 @@ public:
 	}
 
 private:
-
-	// No implementation for these
 	QtWindowingSystem( const QtWindowingSystem& );
 	QtWindowingSystem& operator=( const QtWindowingSystem& );
 };
+
+// @endcond
 
 #if OSG_VERSION_GREATER_OR_EQUAL(3, 5, 6)
 REGISTER_WINDOWINGSYSTEMINTERFACE(Qt, QtWindowingSystem)
