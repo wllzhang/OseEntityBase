@@ -57,15 +57,16 @@ var NAVTREE =
         [ "枚举值", "globals_eval.html", null ],
         [ "宏定义", "globals_defs.html", null ]
       ] ]
-    ] ]
+    ] ],
+    [ "示例", "examples.html", "examples" ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
 "GraphicsWindowQt_8cpp.html",
-"classosgQt_1_1GLWidget.html#a4626a33695e93fd18bceeeaf7946a51c",
-"classosgQt_1_1QWidgetImage.html#a6b0d4138e73715571dc02d0be213a03c"
+"classosgQt_1_1GLWidget.html#a0892712018e52967c0a6c1e70e108ac1",
+"classosgQt_1_1QGraphicsViewAdapter.html#af3263255b1071c2336ee4be89ad38ca5"
 ];
 
 var SYNCONMSG = '点击 关闭 面板同步';

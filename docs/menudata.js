@@ -112,4 +112,5 @@ var menudata={children:[
 {text:"变量",url:"globals_vars.html"},
 {text:"枚举",url:"globals_enum.html"},
 {text:"枚举值",url:"globals_eval.html"},
-{text:"宏定义",url:"globals_defs.html"}]}]}]}
+{text:"宏定义",url:"globals_defs.html"}]}]},
+{text:"示例",url:"examples.html"}]}

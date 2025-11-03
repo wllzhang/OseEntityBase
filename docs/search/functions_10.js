@@ -27,13 +27,14 @@ var searchData=
   ['setupcamera_24',['setupCamera',['../classMainWindow.html#a302ead687ae0f8f941f3cf42d427fdc0',1,'MainWindow']]],
   ['setupkeymap_25',['setUpKeyMap',['../classosgQt_1_1QGraphicsViewAdapter.html#af48b4863fb561469fd62216731684e91',1,'osgQt::QGraphicsViewAdapter']]],
   ['setupmanipulator_26',['setupManipulator',['../classMainWindow.html#ae9d82f3c94bf34abb6d9094355021090',1,'MainWindow']]],
-  ['setviewer_27',['setviewer',['../classGeoEntityManager.html#a2f19737deaaa70d5cef41b71ae35a165',1,'GeoEntityManager::setViewer()'],['../namespaceosgQt.html#a02fc1b09a3965c4f55fa10ca364a311f',1,'osgQt::setViewer()']]],
-  ['setvisible_28',['setVisible',['../classGeoEntity.html#a6ea24102579a7f0b3bdad180599e45a5',1,'GeoEntity']]],
-  ['setwindowdecorationimplementation_29',['setWindowDecorationImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a8fe4fe2e3e35954ceb4448209ed1f942',1,'osgQt::GraphicsWindowQt']]],
-  ['setwindowname_30',['setWindowName',['../classosgQt_1_1GraphicsWindowQt.html#a5b8f4c8d5803ba38124d572267c5668b',1,'osgQt::GraphicsWindowQt']]],
-  ['setwindowrectangleimplementation_31',['setWindowRectangleImplementation',['../classosgQt_1_1GraphicsWindowQt.html#adbad8ea2c2e342f2ca49c97aa4a75252',1,'osgQt::GraphicsWindowQt']]],
-  ['showentitycontextmenu_32',['showEntityContextMenu',['../classMainWindow.html#a4286aaf1a8f62d72dc72d69e5d78f5ac',1,'MainWindow']]],
-  ['statechanged_33',['stateChanged',['../classMapStateManager.html#a6e6d87a50432896f561751a3df4e2551',1,'MapStateManager']]],
-  ['stoptimer_34',['stopTimer',['../classHeartBeat.html#a2aab40670a13c633f46b834c16625eab',1,'HeartBeat']]],
-  ['swapbuffersimplementation_35',['swapBuffersImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a87e6f282241df95f2e03135dd06f1789',1,'osgQt::GraphicsWindowQt']]]
+  ['setupnodetransform_27',['setupNodeTransform',['../classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8',1,'GeoEntity']]],
+  ['setviewer_28',['setviewer',['../classGeoEntityManager.html#a2f19737deaaa70d5cef41b71ae35a165',1,'GeoEntityManager::setViewer()'],['../namespaceosgQt.html#a02fc1b09a3965c4f55fa10ca364a311f',1,'osgQt::setViewer()']]],
+  ['setvisible_29',['setVisible',['../classGeoEntity.html#a6ea24102579a7f0b3bdad180599e45a5',1,'GeoEntity']]],
+  ['setwindowdecorationimplementation_30',['setWindowDecorationImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a8fe4fe2e3e35954ceb4448209ed1f942',1,'osgQt::GraphicsWindowQt']]],
+  ['setwindowname_31',['setWindowName',['../classosgQt_1_1GraphicsWindowQt.html#a5b8f4c8d5803ba38124d572267c5668b',1,'osgQt::GraphicsWindowQt']]],
+  ['setwindowrectangleimplementation_32',['setWindowRectangleImplementation',['../classosgQt_1_1GraphicsWindowQt.html#adbad8ea2c2e342f2ca49c97aa4a75252',1,'osgQt::GraphicsWindowQt']]],
+  ['showentitycontextmenu_33',['showEntityContextMenu',['../classMainWindow.html#a4286aaf1a8f62d72dc72d69e5d78f5ac',1,'MainWindow']]],
+  ['statechanged_34',['stateChanged',['../classMapStateManager.html#a6e6d87a50432896f561751a3df4e2551',1,'MapStateManager']]],
+  ['stoptimer_35',['stopTimer',['../classHeartBeat.html#a2aab40670a13c633f46b834c16625eab',1,'HeartBeat']]],
+  ['swapbuffersimplementation_36',['swapBuffersImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a87e6f282241df95f2e03135dd06f1789',1,'osgQt::GraphicsWindowQt']]]
 ];

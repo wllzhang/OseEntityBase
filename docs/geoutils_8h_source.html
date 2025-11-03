@@ -99,27 +99,54 @@ $(document).ready(function(){initNavTree('geoutils_8h_source.html',''); initResi
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define GEOUTILS_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;QPoint&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;osgViewer/Viewer&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;osgEarth/MapNode&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classGeoUtils.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classGeoUtils.html">GeoUtils</a></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classGeoUtils.html#a60a85d8c7799bcfb9e1b729fa9fad53a">screenToGeoCoordinates</a>(</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        osgViewer::Viewer* viewer,</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        osgEarth::MapNode* mapNode,</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        QPoint screenPos,</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordtype">double</span>&amp; longitude,</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordtype">double</span>&amp; latitude,</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordtype">double</span>&amp; altitude);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;QString&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;QJsonObject&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;osgViewer/Viewer&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;osgEarth/MapNode&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;osgEarthUtil/EarthManipulator&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;osg/Vec3d&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classGeoUtils.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classGeoUtils.html">GeoUtils</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classGeoUtils.html#a60a85d8c7799bcfb9e1b729fa9fad53a">screenToGeoCoordinates</a>(</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        osgViewer::Viewer* viewer,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        osgEarth::MapNode* mapNode,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        QPoint screenPos,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordtype">double</span>&amp; longitude,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordtype">double</span>&amp; latitude,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordtype">double</span>&amp; altitude);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">static</span> osg::Vec3d <a class="code hl_function" href="classGeoUtils.html#a4ceae59328088c50b864b87efab29469">geoToWorldCoordinates</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordtype">double</span> longitude,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordtype">double</span> latitude,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordtype">double</span> altitude,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        osgEarth::AltitudeMode altMode = osgEarth::ALTMODE_ABSOLUTE);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">static</span> QJsonObject <a class="code hl_function" href="classGeoUtils.html#aba7b0ef516ae86719e498fc8f11d18ae">loadJsonFile</a>(<span class="keyword">const</span> QString&amp; filePath, QString* errorMessage = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">static</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classGeoUtils.html#a74b78994c86852d9ad2e780e135cbdf4">calculateDistance2D</a>(<span class="keywordtype">double</span> lon1, <span class="keywordtype">double</span> lat1, <span class="keywordtype">double</span> lon2, <span class="keywordtype">double</span> lat2);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">static</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classGeoUtils.html#a0a5bc391570b33833f8ae7b906d224c3">calculateDistance3D</a>(<span class="keywordtype">double</span> lon1, <span class="keywordtype">double</span> lat1, <span class="keywordtype">double</span> alt1,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                                      <span class="keywordtype">double</span> lon2, <span class="keywordtype">double</span> lat2, <span class="keywordtype">double</span> alt2);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">static</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classGeoUtils.html#a0fbc240cd76b13784716216625ff7e99">calculateGeographicDistance</a>(<span class="keywordtype">double</span> lon1, <span class="keywordtype">double</span> lat1, <span class="keywordtype">double</span> lon2, <span class="keywordtype">double</span> lat2);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keyword">static</span> osgEarth::Util::EarthManipulator* <a class="code hl_function" href="classGeoUtils.html#a730699e406bbc152d255919a80cbe9d7">getEarthManipulator</a>(osgViewer::Viewer* viewer);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>};</div>
 </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif </span><span class="comment">// GEOUTILS_H</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="ttc" id="aclassGeoUtils_html"><div class="ttname"><a href="classGeoUtils.html">GeoUtils</a></div><div class="ttdoc">地理坐标转换工具类</div><div class="ttdef"><b>Definition</b> geoutils.h:15</div></div>
-<div class="ttc" id="aclassGeoUtils_html_a60a85d8c7799bcfb9e1b729fa9fad53a"><div class="ttname"><a href="classGeoUtils.html#a60a85d8c7799bcfb9e1b729fa9fad53a">GeoUtils::screenToGeoCoordinates</a></div><div class="ttdeci">static bool screenToGeoCoordinates(osgViewer::Viewer *viewer, osgEarth::MapNode *mapNode, QPoint screenPos, double &amp;longitude, double &amp;latitude, double &amp;altitude)</div><div class="ttdoc">将屏幕坐标转换为地理坐标</div><div class="ttdef"><b>Definition</b> geoutils.cpp:6</div></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="preprocessor">#endif </span><span class="comment">// GEOUTILS_H</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="ttc" id="aclassGeoUtils_html"><div class="ttname"><a href="classGeoUtils.html">GeoUtils</a></div><div class="ttdoc">地理坐标转换工具类</div><div class="ttdef"><b>Definition</b> geoutils.h:19</div></div>
+<div class="ttc" id="aclassGeoUtils_html_a0a5bc391570b33833f8ae7b906d224c3"><div class="ttname"><a href="classGeoUtils.html#a0a5bc391570b33833f8ae7b906d224c3">GeoUtils::calculateDistance3D</a></div><div class="ttdeci">static double calculateDistance3D(double lon1, double lat1, double alt1, double lon2, double lat2, double alt2)</div><div class="ttdoc">计算两点间的欧几里得距离（3D，包含高度）</div><div class="ttdef"><b>Definition</b> geoutils.cpp:146</div></div>
+<div class="ttc" id="aclassGeoUtils_html_a0fbc240cd76b13784716216625ff7e99"><div class="ttname"><a href="classGeoUtils.html#a0fbc240cd76b13784716216625ff7e99">GeoUtils::calculateGeographicDistance</a></div><div class="ttdeci">static double calculateGeographicDistance(double lon1, double lat1, double lon2, double lat2)</div><div class="ttdoc">计算两点间的地理距离（大圆弧距离，Haversine公式）</div><div class="ttdef"><b>Definition</b> geoutils.cpp:155</div></div>
+<div class="ttc" id="aclassGeoUtils_html_a4ceae59328088c50b864b87efab29469"><div class="ttname"><a href="classGeoUtils.html#a4ceae59328088c50b864b87efab29469">GeoUtils::geoToWorldCoordinates</a></div><div class="ttdeci">static osg::Vec3d geoToWorldCoordinates(double longitude, double latitude, double altitude, osgEarth::AltitudeMode altMode=osgEarth::ALTMODE_ABSOLUTE)</div><div class="ttdoc">将地理坐标转换为世界坐标</div><div class="ttdef"><b>Definition</b> geoutils.cpp:78</div></div>
+<div class="ttc" id="aclassGeoUtils_html_a60a85d8c7799bcfb9e1b729fa9fad53a"><div class="ttname"><a href="classGeoUtils.html#a60a85d8c7799bcfb9e1b729fa9fad53a">GeoUtils::screenToGeoCoordinates</a></div><div class="ttdeci">static bool screenToGeoCoordinates(osgViewer::Viewer *viewer, osgEarth::MapNode *mapNode, QPoint screenPos, double &amp;longitude, double &amp;latitude, double &amp;altitude)</div><div class="ttdoc">将屏幕坐标转换为地理坐标</div><div class="ttdef"><b>Definition</b> geoutils.cpp:16</div></div>
+<div class="ttc" id="aclassGeoUtils_html_a730699e406bbc152d255919a80cbe9d7"><div class="ttname"><a href="classGeoUtils.html#a730699e406bbc152d255919a80cbe9d7">GeoUtils::getEarthManipulator</a></div><div class="ttdeci">static osgEarth::Util::EarthManipulator * getEarthManipulator(osgViewer::Viewer *viewer)</div><div class="ttdoc">获取Viewer的EarthManipulator</div><div class="ttdef"><b>Definition</b> geoutils.cpp:172</div></div>
+<div class="ttc" id="aclassGeoUtils_html_a74b78994c86852d9ad2e780e135cbdf4"><div class="ttname"><a href="classGeoUtils.html#a74b78994c86852d9ad2e780e135cbdf4">GeoUtils::calculateDistance2D</a></div><div class="ttdeci">static double calculateDistance2D(double lon1, double lat1, double lon2, double lat2)</div><div class="ttdoc">计算两点间的欧几里得距离（2D，经纬度）</div><div class="ttdef"><b>Definition</b> geoutils.cpp:139</div></div>
+<div class="ttc" id="aclassGeoUtils_html_aba7b0ef516ae86719e498fc8f11d18ae"><div class="ttname"><a href="classGeoUtils.html#aba7b0ef516ae86719e498fc8f11d18ae">GeoUtils::loadJsonFile</a></div><div class="ttdeci">static QJsonObject loadJsonFile(const QString &amp;filePath, QString *errorMessage=nullptr)</div><div class="ttdoc">加载JSON配置文件</div><div class="ttdef"><b>Definition</b> geoutils.cpp:104</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

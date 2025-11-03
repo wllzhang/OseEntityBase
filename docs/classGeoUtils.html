@@ -104,11 +104,371 @@ $(document).ready(function(){initNavTree('classGeoUtils.html',''); initResizable
 <tr class="memitem:a60a85d8c7799bcfb9e1b729fa9fad53a" id="r_a60a85d8c7799bcfb9e1b729fa9fad53a"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#a60a85d8c7799bcfb9e1b729fa9fad53a">screenToGeoCoordinates</a> (osgViewer::Viewer *viewer, osgEarth::MapNode *mapNode, QPoint screenPos, double &amp;longitude, double &amp;latitude, double &amp;altitude)</td></tr>
 <tr class="memdesc:a60a85d8c7799bcfb9e1b729fa9fad53a"><td class="mdescLeft">&#160;</td><td class="mdescRight">将屏幕坐标转换为地理坐标  <br /></td></tr>
 <tr class="separator:a60a85d8c7799bcfb9e1b729fa9fad53a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ceae59328088c50b864b87efab29469" id="r_a4ceae59328088c50b864b87efab29469"><td class="memItemLeft" align="right" valign="top">static osg::Vec3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#a4ceae59328088c50b864b87efab29469">geoToWorldCoordinates</a> (double longitude, double latitude, double altitude, osgEarth::AltitudeMode altMode=osgEarth::ALTMODE_ABSOLUTE)</td></tr>
+<tr class="memdesc:a4ceae59328088c50b864b87efab29469"><td class="mdescLeft">&#160;</td><td class="mdescRight">将地理坐标转换为世界坐标  <br /></td></tr>
+<tr class="separator:a4ceae59328088c50b864b87efab29469"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba7b0ef516ae86719e498fc8f11d18ae" id="r_aba7b0ef516ae86719e498fc8f11d18ae"><td class="memItemLeft" align="right" valign="top">static QJsonObject&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#aba7b0ef516ae86719e498fc8f11d18ae">loadJsonFile</a> (const QString &amp;filePath, QString *errorMessage=nullptr)</td></tr>
+<tr class="memdesc:aba7b0ef516ae86719e498fc8f11d18ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">加载JSON配置文件  <br /></td></tr>
+<tr class="separator:aba7b0ef516ae86719e498fc8f11d18ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74b78994c86852d9ad2e780e135cbdf4" id="r_a74b78994c86852d9ad2e780e135cbdf4"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#a74b78994c86852d9ad2e780e135cbdf4">calculateDistance2D</a> (double lon1, double lat1, double lon2, double lat2)</td></tr>
+<tr class="memdesc:a74b78994c86852d9ad2e780e135cbdf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">计算两点间的欧几里得距离（2D，经纬度）  <br /></td></tr>
+<tr class="separator:a74b78994c86852d9ad2e780e135cbdf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a5bc391570b33833f8ae7b906d224c3" id="r_a0a5bc391570b33833f8ae7b906d224c3"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#a0a5bc391570b33833f8ae7b906d224c3">calculateDistance3D</a> (double lon1, double lat1, double alt1, double lon2, double lat2, double alt2)</td></tr>
+<tr class="memdesc:a0a5bc391570b33833f8ae7b906d224c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">计算两点间的欧几里得距离（3D，包含高度）  <br /></td></tr>
+<tr class="separator:a0a5bc391570b33833f8ae7b906d224c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fbc240cd76b13784716216625ff7e99" id="r_a0fbc240cd76b13784716216625ff7e99"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#a0fbc240cd76b13784716216625ff7e99">calculateGeographicDistance</a> (double lon1, double lat1, double lon2, double lat2)</td></tr>
+<tr class="memdesc:a0fbc240cd76b13784716216625ff7e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">计算两点间的地理距离（大圆弧距离，Haversine公式）  <br /></td></tr>
+<tr class="separator:a0fbc240cd76b13784716216625ff7e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a730699e406bbc152d255919a80cbe9d7" id="r_a730699e406bbc152d255919a80cbe9d7"><td class="memItemLeft" align="right" valign="top">static osgEarth::Util::EarthManipulator *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#a730699e406bbc152d255919a80cbe9d7">getEarthManipulator</a> (osgViewer::Viewer *viewer)</td></tr>
+<tr class="memdesc:a730699e406bbc152d255919a80cbe9d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取Viewer的EarthManipulator  <br /></td></tr>
+<tr class="separator:a730699e406bbc152d255919a80cbe9d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>地理坐标转换工具类 </p>
 <p>提供屏幕坐标到地理坐标的转换功能，处理Qt和OSG之间的坐标系统差异。 </p>
 </div><h2 class="groupheader">成员函数说明</h2>
+<a id="a74b78994c86852d9ad2e780e135cbdf4" name="a74b78994c86852d9ad2e780e135cbdf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74b78994c86852d9ad2e780e135cbdf4">&#9670;&#160;</a></span>calculateDistance2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double GeoUtils::calculateDistance2D </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lon1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lat1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lon2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lat2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>计算两点间的欧几里得距离（2D，经纬度） </p>
+<p>用于简单的距离计算，适用于小范围区域。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lon1</td><td>点1经度 </td></tr>
+    <tr><td class="paramname">lat1</td><td>点1纬度 </td></tr>
+    <tr><td class="paramname">lon2</td><td>点2经度 </td></tr>
+    <tr><td class="paramname">lat2</td><td>点2纬度 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>距离（度） </dd></dl>
+
+</div>
+</div>
+<a id="a0a5bc391570b33833f8ae7b906d224c3" name="a0a5bc391570b33833f8ae7b906d224c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a5bc391570b33833f8ae7b906d224c3">&#9670;&#160;</a></span>calculateDistance3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double GeoUtils::calculateDistance3D </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lon1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lat1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>alt1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lon2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lat2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>alt2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>计算两点间的欧几里得距离（3D，包含高度） </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lon1</td><td>点1经度 </td></tr>
+    <tr><td class="paramname">lat1</td><td>点1纬度 </td></tr>
+    <tr><td class="paramname">alt1</td><td>点1高度 </td></tr>
+    <tr><td class="paramname">lon2</td><td>点2经度 </td></tr>
+    <tr><td class="paramname">lat2</td><td>点2纬度 </td></tr>
+    <tr><td class="paramname">alt2</td><td>点2高度 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>距离（度，高度单位为米） </dd></dl>
+
+</div>
+</div>
+<a id="a0fbc240cd76b13784716216625ff7e99" name="a0fbc240cd76b13784716216625ff7e99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fbc240cd76b13784716216625ff7e99">&#9670;&#160;</a></span>calculateGeographicDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double GeoUtils::calculateGeographicDistance </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lon1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lat1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lon2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>lat2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>计算两点间的地理距离（大圆弧距离，Haversine公式） </p>
+<p>使用Haversine公式计算地球表面两点间的最短距离（大圆弧）。 比简单的欧几里得距离更准确，适用于任意距离。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lon1</td><td>点1经度（度） </td></tr>
+    <tr><td class="paramname">lat1</td><td>点1纬度（度） </td></tr>
+    <tr><td class="paramname">lon2</td><td>点2经度（度） </td></tr>
+    <tr><td class="paramname">lat2</td><td>点2纬度（度） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>距离（米） </dd></dl>
+
+</div>
+</div>
+<a id="a4ceae59328088c50b864b87efab29469" name="a4ceae59328088c50b864b87efab29469"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ceae59328088c50b864b87efab29469">&#9670;&#160;</a></span>geoToWorldCoordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">osg::Vec3d GeoUtils::geoToWorldCoordinates </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>longitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>latitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>altitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">osgEarth::AltitudeMode&#160;</td>
+          <td class="paramname"><em>altMode</em> = <code>osgEarth::ALTMODE_ABSOLUTE</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将地理坐标转换为世界坐标 </p>
+<p>将经纬度坐标转换为OSG世界坐标系统（WGS84）。 自动处理空间参考系统和高度模式。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">longitude</td><td>经度（度） </td></tr>
+    <tr><td class="paramname">latitude</td><td>纬度（度） </td></tr>
+    <tr><td class="paramname">altitude</td><td>高度（米） </td></tr>
+    <tr><td class="paramname">altMode</td><td>高度模式（默认：ALTMODE_ABSOLUTE） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>世界坐标向量，失败返回零向量 </dd></dl>
+<dl class="section examples"><dt>示例</dt><dd><a class="el" href="_2home_2runner_2work_2OseEntityBase_2OseEntityBase_2geo_2geoentity_8cpp-example.html#a31">/home/runner/work/OseEntityBase/OseEntityBase/geo/geoentity.cpp</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a730699e406bbc152d255919a80cbe9d7" name="a730699e406bbc152d255919a80cbe9d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a730699e406bbc152d255919a80cbe9d7">&#9670;&#160;</a></span>getEarthManipulator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">osgEarth::Util::EarthManipulator * GeoUtils::getEarthManipulator </td>
+          <td>(</td>
+          <td class="paramtype">osgViewer::Viewer *&#160;</td>
+          <td class="paramname"><em>viewer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>获取Viewer的EarthManipulator </p>
+<p>统一获取并转换EarthManipulator，提供统一的空指针检查。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewer</td><td>OSG Viewer指针 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>EarthManipulator指针，失败返回nullptr </dd></dl>
+
+</div>
+</div>
+<a id="aba7b0ef516ae86719e498fc8f11d18ae" name="aba7b0ef516ae86719e498fc8f11d18ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba7b0ef516ae86719e498fc8f11d18ae">&#9670;&#160;</a></span>loadJsonFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QJsonObject GeoUtils::loadJsonFile </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>filePath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QString *&#160;</td>
+          <td class="paramname"><em>errorMessage</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>加载JSON配置文件 </p>
+<p>统一处理JSON文件的读取和解析，提供统一的错误处理。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filePath</td><td>文件路径 </td></tr>
+    <tr><td class="paramname">errorMessage</td><td>输出错误信息（如果失败） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回QJsonObject，失败返回空的QJsonObject（可通过isEmpty()检查） </dd></dl>
+
+</div>
+</div>
 <a id="a60a85d8c7799bcfb9e1b729fa9fad53a" name="a60a85d8c7799bcfb9e1b729fa9fad53a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a60a85d8c7799bcfb9e1b729fa9fad53a">&#9670;&#160;</a></span>screenToGeoCoordinates()</h2>
 
