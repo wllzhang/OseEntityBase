@@ -1,3 +1,10 @@
+/**
+ * @file mainwindow.h
+ * @brief 主窗口类头文件
+ * 
+ * 定义应用程序的主窗口MainWindow，负责UI显示和用户交互
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

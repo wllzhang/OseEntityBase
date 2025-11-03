@@ -1,4 +1,11 @@
-﻿#include "GraphicsWindowQt.h"
+﻿/**
+ * @file GraphicsWindowQt.cpp
+ * @brief OSG图形窗口的Qt实现源文件
+ * 
+ * 实现GraphicsWindowQt类和GLWidget类，以及相关的内部工具类
+ */
+
+#include "GraphicsWindowQt.h"
 
 #include <osg/DeleteHandler>
 //#include <osgQt/GraphicsWindowQt>

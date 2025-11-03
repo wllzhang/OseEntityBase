@@ -1,4 +1,11 @@
-﻿#include "QWidgetImage.h"
+﻿/**
+ * @file QWidgetImage.cpp
+ * @brief QWidgetImage实现文件
+ * 
+ * 实现QWidgetImage类的所有功能
+ */
+
+#include "QWidgetImage.h"
 
 #include <QLayout>
 

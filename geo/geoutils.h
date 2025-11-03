@@ -1,3 +1,10 @@
+/**
+ * @file geoutils.h
+ * @brief 地理坐标转换工具头文件
+ * 
+ * 定义GeoUtils工具类，提供各种地理坐标转换和计算功能
+ */
+
 #ifndef GEOUTILS_H
 #define GEOUTILS_H
 

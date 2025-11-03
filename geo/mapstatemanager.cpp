@@ -1,3 +1,10 @@
+/**
+ * @file mapstatemanager.cpp
+ * @brief 地图状态管理器实现文件
+ * 
+ * 实现MapStateManager类的所有功能
+ */
+
 #include "mapstatemanager.h"
 #include "geoutils.h"
 #include <QDebug>

@@ -1,3 +1,10 @@
+/**
+ * @file draggablelistwidget.cpp
+ * @brief 可拖拽列表控件实现文件
+ * 
+ * 实现DraggableListWidget类的所有功能
+ */
+
 #include "draggablelistwidget.h"
 
 DraggableListWidget::DraggableListWidget(QWidget *parent)

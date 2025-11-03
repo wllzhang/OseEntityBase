@@ -1,3 +1,10 @@
+/**
+ * @file geoentitymanager.h
+ * @brief 地理实体管理器头文件
+ * 
+ * 定义GeoEntityManager类，统一管理所有地理实体的创建、删除、查询和交互
+ */
+
 #ifndef GEOENTITYMANAGER_H
 #define GEOENTITYMANAGER_H
 

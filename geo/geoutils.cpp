@@ -1,3 +1,10 @@
+/**
+ * @file geoutils.cpp
+ * @brief 地理坐标转换工具实现文件
+ * 
+ * 实现GeoUtils类的所有功能
+ */
+
 #include "geoutils.h"
 #include <QDebug>
 #include <QFile>

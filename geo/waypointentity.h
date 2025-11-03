@@ -1,3 +1,10 @@
+/**
+ * @file waypointentity.h
+ * @brief 航点实体头文件
+ * 
+ * 定义WaypointEntity类，用于路线规划与点标绘的基础实体
+ */
+
 #ifndef WAYPOINTENTITY_H
 #define WAYPOINTENTITY_H
 

@@ -1,3 +1,10 @@
+/**
+ * @file geoentity.cpp
+ * @brief 通用地理实体实现文件
+ * 
+ * 实现GeoEntity类的所有功能
+ */
+
 #include "geoentity.h"
 #include "geoutils.h"
 #include <QDebug>

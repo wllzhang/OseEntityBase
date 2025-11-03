@@ -1,4 +1,11 @@
-﻿#include "QGraphicsViewAdapter.h"
+﻿/**
+ * @file QGraphicsViewAdapter.cpp
+ * @brief QGraphicsView适配器实现文件
+ * 
+ * 实现QGraphicsViewAdapter类的所有功能
+ */
+
+#include "QGraphicsViewAdapter.h"
 #include "QWidgetImage.h"
 
 #include <QtOpenGL/QGLWidget>

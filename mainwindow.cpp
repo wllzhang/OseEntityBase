@@ -1,3 +1,10 @@
+/**
+ * @file mainwindow.cpp
+ * @brief 主窗口类实现文件
+ * 
+ * 实现MainWindow类的所有功能
+ */
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "OsgQt/GraphicsWindowQt.h"

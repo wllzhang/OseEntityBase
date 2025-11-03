@@ -1,3 +1,10 @@
+/**
+ * @file imageviewerwindow.cpp
+ * @brief 图片查看器窗口实现文件
+ * 
+ * 实现ImageViewerWindow类的所有功能
+ */
+
 #include "imageviewerwindow.h"
 #include "geo/geoutils.h"
 #include <QApplication>

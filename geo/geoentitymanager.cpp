@@ -1,3 +1,10 @@
+/**
+ * @file geoentitymanager.cpp
+ * @brief 地理实体管理器实现文件
+ * 
+ * 实现GeoEntityManager类的所有功能
+ */
+
 #include "geoentitymanager.h"
 #include "imageentity.h"
 #include "geoutils.h"

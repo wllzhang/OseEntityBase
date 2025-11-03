@@ -1,3 +1,10 @@
+/**
+ * @file imageentity.cpp
+ * @brief 图片实体实现文件
+ * 
+ * 实现ImageEntity类的所有功能
+ */
+
 #include "imageentity.h"
 #include "geoutils.h"
 #include <osgDB/ReadFile>

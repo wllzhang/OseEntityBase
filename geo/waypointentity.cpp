@@ -1,3 +1,10 @@
+/**
+ * @file waypointentity.cpp
+ * @brief 航点实体实现文件
+ * 
+ * 实现WaypointEntity类的所有功能
+ */
+
 #include "waypointentity.h"
 #include <osg/ShapeDrawable>
 #include <osg/PositionAttitudeTransform>

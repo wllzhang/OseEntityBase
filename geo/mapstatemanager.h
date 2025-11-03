@@ -1,3 +1,10 @@
+/**
+ * @file mapstatemanager.h
+ * @brief 地图状态管理器头文件
+ * 
+ * 定义MapStateManager类和MapStateInfo结构体，用于监控和管理地图状态信息
+ */
+
 #ifndef MAPSTATEMANAGER_H
 #define MAPSTATEMANAGER_H
 

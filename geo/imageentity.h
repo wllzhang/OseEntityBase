@@ -1,3 +1,10 @@
+/**
+ * @file imageentity.h
+ * @brief 图片实体头文件
+ * 
+ * 定义ImageEntity类，基于图片的地理实体实现
+ */
+
 #ifndef IMAGEENTITY_H
 #define IMAGEENTITY_H
 
