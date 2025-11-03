@@ -1,7 +1,12 @@
-﻿//////////////////////////////////////////////////////////////////////////
-//	新建一个GraphicsWindowQt类，集成QGLWidget类
-//////////////////////////////////////////////////////////////////////////
-
+﻿/**
+ * @file GraphicsWindowQt.h
+ * @brief OSG图形窗口的Qt实现头文件
+ * 
+ * 功能：提供基于Qt的OpenGL图形窗口，集成OSG场景渲染到Qt应用程序中
+ * 主要类：
+ *   - GLWidget: 基于QGLWidget的OpenGL Widget，处理Qt事件并转发到OSG
+ *   - GraphicsWindowQt: OSG图形窗口的Qt实现，管理窗口生命周期和渲染
+ */
 
 #pragma once
 
@@ -36,29 +41,62 @@ namespace osgViewer {
 namespace osgQt
 {
 
-	// forward declarations
+	// 前向声明
 	class GraphicsWindowQt;
 
+	// 初始化Qt窗口系统
 	void initQtWindowingSystem();
 
+	// 设置OSG查看器，用于驱动场景渲染
 	void setViewer( osgViewer::ViewerBase *viewer );
 
+/**
+ * @brief GLWidget类：基于QGLWidget的OpenGL Widget
+ * 
+ * 功能：
+ *   - 将Qt事件转发到OSG事件队列
+ *   - 支持多线程环境下的延迟事件处理
+ *   - 提供地图状态管理和实体管理接口
+ *   - 处理高DPI显示器的设备像素比
+ */
 class GLWidget : public QGLWidget
 {
 
 public:
-	// 构造函数
+	/**
+	 * @brief 构造函数：使用默认GL格式
+	 * @param parent 父widget
+	 * @param shareWidget 共享的GL widget
+	 * @param f 窗口标志
+	 * @param forwardKeyEvents 是否转发键盘事件到Qt
+	 */
 	GLWidget( QWidget* parent = NULL , 
 		const QGLWidget* shareWidget = NULL , 
 		Qt::WindowFlags f = 0 , 
 		bool forwardKeyEvents = false  );
 
+	/**
+	 * @brief 构造函数：使用指定的GL上下文
+	 * @param context GL上下文
+	 * @param parent 父widget
+	 * @param shareWidget 共享的GL widget
+	 * @param f 窗口标志
+	 * @param forwardKeyEvents 是否转发键盘事件到Qt
+	 */
 	GLWidget( QGLContext* context, 
 		QWidget* parent = NULL, 
 		const QGLWidget* shareWidget = NULL, 
 		Qt::WindowFlags f = 0, 
 		bool forwardKeyEvents = false );
 
+	/**
+	 * @brief 构造函数：使用指定的GL格式
+	 * @param format GL格式
+	 * @param parent 父widget
+	 * @param shareWidget 共享的GL widget
+	 * @param f 窗口标志
+	 * @param forwardKeyEvents 是否转发键盘事件到Qt
+	 */
 	GLWidget( const QGLFormat& format, 
 		QWidget* parent = NULL, 
 		const QGLWidget* shareWidget = NULL, 
@@ -68,13 +106,16 @@ public:
 	// 析构函数
 	virtual ~GLWidget();
 
+	// 设置/获取关联的GraphicsWindowQt指针
 	inline void setGraphicsWindow( GraphicsWindowQt* gw ) { _gw = gw; }
 	inline GraphicsWindowQt* getGraphicsWindow() { return _gw; }
 	inline const GraphicsWindowQt* getGraphicsWindow() const { return _gw; }
 
+	// 获取/设置是否转发键盘事件
 	inline bool getForwardKeyEvents() const { return _forwardKeyEvents; }
 	virtual void setForwardKeyEvents( bool f ) { _forwardKeyEvents = f; }
 
+	// 获取/设置触摸事件是否启用
 	inline bool getTouchEventsEnabled() const { return _touchEventsEnabled; }
 	void setTouchEventsEnabled( bool e );
 
@@ -149,26 +190,53 @@ protected:
 
 
 
+/**
+ * @brief GraphicsWindowQt类：OSG图形窗口的Qt实现
+ * 
+ * 功能：
+ *   - 实现osgViewer::GraphicsWindow接口
+ *   - 管理GLWidget的生命周期
+ *   - 处理窗口的创建、销毁、大小调整等操作
+ *   - 实现OpenGL上下文的创建和管理
+ */
 class GraphicsWindowQt: public osgViewer::GraphicsWindow
 {
 public:
+	/**
+	 * @brief 构造函数：从Traits创建
+	 * @param traits 图形上下文特性
+	 * @param parent 父widget
+	 * @param shareWidget 共享的GL widget
+	 * @param f 窗口标志
+	 */
 	GraphicsWindowQt( osg::GraphicsContext::Traits* traits, QWidget* parent = NULL, const QGLWidget* shareWidget = NULL, Qt::WindowFlags f = 0 );
+	
+	/**
+	 * @brief 构造函数：从已有GLWidget创建
+	 * @param widget GL widget
+	 */
 	GraphicsWindowQt( GLWidget* widget );
+	
+	// 析构函数
 	virtual ~GraphicsWindowQt();
 
+	// 获取GLWidget指针
 	inline GLWidget* getGLWidget() { return _widget; }
 	inline const GLWidget* getGLWidget() const { return _widget; }
 
-	/// deprecated
+	/// @deprecated 使用getGLWidget()代替
 	inline GLWidget* getGraphWidget() { return _widget; }
-	/// deprecated
+	/// @deprecated 使用getGLWidget()代替
 	inline const GLWidget* getGraphWidget() const { return _widget; }
 
+	/**
+	 * @brief WindowData结构体：用于传递窗口数据
+	 */
 	struct WindowData : public osg::Referenced
 	{
 		WindowData( GLWidget* widget = NULL, QWidget* parent = NULL ): _widget(widget), _parent(parent) {}
-		GLWidget* _widget;
-		QWidget* _parent;
+		GLWidget* _widget;  // GL widget指针
+		QWidget* _parent;   // 父widget指针
 	};
 
 

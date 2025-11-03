@@ -11,12 +11,18 @@
 #include <QGraphicsItem>
 #include <QGraphicsProxyWidget>
 
-#define MYQKEYEVENT 2000
-#define MYQPOINTEREVENT 2001
-
+// 自定义事件类型
+#define MYQKEYEVENT 2000      // 键盘事件
+#define MYQPOINTEREVENT 2001  // 指针事件
 
 namespace osgQt
 {
+	/**
+	 * @brief 获取或创建QApplication实例
+	 * @return QApplication指针
+	 * 
+	 * 如果QApplication不存在则创建它，否则返回现有实例
+	 */
 	QCoreApplication* getOrCreateQApplication()
 	{
 		if (QApplication::instance()==0)
@@ -28,6 +34,11 @@ namespace osgQt
 		return QApplication::instance();
 	}
 
+	/**
+	 * @brief MyQKeyEvent类：自定义键盘事件
+	 * 
+	 * 用于在QGraphicsViewAdapter中传递键盘事件
+	 */
 	class MyQKeyEvent : public QEvent
 	{
 	public:
@@ -35,23 +46,33 @@ namespace osgQt
 		  QEvent( QEvent::Type(MYQKEYEVENT) ),
 			  _key(key), _down(down) {}
 
-		  int         _key;
-		  bool        _down;
+		  int         _key;   // 按键码
+		  bool        _down;  // 是否按下
 	};
 
-
+	/**
+	 * @brief MyQPointerEvent结构体：自定义指针事件
+	 * 
+	 * 用于在QGraphicsViewAdapter中传递鼠标/指针事件
+	 */
 	struct MyQPointerEvent : public QEvent
 	{
 		MyQPointerEvent(int x, int y, unsigned int buttonMask):
 	QEvent( QEvent::Type(MYQPOINTEREVENT) ),
 		_x(x), _y(y),_buttonMask(buttonMask) {}
 
-	int _x, _y;
-	unsigned int _buttonMask;
+	int _x, _y;              // 坐标
+	unsigned int _buttonMask; // 按钮掩码
 	};
 
+	// 图像格式：ARGB32预乘alpha
 	const QImage::Format s_imageFormat = QImage::Format_ARGB32_Premultiplied;
 
+	/**
+	 * @brief QGraphicsViewAdapter构造函数
+	 * @param image OSG图像对象（用于存储渲染结果）
+	 * @param widget 要嵌入的Qt Widget
+	 */
 	QGraphicsViewAdapter::QGraphicsViewAdapter(osg::Image* image, QWidget* widget):
 	_image(image),
 		_backgroundWidget(0),
@@ -66,15 +87,17 @@ namespace osgQt
 		_backgroundColor(255, 255, 255),
 		_widget(widget)
 	{
-		// make sure we have a valid QApplication before we start creating widgets.
+		// 确保在创建widget之前有有效的QApplication
 		getOrCreateQApplication();
 
-
+		// 设置OSG到Qt的按键映射
 		setUpKeyMap();
 
+		// 创建QGraphicsScene并添加widget
 		_graphicsScene = new QGraphicsScene;
 		_graphicsScene->addWidget(widget);
 
+		// 创建QGraphicsView并设置场景
 		_graphicsView = new QGraphicsView;
 		_graphicsView->setScene(_graphicsScene);
 		_graphicsView->viewport()->setParent(0);
@@ -83,49 +106,74 @@ namespace osgQt
 		_graphicsScene->setStickyFocus(true);
 #endif
 
+		// 获取场景尺寸
 		_width = static_cast<int>(_graphicsScene->width());
 		_height = static_cast<int>(_graphicsScene->height());
 
+		// 初始化三缓冲图像
 		_qimages[0] = QImage(QSize(_width, _height), s_imageFormat);
 		_qimages[1] = QImage(QSize(_width, _height), s_imageFormat);
 		_qimages[2] = QImage(QSize(_width, _height), s_imageFormat);
 
+		// 初始化缓冲索引
 		_currentRead = 0;
 		_currentWrite = 1;
 		_previousWrite = 2;
 		_previousFrameNumber = osg::UNINITIALIZED_FRAME_NUMBER;
 		_newImageAvailable = false;
 
+		// 连接场景变化信号到重绘槽
 		connect(_graphicsScene, SIGNAL(changed(const QList<QRectF> &)),
 			this, SLOT(repaintRequestedSlot(const QList<QRectF> &)));
 		connect(_graphicsScene, SIGNAL(sceneRectChanged(const QRectF &)),
 			this, SLOT(repaintRequestedSlot(const QRectF &)));
 
+		// 分配初始图像
 		assignImage(0);
 	}
 
 
+	/**
+	 * @brief 重绘请求槽函数（区域列表）
+	 * @param 区域列表（未使用）
+	 * 
+	 * 当QGraphicsScene发生变化时触发
+	 */
 	void QGraphicsViewAdapter::repaintRequestedSlot(const QList<QRectF>&)
 	{
 		// OSG_NOTICE<<"QGraphicsViewAdapter::repaintRequestedSlot"<<std::endl;
 		_requiresRendering = true;
 	}
 
+	/**
+	 * @brief 重绘请求槽函数（单个区域）
+	 * @param 区域（未使用）
+	 * 
+	 * 当QGraphicsScene大小改变时触发
+	 */
 	void QGraphicsViewAdapter::repaintRequestedSlot(const QRectF&)
 	{
 		// OSG_NOTICE<<"QGraphicsViewAdapter::repaintRequestedSlot"<<std::endl;
 		_requiresRendering = true;
 	}
 
+	/**
+	 * @brief 自定义事件处理函数
+	 * @param event 事件指针
+	 * 
+	 * 处理自定义的键盘和指针事件
+	 */
 	void QGraphicsViewAdapter::customEvent ( QEvent * event )
 	{
 		if (event->type()==MYQKEYEVENT)
 		{
+			// 处理键盘事件
 			MyQKeyEvent* keyEvent = (MyQKeyEvent*)event;
 			handleKeyEvent(keyEvent->_key, keyEvent->_down);
 		}
 		else if (event->type()==MYQPOINTEREVENT)
 		{
+			// 处理指针事件
 			MyQPointerEvent* pointerEvent = (MyQPointerEvent*)event;
 			handlePointerEvent(pointerEvent->_x, pointerEvent->_y, pointerEvent->_buttonMask);
 		}

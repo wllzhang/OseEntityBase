@@ -1,4 +1,15 @@
-﻿#pragma once
+﻿/**
+ * @file QGraphicsViewAdapter.h
+ * @brief QGraphicsView适配器头文件
+ * 
+ * 功能：将Qt的QGraphicsView嵌入到OSG场景中
+ * 主要功能：
+ *   - 在OSG纹理上渲染Qt widget
+ *   - 双向事件转发（Qt<->OSG）
+ *   - 三缓冲图像管理
+ */
+
+#pragma once
 
 #ifndef QGRAPHICSVIEWADAPTER_H
 #define QGRAPHICSVIEWADAPTER_H
@@ -7,7 +18,6 @@
 
 #include <osg/Image>
 #include <osg/observer_ptr>
-
 
 #include <QPointer>
 #include <QGraphicsScene>
@@ -19,8 +29,14 @@
 namespace osgQt
 {
 
+// 获取或创建QApplication实例
 extern QCoreApplication* getOrCreateQApplication();
 
+/**
+ * @brief QGraphicsViewAdapter类：QGraphicsView适配器
+ * 
+ * 功能：在OSG场景中嵌入Qt Widget
+ */
 class QGraphicsViewAdapter : public QObject
 {
 	Q_OBJECT

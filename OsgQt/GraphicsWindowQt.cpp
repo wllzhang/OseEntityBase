@@ -12,10 +12,18 @@
 
 using namespace osgQt;
 
+// ============================================================================
+// QtKeyboardMap类：Qt键盘按键映射到OSG按键
+// ============================================================================
+// 功能：将Qt的键盘事件转换为OSG的键盘事件
+// 用途：在Qt和OSG之间建立键盘事件映射关系
+// ============================================================================
+
 class QtKeyboardMap
 {
 
 public:
+	// 构造函数：初始化Qt键盘按键到OSG按键的映射表
 	QtKeyboardMap()
 	{
 		mKeyMap[Qt::Key_Escape     ] = osgGA::GUIEventAdapter::KEY_Escape;
@@ -80,15 +88,23 @@ public:
 		//mKeyMap[Qt::Key_Delete        ] = osgGA::GUIEventAdapter::KEY_KP_Delete;
 	}
 
+	// 析构函数
 	~QtKeyboardMap()
 	{
 	}
 
+	/**
+	 * @brief 将Qt键盘事件映射到OSG键盘码
+	 * @param event Qt键盘事件
+	 * @return OSG键盘码
+	 */
 	int remapKey(QKeyEvent* event)
 	{
+		// 在映射表中查找Qt按键
 		KeyMap::iterator itr = mKeyMap.find(event->key());
 		if (itr == mKeyMap.end())
 		{
+			// 如果找不到映射，直接返回按键的ASCII码
 			return int(*(event->text().toLatin1().data()));
 		}
 		else
@@ -96,46 +112,61 @@ public:
 	}
 
 private:
-	typedef std::map<unsigned int, int> KeyMap;
-	KeyMap mKeyMap;
+	typedef std::map<unsigned int, int> KeyMap;  // Qt按键码到OSG按键码的映射表
+	KeyMap mKeyMap;  // 存储映射关系
 
 };
 
-
+// 全局静态实例，用于键盘映射
 static QtKeyboardMap s_QtKeyboardMap;
 
+// ============================================================================
+// HeartBeat类：场景重渲染定时器
+// ============================================================================
+// 功能：负责在Qt事件循环中驱动OSG场景的渲染
+// 用途：将OSG的渲染循环集成到Qt的事件循环中
+// ============================================================================
 /// The object responsible for the scene re-rendering.
-class HeartBeat : public QObject 
+class HeartBeat : public QObject
 {
 public:
-	int _timerId;
-	osg::Timer _lastFrameStartTime;
-	osg::observer_ptr< osgViewer::ViewerBase > _viewer;
+	int _timerId;  // Qt定时器ID
+	osg::Timer _lastFrameStartTime;  // 上一帧开始时间
+	osg::observer_ptr< osgViewer::ViewerBase > _viewer;  // OSG查看器指针
 
 	virtual ~HeartBeat();
 
+	// 初始化心跳定时器
 	void init( osgViewer::ViewerBase *viewer );
+	// 停止定时器
 	void stopTimer();
+	// 定时器事件处理函数
 	void timerEvent( QTimerEvent *event );
 
+	// 获取单例实例
 	static HeartBeat* instance();
 
 private:
 	HeartBeat();
 
-	static QPointer<HeartBeat> heartBeat;
+	static QPointer<HeartBeat> heartBeat;  // 单例指针
 };
 
 
 QPointer<HeartBeat> HeartBeat::heartBeat;
 
+// 设备像素比宏：用于高DPI显示器支持
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
 #define GETDEVICEPIXELRATIO() 1.0
 #else
 #define GETDEVICEPIXELRATIO() devicePixelRatio()
 #endif
 
+// ============================================================================
+// GLWidget类实现：基于QGLWidget的OpenGL Widget
+// ============================================================================
 
+// 构造函数1：使用默认GL格式
 GLWidget::GLWidget( QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f, bool forwardKeyEvents )
 	: QGLWidget(parent, shareWidget, f),
 	_gw( NULL ),
@@ -146,6 +177,7 @@ GLWidget::GLWidget( QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFla
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }
 
+// 构造函数2：使用指定的GL上下文
 GLWidget::GLWidget( QGLContext* context, QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f,
 	bool forwardKeyEvents )
 	: QGLWidget(context, parent, shareWidget, f),
@@ -157,6 +189,7 @@ GLWidget::GLWidget( QGLContext* context, QWidget* parent, const QGLWidget* share
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }
 
+// 构造函数3：使用指定的GL格式
 GLWidget::GLWidget( const QGLFormat& format, QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f,
 	bool forwardKeyEvents )
 	: QGLWidget(format, parent, shareWidget, f),
@@ -168,9 +201,10 @@ GLWidget::GLWidget( const QGLFormat& format, QWidget* parent, const QGLWidget* s
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }
 
+// 析构函数
 GLWidget::~GLWidget()
 {
-	// close GraphicsWindowQt and remove the reference to us
+	// 关闭GraphicsWindowQt并移除引用
 	if( _gw )
 	{
 		_gw->close();
@@ -179,6 +213,10 @@ GLWidget::~GLWidget()
 	}
 }
 
+/**
+ * @brief 启用或禁用触摸事件（如缩放手势）
+ * @param e 是否启用
+ */
 void GLWidget::setTouchEventsEnabled(bool e)
 {
 #ifdef USE_GESTURES
@@ -189,10 +227,12 @@ void GLWidget::setTouchEventsEnabled(bool e)
 
 	if (_touchEventsEnabled)
 	{
+		// 启用手势识别（如捏合缩放）
 		grabGesture(Qt::PinchGesture);
 	}
 	else
 	{
+		// 禁用手势识别
 		ungrabGesture(Qt::PinchGesture);
 	}
 #endif
@@ -213,16 +253,22 @@ void GLWidget::setEntityManager(GeoEntityManager* manager)
 	_entityManager = manager;
 }
 
+/**
+ * @brief 处理延迟事件队列
+ * 用于在多线程环境中安全处理某些需要在主线程中执行的事件
+ */
 void GLWidget::processDeferredEvents()
 {
 	QQueue<QEvent::Type> deferredEventQueueCopy;
 	{
+		// 加锁复制事件队列
 		QMutexLocker lock(&_deferredEventQueueMutex);
 		deferredEventQueueCopy = _deferredEventQueue;
 		_eventCompressor.clear();
 		_deferredEventQueue.clear();
 	}
 
+	// 处理所有延迟的事件
 	while (!deferredEventQueueCopy.isEmpty())
 	{
 		QEvent event(deferredEventQueueCopy.dequeue());
@@ -231,6 +277,17 @@ void GLWidget::processDeferredEvents()
 }
 
 
+/**
+ * @brief 事件处理函数
+ * @param event Qt事件
+ * @return 是否处理了该事件
+ * 
+ * 说明：
+ * QEvent::Hide - 处理Qt在隐藏widget前调用glFinish的workaround
+ *                在OSG多线程环境中，context可能在另一个线程中活动
+ * QEvent::ParentChange - 处理重新父级化时可能创建的新的GL context
+ *                        这些事件需要在正确的线程中延迟执行
+ */
 bool GLWidget::event( QEvent* event )
 {
 #ifdef USE_GESTURES
@@ -283,16 +340,26 @@ bool GLWidget::event( QEvent* event )
 	return QGLWidget::event( event );
 }
 
+/**
+ * @brief 设置键盘修饰键状态（Shift、Ctrl、Alt等）
+ * @param event Qt输入事件
+ */
 void GLWidget::setKeyboardModifiers( QInputEvent* event )
 {
+	// 提取修饰键状态
 	int modkey = event->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier);
 	unsigned int mask = 0;
 	if ( modkey & Qt::ShiftModifier ) mask |= osgGA::GUIEventAdapter::MODKEY_SHIFT;
 	if ( modkey & Qt::ControlModifier ) mask |= osgGA::GUIEventAdapter::MODKEY_CTRL;
 	if ( modkey & Qt::AltModifier ) mask |= osgGA::GUIEventAdapter::MODKEY_ALT;
+	// 设置到OSG事件队列
 	_gw->getEventQueue()->getCurrentEventState()->setModKeyMask( mask );
 }
 
+/**
+ * @brief 窗口大小改变事件处理
+ * @param event 大小改变事件
+ */
 void GLWidget::resizeEvent( QResizeEvent* event )
 {
 	if (_gw == NULL || !_gw->valid())
@@ -305,50 +372,69 @@ void GLWidget::resizeEvent( QResizeEvent* event )
 	_gw->requestRedraw();
 }
 
+/**
+ * @brief 窗口移动事件处理
+ * @param event 移动事件
+ */
 void GLWidget::moveEvent( QMoveEvent* event )
 {
 	if (_gw == NULL || !_gw->valid())
 		return; 
 	const QPoint& pos = event->pos();
+	// 考虑高DPI显示器的设备像素比
 	int scaled_width = static_cast<int>(width()*_devicePixelRatio);
 	int scaled_height = static_cast<int>(height()*_devicePixelRatio);
 	_gw->resized( pos.x(), pos.y(), scaled_width,  scaled_height );
 	_gw->getEventQueue()->windowResize( pos.x(), pos.y(), scaled_width,  scaled_height );
 }
 
+/**
+ * @brief 请求重绘
+ */
 void GLWidget::glDraw()
 {
 	_gw->requestRedraw();
 }
 
 
+/**
+ * @brief 键盘按下事件处理
+ * @param event 键盘事件
+ */
 void GLWidget::keyPressEvent( QKeyEvent* event )
 {
+	// 设置修饰键状态
 	setKeyboardModifiers( event );
+	// 映射Qt按键到OSG按键
 	int value = s_QtKeyboardMap.remapKey( event );
 	_gw->getEventQueue()->keyPress( value );
 
-	// this passes the event to the regular Qt key event processing,
-	// among others, it closes popup windows on ESC and forwards the event to the parent widgets
+	// 如果需要转发事件给Qt常规键盘事件处理
+	// 例如：按ESC关闭弹出窗口，或转发事件给父widget
 	if( _forwardKeyEvents )
 		keyPressEvent( event );
 }
 
+/**
+ * @brief 键盘释放事件处理
+ * @param event 键盘事件
+ */
 void GLWidget::keyReleaseEvent( QKeyEvent* event )
 {
+	// 忽略自动重复的按键事件
 	if( event->isAutoRepeat() )
 	{
 		event->ignore();
 	}
 	else
 	{
+		// 设置修饰键状态并发送释放事件到OSG
 		setKeyboardModifiers( event );
 		int value = s_QtKeyboardMap.remapKey( event );
 		_gw->getEventQueue()->keyRelease( value );
 	}
 
-	// this passes the event to the regular Qt key event processing,
-	// among others, it closes popup windows on ESC and forwards the event to the parent widgets
+	// 如果需要转发事件给Qt常规键盘事件处理
 	if( _forwardKeyEvents )
 		keyReleaseEvent( event );
 }
@@ -419,8 +505,13 @@ void GLWidget::mouseReleaseEvent( QMouseEvent* event )
 	}
 }
 
+/**
+ * @brief 鼠标双击事件处理
+ * @param event 鼠标事件
+ */
 void GLWidget::mouseDoubleClickEvent( QMouseEvent* event )
 {
+	// 将Qt鼠标按钮映射到OSG按钮编号
 	int button = 0;
 	switch ( event->button() )
 	{
@@ -431,10 +522,14 @@ void GLWidget::mouseDoubleClickEvent( QMouseEvent* event )
 	default: button = 0; break;
 	}
 	setKeyboardModifiers( event );
+	// 发送双击事件到OSG，考虑设备像素比
 	_gw->getEventQueue()->mouseDoubleButtonPress( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio, button );
 }
 
-
+/**
+ * @brief 鼠标移动事件处理
+ * @param event 鼠标事件
+ */
 void GLWidget::mouseMoveEvent( QMouseEvent* event )
 {
 	// ===== OSG鼠标事件处理 =====
@@ -477,6 +572,11 @@ void GLWidget::wheelEvent( QWheelEvent* event )
 
 
 #ifdef USE_GESTURES
+/**
+ * @brief 将Qt手势状态转换为OSG触摸阶段
+ * @param state Qt手势状态
+ * @return OSG触摸阶段
+ */
 static osgGA::GUIEventAdapter::TouchPhase translateQtGestureState( Qt::GestureState state )
 {
 	osgGA::GUIEventAdapter::TouchPhase touchPhase;
@@ -500,7 +600,11 @@ static osgGA::GUIEventAdapter::TouchPhase translateQtGestureState( Qt::GestureSt
 }
 #endif
 
-
+/**
+ * @brief 手势事件处理（如捏合缩放）
+ * @param qevent 手势事件
+ * @return 是否处理了该事件
+ */
 bool GLWidget::gestureEvent( QGestureEvent* qevent )
 {
 #ifndef USE_GESTURES
@@ -557,6 +661,11 @@ bool GLWidget::gestureEvent( QGestureEvent* qevent )
 
 
 
+// ============================================================================
+// GraphicsWindowQt类实现：OSG图形窗口的Qt实现
+// ============================================================================
+
+// 构造函数1：从Traits创建
 GraphicsWindowQt::GraphicsWindowQt( osg::GraphicsContext::Traits* traits, QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f )
 	:   _realized(false)
 {
@@ -566,6 +675,7 @@ GraphicsWindowQt::GraphicsWindowQt( osg::GraphicsContext::Traits* traits, QWidge
 	init( parent, shareWidget, f );
 }
 
+// 构造函数2：从已有GLWidget创建
 GraphicsWindowQt::GraphicsWindowQt( GLWidget* widget )
 	:   _realized(false)
 {
@@ -574,25 +684,33 @@ GraphicsWindowQt::GraphicsWindowQt( GLWidget* widget )
 	init( NULL, NULL, 0 );
 }
 
+// 析构函数
 GraphicsWindowQt::~GraphicsWindowQt()
 {
 	close();
 
-	// remove reference from GLWidget
+	// 移除GLWidget中的引用
 	if ( _widget )
 		_widget->_gw = NULL;
 }
 
+/**
+ * @brief 初始化图形窗口
+ * @param parent 父widget
+ * @param shareWidget 共享的GL widget
+ * @param f 窗口标志
+ * @return 是否成功
+ */
 bool GraphicsWindowQt::init( QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f )
 {
-	// update _widget and parent by WindowData
+	// 从WindowData更新_widget和parent
 	WindowData* windowData = _traits.get() ? dynamic_cast<WindowData*>(_traits->inheritedWindowData.get()) : 0;
 	if ( !_widget )
 		_widget = windowData ? windowData->_widget : NULL;
 	if ( !parent )
 		parent = windowData ? windowData->_parent : NULL;
 
-	// create widget if it does not exist
+	// 如果widget不存在则创建
 	_ownsWidget = _widget == NULL;
 	if ( !_widget )
 	{
@@ -648,14 +766,21 @@ bool GraphicsWindowQt::init( QWidget* parent, const QGLWidget* shareWidget, Qt::
 		getState()->setContextID( osg::GraphicsContext::createNewContextID() );
 	}
 
-	// make sure the event queue has the correct window rectangle size and input range
+	// 确保事件队列有正确的窗口矩形大小和输入范围
 	getEventQueue()->getCurrentEventState()->getGraphicsContext();
 	return true;
 }
+
+/**
+ * @brief 将OSG Traits转换为QGLFormat
+ * @param traits OSG图形上下文特性
+ * @return QGL格式
+ */
 QGLFormat GraphicsWindowQt::traits2qglFormat( const osg::GraphicsContext::Traits* traits )
 {
 	QGLFormat format( QGLFormat::defaultFormat() );
 
+	// 设置缓冲区大小
 	format.setAlphaBufferSize( traits->alpha );
 	format.setRedBufferSize( traits->red );
 	format.setGreenBufferSize( traits->green );
@@ -665,6 +790,7 @@ QGLFormat GraphicsWindowQt::traits2qglFormat( const osg::GraphicsContext::Traits
 	format.setSampleBuffers( traits->sampleBuffers );
 	format.setSamples( traits->samples );
 
+	// 设置缓冲区启用状态
 	format.setAlpha( traits->alpha>0 );
 	format.setDepth( traits->depth>0 );
 	format.setStencil( traits->stencil>0 );
@@ -676,8 +802,14 @@ QGLFormat GraphicsWindowQt::traits2qglFormat( const osg::GraphicsContext::Traits
 }
 
 
+/**
+ * @brief 将QGLFormat转换为OSG Traits
+ * @param format QGL格式
+ * @param traits OSG图形上下文特性
+ */
 void GraphicsWindowQt::qglFormat2traits( const QGLFormat& format, osg::GraphicsContext::Traits* traits )
 {
+	// 读取颜色缓冲区大小
 	traits->red = format.redBufferSize();
 	traits->green = format.greenBufferSize();
 	traits->blue = format.blueBufferSize();
@@ -685,27 +817,38 @@ void GraphicsWindowQt::qglFormat2traits( const QGLFormat& format, osg::GraphicsC
 	traits->depth = format.depth() ? format.depthBufferSize() : 0;
 	traits->stencil = format.stencil() ? format.stencilBufferSize() : 0;
 
+	// 读取多重采样设置
 	traits->sampleBuffers = format.sampleBuffers() ? 1 : 0;
 	traits->samples = format.samples();
 
+	// 读取显示模式
 	traits->quadBufferStereo = format.stereo();
 	traits->doubleBuffer = format.doubleBuffer();
 
+	// 读取垂直同步设置
 	traits->vsync = format.swapInterval() >= 1;
 }
 
+/**
+ * @brief 从QGLWidget创建OSG Traits
+ * @param widget GL widget
+ * @return OSG Traits指针
+ */
 osg::GraphicsContext::Traits* GraphicsWindowQt::createTraits( const QGLWidget* widget )
 {
 	osg::GraphicsContext::Traits *traits = new osg::GraphicsContext::Traits;
 
+	// 从widget格式转换
 	qglFormat2traits( widget->format(), traits );
 
+	// 从widget几何形状获取窗口信息
 	QRect r = widget->geometry();
 	traits->x = r.x();
 	traits->y = r.y();
 	traits->width = r.width();
 	traits->height = r.height();
 
+	// 从widget属性获取窗口信息
 	traits->windowName = widget->windowTitle().toLocal8Bit().data();
 	Qt::WindowFlags f = widget->windowFlags();
 	traits->windowDecoration = ( f & Qt::WindowTitleHint ) &&
@@ -720,6 +863,14 @@ osg::GraphicsContext::Traits* GraphicsWindowQt::createTraits( const QGLWidget* w
 
 
 
+/**
+ * @brief 设置窗口矩形位置和大小
+ * @param x X坐标
+ * @param y Y坐标
+ * @param width 宽度
+ * @param height 高度
+ * @return 是否成功
+ */
 bool GraphicsWindowQt::setWindowRectangleImplementation( int x, int y, int width, int height )
 {
 	if ( _widget == NULL )
@@ -729,6 +880,13 @@ bool GraphicsWindowQt::setWindowRectangleImplementation( int x, int y, int width
 	return true;
 }
 
+/**
+ * @brief 获取窗口矩形位置和大小
+ * @param x X坐标（输出）
+ * @param y Y坐标（输出）
+ * @param width 宽度（输出）
+ * @param height 高度（输出）
+ */
 void GraphicsWindowQt::getWindowRectangle( int& x, int& y, int& width, int& height )
 {
 	if ( _widget )
@@ -741,7 +899,11 @@ void GraphicsWindowQt::getWindowRectangle( int& x, int& y, int& width, int& heig
 	}
 }
 
-
+/**
+ * @brief 设置窗口装饰（标题栏、最小化/最大化按钮等）
+ * @param windowDecoration 是否启用装饰
+ * @return 是否成功
+ */
 bool GraphicsWindowQt::setWindowDecorationImplementation( bool windowDecoration )
 {
 	Qt::WindowFlags flags = Qt::Window|Qt::CustomizeWindowHint;//|Qt::WindowStaysOnTopHint;
@@ -759,42 +921,65 @@ bool GraphicsWindowQt::setWindowDecorationImplementation( bool windowDecoration 
 	return false;
 }
 
-
+/**
+ * @brief 获取窗口装饰状态
+ * @return 是否启用装饰
+ */
 bool GraphicsWindowQt::getWindowDecoration() const
 {
 	return _traits->windowDecoration;
 }
 
+/**
+ * @brief 获取焦点
+ */
 void GraphicsWindowQt::grabFocus()
 {
 	if ( _widget )
 		_widget->setFocus( Qt::ActiveWindowFocusReason );
 }
 
+/**
+ * @brief 如果鼠标在窗口内则获取焦点
+ */
 void GraphicsWindowQt::grabFocusIfPointerInWindow()
 {
 	if ( _widget->underMouse() )
 		_widget->setFocus( Qt::ActiveWindowFocusReason );
 }
 
-
+/**
+ * @brief 提升窗口到前台
+ */
 void GraphicsWindowQt::raiseWindow()
 {
 	if ( _widget )
 		_widget->raise();
 }
 
+/**
+ * @brief 设置窗口名称
+ * @param name 窗口名称
+ */
 void GraphicsWindowQt::setWindowName( const std::string& name )
 {
 	if ( _widget )
 		_widget->setWindowTitle( name.c_str() );
 }
 
+/**
+ * @brief 获取窗口名称
+ * @return 窗口名称
+ */
 std::string GraphicsWindowQt::getWindowName()
 {
 	return _widget ? _widget->windowTitle().toStdString() : "";
 }
 
+/**
+ * @brief 启用或禁用光标
+ * @param cursorOn 是否显示光标
+ */
 void GraphicsWindowQt::useCursor( bool cursorOn )
 {
 	if ( _widget )
@@ -805,7 +990,10 @@ void GraphicsWindowQt::useCursor( bool cursorOn )
 	}
 }
 
-
+/**
+ * @brief 设置光标形状
+ * @param cursor 光标类型
+ */
 void GraphicsWindowQt::setCursor( MouseCursor cursor )
 {
 	if ( cursor==InheritCursor && _widget )
@@ -840,18 +1028,27 @@ void GraphicsWindowQt::setCursor( MouseCursor cursor )
 }
 
 
+/**
+ * @brief 检查窗口是否有效
+ * @return 是否有效
+ */
 bool GraphicsWindowQt::valid() const
 {
 	return _widget && _widget->isValid();
 }
 
+/**
+ * @brief 实现窗口Realize操作
+ * @return 是否成功
+ * 
+ * 功能：初始化OpenGL上下文并使其成为当前上下文
+ */
 bool GraphicsWindowQt::realizeImplementation()
 {
-	// save the current context
-	// note: this will save only Qt-based contexts
+	// 保存当前的上下文（只能保存Qt基于的上下文）
 	const QGLContext *savedContext = QGLContext::currentContext();
 
-	// initialize GL context for the widget
+	// 为widget初始化GL上下文
 	if ( !valid() )
 		_widget->glInit();
 
@@ -890,11 +1087,18 @@ bool GraphicsWindowQt::realizeImplementation()
 }
 
 
+/**
+ * @brief 检查窗口是否已Realize
+ * @return 是否已Realize
+ */
 bool GraphicsWindowQt::isRealizedImplementation() const
 {
 	return _realized;
 }
 
+/**
+ * @brief 关闭窗口实现
+ */
 void GraphicsWindowQt::closeImplementation()
 {
 	if ( _widget )
@@ -902,21 +1106,30 @@ void GraphicsWindowQt::closeImplementation()
 	_realized = false;
 }
 
+/**
+ * @brief 运行图形操作
+ * 在图形线程中，这是执行图形操作前最后的机会做有用的事情
+ */
 void GraphicsWindowQt::runOperations()
 {
-	// While in graphics thread this is last chance to do something useful before
-	// graphics thread will execute its operations.
+	// 处理延迟的事件
 	if (_widget->getNumDeferredEvents() > 0)
 		_widget->processDeferredEvents();
 
+	// 如果当前上下文不是widget的上下文，则设置为当前
 	if (QGLContext::currentContext() != _widget->context())
 		_widget->makeCurrent();
 
 	GraphicsWindow::runOperations();
 }
 
+/**
+ * @brief 使上下文成为当前上下文
+ * @return 是否成功
+ */
 bool GraphicsWindowQt::makeCurrentImplementation()
 {
+	// 处理延迟的事件
 	if (_widget->getNumDeferredEvents() > 0)
 		_widget->processDeferredEvents();
 
@@ -925,88 +1138,142 @@ bool GraphicsWindowQt::makeCurrentImplementation()
 	return true;
 }
 
+/**
+ * @brief 释放当前上下文
+ * @return 是否成功
+ */
 bool GraphicsWindowQt::releaseContextImplementation()
 {
 	_widget->doneCurrent();
 	return true;
 }
 
+/**
+ * @brief 交换缓冲区实现
+ * 
+ * FIXME: processDeferredEvents应该真正在GUI（主）线程上下文中执行
+ * 但目前找不到可靠的方法。现在只能希望不会有任何*仅GUI线程的操作*
+ * 在QGLWidget::event处理器中执行。另一方面，在QGLWidget事件处理器中
+ * 调用仅GUI线程操作是Qt的一个bug
+ */
 void GraphicsWindowQt::swapBuffersImplementation()
 {
-	// FIXME: the processDeferredEvents should really be executed in a GUI (main) thread context but
-	// I couln't find any reliable way to do this. For now, lets hope non of *GUI thread only operations* will
-	// be executed in a QGLWidget::event handler. On the other hand, calling GUI only operations in the
-	// QGLWidget event handler is an indication of a Qt bug.
 	if (_widget->getNumDeferredEvents() > 0)
 		_widget->processDeferredEvents();
 
-	// We need to call makeCurrent here to restore our previously current context
-	// which may be changed by the processDeferredEvents function.
+	// 需要在这里调用makeCurrent以恢复我们之前的当前上下文
+	// 该上下文可能被processDeferredEvents函数改变
 	_widget->makeCurrent();
 	_widget->swapBuffers();
 }
 
+/**
+ * @brief 请求移动鼠标指针
+ * @param x X坐标
+ * @param y Y坐标
+ */
 void GraphicsWindowQt::requestWarpPointer( float x, float y )
 {
 	if ( _widget )
 		QCursor::setPos( _widget->mapToGlobal(QPoint((int)x,(int)y)) );
 }
 
+// ============================================================================
+// QtWindowingSystem类：Qt窗口系统接口
+// ============================================================================
+// 功能：实现OSG窗口系统接口，用于创建和管理Qt图形上下文
+// ============================================================================
 class QtWindowingSystem : public osg::GraphicsContext::WindowingSystemInterface
 {
 public:
-
+	// 构造函数
 	QtWindowingSystem()
 	{
 		OSG_INFO << "QtWindowingSystemInterface()" << std::endl;
 	}
 
+	// 析构函数
 	~QtWindowingSystem()
 	{
 		if (osg::Referenced::getDeleteHandler())
 		{
+			// 刷新所有延迟删除的对象
 			osg::Referenced::getDeleteHandler()->setNumFramesToRetainObjects(0);
 			osg::Referenced::getDeleteHandler()->flushAll();
 		}
 	}
 
-	// Access the Qt windowing system through this singleton class.
+	/**
+	 * @brief 获取单例实例
+	 * @return 窗口系统接口指针
+	 * 
+	 * 通过此单例类访问Qt窗口系统
+	 */
 	static QtWindowingSystem* getInterface()
 	{
 		static QtWindowingSystem* qtInterface = new QtWindowingSystem;
 		return qtInterface;
 	}
 
-	// Return the number of screens present in the system
+	/**
+	 * @brief 获取系统中的屏幕数量
+	 * @param si 屏幕标识符
+	 * @return 屏幕数量
+	 * 
+	 * 注意：尚未实现
+	 */
 	virtual unsigned int getNumScreens( const osg::GraphicsContext::ScreenIdentifier& /*si*/ )
 	{
 		OSG_WARN << "osgQt: getNumScreens() not implemented yet." << std::endl;
 		return 0;
 	}
 
-	// Return the resolution of specified screen
-	// (0,0) is returned if screen is unknown
+	/**
+	 * @brief 获取指定屏幕的分辨率
+	 * @param si 屏幕标识符
+	 * @param resolution 分辨率（输出）
+	 * 
+	 * 注意：如果屏幕未知则返回(0,0)
+	 */
 	virtual void getScreenSettings( const osg::GraphicsContext::ScreenIdentifier& /*si*/, osg::GraphicsContext::ScreenSettings & /*resolution*/ )
 	{
 		OSG_WARN << "osgQt: getScreenSettings() not implemented yet." << std::endl;
 	}
 
-	// Set the resolution for given screen
+	/**
+	 * @brief 设置指定屏幕的分辨率
+	 * @param si 屏幕标识符
+	 * @param resolution 分辨率
+	 * @return 是否成功
+	 * 
+	 * 注意：尚未实现
+	 */
 	virtual bool setScreenSettings( const osg::GraphicsContext::ScreenIdentifier& /*si*/, const osg::GraphicsContext::ScreenSettings & /*resolution*/ )
 	{
 		OSG_WARN << "osgQt: setScreenSettings() not implemented yet." << std::endl;
 		return false;
 	}
 
-	// Enumerates available resolutions
+	/**
+	 * @brief 枚举可用分辨率
+	 * @param screenIdentifier 屏幕标识符
+	 * @param resolution 分辨率列表（输出）
+	 * 
+	 * 注意：尚未实现
+	 */
 	virtual void enumerateScreenSettings( const osg::GraphicsContext::ScreenIdentifier& /*screenIdentifier*/, osg::GraphicsContext::ScreenSettingsList & /*resolution*/ )
 	{
 		OSG_WARN << "osgQt: enumerateScreenSettings() not implemented yet." << std::endl;
 	}
 
-	// Create a graphics context with given traits
+	/**
+	 * @brief 创建带给定特性的图形上下文
+	 * @param traits 图形上下文特性
+	 * @return 图形上下文指针
+	 */
 	virtual osg::GraphicsContext* createGraphicsContext( osg::GraphicsContext::Traits* traits )
 	{
+		// 检查是否是pbuffer（像素缓冲区）
 		if (traits->pbuffer)
 		{
 			OSG_WARN << "osgQt: createGraphicsContext - pbuffer not implemented yet." << std::endl;
@@ -1014,6 +1281,7 @@ public:
 		}
 		else
 		{
+			// 创建Qt图形窗口
 			osg::ref_ptr< GraphicsWindowQt > window = new GraphicsWindowQt( traits );
 			if (window->valid()) return window.release();
 			else return NULL;
@@ -1045,24 +1313,36 @@ void osgQt::initQtWindowingSystem()
 #endif
 
 
+/**
+ * @brief 设置OSG查看器
+ * @param viewer OSG查看器
+ */
 void osgQt::setViewer( osgViewer::ViewerBase *viewer )
 {
 	HeartBeat::instance()->init( viewer );
 }
 
-
-/// Constructor. Must be called from main thread.
+/**
+ * @brief HeartBeat构造函数
+ * 必须在主线程中调用
+ */
 HeartBeat::HeartBeat() : _timerId( 0 )
 {
 }
 
-
-/// Destructor. Must be called from main thread.
+/**
+ * @brief HeartBeat析构函数
+ * 必须在主线程中调用
+ */
 HeartBeat::~HeartBeat()
 {
 	stopTimer();
 }
 
+/**
+ * @brief 获取单例实例
+ * @return HeartBeat实例指针
+ */
 HeartBeat* HeartBeat::instance()
 {
 	if (!heartBeat)
@@ -1072,6 +1352,9 @@ HeartBeat* HeartBeat::instance()
 	return heartBeat;
 }
 
+/**
+ * @brief 停止定时器
+ */
 void HeartBeat::stopTimer()
 {
 	if ( _timerId != 0 )
@@ -1081,8 +1364,12 @@ void HeartBeat::stopTimer()
 	}
 }
 
-
-/// Initializes the loop for viewer. Must be called from main thread.
+/**
+ * @brief 初始化查看器循环
+ * @param viewer OSG查看器
+ * 
+ * 必须在主线程中调用
+ */
 void HeartBeat::init( osgViewer::ViewerBase *viewer )
 {
 	if( _viewer == viewer )
@@ -1094,25 +1381,33 @@ void HeartBeat::init( osgViewer::ViewerBase *viewer )
 
 	if( viewer )
 	{
+		// 启动定时器，间隔为0表示尽可能快地触发
 		_timerId = startTimer( 0 );
 		_lastFrameStartTime.setStartTick( 0 );
 	}
 }
 
 
+/**
+ * @brief 定时器事件处理函数
+ * @param event 定时器事件（未使用）
+ * 
+ * 功能：驱动OSG场景渲染的主循环
+ */
 void HeartBeat::timerEvent( QTimerEvent * /*event*/ )
 {
 	osg::ref_ptr< osgViewer::ViewerBase > viewer;
+	// 尝试锁定查看器，如果已被删除则停止定时器
 	if( !_viewer.lock( viewer ) )
 	{
-		// viewer has been deleted -> stop timer
 		stopTimer();
 		return;
 	}
 
-	// limit the frame rate
+	// 限制帧率
 	if( viewer->getRunMaxFrameRate() > 0.0)
 	{
+		// 如果时间间隔小于最小帧时间，则休眠一段时间
 		double dt = _lastFrameStartTime.time_s();
 		double minFrameTime = 1.0 / viewer->getRunMaxFrameRate();
 		if (dt < minFrameTime)
@@ -1120,7 +1415,7 @@ void HeartBeat::timerEvent( QTimerEvent * /*event*/ )
 	}
 	else
 	{
-		// avoid excessive CPU loading when no frame is required in ON_DEMAND mode
+		// 在按需模式下避免CPU过载
 		if( viewer->getRunFrameScheme() == osgViewer::ViewerBase::ON_DEMAND )
 		{
 			double dt = _lastFrameStartTime.time_s();
@@ -1128,12 +1423,13 @@ void HeartBeat::timerEvent( QTimerEvent * /*event*/ )
 				OpenThreads::Thread::microSleep(static_cast<unsigned int>(1000000.0*(0.01-dt)));
 		}
 
-		// record start frame time
+		// 记录帧开始时间
 		_lastFrameStartTime.setStartTick();
 
-		// make frame
+		// 渲染一帧
 		if( viewer->getRunFrameScheme() == osgViewer::ViewerBase::ON_DEMAND )
 		{
+			// 按需模式：只有需要时才渲染
 			if( viewer->checkNeedToDoFrame() )
 			{
 				viewer->frame();
@@ -1141,6 +1437,7 @@ void HeartBeat::timerEvent( QTimerEvent * /*event*/ )
 		}
 		else
 		{
+			// 连续模式：持续渲染
 			viewer->frame();
 		}
 	}
