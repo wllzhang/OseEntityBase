@@ -24,24 +24,47 @@ WaypointEntity::WaypointEntity(const QString& id,
     labelString_ = "";
 }
 
+/**
+ * @brief 初始化航点实体
+ * 
+ * 使用基类默认实现，创建节点并设置初始状态。
+ * 航点的特定初始化逻辑（如创建 CircleNode 和 PlaceNode）在 createNode() 中完成。
+ */
 void WaypointEntity::initialize()
 {
     // 调用基类默认实现（创建节点、设置可见性等）
     GeoEntity::initialize();
 }
 
+/**
+ * @brief 更新完成后的回调：更新标签文本
+ * 
+ * 当实体位置或属性变化时，基类会调用此方法。
+ * 这里用于更新航点的序号标签，使其与当前 labelString_ 同步。
+ */
 void WaypointEntity::onUpdated()
 {
     // 更新标签（特定逻辑）
     updateLabel();
 }
 
+/**
+ * @brief 更新航点实体
+ * 
+ * 使用基类默认实现更新节点变换，然后通过 onUpdated() 回调更新标签。
+ */
 void WaypointEntity::update()
 {
     // 使用基类默认实现（调用updateNode），然后通过onUpdated更新标签
     GeoEntity::update();
 }
 
+/**
+ * @brief 清理前的回调：清除航点特定资源
+ * 
+ * 在基类 cleanup() 清除节点引用前执行，
+ * 用于清理航点特有的节点引用，避免内存泄漏。
+ */
 void WaypointEntity::onBeforeCleanup()
 {
     // 清理特定的节点引用
@@ -50,6 +73,12 @@ void WaypointEntity::onBeforeCleanup()
     labelGeode_ = nullptr;
 }
 
+/**
+ * @brief 清理航点实体
+ * 
+ * 调用基类清理方法，基类会先调用 onBeforeCleanup() 清理特定资源，
+ * 然后清除节点引用。
+ */
 void WaypointEntity::cleanup()
 {
     // 调用基类清理（会调用onBeforeCleanup）
@@ -62,6 +91,21 @@ void WaypointEntity::setOrderLabel(const QString& text)
     updateLabel();
 }
 
+/**
+ * @brief 创建航点实体的渲染节点
+ * 
+ * 创建流程：
+ * 1. 检查 MapNode 是否已绑定（必须）
+ * 2. 创建 CircleNode 作为航点标记（红色圆形，固定高度避免地形遮挡）
+ * 3. 创建 PlaceNode 作为序号标签（使用中文字体）
+ * 4. 将两者组合到 Group 节点中
+ * 
+ * @return 返回包含 CircleNode 和 PlaceNode 的 Group 节点，失败返回 nullptr
+ * 
+ * @note 航点使用 CircleNode 和 PlaceNode（osgEarth 注解节点），
+ *       这些节点需要 MapNode 引用，因此必须通过 setMapNode() 预先绑定。
+ *       航点的位置通过 GeoPoint 设置，不使用 PAT 节点。
+ */
 osg::ref_ptr<osg::Node> WaypointEntity::createNode()
 {
     // 仅支持显式绑定 MapNode 的直接创建
@@ -108,6 +152,14 @@ osg::ref_ptr<osg::Node> WaypointEntity::createNode()
     return group.get();
 }
 
+/**
+ * @brief 更新航点标签文本
+ * 
+ * 当 labelString_ 变化时（如通过 setOrderLabel() 设置），
+ * 更新 PlaceNode 的文本内容，使其显示新的序号。
+ * 
+ * @note 此方法由 onUpdated() 回调调用，确保标签与实体状态同步。
+ */
 void WaypointEntity::updateLabel()
 {
     if (placeNode_.valid()) {

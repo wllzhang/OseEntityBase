@@ -38,7 +38,20 @@ public:
 
 protected:
     // 生命周期回调重写
+    /** 
+     * @brief 更新完成后的回调
+     * 
+     * 在基类 update() 调用 updateNode() 后执行，
+     * 用于更新航点标签文本，使其与位置变化同步。
+     */
     void onUpdated() override;
+    
+    /** 
+     * @brief 清理前的回调
+     * 
+     * 在基类 cleanup() 清除节点引用前执行，
+     * 用于清理航点特定的节点引用（如 pointGeode_、labelText_ 等）。
+     */
     void onBeforeCleanup() override;
 
 private:

@@ -37,7 +37,20 @@ public:
 
 protected:
     // 生命周期回调重写
+    /** 
+     * @brief 清理前的回调
+     * 
+     * 在基类 cleanup() 清除节点引用前执行，
+     * 用于从 PAT 节点中移除高亮边框节点，避免场景图中残留引用。
+     */
     void onBeforeCleanup() override;
+    
+    /** 
+     * @brief 清理后的回调
+     * 
+     * 在基类 cleanup() 清除节点引用后执行，
+     * 用于记录清理完成的日志或其他后续工作。
+     */
     void onAfterCleanup() override;
 
 private:

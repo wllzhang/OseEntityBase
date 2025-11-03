@@ -21,6 +21,14 @@ ImageEntity::ImageEntity(const QString& id, const QString& name, const QString& 
     setProperty("opacity", 1.0);
 }
 
+/**
+ * @brief 初始化图片实体
+ * 
+ * 使用基类默认实现，创建节点并设置初始状态。
+ * 图片的特定初始化逻辑（如加载图片、创建纹理、创建几何体）在 createNode() 中完成。
+ * 
+ * @note 初始化完成后会记录日志，便于调试。
+ */
 void ImageEntity::initialize()
 {
     // 调用基类默认实现（创建节点、设置可见性等）
@@ -29,12 +37,25 @@ void ImageEntity::initialize()
     qDebug() << "图片实体初始化完成:" << entityName_;
 }
 
+/**
+ * @brief 更新图片实体
+ * 
+ * 使用基类默认实现更新节点变换（位置和旋转）。
+ * 图片实体没有需要额外更新的内容，所以直接使用基类实现。
+ */
 void ImageEntity::update()
 {
     // 使用基类默认实现（调用updateNode）
     GeoEntity::update();
 }
 
+/**
+ * @brief 清理前的回调：移除高亮节点
+ * 
+ * 在基类 cleanup() 清除节点引用前执行。
+ * 高亮边框节点是动态添加到 PAT 节点的子节点，
+ * 必须在清理前从场景图中移除，避免残留引用。
+ */
 void ImageEntity::onBeforeCleanup()
 {
     qDebug() << "清理图片实体:" << entityName_;
@@ -53,11 +74,25 @@ void ImageEntity::onBeforeCleanup()
     highlightNode_ = nullptr;
 }
 
+/**
+ * @brief 清理后的回调：记录清理完成
+ * 
+ * 在基类 cleanup() 清除节点引用后执行，
+ * 用于记录清理完成的日志。
+ */
 void ImageEntity::onAfterCleanup()
 {
     qDebug() << "图片实体清理完成";
 }
 
+/**
+ * @brief 清理图片实体
+ * 
+ * 调用基类清理方法，基类会：
+ * 1. 先调用 onBeforeCleanup() 移除高亮节点
+ * 2. 清除节点引用
+ * 3. 调用 onAfterCleanup() 记录日志
+ */
 void ImageEntity::cleanup()
 {
     // 调用基类清理（会调用onBeforeCleanup和onAfterCleanup）
@@ -91,6 +126,22 @@ void ImageEntity::setSelected(bool selected)
     }
 }
 
+/**
+ * @brief 创建图片实体的渲染节点
+ * 
+ * 创建流程：
+ * 1. 检查并加载图片文件
+ * 2. 创建纹理对象并绑定图片
+ * 3. 使用基类 createPATNode() 创建已初始化的 PAT 节点
+ * 4. 创建带纹理的四边形几何体（根据 size 属性确定大小）
+ * 5. 设置纹理坐标、法线和渲染状态
+ * 6. 将几何体添加到 PAT 节点
+ * 
+ * @return 返回包含图片几何体的 PAT 节点，失败返回 nullptr
+ * 
+ * @note PAT 节点的位置和旋转已由 createPATNode() 根据实体地理位置和航向角设置。
+ *       高亮边框节点将在选中时动态添加，不在 createNode() 中创建。
+ */
 osg::ref_ptr<osg::Node> ImageEntity::createNode()
 {
     try {
@@ -108,7 +159,7 @@ osg::ref_ptr<osg::Node> ImageEntity::createNode()
             return nullptr;
         }
         
-        // 创建纹理
+        // 创建纹理并绑定图片
         osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
         texture->setImage(image.get());
         texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE);
