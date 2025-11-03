@@ -433,8 +433,8 @@ osg::ref_ptr<osg::Geode> GeoEntityManager::buildLinearRoute(const QVector<Waypoi
 
     for (auto* wp : wps) {
         double lon, lat, alt; wp->getPosition(lon, lat, alt);
-        osgEarth::GeoPoint gp(osgEarth::SpatialReference::get("wgs84"), lon, lat, routeAltMeters, osgEarth::ALTMODE_ABSOLUTE);
-        osg::Vec3d world; gp.toWorld(world);
+        // 使用工具函数进行地理坐标到世界坐标的转换
+        osg::Vec3d world = GeoUtils::geoToWorldCoordinates(lon, lat, routeAltMeters);
         verts->push_back(world);
     }
     geom->setVertexArray(verts.get());
@@ -466,9 +466,10 @@ osg::ref_ptr<osg::Geode> GeoEntityManager::buildBezierRoute(const QVector<Waypoi
     osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array();
     const double routeAltMeters = 4000.0; // 固定航线高度（米）
 
-    auto toWorld = [routeAltMeters](double lon,double lat,double /*alt*/){
-        osgEarth::GeoPoint gp(osgEarth::SpatialReference::get("wgs84"), lon, lat, routeAltMeters, osgEarth::ALTMODE_ABSOLUTE);
-        osg::Vec3d w; gp.toWorld(w); return w; };
+    // 使用工具函数进行地理坐标到世界坐标的转换
+    auto toWorld = [routeAltMeters](double lon, double lat, double /*alt*/) {
+        return GeoUtils::geoToWorldCoordinates(lon, lat, routeAltMeters);
+    };
 
     for (int i=0;i<wps.size()-1;++i){
         double lon1,lat1,alt1; wps[i]->getPosition(lon1,lat1,alt1);

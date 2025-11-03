@@ -1,4 +1,5 @@
 #include "geoentity.h"
+#include "geoutils.h"
 #include <QDebug>
 #include <QColor>
 
@@ -99,11 +100,8 @@ void GeoEntity::updateNode()
     // 更新PositionAttitudeTransform的位置
     osg::PositionAttitudeTransform* pat = dynamic_cast<osg::PositionAttitudeTransform*>(node_.get());
     if (pat) {
-        // 更新位置
-        osgEarth::GeoPoint geoPoint(osgEarth::SpatialReference::get("wgs84"), 
-                                   longitude_, latitude_, altitude_, osgEarth::ALTMODE_ABSOLUTE);
-        osg::Vec3d worldPos;
-        geoPoint.toWorld(worldPos);
+        // 更新位置：使用工具函数进行地理坐标到世界坐标的转换
+        osg::Vec3d worldPos = GeoUtils::geoToWorldCoordinates(longitude_, latitude_, altitude_);
         pat->setPosition(worldPos);
         
         // 更新旋转

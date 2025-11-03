@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <osg/Viewport>
 #include <osgUtil/LineSegmentIntersector>
+#include <osgEarth/GeoData>
+#include <osgEarth/SpatialReference>
 
 bool GeoUtils::screenToGeoCoordinates(
     osgViewer::Viewer* viewer,
@@ -48,8 +50,8 @@ bool GeoUtils::screenToGeoCoordinates(
                 latitude = geoVec.y();
                 altitude = geoVec.z();
                 
-                qDebug() << "GeoUtils::screenToGeoCoordinates 转换成功:"
-                         << screenPos << "-> 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
+                // qDebug() << "GeoUtils::screenToGeoCoordinates 转换成功:"
+                //          << screenPos << "-> 经度:" << longitude << "纬度:" << latitude << "高度:" << altitude;
                 return true;
             } else {
                 qDebug() << "GeoUtils::screenToGeoCoordinates: 世界坐标转换为地理坐标失败";
@@ -62,6 +64,32 @@ bool GeoUtils::screenToGeoCoordinates(
     } catch (const std::exception& e) {
         qDebug() << "GeoUtils::screenToGeoCoordinates 异常:" << e.what();
         return false;
+    }
+}
+
+osg::Vec3d GeoUtils::geoToWorldCoordinates(
+    double longitude,
+    double latitude,
+    double altitude,
+    osgEarth::AltitudeMode altMode)
+{
+    try {
+        // 创建地理坐标点（WGS84坐标系）
+        osgEarth::GeoPoint geoPoint(
+            osgEarth::SpatialReference::get("wgs84"),
+            longitude,
+            latitude,
+            altitude,
+            altMode);
+        
+        // 转换为世界坐标
+        osg::Vec3d worldPos;
+        geoPoint.toWorld(worldPos);
+        
+        return worldPos;
+    } catch (const std::exception& e) {
+        qDebug() << "GeoUtils::geoToWorldCoordinates 异常:" << e.what();
+        return osg::Vec3d(0.0, 0.0, 0.0);
     }
 }
 

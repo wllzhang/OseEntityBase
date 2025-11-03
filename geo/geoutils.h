@@ -4,6 +4,7 @@
 #include <QPoint>
 #include <osgViewer/Viewer>
 #include <osgEarth/MapNode>
+#include <osg/Vec3d>
 
 /**
  * @ingroup managers
@@ -35,6 +36,24 @@ public:
         double& longitude,
         double& latitude,
         double& altitude);
+    
+    /**
+     * @brief 将地理坐标转换为世界坐标
+     * 
+     * 将经纬度坐标转换为OSG世界坐标系统（WGS84）。
+     * 自动处理空间参考系统和高度模式。
+     * 
+     * @param longitude 经度（度）
+     * @param latitude 纬度（度）
+     * @param altitude 高度（米）
+     * @param altMode 高度模式（默认：ALTMODE_ABSOLUTE）
+     * @return 世界坐标向量，失败返回零向量
+     */
+    static osg::Vec3d geoToWorldCoordinates(
+        double longitude,
+        double latitude,
+        double altitude,
+        osgEarth::AltitudeMode altMode = osgEarth::ALTMODE_ABSOLUTE);
 };
 
 #endif // GEOUTILS_H

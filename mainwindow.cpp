@@ -612,17 +612,17 @@ void MainWindow::openImageViewer()
 void MainWindow::onMapStateChanged(const MapStateInfo& state)
 {
     auto tuple = state.getTuple();
-    qDebug() << "=== 地图状态变化 ===";
-    qDebug() << "9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2):";
-    qDebug() << "a (Pitch俯仰角):" << std::get<0>(tuple);
-    qDebug() << "b (Heading航向角):" << std::get<1>(tuple);
-    qDebug() << "c (Range距离):" << std::get<2>(tuple);
-    qDebug() << "x1 (视角经度):" << std::get<3>(tuple);
-    qDebug() << "y1 (视角纬度):" << std::get<4>(tuple);
-    qDebug() << "z1 (视角高度):" << std::get<5>(tuple);
-    qDebug() << "x2 (鼠标经度):" << std::get<6>(tuple);
-    qDebug() << "y2 (鼠标纬度):" << std::get<7>(tuple);
-    qDebug() << "z2 (鼠标高度):" << std::get<8>(tuple);
+    // qDebug() << "=== 地图状态变化 ===";
+    // qDebug() << "9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2):";
+    // qDebug() << "a (Pitch俯仰角):" << std::get<0>(tuple);
+    // qDebug() << "b (Heading航向角):" << std::get<1>(tuple);
+    // qDebug() << "c (Range距离):" << std::get<2>(tuple);
+    // qDebug() << "x1 (视角经度):" << std::get<3>(tuple);
+    // qDebug() << "y1 (视角纬度):" << std::get<4>(tuple);
+    // qDebug() << "z1 (视角高度):" << std::get<5>(tuple);
+    // qDebug() << "x2 (鼠标经度):" << std::get<6>(tuple);
+    // qDebug() << "y2 (鼠标纬度):" << std::get<7>(tuple);
+    // qDebug() << "z2 (鼠标高度):" << std::get<8>(tuple);
 }
 
 void MainWindow::onMousePositionChanged(double longitude, double latitude, double altitude)

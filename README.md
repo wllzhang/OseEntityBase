@@ -75,13 +75,12 @@
 2. 实现点标绘, 为路线规划做基础 (已完成,025年10月30日)
 3. 选中时可以根据当前range 调整选中阈值大小   (已修复,从state获取range , 然后动态实现 2025年10月30日) 
 4. 选中后视角移动有问题, 不可以滚轮键调整了.  (已修复 2025年10月30日)
-5. 删除实体时会崩溃  (已修复,使用延时删除,先标记,然后再qtimer里统一处理 2025年10月30日)
-6. 
-7. 与慧慧进行页面集成
-8.  航向角设置有问题
-9.  拖拽添加是坐标不精确 , 主要是坐标算法不精确,导致很多功能都不行
-10. 规划结果转化为afsim文档
-11. **信息层抽象**
+5. 删除实体时会崩溃  (已修复,使用延时删除,先标记,然后再qtimer里统一处理 2025年10月30日) 
+6. 与慧慧进行页面集成
+7.  航向角设置有问题
+8.  拖拽添加是坐标不精确 , 主要是坐标算法不精确,导致很多功能都不行
+9.  规划结果转化为afsim文档
+10. **信息层抽象**
    - 地图状态信息抽象
    - 实体状态信息抽象
    - 服务接口设计
@@ -114,6 +113,11 @@
 - **模块分组**: 创建了`geo_entities`和`managers`两个Doxygen分组，便于文档导航
 - **主页面重写**: 重写了`docs/mainpage.md`，提供更清晰的架构概览和快速开始指南
 
+## 今日工作总结 (2025年11月3日)
+
+ 
+
+
 ## 使用说明
 
 ### 基本操作
@@ -132,76 +136,7 @@
 #### 视图切换
 1. **2D/3D切换** - 点击右上角"切换到2D"/"切换到3D"按钮
 2. **视角跳转** - 拖拽添加实体后自动跳转到实体位置
-
-### 技术特性
-
-#### 实体选择算法
-- 使用距离计算算法，选择距离鼠标点击位置最近的实体
-- 距离阈值：0.01度（约1公里）
-- 支持多实体场景下的精确选择
-
-#### 事件处理架构
-- **GeoEntityManager** - 统一处理所有鼠标事件
-- **信号槽机制** - 组件间通过Qt信号槽通信
-- **多态支持** - 虚函数实现实体选择的高亮功能
-
-#### 坐标系统
-- **屏幕坐标** - Qt鼠标事件坐标
-- **地理坐标** - 经纬度坐标系统
-- **世界坐标** - OSG 3D世界坐标
-- **自动转换** - 各坐标系间的自动转换
-
-## 开发说明
-
-### 架构设计原则
-
-#### 1. 职责分离
-- **GeoEntityManager** - 负责实体管理和鼠标事件处理
-- **MainWindow** - 负责UI显示和用户交互
-- **GeoEntity** - 负责实体自身的状态管理
-
-#### 2. 信号槽通信
-```cpp
-// 实体选择信号
-connect(entityManager_, &GeoEntityManager::entitySelected, 
-        this, [this](GeoEntity* entity) {
-            selectedEntity_ = entity;
-        });
-
-// 右键菜单信号
-connect(entityManager_, &GeoEntityManager::entityRightClicked, 
-        this, [this](GeoEntity* entity, QPoint screenPos) {
-            showEntityContextMenu(screenPos, entity);
-        });
-```
-
-#### 3. 多态设计
-```cpp
-// 基类虚函数
-class GeoEntity {
-public:
-    virtual void setSelected(bool selected);
-};
-
-// 子类重写
-class ImageEntity : public GeoEntity {
-public:
-    void setSelected(bool selected) override;
-};
-```
-
-### 扩展指南
-
-#### 添加新实体类型
-1. 继承`GeoEntity`基类
-2. 实现纯虚函数：`initialize()`, `update()`, `cleanup()`
-3. 重写`setSelected()`方法（可选）
-4. 在`GeoEntityManager::createEntity()`中添加类型判断
-
-#### 添加新交互功能
-1. 在`GeoEntityManager::onMousePress()`中添加事件处理
-2. 定义新的信号（如需要）
-3. 在`MainWindow`中连接信号并实现UI响应
+ 
 
 ## 更新日志
 

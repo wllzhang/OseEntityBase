@@ -1,4 +1,5 @@
 #include "imageentity.h"
+#include "geoutils.h"
 #include <osgDB/ReadFile>
 #include <osg/Geometry>
 #include <osg/Geode>
@@ -160,11 +161,8 @@ osg::ref_ptr<osg::Node> ImageEntity::createNode()
         
         // 高亮边框将在选中时动态创建
         
-        // 设置PAT的位置
-        osgEarth::GeoPoint geoPoint(osgEarth::SpatialReference::get("wgs84"), 
-                                   longitude_, latitude_, altitude_, osgEarth::ALTMODE_ABSOLUTE);
-        osg::Vec3d worldPos;
-        geoPoint.toWorld(worldPos);
+        // 设置PAT的位置：使用工具函数进行地理坐标到世界坐标的转换
+        osg::Vec3d worldPos = GeoUtils::geoToWorldCoordinates(longitude_, latitude_, altitude_);
         pat->setPosition(worldPos);
         
         qDebug() << "图片实体创建成功:" << entityName_;
