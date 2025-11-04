@@ -79,7 +79,6 @@ private:
     void loadMap(const QString& earthFile);
     void setupCamera();
     void setupManipulator(MapMode mode);
-    void loadEntityConfig();
     bool screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude);
     void showEntityContextMenu(QPoint screenPos, GeoEntity* entity);
 

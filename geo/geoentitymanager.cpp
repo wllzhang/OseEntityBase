@@ -8,6 +8,7 @@
 #include "geoentitymanager.h"
 #include "imageentity.h"
 #include "geoutils.h"
+#include "../util/databaseutils.h"
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
@@ -19,6 +20,8 @@
 #include <limits>
 #include "waypointentity.h"
 #include <osg/LineWidth>
+#include <QSqlQuery>
+#include <QSqlError>
 
 GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode, QObject *parent)
     : QObject(parent)
@@ -50,8 +53,8 @@ GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QStri
         
         // 根据实体类型创建不同的实体
         if (entityType == "aircraft" || entityType == "image") {
-            // 从配置中获取图片路径
-            QString imagePath = getImagePathFromConfig(entityName);
+            // 从数据库查询图片路径（根据实体名称查询模型的icon字段）
+            QString imagePath = getImagePathFromDatabase(entityName);
             if (imagePath.isEmpty()) {
                 qDebug() << "未找到图片路径:" << entityName;
                 return nullptr;
@@ -218,49 +221,53 @@ void GeoEntityManager::clearAllEntities()
     qDebug() << "所有实体已标记为待删除，将在下一帧渲染后真正删除";
 }
 
-void GeoEntityManager::setEntityConfig(const QJsonObject& config)
-{
-    entityConfig_ = config;
-    qDebug() << "设置实体配置完成";
-}
-
 QString GeoEntityManager::generateEntityId(const QString& entityType, const QString& entityName)
 {
     entityCounter_++;
     return QString("%1_%2_%3").arg(entityType).arg(entityName).arg(entityCounter_);
 }
 
-QString GeoEntityManager::getImagePathFromConfig(const QString& entityName)
+QString GeoEntityManager::getImagePathFromDatabase(const QString& entityName)
 {
-    if (!entityConfig_.contains("entities")) {
-        qDebug() << "配置中没有entities数组";
-        return QString();
+    // 从数据库查询模型的icon字段（存储的是绝对路径）
+    QSqlDatabase db = DatabaseUtils::getDatabase();
+    
+    // 确保数据库已打开
+    if (!DatabaseUtils::isDatabaseOpen()) {
+        if (!DatabaseUtils::openDatabase()) {
+            qDebug() << "无法打开数据库:" << db.lastError().text();
+            return QString();
+        }
     }
     
-    QJsonArray entitiesArray = entityConfig_["entities"].toArray();
-    QString imageDir = entityConfig_["image_directory"].toString();
+    QSqlQuery query;
+    query.prepare("SELECT icon FROM ModelInformation WHERE name = ?");
+    query.addBindValue(entityName);
     
-    for (int i = 0; i < entitiesArray.size(); ++i) {
-        QJsonObject entityObj = entitiesArray[i].toObject();
-        QString name = entityObj["name"].toString();
-        
-        if (name == entityName) {
-            QString filename = entityObj["filename"].toString();
-            QString fullPath = QDir(imageDir).absoluteFilePath(filename);
-            
-            // 检查文件是否存在
-            QFileInfo fileInfo(fullPath);
-            if (fileInfo.exists()) {
-                qDebug() << "找到匹配的图片路径:" << fullPath;
-                return fullPath;
+    if (query.exec() && query.next()) {
+        QString iconPath = query.value(0).toString();
+        if (!iconPath.isEmpty()) {
+            // 验证文件是否存在
+            QFileInfo fileInfo(iconPath);
+            if (fileInfo.exists() && fileInfo.isFile()) {
+                qDebug() << "从数据库找到图片路径:" << iconPath;
+                return iconPath;
             } else {
-                qDebug() << "图片文件不存在:" << fullPath;
+                qDebug() << "数据库中的图片路径不存在:" << iconPath;
             }
         }
+    } else {
+        qDebug() << "数据库查询失败或未找到模型:" << entityName << query.lastError().text();
     }
     
     qDebug() << "未找到实体对应的图片路径:" << entityName;
     return QString();
+}
+
+QString GeoEntityManager::getImagePathFromConfig(const QString& entityName)
+{
+    // 此方法已废弃，转发到数据库查询方法
+    return getImagePathFromDatabase(entityName);
 }
 
 void GeoEntityManager::onMousePress(QMouseEvent* event)

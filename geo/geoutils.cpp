@@ -8,6 +8,9 @@
 #include "geoutils.h"
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include <QTemporaryFile>
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <osg/Viewport>
@@ -106,6 +109,81 @@ osg::Vec3d GeoUtils::geoToWorldCoordinates(
         qDebug() << "GeoUtils::geoToWorldCoordinates 异常:" << e.what();
         return osg::Vec3d(0.0, 0.0, 0.0);
     }
+}
+
+QString GeoUtils::convertResourcePathToFile(const QString& resourcePath, QString* errorMessage)
+{
+    // 如果不是Qt资源路径，直接返回原路径
+    if (!resourcePath.startsWith(":/")) {
+        // 检查文件是否存在
+        QFileInfo fileInfo(resourcePath);
+        if (!fileInfo.exists()) {
+            QString error = QString("文件不存在: %1").arg(resourcePath);
+            if (errorMessage) {
+                *errorMessage = error;
+            } else {
+                qDebug() << "GeoUtils::convertResourcePathToFile:" << error;
+            }
+            return QString();
+        }
+        return resourcePath;
+    }
+    
+    // Qt资源路径，需要复制到临时文件
+    QFile resourceFile(resourcePath);
+    if (!resourceFile.open(QIODevice::ReadOnly)) {
+        QString error = QString("无法打开资源文件: %1").arg(resourcePath);
+        if (errorMessage) {
+            *errorMessage = error;
+        } else {
+            qDebug() << "GeoUtils::convertResourcePathToFile:" << error;
+        }
+        return QString();
+    }
+    
+    // 从资源路径中提取文件扩展名
+    QFileInfo fileInfo(resourcePath);
+    QString suffix = fileInfo.suffix();
+    if (suffix.isEmpty()) {
+        // 如果无法从路径提取扩展名，尝试从文件名提取
+        QString fileName = fileInfo.fileName();
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot >= 0) {
+            suffix = fileName.mid(lastDot + 1);
+        }
+    }
+    
+    // 创建带扩展名的临时文件模板
+    QString tempTemplate = QDir::temp().absoluteFilePath("osgEarth.XXXXXX");
+    if (!suffix.isEmpty()) {
+        tempTemplate += "." + suffix;
+    }
+    
+    QTemporaryFile tempFile(tempTemplate);
+    // 设置不自动删除，确保文件在使用时不会被删除
+    tempFile.setAutoRemove(false);
+    
+    if (!tempFile.open()) {
+        QString error = QString("无法创建临时文件");
+        if (errorMessage) {
+            *errorMessage = error;
+        } else {
+            qDebug() << "GeoUtils::convertResourcePathToFile:" << error;
+        }
+        return QString();
+    }
+    
+    // 写入资源文件内容
+    QByteArray data = resourceFile.readAll();
+    resourceFile.close();
+    tempFile.write(data);
+    tempFile.flush();  // 确保数据写入磁盘
+    tempFile.close();
+    
+    QString tempFilePath = tempFile.fileName();
+    qDebug() << "GeoUtils::convertResourcePathToFile: 资源文件已复制到临时文件:" << resourcePath << "->" << tempFilePath;
+    
+    return tempFilePath;
 }
 
 QJsonObject GeoUtils::loadJsonFile(const QString& filePath, QString* errorMessage)

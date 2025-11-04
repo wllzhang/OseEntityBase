@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/qss">
+        <file>myStyleSheet.qss</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>MyDatabase.db</file>
+        <file>images/F-15.PNG</file>
+        <file>images/F-16.PNG</file>
+        <file>images/F-35.PNG</file>
+        <file>images/J-10.PNG</file>
+        <file>images/J-15.PNG</file>
+        <file>images/J-16.PNG</file>
+        <file>images/J-20.PNG</file>
+        <file>images/标绘.png</file>
+        <file>images/导出方案.png</file>
+        <file>images/地图.png</file>
+        <file>images/点.png</file>
+        <file>images/方案规划.png</file>
+        <file>images/航迹关联.png</file>
+        <file>images/航线绘制.png</file>
+        <file>images/画多边形.png</file>
+        <file>images/角度测算.png</file>
+        <file>images/矩形.png</file>
+        <file>images/距离测量.png</file>
+        <file>images/面积测算.png</file>
+        <file>images/模型部署.png</file>
+        <file>images/模型组件.png</file>
+        <file>images/模型组装.png</file>
+        <file>images/目标匹配.png</file>
+        <file>images/其他.png</file>
+        <file>images/曲线.png</file>
+        <file>images/设置.png</file>
+        <file>images/态势标绘.png</file>
+        <file>images/线.png</file>
+        <file>images/直线.png</file>
+        <file>images/资源管理.png</file>
+        <file>images/资源管理2.png</file>
+        <file>earth/my.earth</file>
+        <file>earth/world.tif</file>
+    </qresource>
+</RCC>

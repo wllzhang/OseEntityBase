@@ -117,6 +117,7 @@ public:
     /**
      * @brief 设置实体配置
      * @param config JSON配置对象
+     * @deprecated 此方法已废弃，图片路径现在从数据库查询
      */
     void setEntityConfig(const QJsonObject& config);
     
@@ -228,7 +229,6 @@ private:
     // 用于读取当前相机距离range
     MapStateManager* mapStateManager_;
     
-    QJsonObject entityConfig_;
     QMap<QString, GeoEntity*> entities_;
     int entityCounter_;
     
@@ -241,7 +241,9 @@ private:
     
     /** @brief 生成唯一实体ID */
     QString generateEntityId(const QString& entityType, const QString& entityName);
-    /** @brief 根据实体名从配置获取图片路径 */
+    /** @brief 根据实体名从数据库获取图片路径 */
+    QString getImagePathFromDatabase(const QString& entityName);
+    /** @brief 根据实体名从配置获取图片路径（已废弃，转发到数据库查询） */
     QString getImagePathFromConfig(const QString& entityName);
 
     // 航点/航线数据

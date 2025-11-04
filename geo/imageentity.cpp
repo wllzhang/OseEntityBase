@@ -16,7 +16,6 @@
 #include <osg/StateAttribute>
 #include <osg/LineWidth>
 #include <QDebug>
-#include <QFileInfo>
 
 ImageEntity::ImageEntity(const QString& id, const QString& name, const QString& imagePath,
                          double longitude, double latitude, double altitude, QObject* parent)
@@ -152,15 +151,16 @@ void ImageEntity::setSelected(bool selected)
 osg::ref_ptr<osg::Node> ImageEntity::createNode()
 {
     try {
-        // 检查图片文件是否存在
-        QFileInfo fileInfo(imagePath_);
-        if (!fileInfo.exists()) {
-            qDebug() << "图片文件不存在:" << imagePath_;
+        // 使用工具函数将Qt资源路径转换为文件路径
+        QString errorMsg;
+        QString filePath = GeoUtils::convertResourcePathToFile(imagePath_, &errorMsg);
+        if (filePath.isEmpty()) {
+            qDebug() << "无法转换图片资源路径:" << errorMsg;
             return nullptr;
         }
         
         // 加载图片
-        osg::ref_ptr<osg::Image> image = osgDB::readImageFile(imagePath_.toStdString());
+        osg::ref_ptr<osg::Image> image = osgDB::readImageFile(filePath.toStdString());
         if (!image.valid()) {
             qDebug() << "无法加载图片:" << imagePath_;
             return nullptr;

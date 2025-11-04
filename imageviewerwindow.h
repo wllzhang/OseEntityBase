@@ -14,14 +14,12 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
 #include <QFileInfo>
 #include <QPixmap>
 #include <QScrollArea>
 #include <QMimeData>
 #include <QDrag>
+#include <QPair>
 #include "draggablelistwidget.h"
 
 /**
@@ -44,7 +42,7 @@ private slots:
 
 private:
     void setupUI();
-    void loadImageConfig();
+    void loadImageListFromDatabase();
     void populateImageList();
     void displaySelectedImage(const QString &imagePath, const QString &description);
     
@@ -55,8 +53,7 @@ private:
     QScrollArea *scrollArea_;
     QPushButton *closeButton_;
     
-    QJsonObject config_;
-    QString imageDirectory_;
+    QList<QPair<QString, QString>> modelList_;  // 存储模型名称和图片路径的列表
 };
 
 #endif // IMAGEVIEWERWINDOW_H

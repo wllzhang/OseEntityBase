@@ -7,11 +7,15 @@
 
 #include "imageviewerwindow.h"
 #include "geo/geoutils.h"
+#include "util/databaseutils.h"
 #include <QApplication>
 #include <QDir>
 #include <QDebug>
 #include <QMessageBox>
 #include <QJsonParseError>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QFileInfo>
 
 ImageViewerWindow::ImageViewerWindow(QWidget *parent)
     : QDialog(parent)
@@ -26,7 +30,7 @@ ImageViewerWindow::ImageViewerWindow(QWidget *parent)
     resize(800, 600);
     
     setupUI();
-    loadImageConfig();
+    loadImageListFromDatabase();
     populateImageList();
 }
 
@@ -88,62 +92,51 @@ void ImageViewerWindow::setupUI()
     mainLayout->addWidget(rightWidget, 1);
 }
 
-void ImageViewerWindow::loadImageConfig()
+void ImageViewerWindow::loadImageListFromDatabase()
 {
-    // 直接使用绝对路径
-    QString configPath = "E:/osgqtlib/osgEarthmy_osgb/images_config.json";
+    // 使用DatabaseUtils获取数据库连接
+    QSqlDatabase db = DatabaseUtils::getDatabase();
     
-    // 使用工具函数加载JSON配置
-    QString errorMsg;
-    config_ = GeoUtils::loadJsonFile(configPath, &errorMsg);
-    
-    if (config_.isEmpty()) {
-        qDebug() << "配置文件加载失败:" << errorMsg;
+    if (!DatabaseUtils::openDatabase()) {
+        qDebug() << "无法打开数据库:" << db.lastError().text();
+        QMessageBox::warning(this, "错误", "无法打开数据库: " + db.lastError().text());
         return;
     }
     
-    imageDirectory_ = config_["image_directory"].toString();
-    qDebug() << "配置文件加载成功，图片目录:" << imageDirectory_;
+    qDebug() << "ImageViewerWindow: 数据库连接成功，路径:" << DatabaseUtils::getDatabasePath();
+    
+    QSqlQuery query;
+    query.exec("SELECT name, icon FROM ModelInformation WHERE icon IS NOT NULL AND icon != ''");
+    
+    modelList_.clear();
+    while (query.next()) {
+        QString name = query.value(0).toString();
+        QString iconPath = query.value(1).toString();
+        
+        // 验证文件是否存在
+        QFileInfo fileInfo(iconPath);
+        if (fileInfo.exists() && fileInfo.isFile()) {
+            modelList_.append(qMakePair(name, iconPath));
+            qDebug() << "加载模型:" << name << "图片路径:" << iconPath;
+        } else {
+            qDebug() << "模型图片文件不存在，跳过:" << name << iconPath;
+        }
+    }
+    
+    qDebug() << "从数据库加载了" << modelList_.size() << "个模型";
+    db.close();
 }
 
 void ImageViewerWindow::populateImageList()
 {
     qDebug() << "开始填充图片列表...";
     
-    if (!config_.contains("entities")) {
-        qDebug() << "配置文件中没有找到entities数组";
-        qDebug() << "配置对象键:" << config_.keys();
-        return;
-    }
+    imageListWidget_->clear();
     
-    QJsonArray entitiesArray = config_["entities"].toArray();
-    qDebug() << "实体数组大小:" << entitiesArray.size();
-    
-    for (int i = 0; i < entitiesArray.size(); ++i) {
-        QJsonObject entityObj = entitiesArray[i].toObject();
-        QString name = entityObj["name"].toString();
-        QString filename = entityObj["filename"].toString();
-        
-        qDebug() << "处理实体项" << i << ":" << name << "文件名:" << filename;
-        
-        if (name.isEmpty() || filename.isEmpty()) {
-            qDebug() << "跳过空名称或文件名的项";
-            continue;
-        }
-        
-        // 检查文件是否存在
-        QString fullPath = QDir(imageDirectory_).absoluteFilePath(filename);
-        QFileInfo fileInfo(fullPath);
-        
-        qDebug() << "检查文件路径:" << fullPath;
-        qDebug() << "文件是否存在:" << fileInfo.exists();
-        
-        if (fileInfo.exists()) {
-            imageListWidget_->addItem(name);
-            qDebug() << "成功添加实体项:" << name;
-        } else {
-            qDebug() << "实体文件不存在:" << fullPath;
-        }
+    for (const auto& pair : modelList_) {
+        QString name = pair.first;
+        imageListWidget_->addItem(name);
+        qDebug() << "添加模型到列表:" << name;
     }
     
     qDebug() << "实体列表填充完成，列表项数量:" << imageListWidget_->count();
@@ -152,17 +145,13 @@ void ImageViewerWindow::populateImageList()
 void ImageViewerWindow::onImageSelected()
 {
     int currentRow = imageListWidget_->currentRow();
-    if (currentRow < 0) return;
+    if (currentRow < 0 || currentRow >= modelList_.size()) return;
     
-    QJsonArray entitiesArray = config_["entities"].toArray();
-    if (currentRow >= entitiesArray.size()) return;
+    QString name = modelList_[currentRow].first;
+    QString iconPath = modelList_[currentRow].second;
     
-    QJsonObject entityObj = entitiesArray[currentRow].toObject();
-    QString filename = entityObj["filename"].toString();
-    QString description = entityObj["description"].toString();
-    
-    QString fullPath = imageDirectory_ + filename;
-    displaySelectedImage(fullPath, description);
+    // 显示图片，描述使用模型名称
+    displaySelectedImage(iconPath, name);
 }
 
 void ImageViewerWindow::displaySelectedImage(const QString &imagePath, const QString &description)

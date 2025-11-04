@@ -1,0 +1,23 @@
+/* 通过对象名称选择控件 */
+QToolButton#navToolButton {
+    background-color: transparent;  /* 默认透明背景 */
+    border: none;     /* 边框 */
+    padding: 5px;                  /* 内边距 */
+    color: black;                /* 文字颜色 */
+    font-size: 20px;               /* 字体大小 */
+    margin: 0px;                    /* 无外边距 */
+    text-align: center;             /* 文字剧中 */
+    qproperty-spacing: 4;                   /* 图标和文字间距 */
+}
+QToolButton#navToolButton:hover {
+    background-color: #0066cc;     /* 悬停时深蓝色背景 */
+    border-color: #0055aa;         /* 悬停时边框颜色 */
+}
+QToolButton#navToolButton:pressed {
+    background-color: #004488;     /* 按下时更深蓝色 */
+    border-color: #003366;
+}
+QToolButton#navToolButton:checked {
+    background-color: #004488;     /* 选中状态 */
+    border-color: #003366;
+}

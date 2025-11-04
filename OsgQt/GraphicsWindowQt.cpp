@@ -183,7 +183,8 @@ GLWidget::GLWidget( QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFla
 	_gw( NULL ),
 	_touchEventsEnabled( false ),
 	_forwardKeyEvents( forwardKeyEvents ),
-	_mapStateManager( NULL )  // 初始化地图状态管理器指针为空
+	_mapStateManager( NULL ),  // 初始化地图状态管理器指针为空
+	_entityManager( NULL )     // 初始化实体管理器指针为空
 {
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }
@@ -195,7 +196,8 @@ GLWidget::GLWidget( QGLContext* context, QWidget* parent, const QGLWidget* share
 	_gw( NULL ),
 	_touchEventsEnabled( false ),
 	_forwardKeyEvents( forwardKeyEvents ),
-	_mapStateManager( NULL )  // 初始化地图状态管理器指针为空
+	_mapStateManager( NULL ),  // 初始化地图状态管理器指针为空
+	_entityManager( NULL )     // 初始化实体管理器指针为空
 {
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }
@@ -207,7 +209,8 @@ GLWidget::GLWidget( const QGLFormat& format, QWidget* parent, const QGLWidget* s
 	_gw( NULL ),
 	_touchEventsEnabled( false ),
 	_forwardKeyEvents( forwardKeyEvents ),
-	_mapStateManager( NULL )  // 初始化地图状态管理器指针为空
+	_mapStateManager( NULL ),  // 初始化地图状态管理器指针为空
+	_entityManager( NULL )     // 初始化实体管理器指针为空
 {
 	_devicePixelRatio = GETDEVICEPIXELRATIO();
 }

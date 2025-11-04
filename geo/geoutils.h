@@ -66,6 +66,19 @@ public:
         osgEarth::AltitudeMode altMode = osgEarth::ALTMODE_ABSOLUTE);
     
     /**
+     * @brief 将Qt资源路径转换为可用的文件路径
+     * 
+     * 如果路径是Qt资源路径（以":/"开头），将其复制到临时文件并返回临时文件路径。
+     * 如果路径是普通文件路径，直接返回原路径。
+     * 主要用于OSG等不支持Qt资源系统的库。
+     * 
+     * @param resourcePath Qt资源路径（如":/images/file.png"）或普通文件路径
+     * @param errorMessage 输出错误信息（如果失败）
+     * @return 成功返回可用文件路径，失败返回空字符串
+     */
+    static QString convertResourcePathToFile(const QString& resourcePath, QString* errorMessage = nullptr);
+    
+    /**
      * @brief 加载JSON配置文件
      * 
      * 统一处理JSON文件的读取和解析，提供统一的错误处理。

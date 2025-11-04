@@ -1,5 +1,5 @@
 {
-    "image_directory": "E:/osgqtlib/osgEarthmy_osgb/images/",
+    "image_directory": ":/images/",
     "entities": [
         {
             "name": "F-15战斗机",

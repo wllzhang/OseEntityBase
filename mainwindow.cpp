@@ -60,12 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     setAcceptDrops(true);
     
     // 只使用3D进行测试
-    earth3DPath_ = "E:/osgqtlib/osgEarthmy_osgb/earth/my.earth";
-    
-    // 检查文件是否存在
-    if (!QFileInfo(earth3DPath_).exists()) {
-        qDebug() << "警告: 3D地图文件未找到:" << earth3DPath_;
-    }
+    earth3DPath_ = ":/earth/my.earth";
     
     qDebug() << "3D地图路径:" << earth3DPath_;
     
@@ -191,15 +186,17 @@ void MainWindow::loadMap(const QString& earthFile)
 {
     root_->removeChildren(0, root_->getNumChildren());
     
-    QFileInfo fileInfo(earthFile);
-    if (!fileInfo.exists()) {
-        qDebug() << "地图文件未找到:" << earthFile;
+    // 使用工具函数将Qt资源路径转换为文件路径
+    QString errorMsg;
+    QString filePath = GeoUtils::convertResourcePathToFile(earthFile, &errorMsg);
+    if (filePath.isEmpty()) {
+        qDebug() << "无法转换资源路径:" << errorMsg;
         return;
     }
     
     qDebug() << "加载地图:" << earthFile;
     
-    osg::ref_ptr<osg::Node> mapNode = osgDB::readNodeFile(earthFile.toStdString());
+    osg::ref_ptr<osg::Node> mapNode = osgDB::readNodeFile(filePath.toStdString());
     if (mapNode.valid()) {
         root_->addChild(mapNode);
         
@@ -227,8 +224,6 @@ void MainWindow::loadMap(const QString& earthFile)
                             showEntityContextMenu(screenPos, entity);
                             qDebug() << "MainWindow收到实体右键点击信号:" << entity->getName();
                         });
-                
-                loadEntityConfig();
             }
             
             // 初始化地图状态管理器
@@ -390,25 +385,6 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     }
 }
 
-
-void MainWindow::loadEntityConfig()
-{
-    QString configPath = "E:/osgqtlib/osgEarthmy_osgb/images_config.json";
-    
-    // 使用工具函数加载JSON配置
-    QString errorMsg;
-    QJsonObject config = GeoUtils::loadJsonFile(configPath, &errorMsg);
-    
-    if (config.isEmpty()) {
-        qDebug() << "实体配置加载失败:" << errorMsg;
-        return;
-    }
-    
-    if (entityManager_) {
-        entityManager_->setEntityConfig(config);
-        qDebug() << "实体配置加载完成";
-    }
-}
 
 bool MainWindow::screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude)
 {
