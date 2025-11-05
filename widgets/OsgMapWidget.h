@@ -173,18 +173,6 @@ private:
      * 创建EarthManipulator并关联到Viewer
      */
     void setupManipulator();
-    
-    /**
-     * @brief 屏幕坐标转地理坐标
-     * 
-     * 将Qt窗口坐标转换为地理坐标（经纬度）
-     * @param screenPos 屏幕坐标
-     * @param longitude 输出经度
-     * @param latitude 输出纬度
-     * @param altitude 输出高度
-     * @return 成功返回true
-     */
-    bool screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude);
 
     osg::ref_ptr<osgViewer::Viewer> viewer_;      // OSG Viewer
     osg::ref_ptr<osg::Group> root_;                // 场景根节点

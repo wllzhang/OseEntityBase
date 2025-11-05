@@ -316,19 +316,11 @@ void OsgMapWidget::dropEvent(QDropEvent* event)
         return;
     }
     
-    // 转换为地理坐标
+    // 转换为地理坐标 - 统一使用 MapStateManager 获取坐标信息（mapStateManager_ 必然存在）
     double longitude, latitude, altitude;
-    if (!screenToGeoCoordinates(glWidgetPos, longitude, latitude, altitude)) {
-        qDebug() << "OsgMapWidget: 无法将拖拽位置转换为地理坐标，使用默认位置";
-        longitude = 116.4;
-        latitude = 39.9;
-        altitude = 100000.0;
-    }
+    mapStateManager_->getGeoCoordinatesFromScreen(glWidgetPos, longitude, latitude, altitude);
     
-    // 设置实体高度为合理值
-    altitude = 100000.0;
-    
-    // 创建实体
+    // 创建实体（高度已经通过 MapStateManager 设置为默认高度）
     GeoEntity* entity = entityManager_->createEntity(
         "aircraft",
         modelName,
@@ -364,13 +356,3 @@ void OsgMapWidget::dropEvent(QDropEvent* event)
         event->ignore();
     }
 }
-
-bool OsgMapWidget::screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude)
-{
-    if (!viewer_ || !mapNode_) {
-        return false;
-    }
-    
-    return GeoUtils::screenToGeoCoordinates(viewer_.get(), mapNode_.get(), screenPos, longitude, latitude, altitude);
-}
-

@@ -373,14 +373,11 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
 {
     double mouseLongitude, mouseLatitude, mouseAltitude;
     
-    // 使用工具函数进行坐标转换
-    if (!GeoUtils::screenToGeoCoordinates(viewer_, mapNode_.get(), screenPos, mouseLongitude, mouseLatitude, mouseAltitude)) {
-        qDebug() << "GeoEntityManager::findEntityAtPosition: 坐标转换失败";
-        return nullptr;
-    }
+    // 统一使用 MapStateManager 获取坐标信息（mapStateManager_ 必然存在）
+    mapStateManager_->getGeoCoordinatesFromScreen(screenPos, mouseLongitude, mouseLatitude, mouseAltitude);
     
     try {
-        qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude;
+        qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude << mouseAltitude;
         
         // 遍历所有实体，找到距离最近的
         GeoEntity* closestEntity = nullptr;

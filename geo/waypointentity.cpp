@@ -124,7 +124,7 @@ osg::ref_ptr<osg::Node> WaypointEntity::createNode()
     using namespace osgEarth::Annotation;
 
     osgEarth::GeoPoint gp(osgEarth::SpatialReference::get("wgs84"),
-                          longitude_, latitude_, 5000.0,
+                          longitude_, latitude_, altitude_,  // 使用实体的高度属性（默认通过 MapStateConstants::DEFAULT_ALTITUDE_METERS 设置）
                           osgEarth::ALTMODE_ABSOLUTE);
 
     // 使用 CircleNode 作为“点”（真实地理半径），固定高度，避免地形遮挡

@@ -772,20 +772,18 @@ void MainWidget::onSavePlanClicked()
         return;
     }
     
-    // 保存当前相机视角
+    // 保存当前相机视角（mapStateManager 必然存在）
     if (osgMapWidget_) {
         auto mapStateManager = osgMapWidget_->getMapStateManager();
-        if (mapStateManager) {
-            const auto& state = mapStateManager->getCurrentState();
-            planFileManager_->setCameraViewpoint(
-                state.viewLongitude,
-                state.viewLatitude,
-                state.viewAltitude,
-                state.heading,
-                state.pitch,
-                state.range
-            );
-        }
+        const auto& state = mapStateManager->getCurrentState();
+        planFileManager_->setCameraViewpoint(
+            state.viewLongitude,
+            state.viewLatitude,
+            state.viewAltitude,
+            state.heading,
+            state.pitch,
+            state.range
+        );
     }
     
     if (planFileManager_->savePlan()) {
@@ -818,20 +816,18 @@ void MainWidget::onSavePlanAsClicked()
         filePath += ".plan.json";
     }
     
-    // 保存当前相机视角
+    // 保存当前相机视角（mapStateManager 必然存在）
     if (osgMapWidget_) {
         auto mapStateManager = osgMapWidget_->getMapStateManager();
-        if (mapStateManager) {
-            const auto& state = mapStateManager->getCurrentState();
-            planFileManager_->setCameraViewpoint(
-                state.viewLongitude,
-                state.viewLatitude,
-                state.viewAltitude,
-                state.heading,
-                state.pitch,
-                state.range
-            );
-        }
+        const auto& state = mapStateManager->getCurrentState();
+        planFileManager_->setCameraViewpoint(
+            state.viewLongitude,
+            state.viewLatitude,
+            state.viewAltitude,
+            state.heading,
+            state.pitch,
+            state.range
+        );
     }
     
     if (planFileManager_->savePlan(filePath)) {
@@ -1005,13 +1001,9 @@ void MainWidget::onMapLoaded()
     connect(entityManager, &GeoEntityManager::mapLeftClicked, this, [this, entityManager](QPoint screenPos) {
         if (isPlacingWaypoint_) {
             double lon=0, lat=0, alt=0;
-            auto viewer = osgMapWidget_->getViewer();
-            auto mapNode = osgMapWidget_->getMapNode();
-            if (!GeoUtils::screenToGeoCoordinates(viewer, mapNode, screenPos, lon, lat, alt)) {
-                QMessageBox::warning(this, "点标绘", "无法将屏幕坐标转换为地理坐标。");
-                isPlacingWaypoint_ = false;
-                return;
-            }
+            // 统一使用 MapStateManager 获取坐标信息（mapStateManager 必然存在）
+            auto mapStateManager = osgMapWidget_->getMapStateManager();
+            mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
             auto wp = entityManager->addStandaloneWaypoint(lon, lat, alt, pendingWaypointLabel_);
             if (!wp) QMessageBox::warning(this, "点标绘", "创建失败。");
             isPlacingWaypoint_ = false;
@@ -1020,9 +1012,9 @@ void MainWidget::onMapLoaded()
         // 航线标绘：左键连加
         if (isPlacingRoute_ && !currentWaypointGroupId_.isEmpty()) {
             double lon=0, lat=0, alt=0;
-            auto viewer = osgMapWidget_->getViewer();
-            auto mapNode = osgMapWidget_->getMapNode();
-            if (!GeoUtils::screenToGeoCoordinates(viewer, mapNode, screenPos, lon, lat, alt)) return;
+            // 统一使用 MapStateManager 获取坐标信息（mapStateManager 必然存在）
+            auto mapStateManager = osgMapWidget_->getMapStateManager();
+            mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
             auto wp = entityManager->addWaypointToGroup(currentWaypointGroupId_, lon, lat, alt);
             qDebug() << "[Route] 添加航点:" << lon << lat << alt << (wp?"成功":"失败");
         }

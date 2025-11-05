@@ -164,6 +164,10 @@ void MapStateManager::updateState()
                 currentState_.viewLongitude = geoPoint.x();
                 currentState_.viewLatitude = geoPoint.y();
                 currentState_.viewAltitude = geoPoint.z();
+                // 如果获取的高度接近0（椭球面高度），使用默认高度
+                if (currentState_.viewAltitude < 100.0) {
+                    currentState_.viewAltitude = MapStateConstants::DEFAULT_ALTITUDE_METERS;
+                }
                 
                 // 发出视角位置变化信号
                 emit viewPositionChanged(currentState_.viewLongitude, currentState_.viewLatitude, currentState_.viewAltitude);
@@ -218,15 +222,37 @@ void MapStateManager::updateMouseGeoPosition(QPoint mousePos)
                                          currentState_.mouseLongitude, 
                                          currentState_.mouseLatitude, 
                                          currentState_.mouseAltitude)) {
+        // 如果获取的高度接近0（椭球面高度），使用默认高度
+        if (currentState_.mouseAltitude < 100.0) {
+            currentState_.mouseAltitude = MapStateConstants::DEFAULT_ALTITUDE_METERS;
+        }
         // 发出鼠标位置变化信号
         emit mousePositionChanged(currentState_.mouseLongitude, 
                                   currentState_.mouseLatitude, 
                                   currentState_.mouseAltitude);
     } else {
-        // 如果转换失败，使用视角坐标作为默认值
+        // 如果转换失败，使用视角坐标作为默认值，高度使用默认值
         currentState_.mouseLongitude = currentState_.viewLongitude;
         currentState_.mouseLatitude = currentState_.viewLatitude;
-        currentState_.mouseAltitude = currentState_.viewAltitude;
+        currentState_.mouseAltitude = MapStateConstants::DEFAULT_ALTITUDE_METERS;
+    }
+}
+
+bool MapStateManager::getGeoCoordinatesFromScreen(QPoint screenPos, double& longitude, double& latitude, double& altitude)
+{
+    // 使用工具函数进行坐标转换
+    if (GeoUtils::screenToGeoCoordinates(viewer_, mapNode_, screenPos, longitude, latitude, altitude)) {
+        // 如果获取的高度接近0（椭球面高度），使用默认高度
+        if (altitude < 100.0) {
+            altitude = MapStateConstants::DEFAULT_ALTITUDE_METERS;
+        }
+        return true;
+    } else {
+        // 如果转换失败，使用当前鼠标位置或视角位置，高度使用默认值
+        longitude = currentState_.mouseLongitude;
+        latitude = currentState_.mouseLatitude;
+        altitude = MapStateConstants::DEFAULT_ALTITUDE_METERS;
+        return false;
     }
 }
 

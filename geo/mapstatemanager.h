@@ -24,6 +24,16 @@
 
 /**
  * @ingroup managers
+ * @brief 默认高度常量（米）
+ * 
+ * 当无法从地形获取高度或高度接近0（椭球面高度）时使用的默认高度值
+ */
+namespace MapStateConstants {
+    constexpr double DEFAULT_ALTITUDE_METERS = 10000.0;  // 默认高度：10000米
+}
+
+/**
+ * @ingroup managers
  * @brief 地图状态信息结构体
  * 
  * 包含地图的9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2)：
@@ -44,8 +54,8 @@ struct MapStateInfo {
     
     MapStateInfo() 
         : pitch(-90.0), heading(0.0), range(100000.0),
-          viewLongitude(116.4), viewLatitude(39.9), viewAltitude(0.0),
-          mouseLongitude(116.4), mouseLatitude(39.9), mouseAltitude(0.0) {}
+          viewLongitude(116.4), viewLatitude(39.9), viewAltitude(MapStateConstants::DEFAULT_ALTITUDE_METERS),
+          mouseLongitude(116.4), mouseLatitude(39.9), mouseAltitude(MapStateConstants::DEFAULT_ALTITUDE_METERS) {}
     
     // 获取9元组信息 (a,b,c,x1,y1,z1,x2,y2,z2)
     std::tuple<double,double,double,double,double,double,double,double,double> getTuple() const {
@@ -93,6 +103,16 @@ public:
     
     // 获取当前状态
     const MapStateInfo& getCurrentState() const { return currentState_; }
+    
+    /**
+     * @brief 根据屏幕坐标获取地理坐标（统一接口，避免重复调用）
+     * @param screenPos 屏幕坐标
+     * @param longitude 输出经度
+     * @param latitude 输出纬度
+     * @param altitude 输出高度（如果转换失败，使用默认高度）
+     * @return 成功返回true，失败返回false（但altitude会设置为默认值）
+     */
+    bool getGeoCoordinatesFromScreen(QPoint screenPos, double& longitude, double& latitude, double& altitude);
 
 signals:
     /** @brief 状态整体变化通知（含相机与鼠标） */
