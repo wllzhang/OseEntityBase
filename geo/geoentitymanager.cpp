@@ -145,6 +145,23 @@ QStringList GeoEntityManager::getEntityIdsByType(const QString& entityType) cons
     return result;
 }
 
+QList<GeoEntity*> GeoEntityManager::getEntitiesByPlanFile(const QString& planFile) const
+{
+    QList<GeoEntity*> result;
+    if (planFile.isEmpty()) {
+        return result;
+    }
+
+    for (auto it = entities_.begin(); it != entities_.end(); ++it) {
+        GeoEntity* entity = it.value();
+        if (entity && entity->getProperty("planFile").toString() == planFile) {
+            result.append(entity);
+        }
+    }
+
+    return result;
+}
+
 void GeoEntityManager::removeEntity(const QString& entityId)
 {
     qDebug() << "标记实体待删除:" << entityId;
@@ -314,6 +331,20 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
             qDebug() << "右键点击实体:" << entity->getName();
         } else {
             qDebug() << "右键点击地图空白处";
+        }
+    }
+}
+
+void GeoEntityManager::onMouseDoubleClick(QMouseEvent* event)
+{
+    qDebug() << "=== GeoEntityManager::onMouseDoubleClick 被调用 ===";
+    qDebug() << "鼠标位置:" << event->pos();
+    
+    if (event->button() == Qt::LeftButton) {
+        GeoEntity* entity = findEntityAtPosition(event->pos());
+        if (entity) {
+            emit entityDoubleClicked(entity);
+            qDebug() << "双击实体:" << entity->getName();
         }
     }
 }

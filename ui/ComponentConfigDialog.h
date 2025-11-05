@@ -5,7 +5,7 @@
 #include <QTreeWidget>
 #include <QSqlDatabase>
 #include <QJsonObject>
-#include "util/databaseutils.h"
+#include "../util/databaseutils.h"
 
 class QLineEdit;
 class QComboBox;

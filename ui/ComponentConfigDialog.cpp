@@ -1,5 +1,5 @@
 ﻿#include "ComponentConfigDialog.h"
-#include "util/databaseutils.h"
+#include "../util/databaseutils.h"
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>

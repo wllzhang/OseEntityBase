@@ -4,6 +4,10 @@
 #include <QWidget>
 #include <QTimer>
 #include <QResizeEvent>
+#include <QShowEvent>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QPoint>
 #include <osgViewer/Viewer>
 #include <osg/Group>
 #include <osg/Camera>
@@ -40,6 +44,9 @@ public:
     // 设置2D/3D模式
     void setMode2D();
     void setMode3D();
+    
+    // 设置方案文件管理器
+    void setPlanFileManager(class PlanFileManager* planFileManager);
 
 signals:
     void mapLoaded();  // 地图加载完成信号
@@ -47,6 +54,8 @@ signals:
 protected:
     void resizeEvent(QResizeEvent* event) override;
     void showEvent(QShowEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
 
 private:
     void initializeViewer();
@@ -63,6 +72,12 @@ private:
     // 实体和地图状态管理器
     GeoEntityManager* entityManager_;
     MapStateManager* mapStateManager_;
+    
+    // 方案文件管理器（用于拖拽时添加到方案）
+    class PlanFileManager* planFileManager_;
+    
+    // 坐标转换辅助方法
+    bool screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude);
 };
 
 #endif // OSGMAPWIDGET_H

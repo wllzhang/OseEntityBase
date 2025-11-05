@@ -14,22 +14,12 @@
 #include <QJsonArray>
 #include <QDateTime>
 #include <QList>
+#include <QTimer>
 
 // 前向声明
 class GeoEntity;
 class GeoEntityManager;
-
-/**
- * @brief 模型信息结构体（与ModelAssemblyDialog中的ModelInfo保持一致）
- */
-struct ModelInfo {
-    QString id;
-    QString name;
-    QString type;
-    QString location;
-    QString icon;
-    QStringList componentList;
-};
+struct ModelInfo;  // 在ModelAssemblyDialog.h中定义
 
 /**
  * @brief 方案文件管理器
@@ -104,10 +94,48 @@ public:
     bool hasUnsavedChanges() const;
 
     /**
+     * @brief 设置实体管理器
+     * @param entityManager 实体管理器指针
+     */
+    void setEntityManager(GeoEntityManager* entityManager);
+    
+    /**
+     * @brief 设置自动保存选项
+     * @param enabled 是否启用自动保存
+     * @param intervalMs 自动保存间隔（毫秒），默认2000ms（2秒）
+     */
+    void setAutoSaveEnabled(bool enabled, int intervalMs = 2000);
+
+    /**
      * @brief 获取方案文件保存目录
      * @return 目录路径
      */
     static QString getPlansDirectory();
+    
+    /**
+     * @brief 设置相机视角（保存方案时调用）
+     * @param longitude 经度
+     * @param latitude 纬度
+     * @param altitude 高度
+     * @param heading 航向角
+     * @param pitch 俯仰角
+     * @param range 距离
+     */
+    void setCameraViewpoint(double longitude, double latitude, double altitude,
+                           double heading, double pitch, double range);
+    
+    /**
+     * @brief 获取相机视角（加载方案时调用）
+     * @param longitude 输出经度
+     * @param latitude 输出纬度
+     * @param altitude 输出高度
+     * @param heading 输出航向角
+     * @param pitch 输出俯仰角
+     * @param range 输出距离
+     * @return 如果存在保存的视角返回true，否则返回false
+     */
+    bool getCameraViewpoint(double& longitude, double& latitude, double& altitude,
+                           double& heading, double& pitch, double& range) const;
 
 signals:
     /**
@@ -168,6 +196,13 @@ private:
      * @return 组件配置JSON对象
      */
     QJsonObject getComponentConfigFromDatabase(const QString& componentId);
+    
+    /**
+     * @brief 从数据库获取完整的组件信息（包括componentId, name, type, configInfo, templateInfo等）
+     * @param componentId 组件ID
+     * @return 完整的组件信息JSON对象
+     */
+    QJsonObject getComponentFullInfoFromDatabase(const QString& componentId);
 
     /**
      * @brief 生成方案内的实体ID
@@ -197,6 +232,19 @@ private:
     QDateTime createTime_;              // 创建时间
     int entityCounter_;                 // 实体计数器（用于生成唯一ID）
     bool hasUnsavedChanges_;           // 是否有未保存的更改
+    
+    // 自动保存相关
+    QTimer* autoSaveTimer_;             // 自动保存定时器
+    bool autoSaveEnabled_;              // 是否启用自动保存
+    
+    // 相机视角保存
+    bool hasCameraViewpoint_;           // 是否有保存的相机视角
+    double cameraLongitude_;
+    double cameraLatitude_;
+    double cameraAltitude_;
+    double cameraHeading_;
+    double cameraPitch_;
+    double cameraRange_;
 };
 
 #endif // PLANFILEMANAGER_H

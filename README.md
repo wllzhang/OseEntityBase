@@ -1,48 +1,125 @@
 # 数字地图脚手架库 (Digital Map Scaffold Library)
 
-## 项目概述
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Qt](https://img.shields.io/badge/Qt-5.14%2B-green.svg)](https://www.qt.io/)
+[![C++](https://img.shields.io/badge/C%2B%2B-11-orange.svg)](https://isocpp.org/)
 
-目标是成为一个脚手架的数字地图库, 对GeoEntity进行封装, 对其状态进行管理, 可对其进行渲染, 同时将其数字地图上的任务GeoEntity和数字地图的状态信息抽象为一个信息层, 传递给其他服务.
+## 📖 项目概述
 
-## 技术栈
+数字地图脚手架库是一个基于Qt和OSG的数字地图应用框架，提供完整的地理实体管理、渲染和交互功能。本项目旨在成为一个可扩展的脚手架库，对GeoEntity进行封装，对其状态进行管理，可对其进行渲染，同时将数字地图上的任务GeoEntity和数字地图的状态信息抽象为一个信息层，传递给其他服务。
 
-- **Qt 5/6**: GUI框架
-- **OSG (OpenSceneGraph)**: 3D图形渲染引擎
+### 核心特性
+
+- 🗺️ **3D地球渲染** - 基于osgEarth的高性能3D地球渲染
+- 🎯 **实体管理系统** - 统一的地理实体生命周期管理
+- 🔄 **2D/3D视图切换** - 灵活的视角切换和相机控制
+- 📋 **方案规划** - 完整的方案文件管理和实体规划功能
+- 🎨 **可扩展架构** - 基于继承的实体类型扩展机制
+
+## 🛠️ 技术栈
+
+- **Qt 5.14+**: GUI框架和跨平台支持
+- **OSG (OpenSceneGraph)**: 高性能3D图形渲染引擎
 - **osgEarth**: 基于OSG的地球渲染库
+- **SQLite**: 数据库存储
 - **C++11**: 编程语言标准
 
-## 项目结构
+## 📁 项目结构
 
 ```
 项目根目录/
-├── geo/                           # 地理实体模块
-│   ├── geoentity.h/cpp           # 通用地理实体基类
-│   ├── imageentity.h/cpp         # 图片实体实现
-│   ├── geoentitymanager.h/cpp    # 通用实体管理器
-│   └── mapstatemanager.h/cpp     # 地图状态管理器
-├── OsgQt/                        # OSG-Qt集成组件
-├── images/                       # 实体图片资源
-├── earth/                        # 地球配置文件
-├── main.cpp                      # 程序入口
-├── mainwindow.h/cpp             # 主窗口
-├── imageviewerwindow.h/cpp       # 图片查看器
-├── draggablelistwidget.h/cpp     # 可拖拽列表
-├── images_config.json           # 实体配置文件
-└── osgEarth.pro                 # 项目文件
+├── ui/                              # UI界面模块
+│   ├── MainWidget.h/cpp/ui         # 主窗口
+│   ├── ComponentConfigDialog.h/cpp # 组件配置对话框
+│   ├── ModelAssemblyDialog.h/cpp   # 模型组装对话框
+│   ├── ModelDeployDialog.h/cpp     # 模型部署对话框
+│   └── EntityPropertyDialog.h/cpp  # 实体属性编辑对话框
+├── widgets/                         # 自定义控件模块
+│   ├── OsgMapWidget.h/cpp          # OSG地图控件
+│   ├── draggablelistwidget.h/cpp   # 可拖拽列表控件
+│   └── imageviewerwindow.h/cpp     # 图片查看器窗口
+├── geo/                             # 地理实体模块
+│   ├── geoentity.h/cpp             # 通用地理实体基类
+│   ├── imageentity.h/cpp           # 图片实体实现
+│   ├── waypointentity.h/cpp        # 航点实体实现
+│   ├── geoentitymanager.h/cpp      # 通用实体管理器
+│   ├── mapstatemanager.h/cpp       # 地图状态管理器
+│   └── geoutils.h/cpp               # 地理工具类
+├── plan/                            # 方案管理模块
+│   └── planfilemanager.h/cpp       # 方案文件管理器
+├── util/                            # 工具模块
+│   └── databaseutils.h/cpp         # 数据库工具类
+├── OsgQt/                           # OSG-Qt集成组件
+│   ├── GraphicsWindowQt.h/cpp       # Qt图形窗口适配器
+│   ├── QGraphicsViewAdapter.h/cpp  # QGraphicsView适配器
+│   └── QWidgetImage.h/cpp          # Qt Widget图像处理
+├── images/                          # 实体图片资源
+├── earth/                           # 地球配置文件
+│   ├── my.earth                     # osgEarth配置文件
+│   └── world.tif                    # 地球纹理
+├── docs/                            # 文档目录
+│   └── mainpage.md                  # 主文档页面
+├── main.cpp                         # 程序入口
+├── ScenePlan2.pro                   # Qt项目文件
+├── res.qrc                          # Qt资源文件
+├── README.md                        # 项目说明文档
+└── WorkRecord.md                    # 工作记录文档
 ```
 
-## 核心功能
+## 🚀 快速开始
+
+### 环境要求
+
+- **Qt**: 5.14 或更高版本（推荐5.15+）
+- **OSG**: 3.6.x 或更高版本
+- **osgEarth**: 2.10+ 或更高版本
+- **编译器**: MSVC 2017+ / GCC 7+ / Clang 8+
+- **CMake**: 3.10+（可选，项目使用qmake）
+
+### 构建步骤
+
+1. **克隆项目**
+   ```bash
+   git clone <repository-url>
+   cd osgEarthmy_osgb
+   ```
+
+2. **配置OSG路径**
+   
+   编辑 `ScenePlan2.pro` 文件，修改OSG库路径：
+   ```pro
+   OSGDIR = E:/osgqtlib/  # 修改为你的OSG安装路径
+   ```
+
+3. **配置数据库路径**
+   
+   编辑 `main.cpp`，设置数据库绝对路径：
+   ```cpp
+   DatabaseUtils::setDatabasePath("E:/osgqtlib/osgEarthmy_osgb/MyDatabase.db");
+   ```
+
+4. **使用Qt Creator打开项目**
+   - 打开 `ScenePlan2.pro`
+   - 选择合适的构建套件（Kit）
+   - 点击"构建"按钮
+
+5. **运行程序**
+   - 确保所有依赖库（OSG、osgEarth）在系统PATH中，或与可执行文件在同一目录
+   - 运行生成的可执行文件
+
+## ✨ 核心功能
 
 ### ✅ 3D地图显示
 - 基于osgEarth的3D地球渲染
 - 高德地图瓦片集成
 - 地球漫游控制（缩放、旋转、平移）
-- 相机视角管理
+- 相机视角管理和保存/恢复
 
 ### ✅ 实体管理系统
-- 通用GeoEntity基类设计
+- 通用GeoEntity基类设计，支持生命周期管理
 - ImageEntity图片实体实现
-- GeoEntityManager统一管理
+- WaypointEntity航点实体实现
+- GeoEntityManager统一管理所有实体
 - 拖拽添加实体功能
 
 ### ✅ 2D/3D视图切换
@@ -57,6 +134,15 @@
 - 右键上下文菜单
 - 航向角和高度设置
 - 实体删除和属性查看
+- 双击编辑实体属性
+
+### ✅ 方案规划功能
+- 方案文件管理（新建、打开、保存、另存为）
+- 实体规划部署（拖拽部署到地图）
+- 实体属性编辑（规划属性、模型组装、组件配置）
+- 相机视角保存和恢复
+- 自动保存功能
+- 最近文件管理
 
 ### ✅ 事件处理架构
 - GeoEntityManager统一处理鼠标事件
@@ -64,192 +150,71 @@
 - 多态支持实现实体选择高亮
 - 职责分离设计
 
- 
+### ✅ 代码架构
+- 模块化设计，清晰的目录结构
+- 基于继承的实体扩展机制
+- 统一的工具类和辅助方法
+- 完善的Doxygen文档注释
 
-## 今日工作总结 (2025-10-30)
+## 📖 使用示例
 
-- **路线规划功能**: 基于点标绘的控制点生成线性连线，并可绑定到实体。
-- **点标绘基础**: 支持在地图上绘制点与顺序标签；点按组管理。
-- **选中阈值自适应**: 依据当前地图 `range` 动态调整选中阈值，提升选择稳定性。
-- **视角交互修复**: 解决选中实体后滚轮缩放不可用的问题，恢复正常交互。
-- **删除稳定性**: 采用“标记+QTimer延时删除”策略，修复删除实体导致崩溃的问题。
-- **代码与架构**: 鼠标交互统一收敛到 `GeoEntityManager`；部分阈值与状态从 `MapStateManager` 获取。
-- **后续计划**: 与慧慧页面集成、航向角设置问题排查、拖拽定位精度优化、规划结果导出为 AFSIM、推进“信息层抽象”。
+### 创建自定义实体
 
-## 今日工作总结 (2025年10月31日)
+```cpp
+#include "geo/geoentity.h"
+#include <osg/Node>
 
-### 坐标转换精度修复
-- **Y轴翻转问题修复**: 解决了Qt窗口坐标系（Y=0在顶部）与OSG视口坐标系（Y=0在底部）不匹配的问题，修复了拖拽时点击上方实体出现在下方的bug
-- **坐标系统转换**: 添加了MainWindow坐标到GLWidget本地坐标的转换，确保`dropEvent`中的坐标正确传递给OSG
+class CustomEntity : public GeoEntity {
+public:
+    CustomEntity(const QString& name, double lon, double lat, double alt)
+        : GeoEntity("custom", name, lon, lat, alt) {}
 
+protected:
+    osg::Node* createNode() override {
+        // 创建你的自定义OSG节点
+        osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+        // ... 添加几何体或模型
+        return geode.release();
+    }
+    
+    void onInitialized() override {
+        // 初始化完成后的自定义逻辑
+    }
+};
+```
 
-### 代码重构与优化
-- **提取工具类**: 创建了`GeoUtils`工具类，统一处理屏幕坐标到地理坐标的转换逻辑
-- **消除重复代码**: 将`MainWindow`、`GeoEntityManager`、`MapStateManager`中的重复坐标转换代码提取为公共函数
-- **提升可维护性**: 坐标转换逻辑集中管理，后续优化和修复只需修改一处
+### 添加实体到地图
 
-### Doxygen文档完善
-- **API文档**: 为所有核心头文件添加了完整的Doxygen注释（`GeoEntity`、`ImageEntity`、`WaypointEntity`、`GeoEntityManager`、`MapStateManager`）
-- **模块分组**: 创建了`geo_entities`和`managers`两个Doxygen分组，便于文档导航
-- **主页面重写**: 重写了`docs/mainpage.md`，提供更清晰的架构概览和快速开始指南
+```cpp
+GeoEntityManager* manager = getEntityManager();
+GeoEntity* entity = manager->createEntity(
+    "aircraft",           // 实体类型
+    "F-16",              // 实体名称
+    QJsonObject(),       // 属性
+    116.4,               // 经度
+    39.9,                // 纬度
+    100000.0             // 高度（米）
+);
+```
 
-## 今日工作总结 (2025年11月4日)
+## 📚 文档
 
-### 基类重构与公共实现提取
-- **默认生命周期实现**: 在`GeoEntity`基类中添加了`initialize()`、`update()`、`cleanup()`的默认实现，统一管理实体的生命周期流程
-- **生命周期回调机制**: 引入了`onInitialized()`、`onUpdated()`、`onBeforeCleanup()`、`onAfterCleanup()`四个回调方法，子类可通过重写回调来扩展特定逻辑
-- **节点变换辅助方法**: 添加了`setupNodeTransform()`和`createPATNode()`辅助方法，统一处理地理坐标到世界坐标的转换和PAT节点的创建
-- **子类代码简化**: 重构了`ImageEntity`和`WaypointEntity`，大幅减少了重复代码，使子类代码更专注于特定实现
+- **API文档**: 使用Doxygen生成，运行 `doxygen Doxyfile` 生成HTML文档
+- **工作记录**: 查看 [WorkRecord.md](WorkRecord.md) 了解开发历史和更新日志
+- **架构文档**: 查看 `docs/mainpage.md` 了解详细架构设计
 
-### 代码质量改进
-- **编译错误修复**: 修复了子类重写保护方法的声明问题，确保代码符合C++标准
-- **注释文档完善**: 为所有新增和重构的方法添加了详细的Doxygen注释，包括方法流程、使用场景、注意事项和使用示例
-- **代码可维护性提升**: 公共逻辑集中到基类管理，后续优化和修复只需修改一处，降低了维护成本
+## 🤝 贡献
 
-### 架构优化效果
-- **消除代码重复**: 所有实体共享统一的生命周期管理逻辑，避免了多处实现不一致的问题
-- **扩展更简单**: 新增实体类型只需实现`createNode()`和必要的回调方法，大大降低了开发成本
-- **错误率降低**: 统一的初始化、更新、清理流程减少了遗漏和错误
+欢迎提交Issue和Pull Request！
 
+## 📝 工作记录
 
- 
- 
-## 待完成任务TODO
+详细的工作总结、待完成任务和更新日志请参考 [WorkRecord.md](WorkRecord.md) 文档。
 
-1. 与慧慧进行页面集成
-2.  航向角设置有问题
-3.  拖拽添加是坐标不精确 , 主要是坐标算法不精确,导致很多功能都不行
-4.  路线生成无法生成平滑的曲线
-5.  增加所有的实体信息展示管理页面
-6.  规划结果转化为afsim文档
-7.  **信息层抽象**
-   - 地图状态信息抽象
-   - 实体状态信息抽象
-   - 服务接口设计
+## 📄 许可证
 
+本项目采用MIT许可证。
 
-## 更新日志
+---
 
-### v1.0.0 (2025-10-24)
-**初始版本 - 基础功能实现**
-
-#### 🎯 核心功能
-- **3D地图显示** - 基于osgEarth的3D地球渲染
-- **实体管理系统** - GeoEntity基类和ImageEntity实现
-- **拖拽功能** - 从列表拖拽实体到地图
-- **MapStateManager支持** - 地图状态管理
-
-#### 🔧 技术实现
-- **Qt-OSG集成** - GraphicsWindowQt组件
-- **实体配置** - JSON配置文件支持
-- **模块化设计** - geo模块独立管理
-
-### v1.1.0 (2025-10-24)
-**2D/3D视图切换功能**
-
-#### 🎯 新功能
-- **2D/3D切换按钮** - 动态切换地图显示模式
-- **自定义视角配置** - 2D和3D模式使用不同视角参数
-- **视角自动跳转** - 切换模式时自动调整到预设视角
-
-#### 📐 视角配置
-- **2D视角参数** - Pitch: -90°, Heading: -0.916737°, Range: 540978
-- **3D视角参数** - Pitch: -76.466°, Heading: 0°, Range: 12725200
-
-### v1.2.0 (2025-10-24)
-**拖拽功能优化**
-
-#### 🔧 技术改进
-- **精确坐标定位** - 拖拽时使用鼠标实际地理坐标
-- **相机视角跳转** - 拖拽后自动调整视角到实体位置
-- **坐标转换优化** - 屏幕坐标到地理坐标的准确转换
-
-### v1.3.0 (2025-10-24)
-**实体交互功能完善**
-
-#### 🎯 核心功能
-- **实体选择系统** - 点击实体进行选择，支持高亮显示
-- **右键上下文菜单** - 完整的实体操作菜单系统
-- **实体属性设置** - 航向角和高度设置功能
-
-#### 🔧 技术改进
-- **事件处理架构重构** - GeoEntityManager统一处理鼠标事件
-- **信号槽机制优化** - 使用Qt信号槽进行组件间通信
-- **多态支持完善** - 虚函数实现实体选择的高亮功能
-- **职责分离设计** - MainWindow专注UI，GeoEntityManager专注实体交互
-
-#### 🎨 交互功能
-- **实体高亮显示** - 选中实体显示红色边框
-- **航向角设置** - 通过对话框修改实体朝向
-- **高度设置** - 通过对话框修改实体高度
-- **实体删除** - 确认删除选中的实体
-- **属性查看** - 显示实体的详细信息
-
-### v2.0.0 (2025-10-30)
-**路线规划与交互优化**
-
-#### 🎯 核心功能
-- **路线规划功能** - 基于点标绘的控制点生成线性连线，并可绑定到实体
-- **点标绘基础** - 支持在地图上绘制点与顺序标签（1,2,3,4），点按组管理
-- **WaypointEntity实现** - 基于GeoEntity的航点实体类，支持CircleNode和PlaceNode显示
-
-#### 🔧 技术改进
-- **选中阈值自适应** - 依据当前地图`range`动态调整选中阈值，提升选择稳定性
-- **视角交互修复** - 解决选中实体后滚轮缩放不可用的问题，恢复正常交互
-- **删除稳定性优化** - 采用"标记+QTimer延时删除"策略，修复删除实体导致崩溃的问题
-- **事件处理优化** - 鼠标交互统一收敛到`GeoEntityManager`，阈值与状态从`MapStateManager`获取
-
-#### 📐 功能完善
-- **线性/贝塞尔路线生成** - 支持线性模型和贝塞尔曲线模型生成轨迹连线
-- **轨迹绑定机制** - 将生成的路由轨迹绑定到指定实体，支持编辑和管理
-
-### v2.1.0 (2025-10-31)
-**坐标精度修复与代码重构**
-
-#### 🐛 Bug修复
-- **Y轴翻转问题修复** - 解决了Qt窗口坐标系（Y=0在顶部）与OSG视口坐标系（Y=0在底部）不匹配的问题，修复了拖拽时点击上方实体出现在下方的bug
-- **坐标系统转换** - 添加了MainWindow坐标到GLWidget本地坐标的转换，确保`dropEvent`中的坐标正确传递给OSG
-
-#### 🔧 代码重构
-- **工具类提取** - 创建了`GeoUtils`工具类，统一处理：
-  - 屏幕坐标到地理坐标的转换逻辑
-  - 地理坐标到世界坐标的转换逻辑
-  - JSON配置文件加载
-  - 距离计算（2D、3D、地理距离）
-  - EarthManipulator获取
-- **消除重复代码** - 将`MainWindow`、`GeoEntityManager`、`MapStateManager`中的重复代码提取为公共函数
-- **可维护性提升** - 坐标转换逻辑集中管理，后续优化和修复只需修改一处
-
-#### 📚 文档完善
-- **Doxygen API文档** - 为所有核心头文件添加了完整的Doxygen注释：
-  - `GeoEntity` - 通用地理实体基类
-  - `ImageEntity` - 图片实体实现
-  - `WaypointEntity` - 航点实体实现
-  - `GeoEntityManager` - 实体管理器
-  - `MapStateManager` - 地图状态管理器
-- **模块分组** - 创建了`geo_entities`和`managers`两个Doxygen分组，便于文档导航
-- **主页面优化** - 重写了`docs/mainpage.md`，提供更清晰的架构概览、快速开始指南和使用示例
-
-### v2.2.0 (2025-11-04)
-**基类重构与架构优化**
-
-#### 🏗️ 架构优化
-- **默认生命周期实现** - 在`GeoEntity`基类中添加了`initialize()`、`update()`、`cleanup()`的默认实现，统一管理实体的生命周期流程
-- **生命周期回调机制** - 引入了四个回调方法，支持子类扩展特定逻辑：
-  - `onInitialized()` - 初始化完成回调
-  - `onUpdated()` - 更新完成回调（用于更新标签等）
-  - `onBeforeCleanup()` - 清理前回调（用于移除子节点）
-  - `onAfterCleanup()` - 清理后回调
-- **节点变换辅助方法** - 添加了辅助方法，统一处理坐标转换和节点创建：
-  - `setupNodeTransform()` - 设置节点的位置和旋转变换
-  - `createPATNode()` - 创建并初始化PositionAttitudeTransform节点
-
-#### 🔧 代码质量改进
-- **子类代码简化** - 重构了`ImageEntity`和`WaypointEntity`，大幅减少了重复代码，使子类代码更专注于特定实现
-- **注释文档完善** - 为所有新增和重构的方法添加了详细的Doxygen注释，包括方法流程、使用场景、注意事项和使用示例
-- **编译错误修复** - 修复了子类重写保护方法的声明问题，确保代码符合C++标准
-
-#### 📈 优化效果
-- **消除代码重复** - 所有实体共享统一的生命周期管理逻辑，避免了多处实现不一致的问题
-- **扩展更简单** - 新增实体类型只需实现`createNode()`和必要的回调方法，大大降低了开发成本
-- **错误率降低** - 统一的初始化、更新、清理流程减少了遗漏和错误  
+**注意**: 本项目需要预先安装OSG和osgEarth库。请确保这些库正确配置在系统环境变量中，或在项目配置文件中指定正确的路径。

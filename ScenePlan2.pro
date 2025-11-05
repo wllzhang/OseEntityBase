@@ -90,11 +90,13 @@ INCLUDEPATH += $${OSGDIR}/include
 DEPENDPATH += $${OSGDIR}/include
 
 SOURCES += \
-    ComponentConfigDialog.cpp \
-    MainWidget.cpp \
-    ModelAssemblyDialog.cpp \
+    ui/ComponentConfigDialog.cpp \
+    ui/MainWidget.cpp \
+    ui/ModelAssemblyDialog.cpp \
+    ui/ModelDeployDialog.cpp \
+    ui/EntityPropertyDialog.cpp \
     main.cpp \
-    OsgMapWidget.cpp \
+    widgets/OsgMapWidget.cpp \
     OsgQt/GraphicsWindowQt.cpp \
     OsgQt/QGraphicsViewAdapter.cpp \
     OsgQt/QWidgetImage.cpp \
@@ -104,13 +106,18 @@ SOURCES += \
     geo/mapstatemanager.cpp \
     geo/waypointentity.cpp \
     geo/geoutils.cpp \
-    util/databaseutils.cpp
+    util/databaseutils.cpp \
+    plan/planfilemanager.cpp \
+    widgets/draggablelistwidget.cpp \
+    widgets/imageviewerwindow.cpp
 
 HEADERS += \
-    ComponentConfigDialog.h \
-    MainWidget.h \
-    ModelAssemblyDialog.h \
-    OsgMapWidget.h \
+    ui/ComponentConfigDialog.h \
+    ui/MainWidget.h \
+    ui/ModelAssemblyDialog.h \
+    ui/ModelDeployDialog.h \
+    ui/EntityPropertyDialog.h \
+    widgets/OsgMapWidget.h \
     OsgQt/GraphicsWindowQt.h \
     OsgQt/QGraphicsViewAdapter.h \
     OsgQt/QWidgetImage.h \
@@ -120,10 +127,13 @@ HEADERS += \
     geo/mapstatemanager.h \
     geo/waypointentity.h \
     geo/geoutils.h \
-    util/databaseutils.h
+    util/databaseutils.h \
+    plan/planfilemanager.h \
+    widgets/draggablelistwidget.h \
+    widgets/imageviewerwindow.h
 
 FORMS += \
-    MainWidget.ui
+    ui/MainWidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

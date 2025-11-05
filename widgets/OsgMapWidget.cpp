@@ -13,9 +13,13 @@
 #include <osg/GraphicsContext>
 #include <algorithm>
 
-#include "geo/geoentitymanager.h"
-#include "geo/mapstatemanager.h"
-#include "geo/geoutils.h"
+#include "../geo/geoentitymanager.h"
+#include "../geo/mapstatemanager.h"
+#include "../geo/geoutils.h"
+#include "../plan/planfilemanager.h"
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 OsgMapWidget::OsgMapWidget(QWidget *parent)
     : QWidget(parent)
@@ -25,7 +29,10 @@ OsgMapWidget::OsgMapWidget(QWidget *parent)
     , gw_(nullptr)
     , entityManager_(nullptr)
     , mapStateManager_(nullptr)
+    , planFileManager_(nullptr)
 {
+    // 启用拖放功能
+    setAcceptDrops(true);
     // 设置布局
     setLayout(new QVBoxLayout(this));
     layout()->setContentsMargins(0, 0, 0, 0);
@@ -237,5 +244,126 @@ void OsgMapWidget::resizeEvent(QResizeEvent* event)
     }
     
     QWidget::resizeEvent(event);
+}
+
+void OsgMapWidget::setPlanFileManager(PlanFileManager* planFileManager)
+{
+    planFileManager_ = planFileManager;
+}
+
+void OsgMapWidget::dragEnterEvent(QDragEnterEvent* event)
+{
+    if (event->mimeData()->hasText()) {
+        QString text = event->mimeData()->text();
+        if (text.startsWith("modeldeploy:")) {
+            event->acceptProposedAction();
+            qDebug() << "OsgMapWidget: 接受拖拽:" << text;
+            return;
+        }
+    }
+    event->ignore();
+}
+
+void OsgMapWidget::dropEvent(QDropEvent* event)
+{
+    if (!entityManager_) {
+        qDebug() << "OsgMapWidget: EntityManager为空，无法处理拖拽";
+        event->ignore();
+        return;
+    }
+    
+    QString text = event->mimeData()->text();
+    if (!text.startsWith("modeldeploy:")) {
+        event->ignore();
+        return;
+    }
+    
+    // 解析拖拽数据格式: "modeldeploy:{modelId}:{modelName}"
+    QStringList parts = text.split(":");
+    if (parts.size() < 3) {
+        qDebug() << "OsgMapWidget: 无效的拖拽数据格式:" << text;
+        event->ignore();
+        return;
+    }
+    
+    QString modelId = parts[1];
+    QString modelName = parts[2];
+    qDebug() << "OsgMapWidget: 拖拽模型 ID:" << modelId << "名称:" << modelName;
+    
+    // 获取 GLWidget 用于坐标转换
+    QWidget* glWidget = gw_ ? gw_->getGLWidget() : nullptr;
+    if (!glWidget) {
+        qDebug() << "OsgMapWidget: 无法获取 GLWidget，拖拽操作失败";
+        event->ignore();
+        return;
+    }
+    
+    // 将 OsgMapWidget 坐标转换为 GLWidget 的本地坐标
+    QPoint dropPos = event->pos();
+    QPoint glWidgetPos = glWidget->mapFrom(this, dropPos);
+    
+    // 检查坐标是否在 GLWidget 范围内
+    if (!glWidget->rect().contains(glWidgetPos)) {
+        qDebug() << "OsgMapWidget: 拖拽位置不在 GLWidget 范围内:" << dropPos << "->" << glWidgetPos;
+        event->ignore();
+        return;
+    }
+    
+    // 转换为地理坐标
+    double longitude, latitude, altitude;
+    if (!screenToGeoCoordinates(glWidgetPos, longitude, latitude, altitude)) {
+        qDebug() << "OsgMapWidget: 无法将拖拽位置转换为地理坐标，使用默认位置";
+        longitude = 116.4;
+        latitude = 39.9;
+        altitude = 100000.0;
+    }
+    
+    // 设置实体高度为合理值
+    altitude = 100000.0;
+    
+    // 创建实体
+    GeoEntity* entity = entityManager_->createEntity(
+        "aircraft",
+        modelName,
+        QJsonObject(),
+        longitude,
+        latitude,
+        altitude
+    );
+    
+    if (entity) {
+        // 设置模型ID和方案文件关联
+        entity->setProperty("modelId", modelId);
+        
+        // 如果有PlanFileManager，添加到方案
+        if (planFileManager_) {
+            planFileManager_->addEntityToPlan(entity);
+            qDebug() << "OsgMapWidget: 实体已添加到方案";
+        }
+        
+        // 调整相机到实体位置，参考mainwindow.cpp的实现
+        osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer_.get());
+        if (em) {
+            // 使用实体位置作为相机视点
+            osgEarth::Viewpoint vp("Entity", longitude, latitude, 0.0, 0.0, -90.0, 1000000.0);
+            em->setViewpoint(vp, 2.0);
+            qDebug() << "OsgMapWidget: 相机已调整到实体位置:" << longitude << latitude;
+        }
+        
+        qDebug() << "OsgMapWidget: 实体创建成功，位置:" << longitude << latitude << altitude;
+        event->acceptProposedAction();
+    } else {
+        qDebug() << "OsgMapWidget: 实体创建失败";
+        event->ignore();
+    }
+}
+
+bool OsgMapWidget::screenToGeoCoordinates(QPoint screenPos, double& longitude, double& latitude, double& altitude)
+{
+    if (!viewer_ || !mapNode_) {
+        return false;
+    }
+    
+    return GeoUtils::screenToGeoCoordinates(viewer_.get(), mapNode_.get(), screenPos, longitude, latitude, altitude);
 }
 

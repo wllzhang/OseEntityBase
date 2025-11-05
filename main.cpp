@@ -5,7 +5,7 @@
  * 程序主入口，创建QApplication和MainWidget实例
  */
 
-#include "MainWidget.h"
+#include "ui/MainWidget.h"
 // #include "mainwindow.h"
 #include <QApplication>
 #include "util/databaseutils.h"

@@ -104,6 +104,13 @@ public:
     QStringList getEntityIdsByType(const QString& entityType) const;
     
     /**
+     * @brief 获取属于指定方案文件的所有实体
+     * @param planFile 方案文件路径
+     * @return 实体列表
+     */
+    QList<GeoEntity*> getEntitiesByPlanFile(const QString& planFile) const;
+    
+    /**
      * @brief 删除实体
      * @param entityId 实体ID
      */
@@ -126,6 +133,12 @@ public:
      * @param event 鼠标事件
      */
     void onMousePress(QMouseEvent* event);
+    
+    /**
+     * @brief 处理鼠标双击事件
+     * @param event 鼠标事件
+     */
+    void onMouseDoubleClick(QMouseEvent* event);
     
     /**
      * @brief 设置Viewer用于射线相交检测
@@ -207,6 +220,12 @@ signals:
      * @param screenPos 屏幕坐标
      */
     void entityRightClicked(GeoEntity* entity, QPoint screenPos);
+    
+    /**
+     * @brief 实体双击信号
+     * @param entity 被双击的实体指针
+     */
+    void entityDoubleClicked(GeoEntity* entity);
 
     /**
      * @brief 地图左键点击（空白处）

@@ -8,7 +8,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QPushButton>
-#include "util/databaseutils.h"
+#include "../util/databaseutils.h"
 
 struct ModelInfo {
     QString id;

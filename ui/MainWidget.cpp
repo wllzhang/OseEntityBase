@@ -1,5 +1,8 @@
 ﻿#include "MainWidget.h"
-#include "OsgMapWidget.h"
+#include "../widgets/OsgMapWidget.h"
+#include "ModelDeployDialog.h"
+#include "EntityPropertyDialog.h"
+#include "../plan/planfilemanager.h"
 #include <QLabel>
 #include <qt_windows.h>
 #include <QLineEdit>
@@ -10,9 +13,14 @@
 #include <QToolButton>
 #include <QFile>
 #include <QApplication>
+#include <QFileDialog>
+#include <QMenu>
+#include <QAction>
+#include <QSettings>
 
-#include "geo/geoentitymanager.h"
-#include "geo/geoutils.h"
+#include "../geo/geoentitymanager.h"
+#include "../geo/geoutils.h"
+#include "../geo/mapstatemanager.h"
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent), currentNavIndex(0)
@@ -21,12 +29,23 @@ MainWidget::MainWidget(QWidget *parent)
     , isPlacingRoute_(false)
     , componentConfigDialog_(nullptr)
     , modelAssemblyDialog_(nullptr)
+    , modelDeployDialog_(nullptr)
+    , planFileManager_(nullptr)
 {
     //设置窗口属性
     setWindowTitle("任务规划");
     setMinimumSize(1200, 800);
 
     loadStyleSheet();
+
+    // 创建方案文件管理器
+    planFileManager_ = new PlanFileManager(nullptr, this);  // entityManager将在onMapLoaded中设置
+    
+    // 启用自动保存（默认启用，2秒间隔）
+    planFileManager_->setAutoSaveEnabled(true, 2000);
+    
+    // 加载最近打开的文件列表
+    loadRecentFiles();
 
     // 创建主垂直布局
     mainVLayout = new QVBoxLayout(this);
@@ -56,6 +75,10 @@ MainWidget::~MainWidget()
     if (modelAssemblyDialog_) {
         delete modelAssemblyDialog_;
     }
+    if (modelDeployDialog_) {
+        delete modelDeployDialog_;
+    }
+    // planFileManager_由Qt父对象管理，自动删除
 }
 
 
@@ -81,10 +104,22 @@ void MainWidget::createToolBar()
     toolBarLayout->setContentsMargins(15,5,15,5);
 
     // 添加工具栏按钮
-    QPushButton *newBtn = new QPushButton("新建");
-    newBtn->setStyleSheet("border: none;");
-    QPushButton *saveBtn = new QPushButton("保存");
-    saveBtn->setStyleSheet("border: none;");
+    QPushButton *newPlanBtn = new QPushButton("新建方案");
+    newPlanBtn->setStyleSheet("border: none;");
+    connect(newPlanBtn, &QPushButton::clicked, this, &MainWidget::onNewPlanClicked);
+    
+    QPushButton *openPlanBtn = new QPushButton("打开方案");
+    openPlanBtn->setStyleSheet("border: none;");
+    connect(openPlanBtn, &QPushButton::clicked, this, &MainWidget::onOpenPlanClicked);
+    
+    QPushButton *savePlanBtn = new QPushButton("保存方案");
+    savePlanBtn->setStyleSheet("border: none;");
+    connect(savePlanBtn, &QPushButton::clicked, this, &MainWidget::onSavePlanClicked);
+    
+    QPushButton *savePlanAsBtn = new QPushButton("另存为");
+    savePlanAsBtn->setStyleSheet("border: none;");
+    connect(savePlanAsBtn, &QPushButton::clicked, this, &MainWidget::onSavePlanAsClicked);
+    
     QPushButton *returnBtn = new QPushButton("后退");
     returnBtn->setStyleSheet("border: none;");
     QPushButton *forwardBtn = new QPushButton("前进");
@@ -94,9 +129,10 @@ void MainWidget::createToolBar()
 
     // 设置样式 待补充
 
-
-    toolBarLayout->addWidget(newBtn);
-    toolBarLayout->addWidget(saveBtn);
+    toolBarLayout->addWidget(newPlanBtn);
+    toolBarLayout->addWidget(openPlanBtn);
+    toolBarLayout->addWidget(savePlanBtn);
+    toolBarLayout->addWidget(savePlanAsBtn);
     toolBarLayout->addWidget(returnBtn);
     toolBarLayout->addWidget(forwardBtn);
     toolBarLayout->addWidget(helpBtn);
@@ -412,6 +448,8 @@ void MainWidget::createSubNavigation()
     connect(modelComponentBtn, &QPushButton::clicked, this, &MainWidget::onModelComponentBtnClicked);
     // 模型组装
     connect(modelAssemblyBtn, &QPushButton::clicked, this, &MainWidget::onModelAssemblyBtnClicked);
+    // 模型部署
+    connect(modelDeployBtn, &QPushButton::clicked, this, &MainWidget::onModelDeployBtnClicked);
     
     // 点标绘按钮
     connect(pointBtn, &QPushButton::clicked, this, [this]() {
@@ -550,6 +588,308 @@ void MainWidget::onModelAssemblyBtnClicked()
     }
 }
 
+// 模型部署槽函数
+void MainWidget::onModelDeployBtnClicked()
+{
+    // 检查是否有打开的方案文件
+    if (!planFileManager_ || planFileManager_->getCurrentPlanFile().isEmpty()) {
+        // 弹出方案选择对话框（新建或打开）
+        QMessageBox msgBox(this);
+        msgBox.setWindowTitle("方案管理");
+        msgBox.setText("请先创建或打开一个方案文件");
+        msgBox.setInformativeText("选择操作：");
+        QPushButton *newBtn = msgBox.addButton("新建方案", QMessageBox::ActionRole);
+        QPushButton *openBtn = msgBox.addButton("打开方案", QMessageBox::ActionRole);
+        QPushButton *cancelBtn = msgBox.addButton("取消", QMessageBox::RejectRole);
+        msgBox.exec();
+        
+        if (msgBox.clickedButton() == newBtn) {
+            onNewPlanClicked();
+            return;  // 新建方案后，用户需要再次点击"模型部署"
+        } else if (msgBox.clickedButton() == openBtn) {
+            onOpenPlanClicked();
+            return;  // 打开方案后，用户需要再次点击"模型部署"
+        } else {
+            return;  // 用户取消
+        }
+    }
+    
+    // 如果对话框不存在，创建它
+    if (!modelDeployDialog_) {
+        modelDeployDialog_ = new ModelDeployDialog(this);
+        // 设置对话框为非模态，不阻塞主窗口
+        modelDeployDialog_->setModal(false);
+        // 设置窗口标志为普通窗口，不阻塞父窗口交互
+        modelDeployDialog_->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
+        // 连接对话框关闭信号
+        connect(modelDeployDialog_, &QDialog::finished, this, [this](int result) {
+            Q_UNUSED(result);
+            // 对话框关闭时保留指针，下次打开时复用
+        });
+    }
+    
+    // 如果对话框已经打开，激活它（将其置于前台）
+    if (modelDeployDialog_->isVisible()) {
+        modelDeployDialog_->activateWindow();
+        modelDeployDialog_->raise();
+    } else {
+        // 显示非模态对话框，不阻塞主窗口
+        modelDeployDialog_->show();
+    }
+}
+
+void MainWidget::onNewPlanClicked()
+{
+    bool ok;
+    QString planName = QInputDialog::getText(this, "新建方案", 
+                                              "请输入方案名称:", 
+                                              QLineEdit::Normal, 
+                                              "新方案", 
+                                              &ok);
+    if (!ok || planName.trimmed().isEmpty()) {
+        return;
+    }
+    
+    QString description = QInputDialog::getText(this, "新建方案", 
+                                                "请输入方案描述（可选）:", 
+                                                QLineEdit::Normal, 
+                                                "", 
+                                                &ok);
+    if (!ok) {
+        description = "";  // 用户取消输入描述，使用空字符串
+    }
+    
+    if (planFileManager_) {
+        if (planFileManager_->createPlan(planName.trimmed(), description.trimmed())) {
+            QMessageBox::information(this, "成功", QString("方案 '%1' 创建成功").arg(planName));
+            qDebug() << "方案创建成功:" << planFileManager_->getCurrentPlanFile();
+        } else {
+            QMessageBox::warning(this, "错误", "方案创建失败");
+        }
+    }
+}
+
+void MainWidget::onOpenPlanClicked()
+{
+    QString plansDir = PlanFileManager::getPlansDirectory();
+    
+    // 创建菜单：显示最近打开的文件
+    QMenu menu(this);
+    QAction* recentAction = nullptr;
+    if (!recentPlanFiles_.isEmpty()) {
+        QMenu* recentMenu = menu.addMenu("最近打开");
+        addRecentFileMenuItem(recentMenu);
+        menu.addSeparator();
+    }
+    
+    QAction* openAction = menu.addAction("打开文件...");
+    menu.addSeparator();
+    
+    QAction* selectedAction = menu.exec(mapToGlobal(QPoint(0, 50)));
+    
+    if (selectedAction == openAction) {
+        // 打开文件对话框
+        QString filePath = QFileDialog::getOpenFileName(this, 
+                                                        "打开方案文件", 
+                                                        plansDir, 
+                                                        "方案文件 (*.plan.json);;所有文件 (*.*)");
+        
+        if (!filePath.isEmpty()) {
+            if (planFileManager_ && planFileManager_->loadPlan(filePath)) {
+                updateRecentFiles(filePath);
+                
+                // 恢复相机视角
+                double lon, lat, alt, heading, pitch, range;
+                if (planFileManager_->getCameraViewpoint(lon, lat, alt, heading, pitch, range)) {
+                    if (osgMapWidget_) {
+                        auto viewer = osgMapWidget_->getViewer();
+                        if (viewer) {
+                            osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+                            if (em) {
+                                osgEarth::Viewpoint vp("Plan", lon, lat, alt, heading, pitch, range);
+                                em->setViewpoint(vp, 2.0);
+                                qDebug() << "恢复相机视角:" << lon << lat << range;
+                            }
+                        }
+                    }
+                }
+                
+                QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
+                qDebug() << "方案加载成功:" << filePath;
+            } else {
+                QMessageBox::warning(this, "错误", "方案文件加载失败");
+            }
+        }
+    } else if (selectedAction && selectedAction != recentAction) {
+        // 检查是否是最近文件菜单项
+        QString filePath = selectedAction->data().toString();
+        if (!filePath.isEmpty() && QFile::exists(filePath)) {
+            if (planFileManager_ && planFileManager_->loadPlan(filePath)) {
+                updateRecentFiles(filePath);
+                
+                // 恢复相机视角
+                double lon, lat, alt, heading, pitch, range;
+                if (planFileManager_->getCameraViewpoint(lon, lat, alt, heading, pitch, range)) {
+                    if (osgMapWidget_) {
+                        auto viewer = osgMapWidget_->getViewer();
+                        if (viewer) {
+                            osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+                            if (em) {
+                                osgEarth::Viewpoint vp("Plan", lon, lat, alt, heading, pitch, range);
+                                em->setViewpoint(vp, 2.0);
+                                qDebug() << "恢复相机视角:" << lon << lat << range;
+                            }
+                        }
+                    }
+                }
+                
+                QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
+                qDebug() << "方案加载成功:" << filePath;
+            } else {
+                QMessageBox::warning(this, "错误", "方案文件加载失败");
+            }
+        }
+    }
+}
+
+void MainWidget::onSavePlanClicked()
+{
+    if (!planFileManager_) {
+        QMessageBox::warning(this, "错误", "方案文件管理器未初始化");
+        return;
+    }
+    
+    QString currentPlanFile = planFileManager_->getCurrentPlanFile();
+    if (currentPlanFile.isEmpty()) {
+        QMessageBox::warning(this, "提示", "当前没有打开的方案文件");
+        return;
+    }
+    
+    // 保存当前相机视角
+    if (osgMapWidget_) {
+        auto mapStateManager = osgMapWidget_->getMapStateManager();
+        if (mapStateManager) {
+            const auto& state = mapStateManager->getCurrentState();
+            planFileManager_->setCameraViewpoint(
+                state.viewLongitude,
+                state.viewLatitude,
+                state.viewAltitude,
+                state.heading,
+                state.pitch,
+                state.range
+            );
+        }
+    }
+    
+    if (planFileManager_->savePlan()) {
+        QMessageBox::information(this, "成功", "方案保存成功");
+        qDebug() << "方案保存成功:" << currentPlanFile;
+    } else {
+        QMessageBox::warning(this, "错误", "方案保存失败");
+    }
+}
+
+void MainWidget::onSavePlanAsClicked()
+{
+    if (!planFileManager_) {
+        QMessageBox::warning(this, "错误", "方案文件管理器未初始化");
+        return;
+    }
+    
+    QString plansDir = PlanFileManager::getPlansDirectory();
+    QString filePath = QFileDialog::getSaveFileName(this, 
+                                                    "另存为方案文件", 
+                                                    plansDir, 
+                                                    "方案文件 (*.plan.json);;所有文件 (*.*)");
+    
+    if (filePath.isEmpty()) {
+        return;
+    }
+    
+    // 确保文件扩展名正确
+    if (!filePath.endsWith(".plan.json")) {
+        filePath += ".plan.json";
+    }
+    
+    // 保存当前相机视角
+    if (osgMapWidget_) {
+        auto mapStateManager = osgMapWidget_->getMapStateManager();
+        if (mapStateManager) {
+            const auto& state = mapStateManager->getCurrentState();
+            planFileManager_->setCameraViewpoint(
+                state.viewLongitude,
+                state.viewLatitude,
+                state.viewAltitude,
+                state.heading,
+                state.pitch,
+                state.range
+            );
+        }
+    }
+    
+    if (planFileManager_->savePlan(filePath)) {
+        updateRecentFiles(filePath);
+        QMessageBox::information(this, "成功", "方案保存成功");
+        qDebug() << "方案另存为成功:" << filePath;
+    } else {
+        QMessageBox::warning(this, "错误", "方案保存失败");
+    }
+}
+
+void MainWidget::updateRecentFiles(const QString& filePath)
+{
+    // 移除重复项
+    recentPlanFiles_.removeAll(filePath);
+    
+    // 添加到列表开头
+    recentPlanFiles_.prepend(filePath);
+    
+    // 限制数量
+    while (recentPlanFiles_.size() > MAX_RECENT_FILES) {
+        recentPlanFiles_.removeLast();
+    }
+    
+    // 保存到配置文件
+    saveRecentFiles();
+}
+
+void MainWidget::loadRecentFiles()
+{
+    QSettings settings;
+    int count = settings.beginReadArray("RecentPlanFiles");
+    recentPlanFiles_.clear();
+    for (int i = 0; i < count; ++i) {
+        settings.setArrayIndex(i);
+        QString filePath = settings.value("path").toString();
+        if (QFile::exists(filePath)) {
+            recentPlanFiles_.append(filePath);
+        }
+    }
+    settings.endArray();
+}
+
+void MainWidget::saveRecentFiles()
+{
+    QSettings settings;
+    settings.beginWriteArray("RecentPlanFiles");
+    for (int i = 0; i < recentPlanFiles_.size(); ++i) {
+        settings.setArrayIndex(i);
+        settings.setValue("path", recentPlanFiles_[i]);
+    }
+    settings.endArray();
+}
+
+void MainWidget::addRecentFileMenuItem(QMenu* menu)
+{
+    for (const QString& filePath : recentPlanFiles_) {
+        QFileInfo fileInfo(filePath);
+        QString displayName = fileInfo.fileName();
+        QAction* action = menu->addAction(displayName);
+        action->setData(filePath);
+        action->setToolTip(filePath);
+    }
+}
+
 
 void MainWidget::updateSubNavigation(int navIndex)
 {
@@ -580,6 +920,79 @@ void MainWidget::onMapLoaded()
         qDebug() << "EntityManager未初始化";
         return;
     }
+    
+    // 设置PlanFileManager的entityManager
+    if (planFileManager_) {
+        planFileManager_->setEntityManager(entityManager);
+        qDebug() << "PlanFileManager的EntityManager已设置";
+    }
+    
+    // 设置PlanFileManager到OsgMapWidget
+    if (osgMapWidget_ && planFileManager_) {
+        osgMapWidget_->setPlanFileManager(planFileManager_);
+        qDebug() << "PlanFileManager已设置到OsgMapWidget";
+    }
+    
+    // 连接实体双击事件 - 打开属性编辑对话框
+    connect(entityManager, &GeoEntityManager::entityDoubleClicked, this, [this](GeoEntity* entity) {
+        if (!entity || !planFileManager_) {
+            return;
+        }
+        
+        // 检查实体是否属于当前方案
+        QString planFile = entity->getProperty("planFile").toString();
+        if (planFile.isEmpty() || planFile != planFileManager_->getCurrentPlanFile()) {
+            QMessageBox::information(this, "提示", "该实体不属于当前方案，无法编辑");
+            return;
+        }
+        
+        // 打开属性编辑对话框
+        EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->exec();
+    });
+    
+    // 连接实体右键事件 - 显示右键菜单
+    connect(entityManager, &GeoEntityManager::entityRightClicked, this, [this, entityManager](GeoEntity* entity, QPoint screenPos) {
+        if (!entity || !planFileManager_) {
+            return;
+        }
+        
+        // 检查实体是否属于当前方案
+        QString planFile = entity->getProperty("planFile").toString();
+        if (planFile.isEmpty() || planFile != planFileManager_->getCurrentPlanFile()) {
+            return;  // 不属于当前方案，不显示菜单
+        }
+        
+        // 创建右键菜单
+        QMenu menu(this);
+        QAction* editAction = menu.addAction("编辑属性");
+        QAction* deleteAction = menu.addAction("删除");
+        
+        // 转换为全局坐标
+        QPoint globalPos = osgMapWidget_->mapToGlobal(screenPos);
+        QAction* selectedAction = menu.exec(globalPos);
+        
+        if (selectedAction == editAction) {
+            // 打开属性编辑对话框
+            EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->exec();
+        } else if (selectedAction == deleteAction) {
+            // 删除确认
+            int ret = QMessageBox::question(this, "确认删除", 
+                                           QString("确定要删除实体 '%1' 吗？").arg(entity->getName()),
+                                           QMessageBox::Yes | QMessageBox::No);
+            if (ret == QMessageBox::Yes) {
+                // 从方案中移除
+                planFileManager_->removeEntityFromPlan(entity->getId());
+                // 从实体管理器中删除
+                entityManager->removeEntity(entity->getId());
+                // 保存方案
+                planFileManager_->savePlan();
+            }
+        }
+    });
     
     // 订阅空白处点击，用于点标绘放置
     connect(entityManager, &GeoEntityManager::mapLeftClicked, this, [this, entityManager](QPoint screenPos) {

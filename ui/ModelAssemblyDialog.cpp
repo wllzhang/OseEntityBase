@@ -1,5 +1,5 @@
 ﻿#include "ModelAssemblyDialog.h"
-#include "util/databaseutils.h"
+#include "../util/databaseutils.h"
 #include <QListWidget>
 #include <QTreeWidget>
 #include <QVBoxLayout>

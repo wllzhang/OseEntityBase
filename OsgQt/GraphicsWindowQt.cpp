@@ -14,8 +14,8 @@
 #include <QtCore/QPointer>
 
 // 包含MapStateManager和GeoEntityManager的完整定义
-#include "geo/mapstatemanager.h"
-#include "geo/geoentitymanager.h"
+#include "../geo/mapstatemanager.h"
+#include "../geo/geoentitymanager.h"
 
 using namespace osgQt;
 
@@ -538,6 +538,12 @@ void GLWidget::mouseDoubleClickEvent( QMouseEvent* event )
 	setKeyboardModifiers( event );
 	// 发送双击事件到OSG，考虑设备像素比
 	_gw->getEventQueue()->mouseDoubleButtonPress( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio, button );
+	
+	// ===== 实体管理器通知 =====
+	// 如果设置了实体管理器，则通知它鼠标双击事件
+	if (_entityManager) {
+		_entityManager->onMouseDoubleClick(event);
+	}
 }
 
 /**

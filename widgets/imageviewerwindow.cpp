@@ -6,8 +6,8 @@
  */
 
 #include "imageviewerwindow.h"
-#include "geo/geoutils.h"
-#include "util/databaseutils.h"
+#include "../geo/geoutils.h"
+#include "../util/databaseutils.h"
 #include <QApplication>
 #include <QDir>
 #include <QDebug>
