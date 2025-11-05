@@ -322,7 +322,18 @@ Public 成员函数</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>返回</dt><dd>成功返回true </dd></dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回true</dd></dl>
+<p>解析拖拽数据格式（"aircraft:实体名称"），创建对应的实体。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dragData</td><td>拖拽数据字符串，格式为"aircraft:实体名称" </td></tr>
+    <tr><td class="paramname">longitude</td><td>经度 </td></tr>
+    <tr><td class="paramname">latitude</td><td>纬度 </td></tr>
+    <tr><td class="paramname">altitude</td><td>高度 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回true，失败返回false </dd></dl>
 
 </div>
 </div>
@@ -776,6 +787,14 @@ Public 成员函数</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>返回</dt><dd>找到的实体指针，未找到返回nullptr</dd></dl>
+<p>将屏幕坐标转换为地理坐标，然后遍历所有实体，找到距离最近的实体。 使用动态阈值（基于相机距离）来判断是否选中实体。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">screenPos</td><td>屏幕坐标（相对于GLWidget） </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>返回</dt><dd>找到的实体指针，未找到返回nullptr </dd></dl>
 
 </div>
@@ -1035,6 +1054,9 @@ Public 成员函数</h2></td></tr>
 </div><div class="memdoc">
 
 <p>处理延迟删除队列（应该在frame()完成后调用） 公共方法，供外部在渲染完成后调用 </p>
+<p>处理延迟删除队列</p>
+<p>在渲染完成后调用，安全地删除已标记为待删除的实体。 使用延迟删除机制避免在渲染过程中删除OSG节点导致崩溃。</p>
+<dl class="section note"><dt>注解</dt><dd>应该在每一帧渲染完成后（frame()）调用此方法 </dd></dl>
 
 </div>
 </div>

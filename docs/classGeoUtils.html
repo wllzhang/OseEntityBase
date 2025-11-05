@@ -369,6 +369,15 @@ $(document).ready(function(){initNavTree('classGeoUtils.html',''); initResizable
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回可用文件路径，失败返回空字符串</dd></dl>
+<p>如果路径是Qt资源路径（以":/"开头），将其复制到临时文件并返回临时文件路径。 如果路径是普通文件路径，直接返回原路径（如果文件存在）。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">resourcePath</td><td>Qt资源路径（如":/images/file.png"）或普通文件路径 </td></tr>
+    <tr><td class="paramname">errorMessage</td><td>输出错误信息（如果失败） </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>返回</dt><dd>成功返回可用文件路径，失败返回空字符串 </dd></dl>
 
 </div>
@@ -579,6 +588,19 @@ $(document).ready(function(){initNavTree('classGeoUtils.html',''); initResizable
 
 <p>将屏幕坐标转换为地理坐标 </p>
 <p>将Qt窗口坐标（Y=0在顶部）转换为OSG视口坐标（Y=0在底部）， 然后通过射线相交检测获取地球表面的地理坐标。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewer</td><td>OSG Viewer指针 </td></tr>
+    <tr><td class="paramname">mapNode</td><td>osgEarth MapNode指针 </td></tr>
+    <tr><td class="paramname">screenPos</td><td>屏幕坐标（相对于GLWidget的本地坐标） </td></tr>
+    <tr><td class="paramname">longitude</td><td>输出经度 </td></tr>
+    <tr><td class="paramname">latitude</td><td>输出纬度 </td></tr>
+    <tr><td class="paramname">altitude</td><td>输出高度 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回true，失败返回false</dd></dl>
+<p>处理Qt窗口坐标系（Y=0在顶部）与OSG视口坐标系（Y=0在底部）的差异， 通过射线相交检测获取地球表面的地理坐标。</p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
     <tr><td class="paramname">viewer</td><td>OSG Viewer指针 </td></tr>
