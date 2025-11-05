@@ -154,6 +154,9 @@ Public 成员函数</h2></td></tr>
 <tr class="separator:ade65c086dd26fe4ee1faafd1a8958c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40beb99443ae8831e3419a63aee4ff51" id="r_a40beb99443ae8831e3419a63aee4ff51"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structMapStateInfo.html">MapStateInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a40beb99443ae8831e3419a63aee4ff51">getCurrentState</a> () const</td></tr>
 <tr class="separator:a40beb99443ae8831e3419a63aee4ff51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51f4119121484198f620d10020fb0c7b" id="r_a51f4119121484198f620d10020fb0c7b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a51f4119121484198f620d10020fb0c7b">getGeoCoordinatesFromScreen</a> (QPoint screenPos, double &amp;longitude, double &amp;latitude, double &amp;altitude)</td></tr>
+<tr class="memdesc:a51f4119121484198f620d10020fb0c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据屏幕坐标获取地理坐标（统一接口，避免重复调用）  <br /></td></tr>
+<tr class="separator:a51f4119121484198f620d10020fb0c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>地图状态管理器 </p>
@@ -243,6 +246,58 @@ Public 成员函数</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a51f4119121484198f620d10020fb0c7b" name="a51f4119121484198f620d10020fb0c7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51f4119121484198f620d10020fb0c7b">&#9670;&#160;</a></span>getGeoCoordinatesFromScreen()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MapStateManager::getGeoCoordinatesFromScreen </td>
+          <td>(</td>
+          <td class="paramtype">QPoint&#160;</td>
+          <td class="paramname"><em>screenPos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>longitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>latitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>altitude</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>根据屏幕坐标获取地理坐标（统一接口，避免重复调用） </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">screenPos</td><td>屏幕坐标 </td></tr>
+    <tr><td class="paramname">longitude</td><td>输出经度 </td></tr>
+    <tr><td class="paramname">latitude</td><td>输出纬度 </td></tr>
+    <tr><td class="paramname">altitude</td><td>输出高度（如果转换失败，使用默认高度） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回true，失败返回false（但altitude会设置为默认值） </dd></dl>
 
 </div>
 </div>
