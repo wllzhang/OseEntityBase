@@ -1008,6 +1008,10 @@ void MainWidget::onMapLoaded()
             EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
             dialog->setAttribute(Qt::WA_DeleteOnClose);
             dialog->exec();
+            // 对话框关闭后，恢复焦点到地图窗口，确保相机控制正常
+            if (osgMapWidget_) {
+                osgMapWidget_->setFocus();
+            }
         } else if (selectedAction == deleteAction) {
             // 删除确认
             int ret = QMessageBox::question(this, "确认删除", 

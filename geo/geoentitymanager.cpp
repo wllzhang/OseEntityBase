@@ -310,6 +310,12 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
         qDebug() << "找到的实体:" << (entity ? entity->getName() : "无");
         
         if (entity) {
+            // 如果点击的是已选中的实体，不做任何操作（避免重复设置）
+            if (selectedEntity_ == entity && entity->isSelected()) {
+                qDebug() << "实体已选中，无需重复设置:" << entity->getName();
+                return;
+            }
+            
             // 取消之前的选择
             if (selectedEntity_ && selectedEntity_ != entity) {
                 selectedEntity_->setSelected(false);
@@ -374,54 +380,74 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
     double mouseLongitude, mouseLatitude, mouseAltitude;
     
     // 统一使用 MapStateManager 获取坐标信息（mapStateManager_ 必然存在）
-    mapStateManager_->getGeoCoordinatesFromScreen(screenPos, mouseLongitude, mouseLatitude, mouseAltitude);
+    if (!mapStateManager_->getGeoCoordinatesFromScreen(screenPos, mouseLongitude, mouseLatitude, mouseAltitude)) {
+        qDebug() << "findEntityAtPosition: 无法获取鼠标地理坐标";
+        return nullptr;
+    }
     
     try {
         qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude << mouseAltitude;
         
-        // 遍历所有实体，找到距离最近的
+        // 遍历所有实体，找到距离最近的可见实体
         GeoEntity* closestEntity = nullptr;
         double minDistance = std::numeric_limits<double>::max();
         
         QStringList entityIds = getEntityIds();
         for (const QString& entityId : entityIds) {
             GeoEntity* entity = getEntity(entityId);
-            if (entity) {
-                double entityLongitude, entityLatitude, entityAltitude;
-                entity->getPosition(entityLongitude, entityLatitude, entityAltitude);
-                
-                // 计算距离：使用工具函数计算2D距离
-                double distance = GeoUtils::calculateDistance2D(mouseLongitude, mouseLatitude, 
-                                                               entityLongitude, entityLatitude);
-                
-                qDebug() << "实体" << entity->getName() << "距离:" << distance;
-                
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestEntity = entity;
-                }
+            if (!entity) {
+                continue;
+            }
+            
+            // 跳过不可见的实体
+            if (!entity->isVisible()) {
+                continue;
+            }
+            
+            // 跳过没有有效节点的实体
+            if (!entity->getNode()) {
+                continue;
+            }
+            
+            double entityLongitude, entityLatitude, entityAltitude;
+            entity->getPosition(entityLongitude, entityLatitude, entityAltitude);
+            
+            // 计算距离：使用地理距离（米），更精确
+            double distanceMeters = GeoUtils::calculateGeographicDistance(mouseLongitude, mouseLatitude, 
+                                                                          entityLongitude, entityLatitude);
+            
+            qDebug() << "实体" << entity->getName() << "距离:" << distanceMeters << "米";
+            
+            if (distanceMeters < minDistance) {
+                minDistance = distanceMeters;
+                closestEntity = entity;
             }
         }
         
-        // 基于当前相机距离动态调整选中阈值
-        double threshold = 0.1; // 默认阈值
+        // 基于当前相机距离动态调整选中阈值（米）
+        // 阈值应该根据相机距离动态调整：相机越远，阈值越大；相机越近，阈值越小
+        double thresholdMeters = 100.0; // 默认阈值（100米）
         if (mapStateManager_) {
             double rangeMeters = mapStateManager_->getRange();
-            const double baseThreshold = 0.1;      // 度，基础阈值（约1km）
-            const double scaleFactor = 100000.0;   // 米，缩放因子
-            const double minThreshold = 0.05;      // 最小阈值（约0.5km）
-            const double maxThreshold = 1.0;        // 最大阈值（约100km）
-            double dynamicThreshold = baseThreshold * (1.0 + rangeMeters / scaleFactor);
+            // 基础阈值：50米（近距离时）
+            const double baseThreshold = 50.0;      // 米，基础阈值
+            // 根据相机距离动态调整：相机距离的1/100到1/1000作为阈值
+            // 例如：相机距离1000米时，阈值约10-100米；相机距离10000米时，阈值约100-1000米
+            double dynamicThreshold = baseThreshold + (rangeMeters * 0.05); // 相机距离的5%
+            
+            // 限制阈值范围：最小50米，最大2000米
+            const double minThreshold = 50.0;       // 最小阈值（50米）
+            const double maxThreshold = 2000.0;     // 最大阈值（2公里）
             if (dynamicThreshold < minThreshold) dynamicThreshold = minThreshold;
             if (dynamicThreshold > maxThreshold) dynamicThreshold = maxThreshold;
-            threshold = dynamicThreshold;
+            thresholdMeters = dynamicThreshold;
         }
         
-        if (closestEntity && minDistance < threshold) {
-            qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance;
+        if (closestEntity && minDistance < thresholdMeters) {
+            qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
             return closestEntity;
         } else {
-            qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance;
+            qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
         }
         
         return nullptr;
