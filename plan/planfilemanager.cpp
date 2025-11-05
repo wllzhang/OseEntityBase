@@ -21,6 +21,7 @@
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QTimer>
+#include <QtMath>
 
 PlanFileManager::PlanFileManager(GeoEntityManager* entityManager, QObject *parent)
     : QObject(parent)
@@ -270,14 +271,46 @@ bool PlanFileManager::loadPlan(const QString& filePath)
     if (planObject.contains("camera")) {
         QJsonObject camera = planObject["camera"].toObject();
         if (!camera.isEmpty()) {
-            hasCameraViewpoint_ = true;
-            cameraLongitude_ = camera["longitude"].toDouble();
-            cameraLatitude_ = camera["latitude"].toDouble();
-            cameraAltitude_ = camera["altitude"].toDouble();
-            cameraHeading_ = camera["heading"].toDouble();
-            cameraPitch_ = camera["pitch"].toDouble();
-            cameraRange_ = camera["range"].toDouble();
-            qDebug() << "加载相机视角:" << cameraLongitude_ << cameraLatitude_ << cameraRange_;
+            double lon = camera["longitude"].toDouble();
+            double lat = camera["latitude"].toDouble();
+            double alt = camera["altitude"].toDouble();
+            double heading = camera["heading"].toDouble();
+            double pitch = camera["pitch"].toDouble();
+            double range = camera["range"].toDouble();
+            
+            // 验证数据的有效性
+            bool isValid = true;
+            // 检查是否为NaN或无穷大
+            if (qIsNaN(lon) || qIsInf(lon) || qIsNaN(lat) || qIsInf(lat) || 
+                qIsNaN(alt) || qIsInf(alt) || qIsNaN(heading) || qIsInf(heading) ||
+                qIsNaN(pitch) || qIsInf(pitch) || qIsNaN(range) || qIsInf(range)) {
+                isValid = false;
+                qDebug() << "相机视角数据包含NaN或Inf，忽略";
+            }
+            // 检查经纬度范围
+            if (isValid && (lon < -180.0 || lon > 180.0 || lat < -90.0 || lat > 90.0)) {
+                isValid = false;
+                qDebug() << "相机视角经纬度超出有效范围，忽略";
+            }
+            // 检查距离和高度是否合理（避免异常大的值）
+            if (isValid && (range < 0.0 || range > 1e8 || alt < -10000.0 || alt > 1e7)) {
+                isValid = false;
+                qDebug() << "相机视角距离或高度超出合理范围，忽略";
+            }
+            
+            if (isValid) {
+                hasCameraViewpoint_ = true;
+                cameraLongitude_ = lon;
+                cameraLatitude_ = lat;
+                cameraAltitude_ = alt;
+                cameraHeading_ = heading;
+                cameraPitch_ = pitch;
+                cameraRange_ = range;
+                qDebug() << "加载相机视角:" << cameraLongitude_ << cameraLatitude_ << cameraRange_;
+            } else {
+                hasCameraViewpoint_ = false;
+                qDebug() << "相机视角数据无效，已忽略";
+            }
         } else {
             hasCameraViewpoint_ = false;
         }
@@ -802,13 +835,37 @@ void PlanFileManager::setAutoSaveEnabled(bool enabled, int intervalMs)
 void PlanFileManager::setCameraViewpoint(double longitude, double latitude, double altitude,
                                         double heading, double pitch, double range)
 {
-    hasCameraViewpoint_ = true;
-    cameraLongitude_ = longitude;
-    cameraLatitude_ = latitude;
-    cameraAltitude_ = altitude;
-    cameraHeading_ = heading;
-    cameraPitch_ = pitch;
-    cameraRange_ = range;
+    // 验证数据的有效性
+    bool isValid = true;
+    // 检查是否为NaN或无穷大
+    if (qIsNaN(longitude) || qIsInf(longitude) || qIsNaN(latitude) || qIsInf(latitude) || 
+        qIsNaN(altitude) || qIsInf(altitude) || qIsNaN(heading) || qIsInf(heading) ||
+        qIsNaN(pitch) || qIsInf(pitch) || qIsNaN(range) || qIsInf(range)) {
+        isValid = false;
+        qDebug() << "setCameraViewpoint: 数据包含NaN或Inf，忽略设置";
+    }
+    // 检查经纬度范围
+    if (isValid && (longitude < -180.0 || longitude > 180.0 || latitude < -90.0 || latitude > 90.0)) {
+        isValid = false;
+        qDebug() << "setCameraViewpoint: 经纬度超出有效范围，忽略设置";
+    }
+    // 检查距离和高度是否合理（避免异常大的值）
+    if (isValid && (range < 0.0 || range > 1e8 || altitude < -10000.0 || altitude > 1e7)) {
+        isValid = false;
+        qDebug() << "setCameraViewpoint: 距离或高度超出合理范围，忽略设置";
+    }
+    
+    if (isValid) {
+        hasCameraViewpoint_ = true;
+        cameraLongitude_ = longitude;
+        cameraLatitude_ = latitude;
+        cameraAltitude_ = altitude;
+        cameraHeading_ = heading;
+        cameraPitch_ = pitch;
+        cameraRange_ = range;
+    } else {
+        hasCameraViewpoint_ = false;
+    }
 }
 
 /**

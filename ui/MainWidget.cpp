@@ -24,6 +24,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QSettings>
+#include <QtMath>
 
 #include "../geo/geoentitymanager.h"
 #include "../geo/geoutils.h"
@@ -775,15 +776,28 @@ void MainWidget::onSavePlanClicked()
     // 保存当前相机视角（mapStateManager 必然存在）
     if (osgMapWidget_) {
         auto mapStateManager = osgMapWidget_->getMapStateManager();
-        const auto& state = mapStateManager->getCurrentState();
-        planFileManager_->setCameraViewpoint(
-            state.viewLongitude,
-            state.viewLatitude,
-            state.viewAltitude,
-            state.heading,
-            state.pitch,
-            state.range
-        );
+        if (mapStateManager) {
+            const auto& state = mapStateManager->getCurrentState();
+            // 验证状态值是否有效后再保存
+            bool isValid = true;
+            if (qIsNaN(state.viewLongitude) || qIsInf(state.viewLongitude) ||
+                qIsNaN(state.viewLatitude) || qIsInf(state.viewLatitude) ||
+                state.viewLongitude < -180.0 || state.viewLongitude > 180.0 ||
+                state.viewLatitude < -90.0 || state.viewLatitude > 90.0) {
+                isValid = false;
+                qDebug() << "保存方案: 相机视角经纬度无效，跳过保存";
+            }
+            if (isValid) {
+                planFileManager_->setCameraViewpoint(
+                    state.viewLongitude,
+                    state.viewLatitude,
+                    state.viewAltitude,
+                    state.heading,
+                    state.pitch,
+                    state.range
+                );
+            }
+        }
     }
     
     if (planFileManager_->savePlan()) {
@@ -819,15 +833,28 @@ void MainWidget::onSavePlanAsClicked()
     // 保存当前相机视角（mapStateManager 必然存在）
     if (osgMapWidget_) {
         auto mapStateManager = osgMapWidget_->getMapStateManager();
-        const auto& state = mapStateManager->getCurrentState();
-        planFileManager_->setCameraViewpoint(
-            state.viewLongitude,
-            state.viewLatitude,
-            state.viewAltitude,
-            state.heading,
-            state.pitch,
-            state.range
-        );
+        if (mapStateManager) {
+            const auto& state = mapStateManager->getCurrentState();
+            // 验证状态值是否有效后再保存
+            bool isValid = true;
+            if (qIsNaN(state.viewLongitude) || qIsInf(state.viewLongitude) ||
+                qIsNaN(state.viewLatitude) || qIsInf(state.viewLatitude) ||
+                state.viewLongitude < -180.0 || state.viewLongitude > 180.0 ||
+                state.viewLatitude < -90.0 || state.viewLatitude > 90.0) {
+                isValid = false;
+                qDebug() << "保存方案: 相机视角经纬度无效，跳过保存";
+            }
+            if (isValid) {
+                planFileManager_->setCameraViewpoint(
+                    state.viewLongitude,
+                    state.viewLatitude,
+                    state.viewAltitude,
+                    state.heading,
+                    state.pitch,
+                    state.range
+                );
+            }
+        }
     }
     
     if (planFileManager_->savePlan(filePath)) {
