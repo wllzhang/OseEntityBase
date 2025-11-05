@@ -1,18 +1,16 @@
 var indexSectionsWithContent =
 {
-  0: "1234_abcdefghiklmnopqrstuvw~主创地实弃快扩数文架核模添版生联许连",
+  0: "12345_abcdefghiklmnopqrstuvw~✨主依创初地实工弃快扩数文方架模添版生相组自许连项🏗📁📄📖📚📝📦🔍🔗🔧🚀",
   1: "gimqw",
-  2: "ou",
+  2: "o",
   3: "gimqw",
-  4: "abcdefghiklmopqrstuvw~",
+  4: "abcefghiklmopqrstuvw~",
   5: "_aeghlmnprsvw",
   6: "k",
-  7: "m",
-  8: "m",
-  9: "g",
-  10: "moq",
-  11: "egm",
-  12: "a弃数文"
+  7: "g",
+  8: "moq",
+  9: "egm",
+  10: "a弃数文"
 };
 
 var indexSectionNames =
@@ -24,12 +22,10 @@ var indexSectionNames =
   4: "functions",
   5: "variables",
   6: "typedefs",
-  7: "enums",
-  8: "enumvalues",
-  9: "related",
-  10: "defines",
-  11: "groups",
-  12: "pages"
+  7: "related",
+  8: "defines",
+  9: "groups",
+  10: "pages"
 };
 
 var indexSectionLabels =
@@ -41,11 +37,9 @@ var indexSectionLabels =
   4: "函数",
   5: "变量",
   6: "类型定义",
-  7: "枚举",
-  8: "枚举值",
-  9: "友元",
-  10: "宏定义",
-  11: "组",
-  12: "页"
+  7: "友元",
+  8: "宏定义",
+  9: "组",
+  10: "页"
 };
 

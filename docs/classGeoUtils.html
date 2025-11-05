@@ -107,6 +107,9 @@ $(document).ready(function(){initNavTree('classGeoUtils.html',''); initResizable
 <tr class="memitem:a4ceae59328088c50b864b87efab29469" id="r_a4ceae59328088c50b864b87efab29469"><td class="memItemLeft" align="right" valign="top">static osg::Vec3d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#a4ceae59328088c50b864b87efab29469">geoToWorldCoordinates</a> (double longitude, double latitude, double altitude, osgEarth::AltitudeMode altMode=osgEarth::ALTMODE_ABSOLUTE)</td></tr>
 <tr class="memdesc:a4ceae59328088c50b864b87efab29469"><td class="mdescLeft">&#160;</td><td class="mdescRight">将地理坐标转换为世界坐标  <br /></td></tr>
 <tr class="separator:a4ceae59328088c50b864b87efab29469"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c684b56b65e6f065c2a3af7e64ea725" id="r_a5c684b56b65e6f065c2a3af7e64ea725"><td class="memItemLeft" align="right" valign="top">static QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#a5c684b56b65e6f065c2a3af7e64ea725">convertResourcePathToFile</a> (const QString &amp;resourcePath, QString *errorMessage=nullptr)</td></tr>
+<tr class="memdesc:a5c684b56b65e6f065c2a3af7e64ea725"><td class="mdescLeft">&#160;</td><td class="mdescRight">将Qt资源路径转换为可用的文件路径  <br /></td></tr>
+<tr class="separator:a5c684b56b65e6f065c2a3af7e64ea725"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba7b0ef516ae86719e498fc8f11d18ae" id="r_aba7b0ef516ae86719e498fc8f11d18ae"><td class="memItemLeft" align="right" valign="top">static QJsonObject&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoUtils.html#aba7b0ef516ae86719e498fc8f11d18ae">loadJsonFile</a> (const QString &amp;filePath, QString *errorMessage=nullptr)</td></tr>
 <tr class="memdesc:aba7b0ef516ae86719e498fc8f11d18ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">加载JSON配置文件  <br /></td></tr>
 <tr class="separator:aba7b0ef516ae86719e498fc8f11d18ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -320,6 +323,53 @@ $(document).ready(function(){initNavTree('classGeoUtils.html',''); initResizable
   </dd>
 </dl>
 <dl class="section return"><dt>返回</dt><dd>距离（米） </dd></dl>
+
+</div>
+</div>
+<a id="a5c684b56b65e6f065c2a3af7e64ea725" name="a5c684b56b65e6f065c2a3af7e64ea725"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c684b56b65e6f065c2a3af7e64ea725">&#9670;&#160;</a></span>convertResourcePathToFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString GeoUtils::convertResourcePathToFile </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>resourcePath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QString *&#160;</td>
+          <td class="paramname"><em>errorMessage</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>将Qt资源路径转换为可用的文件路径 </p>
+<p>如果路径是Qt资源路径（以":/"开头），将其复制到临时文件并返回临时文件路径。 如果路径是普通文件路径，直接返回原路径。 主要用于OSG等不支持Qt资源系统的库。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">resourcePath</td><td>Qt资源路径（如":/images/file.png"）或普通文件路径 </td></tr>
+    <tr><td class="paramname">errorMessage</td><td>输出错误信息（如果失败） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回可用文件路径，失败返回空字符串 </dd></dl>
 
 </div>
 </div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['架构概览_0',['架构概览',['../index.html#autotoc_md5',1,'']]]
+  ['弃用列表_0',['弃用列表',['../deprecated.html',1,'']]]
 ];

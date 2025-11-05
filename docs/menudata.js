@@ -42,7 +42,6 @@ var menudata={children:[
 {text:"a",url:"functions_a.html#index_a"},
 {text:"b",url:"functions_b.html#index_b"},
 {text:"c",url:"functions_c.html#index_c"},
-{text:"d",url:"functions_d.html#index_d"},
 {text:"e",url:"functions_e.html#index_e"},
 {text:"f",url:"functions_f.html#index_f"},
 {text:"g",url:"functions_g.html#index_g"},
@@ -66,7 +65,6 @@ var menudata={children:[
 {text:"a",url:"functions_func.html#index_a"},
 {text:"b",url:"functions_func_b.html#index_b"},
 {text:"c",url:"functions_func_c.html#index_c"},
-{text:"d",url:"functions_func_d.html#index_d"},
 {text:"e",url:"functions_func_e.html#index_e"},
 {text:"f",url:"functions_func_f.html#index_f"},
 {text:"g",url:"functions_func_g.html#index_g"},
@@ -105,7 +103,5 @@ var menudata={children:[
 {text:"文件列表",url:"files.html"},
 {text:"文件成员",url:"globals.html",children:[
 {text:"全部",url:"globals.html"},
-{text:"枚举",url:"globals_enum.html"},
-{text:"枚举值",url:"globals_eval.html"},
 {text:"宏定义",url:"globals_defs.html"}]}]},
 {text:"示例",url:"examples.html"}]}

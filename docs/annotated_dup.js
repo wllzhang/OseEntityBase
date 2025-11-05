@@ -10,7 +10,6 @@ var annotated_dup =
     [ "GeoEntityManager", "classGeoEntityManager.html", "classGeoEntityManager" ],
     [ "GeoUtils", "classGeoUtils.html", "classGeoUtils" ],
     [ "ImageEntity", "classImageEntity.html", "classImageEntity" ],
-    [ "MainWindow", "classMainWindow.html", "classMainWindow" ],
     [ "MapStateInfo", "structMapStateInfo.html", "structMapStateInfo" ],
     [ "MapStateManager", "classMapStateManager.html", "classMapStateManager" ],
     [ "WaypointEntity", "classWaypointEntity.html", "classWaypointEntity" ]

@@ -11,9 +11,6 @@ var hierarchy =
     [ "QGLWidget", null, [
       [ "osgQt::GLWidget", "classosgQt_1_1GLWidget.html", null ]
     ] ],
-    [ "QMainWindow", null, [
-      [ "MainWindow", "classMainWindow.html", null ]
-    ] ],
     [ "QObject", null, [
       [ "GeoEntity", "classGeoEntity.html", [
         [ "ImageEntity", "classImageEntity.html", null ],

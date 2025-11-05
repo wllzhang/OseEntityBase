@@ -1,30 +1,6 @@
 var searchData=
 [
-  ['m_5fpi_0',['m_pi',['../geoutils_8cpp.html#ae71449b1cc6e6250b91f539153a7a0d3',1,'M_PI:&#160;geoutils.cpp'],['../geoentity_8h.html#ae71449b1cc6e6250b91f539153a7a0d3',1,'M_PI:&#160;geoentity.h']]],
-  ['mainpage_2emd_1',['mainpage.md',['../mainpage_8md.html',1,'']]],
-  ['mainwindow_2',['mainwindow',['../classMainWindow.html',1,'MainWindow'],['../classMainWindow.html#a996c5a2b6f77944776856f08ec30858d',1,'MainWindow::MainWindow()']]],
-  ['mainwindow_2ecpp_3',['mainwindow.cpp',['../mainwindow_8cpp.html',1,'']]],
-  ['mainwindow_2eh_4',['mainwindow.h',['../mainwindow_8h.html',1,'']]],
-  ['makecurrentimplementation_5',['makeCurrentImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a4c8fc7091e4383a5440e3c9bdf57b96e',1,'osgQt::GraphicsWindowQt']]],
-  ['managers_6',['Managers',['../group__managers.html',1,'']]],
-  ['map_5fmode_5f2d_7',['MAP_MODE_2D',['../mainwindow_8h.html#aa17ca8c572605df6a7d49a362f6d7534aeeb2bdbeb39ed22fa4913010ac4b61a4',1,'mainwindow.h']]],
-  ['map_5fmode_5f3d_8',['MAP_MODE_3D',['../mainwindow_8h.html#aa17ca8c572605df6a7d49a362f6d7534a5b46ddb55ab152006ad1152bdf4104ee',1,'mainwindow.h']]],
-  ['mapleftclicked_9',['mapLeftClicked',['../classGeoEntityManager.html#a04fa1ba8d7880882ce4d89c4464ef462',1,'GeoEntityManager']]],
-  ['mapmode_10',['MapMode',['../mainwindow_8h.html#aa17ca8c572605df6a7d49a362f6d7534',1,'mainwindow.h']]],
-  ['maprightclicked_11',['mapRightClicked',['../classGeoEntityManager.html#a036e4a8b454e4e545dccc741f40ffaf6',1,'GeoEntityManager']]],
-  ['mapstateinfo_12',['mapstateinfo',['../structMapStateInfo.html',1,'MapStateInfo'],['../structMapStateInfo.html#a19450069173302ef9da5eabf0deb398b',1,'MapStateInfo::MapStateInfo()']]],
-  ['mapstatemanager_13',['mapstatemanager',['../classMapStateManager.html#af8845bc3795072e96f0e6457d1142b26',1,'MapStateManager::MapStateManager()'],['../classMapStateManager.html',1,'MapStateManager']]],
-  ['mapstatemanager_2ecpp_14',['mapstatemanager.cpp',['../mapstatemanager_8cpp.html',1,'']]],
-  ['mapstatemanager_2eh_15',['mapstatemanager.h',['../mapstatemanager_8h.html',1,'']]],
-  ['mousealtitude_16',['mouseAltitude',['../structMapStateInfo.html#af23be3da85e16e5892e9a8d80a764e2a',1,'MapStateInfo']]],
-  ['mousedoubleclickevent_17',['mouseDoubleClickEvent',['../classosgQt_1_1GLWidget.html#a081cee134a182000931328e91fb1fd7f',1,'osgQt::GLWidget']]],
-  ['mouselatitude_18',['mouseLatitude',['../structMapStateInfo.html#a13a81506f8c63c5ebb972cfb171ec274',1,'MapStateInfo']]],
-  ['mouselongitude_19',['mouseLongitude',['../structMapStateInfo.html#aa7b8dc531adab725018d6e2e66bd1050',1,'MapStateInfo']]],
-  ['mousemoveevent_20',['mouseMoveEvent',['../classosgQt_1_1GLWidget.html#a4a65f983e170afb84f8ee00793bb415e',1,'osgQt::GLWidget']]],
-  ['mousepositionchanged_21',['mousePositionChanged',['../classMapStateManager.html#a95d62c0c538ddb7a5ee60c1e96d667ea',1,'MapStateManager']]],
-  ['mousepressevent_22',['mousePressEvent',['../classosgQt_1_1GLWidget.html#abc500ddfdb5a7d1831b711b48d333da2',1,'osgQt::GLWidget']]],
-  ['mousereleaseevent_23',['mouseReleaseEvent',['../classosgQt_1_1GLWidget.html#abc2214ea1c28c5f3607947d6ffd57f64',1,'osgQt::GLWidget']]],
-  ['moveevent_24',['moveEvent',['../classosgQt_1_1GLWidget.html#a7cca771322c09777689aed6c88ca714d',1,'osgQt::GLWidget']]],
-  ['myqkeyevent_25',['MYQKEYEVENT',['../QGraphicsViewAdapter_8cpp.html#a700905cbf27da7039f6217c93ad1e2a8',1,'QGraphicsViewAdapter.cpp']]],
-  ['myqpointerevent_26',['MYQPOINTEREVENT',['../QGraphicsViewAdapter_8cpp.html#a948dfada9969fb68d5421cb645cb05d2',1,'QGraphicsViewAdapter.cpp']]]
+  ['latitude_5f_0',['latitude_',['../classGeoEntity.html#a99c192552234098b00e3293d97ca9f7c',1,'GeoEntity']]],
+  ['loadjsonfile_1',['loadJsonFile',['../classGeoUtils.html#aba7b0ef516ae86719e498fc8f11d18ae',1,'GeoUtils']]],
+  ['longitude_5f_2',['longitude_',['../classGeoEntity.html#a1b4c07cd86aff844e0a6f136f84cabc3',1,'GeoEntity']]]
 ];
