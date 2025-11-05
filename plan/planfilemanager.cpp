@@ -364,6 +364,15 @@ bool PlanFileManager::hasUnsavedChanges() const
     return hasUnsavedChanges_;
 }
 
+/**
+ * @brief 序列化实体为JSON对象
+ * 
+ * 将实体的所有信息（规划属性、模型组装、组件配置）序列化为JSON格式。
+ * 组件信息采用深层复制，确保方案文件完全独立于数据库。
+ * 
+ * @param entity 实体指针
+ * @return JSON对象，包含实体的完整信息
+ */
 QJsonObject PlanFileManager::entityToJson(GeoEntity* entity)
 {
     if (!entity) {
@@ -464,6 +473,15 @@ QJsonObject PlanFileManager::entityToJson(GeoEntity* entity)
     return entityObj;
 }
 
+/**
+ * @brief 从JSON对象创建实体
+ * 
+ * 反序列化JSON对象，创建实体并设置所有属性（规划属性、模型组装、组件配置）。
+ * 优先使用方案文件中的完整信息，而不是数据库默认值。
+ * 
+ * @param json JSON对象，包含实体的完整信息
+ * @return 创建的实体指针，失败返回nullptr
+ */
 GeoEntity* PlanFileManager::jsonToEntity(const QJsonObject& json)
 {
     if (!entityManager_) {
@@ -545,6 +563,14 @@ GeoEntity* PlanFileManager::jsonToEntity(const QJsonObject& json)
     return entity;
 }
 
+/**
+ * @brief 从数据库获取模型信息
+ * 
+ * 查询ModelInformation表，获取模型的完整信息。
+ * 
+ * @param modelId 模型ID
+ * @return ModelInfo结构体
+ */
 ModelInfo PlanFileManager::getModelInfoFromDatabase(const QString& modelId)
 {
     ModelInfo info;
@@ -577,6 +603,14 @@ ModelInfo PlanFileManager::getModelInfoFromDatabase(const QString& modelId)
     return info;
 }
 
+/**
+ * @brief 从数据库获取模型组装信息（JSON格式）
+ * 
+ * 查询ModelInformation表，获取模型的部署位置、图标和组件列表。
+ * 
+ * @param modelId 模型ID
+ * @return JSON对象，包含location、icon、componentList
+ */
 QJsonObject PlanFileManager::getModelAssemblyFromDatabase(const QString& modelId)
 {
     QJsonObject result;
@@ -594,6 +628,15 @@ QJsonObject PlanFileManager::getModelAssemblyFromDatabase(const QString& modelId
     return result;
 }
 
+/**
+ * @brief 从数据库获取完整的组件信息
+ * 
+ * 查询ComponentInformation和ComponentType表，获取组件的完整信息，
+ * 包括componentId、name、type、configInfo、templateInfo等。
+ * 
+ * @param componentId 组件ID
+ * @return 完整的组件信息JSON对象
+ */
 QJsonObject PlanFileManager::getComponentFullInfoFromDatabase(const QString& componentId)
 {
     QJsonObject result;
@@ -642,6 +685,14 @@ QJsonObject PlanFileManager::getComponentFullInfoFromDatabase(const QString& com
     return result;
 }
 
+/**
+ * @brief 从数据库获取组件配置
+ * 
+ * 查询ComponentInformation表，获取组件的配置信息（configInfo字段）。
+ * 
+ * @param componentId 组件ID
+ * @return 组件配置JSON对象
+ */
 QJsonObject PlanFileManager::getComponentConfigFromDatabase(const QString& componentId)
 {
     QJsonObject result;
@@ -669,11 +720,27 @@ QJsonObject PlanFileManager::getComponentConfigFromDatabase(const QString& compo
     return result;
 }
 
+/**
+ * @brief 生成方案内的实体ID
+ * 
+ * 生成格式为"entity_N"的唯一实体ID，N为递增计数器。
+ * 
+ * @return 实体ID
+ */
 QString PlanFileManager::generatePlanEntityId()
 {
     return QString("entity_%1").arg(++entityCounter_);
 }
 
+/**
+ * @brief 生成方案文件名
+ * 
+ * 根据方案名称和时间戳生成安全的文件名。
+ * 移除文件名中的非法字符，添加时间戳避免重名。
+ * 
+ * @param name 方案名称
+ * @return 文件名（不含路径）
+ */
 QString PlanFileManager::generatePlanFileName(const QString& name)
 {
     QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss");
@@ -683,11 +750,29 @@ QString PlanFileManager::generatePlanFileName(const QString& name)
     return QString("%1_%2.plan.json").arg(safeName).arg(timestamp);
 }
 
+/**
+ * @brief 比较两个JSON对象是否有差异
+ * 
+ * 简单比较两个JSON对象是否相等。
+ * 
+ * @param obj1 第一个对象
+ * @param obj2 第二个对象
+ * @return 有差异返回true，相同返回false
+ */
 bool PlanFileManager::jsonObjectsDiffer(const QJsonObject& obj1, const QJsonObject& obj2)
 {
     return obj1 != obj2;
 }
 
+/**
+ * @brief 设置自动保存选项
+ * 
+ * 启用或禁用自动保存功能，并设置保存间隔。
+ * 当启用时，planDataChanged信号会触发定时器，定时器到期后自动保存。
+ * 
+ * @param enabled 是否启用自动保存
+ * @param intervalMs 自动保存间隔（毫秒），默认2000ms（2秒）
+ */
 void PlanFileManager::setAutoSaveEnabled(bool enabled, int intervalMs)
 {
     autoSaveEnabled_ = enabled;
@@ -701,6 +786,19 @@ void PlanFileManager::setAutoSaveEnabled(bool enabled, int intervalMs)
     }
 }
 
+/**
+ * @brief 设置相机视角（保存方案时调用）
+ * 
+ * 保存当前相机的视角参数，包括位置、朝向和距离。
+ * 这些参数会在保存方案时序列化到JSON文件中。
+ * 
+ * @param longitude 经度
+ * @param latitude 纬度
+ * @param altitude 高度
+ * @param heading 航向角
+ * @param pitch 俯仰角
+ * @param range 距离
+ */
 void PlanFileManager::setCameraViewpoint(double longitude, double latitude, double altitude,
                                         double heading, double pitch, double range)
 {
@@ -713,6 +811,19 @@ void PlanFileManager::setCameraViewpoint(double longitude, double latitude, doub
     cameraRange_ = range;
 }
 
+/**
+ * @brief 获取相机视角（加载方案时调用）
+ * 
+ * 获取保存的相机视角参数。如果方案文件中没有保存视角，返回false。
+ * 
+ * @param longitude 输出经度
+ * @param latitude 输出纬度
+ * @param altitude 输出高度
+ * @param heading 输出航向角
+ * @param pitch 输出俯仰角
+ * @param range 输出距离
+ * @return 如果存在保存的视角返回true，否则返回false
+ */
 bool PlanFileManager::getCameraViewpoint(double& longitude, double& latitude, double& altitude,
                                         double& heading, double& pitch, double& range) const
 {

@@ -96,6 +96,17 @@ GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QStri
     }
 }
 
+/**
+ * @brief 从拖拽数据添加实体
+ * 
+ * 解析拖拽数据格式（"aircraft:实体名称"），创建对应的实体。
+ * 
+ * @param dragData 拖拽数据字符串，格式为"aircraft:实体名称"
+ * @param longitude 经度
+ * @param latitude 纬度
+ * @param altitude 高度
+ * @return 成功返回true，失败返回false
+ */
 bool GeoEntityManager::addEntityFromDrag(const QString& dragData, double longitude, double latitude, double altitude)
 {
     qDebug() << "=== 开始从拖拽数据添加实体 ===";
@@ -349,6 +360,15 @@ void GeoEntityManager::onMouseDoubleClick(QMouseEvent* event)
     }
 }
 
+/**
+ * @brief 查找指定位置的实体
+ * 
+ * 将屏幕坐标转换为地理坐标，然后遍历所有实体，找到距离最近的实体。
+ * 使用动态阈值（基于相机距离）来判断是否选中实体。
+ * 
+ * @param screenPos 屏幕坐标（相对于GLWidget）
+ * @return 找到的实体指针，未找到返回nullptr
+ */
 GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
 {
     double mouseLongitude, mouseLatitude, mouseAltitude;
@@ -468,6 +488,14 @@ bool GeoEntityManager::removeWaypointFromGroup(const QString& groupId, int index
     return true;
 }
 
+/**
+ * @brief 生成线性航线节点
+ * 
+ * 根据航点列表生成直线连接的航线几何体。
+ * 
+ * @param wps 航点实体向量
+ * @return 航线几何节点（Geode），失败返回nullptr
+ */
 osg::ref_ptr<osg::Geode> GeoEntityManager::buildLinearRoute(const QVector<WaypointEntity*>& wps)
 {
     if (wps.size() < 2) return nullptr;
@@ -502,6 +530,15 @@ osg::ref_ptr<osg::Geode> GeoEntityManager::buildLinearRoute(const QVector<Waypoi
     return geode.get();
 }
 
+/**
+ * @brief 生成贝塞尔航线节点
+ * 
+ * 根据航点列表生成平滑的贝塞尔曲线航线几何体。
+ * 使用二次贝塞尔插值算法，在相邻航点间插入中间点实现平滑。
+ * 
+ * @param wps 航点实体向量
+ * @return 航线几何节点（Geode），失败返回nullptr
+ */
 osg::ref_ptr<osg::Geode> GeoEntityManager::buildBezierRoute(const QVector<WaypointEntity*>& wps)
 {
     // 简化：将每对相邻点间插入若干中间点进行平滑
@@ -603,6 +640,14 @@ void GeoEntityManager::setMapStateManager(MapStateManager* mapStateManager)
     mapStateManager_ = mapStateManager;
 }
 
+/**
+ * @brief 处理延迟删除队列
+ * 
+ * 在渲染完成后调用，安全地删除已标记为待删除的实体。
+ * 使用延迟删除机制避免在渲染过程中删除OSG节点导致崩溃。
+ * 
+ * @note 应该在每一帧渲染完成后（frame()）调用此方法
+ */
 void GeoEntityManager::processPendingDeletions()
 {
     // qDebug() << "处理延迟删除队列，共有" << pendingDeletions_.size() << "个实体待删除";

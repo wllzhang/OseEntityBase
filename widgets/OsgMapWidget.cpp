@@ -1,3 +1,10 @@
+/**
+ * @file OsgMapWidget.cpp
+ * @brief OSG地图Widget组件实现文件
+ * 
+ * 实现OsgMapWidget类的所有功能，包括地图加载、视图切换、拖拽处理等
+ */
+
 #include "OsgMapWidget.h"
 #include <QVBoxLayout>
 #include <QDebug>

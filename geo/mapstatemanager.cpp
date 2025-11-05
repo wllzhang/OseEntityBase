@@ -120,7 +120,14 @@ void MapStateManager::onWheelEvent(QWheelEvent* event)
     // qDebug() << "滚轮事件，当前距离:" << currentState_.range;
 }
 
-// 更新所有状态信息
+/**
+ * @brief 更新所有状态信息
+ * 
+ * 从EarthManipulator获取当前的相机参数（俯仰角、航向角、距离）和视角位置，
+ * 更新到currentState_中，并发出相应的信号。
+ * 
+ * @note 鼠标地理坐标已在updateMouseGeoPosition中更新
+ */
 void MapStateManager::updateState()
 {
     if (!viewer_ || !viewer_->getCamera()) {
@@ -169,7 +176,13 @@ void MapStateManager::updateState()
     }
 }
 
-// 初始化MapNode
+/**
+ * @brief 初始化MapNode
+ * 
+ * 从Viewer的场景图中查找MapNode，用于后续的地理坐标转换。
+ * 
+ * @note 如果MapNode未找到，某些功能（如鼠标坐标转换）可能无法使用
+ */
 void MapStateManager::initializeMapNode()
 {
     if (!viewer_) {
@@ -190,7 +203,14 @@ void MapStateManager::initializeMapNode()
     }
 }
 
-// 更新鼠标地理坐标 (简化实现)
+/**
+ * @brief 更新鼠标地理坐标
+ * 
+ * 将屏幕坐标转换为地理坐标，更新到currentState_中，
+ * 并发出mousePositionChanged信号。
+ * 
+ * @param mousePos 鼠标屏幕坐标
+ */
 void MapStateManager::updateMouseGeoPosition(QPoint mousePos)
 {
     // 使用工具函数进行坐标转换

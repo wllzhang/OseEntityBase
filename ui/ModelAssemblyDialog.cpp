@@ -1,4 +1,11 @@
-﻿#include "ModelAssemblyDialog.h"
+﻿/**
+ * @file ModelAssemblyDialog.cpp
+ * @brief 模型组装对话框实现文件
+ * 
+ * 实现ModelAssemblyDialog类的所有功能
+ */
+
+#include "ModelAssemblyDialog.h"
 #include "../util/databaseutils.h"
 #include <QListWidget>
 #include <QTreeWidget>

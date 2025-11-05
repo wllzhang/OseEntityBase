@@ -1,4 +1,11 @@
-﻿#include "MainWidget.h"
+﻿/**
+ * @file MainWidget.cpp
+ * @brief 主窗口组件实现文件
+ * 
+ * 实现MainWidget类的所有功能，包括UI创建、事件处理、方案文件管理等
+ */
+
+#include "MainWidget.h"
 #include "../widgets/OsgMapWidget.h"
 #include "ModelDeployDialog.h"
 #include "EntityPropertyDialog.h"

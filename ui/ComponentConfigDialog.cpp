@@ -1,4 +1,11 @@
-﻿#include "ComponentConfigDialog.h"
+﻿/**
+ * @file ComponentConfigDialog.cpp
+ * @brief 组件配置对话框实现文件
+ * 
+ * 实现ComponentConfigDialog类的所有功能
+ */
+
+#include "ComponentConfigDialog.h"
 #include "../util/databaseutils.h"
 #include <QTreeWidget>
 #include <QTreeWidgetItem>

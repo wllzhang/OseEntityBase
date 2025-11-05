@@ -1,4 +1,11 @@
-﻿#ifndef COMPONENTCONFIGDIALOG_H
+﻿/**
+ * @file ComponentConfigDialog.h
+ * @brief 组件配置对话框头文件
+ * 
+ * 定义ComponentConfigDialog类，用于配置和管理模型组件参数
+ */
+
+#ifndef COMPONENTCONFIGDIALOG_H
 #define COMPONENTCONFIGDIALOG_H
 
 #include <QDialog>
@@ -14,62 +21,176 @@ class QHBoxLayout;
 class QFormLayout;
 class QLabel;
 
+/**
+ * @brief 组件信息结构体
+ * 
+ * 存储组件的完整信息，包括ID、名称、类型、配置和模板信息
+ */
 struct ComponentInfo {
-    QString componentId;
-    QString name;
-    QString type;
-    QString wsf;
-    QString subtype;
-    QJsonObject configInfo;
-    QJsonObject templateInfo;
+    QString componentId;        // 组件ID
+    QString name;               // 组件名称
+    QString type;               // 组件类型
+    QString wsf;                // WSF文件路径
+    QString subtype;            // 子类型
+    QJsonObject configInfo;     // 配置信息（JSON格式）
+    QJsonObject templateInfo;   // 模板信息（JSON格式，用于动态生成表单）
 };
 
+/**
+ * @brief 组件配置对话框
+ * 
+ * 用于配置和管理模型组件的参数。提供以下功能：
+ * - 组件树状结构浏览（按类型分类）
+ * - 组件参数的动态表单编辑（根据templateInfo生成）
+ * - 组件的添加、复制、删除
+ * - 组件参数的保存到数据库
+ * 
+ * 主要特性：
+ * - 支持多种参数类型（文本、数字、下拉框、复选框等）
+ * - 动态表单生成（根据templateInfo动态创建控件）
+ * - 数据库集成（使用DatabaseUtils）
+ * - 右键菜单操作（复制、删除）
+ */
 class ComponentConfigDialog : public QDialog
 {
     Q_OBJECT
 
 public:
+    /**
+     * @brief 构造函数
+     * @param parent 父widget
+     */
     explicit ComponentConfigDialog(QWidget *parent = nullptr);
+    
+    /**
+     * @brief 析构函数
+     */
     ~ComponentConfigDialog();
 
 private slots:
+    /**
+     * @brief 组件树项点击槽函数
+     * @param item 点击的树项
+     * @param column 列索引
+     */
     void onTreeItemClicked(QTreeWidgetItem *item, int column);
+    
+    /**
+     * @brief 保存按钮点击槽函数
+     * 
+     * 保存当前组件的配置到数据库
+     */
     void onSaveButtonClicked();
+    
+    /**
+     * @brief 显示右键上下文菜单
+     * @param pos 菜单位置
+     */
     void showContextMenu(const QPoint &pos);
+    
+    /**
+     * @brief 复制组件操作
+     */
     void copyComponent();
+    
+    /**
+     * @brief 删除组件操作
+     */
     void deleteComponent();
 
 private:
+    /**
+     * @brief 设置UI界面
+     */
     void setupUI();
+    
+    /**
+     * @brief 设置数据库连接
+     */
     void setupDatabase();
+    
+    /**
+     * @brief 加载组件树
+     * 
+     * 从数据库加载组件并按类型分类显示
+     */
     void loadComponentTree();
+    
+    /**
+     * @brief 加载组件类型列表
+     */
     void loadComponentTypes();
+    
+    /**
+     * @brief 加载所有组件
+     */
     void loadComponents();
+    
+    /**
+     * @brief 清空参数表单
+     */
     void clearParameterForm();
+    
+    /**
+     * @brief 创建参数表单
+     * 
+     * 根据templateInfo动态生成表单控件
+     * @param templateInfo 模板信息（定义参数类型和选项）
+     * @param configInfo 配置信息（当前参数值，可选）
+     */
     void createParameterForm(const QJsonObject &templateInfo, const QJsonObject &configInfo = QJsonObject());
+    
+    /**
+     * @brief 创建表单控件
+     * @param type 控件类型
+     * @param values 选项值列表（用于下拉框等）
+     * @param currentValue 当前值
+     * @return 创建的控件指针
+     */
     QWidget* createFormWidget(int type, const QStringList &values = QStringList(), const QVariant &currentValue = QVariant());
+    
+    /**
+     * @brief 更新组件信息到UI
+     * @param info 组件信息
+     */
     void updateComponentInfo(const ComponentInfo &info);
+    
+    /**
+     * @brief 获取当前组件信息
+     * @return 组件信息结构体
+     */
     ComponentInfo getCurrentComponentInfo() const;
+    
+    /**
+     * @brief 生成新的组件ID
+     * @return 生成的组件ID
+     */
     QString generateComponentId();
+    
+    /**
+     * @brief 检查组件是否被使用
+     * @param componentId 组件ID
+     * @return 被使用返回true
+     */
     bool isComponentUsed(QString componentId);
 
 
-    QSqlDatabase db;
-    QTreeWidget *componentTree;
-    QVBoxLayout *rightLayout;
-    QWidget *parameterWidget;
-    QFormLayout *parameterFormLayout;
+    QSqlDatabase db;                        // 数据库连接
+    QTreeWidget *componentTree;             // 组件树控件
+    QVBoxLayout *rightLayout;               // 右侧布局
+    QWidget *parameterWidget;               // 参数表单widget
+    QFormLayout *parameterFormLayout;       // 参数表单布局
 
     // 通用信息控件
-    QLineEdit *nameEdit;
-    QComboBox *typeComboBox;
-    QLineEdit *wsfEdit;
-    QLineEdit *commentEdit;
+    QLineEdit *nameEdit;                    // 名称输入框
+    QComboBox *typeComboBox;                // 类型下拉框
+    QLineEdit *wsfEdit;                     // WSF文件路径输入框
+    QLineEdit *commentEdit;                 // 注释输入框
 
     // 动态生成的参数控件映射
-    QMap<QString, QWidget*> paramWidgets;
-    ComponentInfo currentComponentInfo;
-    QTreeWidgetItem *currentItem;
+    QMap<QString, QWidget*> paramWidgets;   // 参数名 -> 控件映射
+    ComponentInfo currentComponentInfo;     // 当前组件信息
+    QTreeWidgetItem *currentItem;          // 当前选中的树项
 };
 
 #endif // COMPONENTCONFIGDIALOG_H

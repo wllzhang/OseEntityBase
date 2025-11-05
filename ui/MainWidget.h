@@ -1,4 +1,11 @@
-﻿#ifndef SCENPLAN_H
+﻿/**
+ * @file MainWidget.h
+ * @brief 主窗口组件头文件
+ * 
+ * 定义MainWidget类，应用程序的主窗口，整合所有功能模块
+ */
+
+#ifndef SCENPLAN_H
 #define SCENPLAN_H
 
 #include <QToolBar>
@@ -21,93 +28,211 @@ class GeoEntity;
 class PlanFileManager;
 class ModelDeployDialog;
 
-
+/**
+ * @brief 应用程序主窗口
+ * 
+ * 整合所有功能模块的主窗口，包括：
+ * - 工具栏和导航栏
+ * - OSG地图显示区域
+ * - 方案文件管理（新建、打开、保存、另存为）
+ * - 模型组件配置对话框
+ * - 模型组装对话框
+ * - 模型部署对话框
+ * - 2D/3D视图切换
+ * - 最近文件管理
+ * 
+ * 主要功能：
+ * - 管理UI布局和导航
+ * - 协调各个功能模块
+ * - 处理方案文件的创建、打开、保存
+ * - 管理对话框的显示（非模态）
+ * - 处理实体双击和右键菜单
+ */
 class MainWidget : public QWidget
 {
     Q_OBJECT
 
 public:
+    /**
+     * @brief 构造函数
+     * @param parent 父widget
+     */
     MainWidget(QWidget *parent = nullptr);
+    
+    /**
+     * @brief 析构函数
+     */
     ~MainWidget();
 
 private slots:
+    /**
+     * @brief 导航按钮点击槽函数
+     */
     void onNavButtonClicked();
+    
+    /**
+     * @brief 模型组件按钮点击槽函数
+     * 
+     * 显示或激活模型组件配置对话框（非模态）
+     */
     void onModelComponentBtnClicked();
+    
+    /**
+     * @brief 模型组装按钮点击槽函数
+     * 
+     * 显示或激活模型组装对话框（非模态）
+     */
     void onModelAssemblyBtnClicked();
+    
+    /**
+     * @brief 模型部署按钮点击槽函数
+     * 
+     * 显示模型部署对话框，用于拖拽部署实体到地图
+     */
     void onModelDeployBtnClicked();
+    
+    /**
+     * @brief 地图加载完成槽函数
+     * 
+     * 地图加载完成后，设置实体管理器和方案文件管理器
+     */
     void onMapLoaded();
+    
+    /**
+     * @brief 2D/3D切换按钮点击槽函数
+     */
     void onToggle2D3D();
+    
+    /**
+     * @brief 新建方案槽函数
+     */
     void onNewPlanClicked();
+    
+    /**
+     * @brief 打开方案槽函数
+     */
     void onOpenPlanClicked();
+    
+    /**
+     * @brief 保存方案槽函数
+     */
     void onSavePlanClicked();
+    
+    /**
+     * @brief 另存为方案槽函数
+     */
     void onSavePlanAsClicked();
 
 private:
+    /**
+     * @brief 创建工具栏
+     */
     void createToolBar();
+    
+    /**
+     * @brief 创建导航栏
+     */
     void createNavigation();
+    
+    /**
+     * @brief 创建子导航栏
+     */
     void createSubNavigation();
+    
+    /**
+     * @brief 创建地图区域
+     */
     void createMapArea();
+    
+    /**
+     * @brief 更新子导航栏显示
+     * @param navIndex 导航索引
+     */
     void updateSubNavigation(int navIndex);
+    
+    /**
+     * @brief 加载样式表
+     */
     void loadStyleSheet();
-
+    
+    /**
+     * @brief 更新最近文件列表
+     * @param filePath 文件路径
+     */
+    void updateRecentFiles(const QString& filePath);
+    
+    /**
+     * @brief 从设置中加载最近文件列表
+     */
+    void loadRecentFiles();
+    
+    /**
+     * @brief 保存最近文件列表到设置
+     */
+    void saveRecentFiles();
+    
+    /**
+     * @brief 添加最近文件菜单项
+     * @param menu 菜单指针
+     */
+    void addRecentFileMenuItem(QMenu* menu);
 
     // 主布局组件
-//    QWidget *centralWidget;
-    QVBoxLayout *mainVLayout;
-    QHBoxLayout *contentLayout;
+    QVBoxLayout *mainVLayout;        // 主垂直布局
+    QHBoxLayout *contentLayout;       // 内容水平布局
 
     // 工具栏
-    QWidget *toolBarWidget;
-    QHBoxLayout *toolBarLayout;
+    QWidget *toolBarWidget;          // 工具栏widget
+    QHBoxLayout *toolBarLayout;      // 工具栏布局
 
     // 导航栏
-    QWidget *navWidget;
-    QVBoxLayout *navLayout;
-    QToolButton *planBtn, *resourceBtn, *mapBtn, *situationBtn;
+    QWidget *navWidget;              // 导航栏widget
+    QVBoxLayout *navLayout;          // 导航栏布局
+    QToolButton *planBtn;            // 方案规划按钮
+    QToolButton *resourceBtn;        // 资源管理按钮
+    QToolButton *mapBtn;             // 地图按钮
+    QToolButton *situationBtn;       // 态势标绘按钮
 
     // 子导航栏
-    QWidget *subNavWidget;
-    QVBoxLayout *subNavLayout;
-    QStackedWidget *subNavStack;
+    QWidget *subNavWidget;           // 子导航栏widget
+    QVBoxLayout *subNavLayout;       // 子导航栏布局
+    QStackedWidget *subNavStack;     // 子导航栏堆叠widget
 
     // 子导航按钮组
-    QWidget *planSubNav, *resourceSubNav, *mapSubNav, *situationSubNav;
+    QWidget *planSubNav;             // 方案规划子导航
+    QWidget *resourceSubNav;         // 资源管理子导航
+    QWidget *mapSubNav;              // 地图子导航
+    QWidget *situationSubNav;         // 态势标绘子导航
 
     // 地图区域
-    OsgMapWidget *osgMapWidget_;  // OSG地图控件
+    OsgMapWidget *osgMapWidget_;    // OSG地图控件
 
     // 对话框指针（使用成员变量避免重复创建，并支持非模态显示）
-    ComponentConfigDialog *componentConfigDialog_;
-    ModelAssemblyDialog *modelAssemblyDialog_;
-    ModelDeployDialog *modelDeployDialog_;
+    ComponentConfigDialog *componentConfigDialog_;    // 组件配置对话框
+    ModelAssemblyDialog *modelAssemblyDialog_;         // 模型组装对话框
+    ModelDeployDialog *modelDeployDialog_;            // 模型部署对话框
     
     // 方案文件管理器
     PlanFileManager *planFileManager_;
     
     // 最近打开的文件列表（最多10个）
     QStringList recentPlanFiles_;
-    static const int MAX_RECENT_FILES = 10;
-    
-    // 辅助方法
-    void updateRecentFiles(const QString& filePath);
-    void loadRecentFiles();
-    void saveRecentFiles();
-    void addRecentFileMenuItem(QMenu* menu);
+    static const int MAX_RECENT_FILES = 10;  // 最近文件最大数量
 
     // 当前选中的导航索引
     int currentNavIndex;
     
     // 2D/3D切换按钮
-    QPushButton *toggle2D3DBtn_;
-    bool is3DMode_;
+    QPushButton *toggle2D3DBtn_;     // 2D/3D切换按钮
+    bool is3DMode_;                  // 当前是否为3D模式
     
     // 点标绘：是否进入放置模式与待放置标签
-    bool isPlacingWaypoint_;
-    QString pendingWaypointLabel_;
+    bool isPlacingWaypoint_;         // 是否正在放置航点
+    QString pendingWaypointLabel_;   // 待放置的航点标签
     
     // 航线标绘：是否处于连点模式
-    bool isPlacingRoute_;
-    QString currentWaypointGroupId_;
+    bool isPlacingRoute_;            // 是否正在放置航线
+    QString currentWaypointGroupId_; // 当前航点组ID
 
 };
 
