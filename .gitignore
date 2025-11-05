@@ -40,3 +40,5 @@ release/
 *.bak
 *.log
 
+# 工作记录文档（不纳入版本管理）
+WorkRecord.md
