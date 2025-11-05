@@ -8,6 +8,7 @@
 #include "planfilemanager.h"
 #include "../geo/geoentitymanager.h"
 #include "../geo/geoentity.h"
+#include "../geo/waypointentity.h"
 #include "../util/databaseutils.h"
 #include "../ui/ModelAssemblyDialog.h"  // 包含ModelInfo定义
 #include <QDebug>
@@ -161,9 +162,66 @@ bool PlanFileManager::savePlan(const QString& filePath)
     }
     planObject["entities"] = entitiesArray;
 
-    // TODO: 航点和航线（阶段2实现）
+    // 保存航线信息（关联到实体的航线）
+    QJsonArray routesArray;
+    QList<GeoEntityManager::WaypointGroupInfo> allGroups = entityManager_->getAllWaypointGroups();
+    for (const auto& groupInfo : allGroups) {
+        // 通过routeBinding查找关联的实体ID（反向查找）
+        QString entityId;
+        for (auto it = groupInfo.waypoints.begin(); it != groupInfo.waypoints.end(); ++it) {
+            // 通过groupInfo无法直接获取entityId，需要通过entityManager的routeBinding查找
+            // 这里使用另一种方式：遍历所有实体，检查其routeGroupId属性
+            break;
+        }
+        
+        // 更好的方式：遍历当前方案的所有实体，检查其routeGroupId属性
+        QList<GeoEntity*> planEntities = entityManager_->getEntitiesByPlanFile(currentPlanFile_);
+        for (GeoEntity* entity : planEntities) {
+            QString routeGroupId = entity->getProperty("routeGroupId").toString();
+            if (routeGroupId == groupInfo.groupId) {
+                entityId = entity->getId();
+                break;
+            }
+        }
+        
+        if (entityId.isEmpty()) {
+            continue;  // 跳过未关联到实体的航线
+        }
+        
+        // 构建路线JSON对象
+        QJsonObject routeObj;
+        routeObj["groupId"] = groupInfo.groupId;
+        routeObj["name"] = groupInfo.name;
+        routeObj["entityId"] = entityId;
+        
+        // 保存航点列表
+        QJsonArray waypointsArray;
+        for (WaypointEntity* wp : groupInfo.waypoints) {
+            if (!wp) continue;
+            double lon, lat, alt;
+            wp->getPosition(lon, lat, alt);
+            QJsonObject wpObj;
+            wpObj["longitude"] = lon;
+            wpObj["latitude"] = lat;
+            wpObj["altitude"] = alt;
+            waypointsArray.append(wpObj);
+        }
+        routeObj["waypoints"] = waypointsArray;
+        
+        // 检查是否有生成的路线类型（从实体属性中获取）
+        GeoEntity* entity = entityManager_->getEntity(entityId);
+        QString routeType = "linear"; // 默认类型
+        if (entity && entity->getProperty("routeType").isValid()) {
+            routeType = entity->getProperty("routeType").toString();
+        }
+        routeObj["routeType"] = routeType;
+        
+        routesArray.append(routeObj);
+    }
+    planObject["routes"] = routesArray;
+    
+    // 独立航点（不属于任何航线组的航点）
     planObject["waypoints"] = QJsonArray();
-    planObject["routes"] = QJsonArray();
     
     // 相机视角
     if (hasCameraViewpoint_) {
@@ -265,6 +323,50 @@ bool PlanFileManager::loadPlan(const QString& filePath)
                 entity->setProperty("componentConfigs", componentConfigs);
             }
         }
+    }
+    
+    // 加载航线信息
+    QJsonArray routesArray = planObject["routes"].toArray();
+    for (const auto& routeValue : routesArray) {
+        QJsonObject routeObj = routeValue.toObject();
+        QString groupId = routeObj["groupId"].toString();
+        QString entityId = routeObj["entityId"].toString();
+        QString routeType = routeObj["routeType"].toString();
+        if (routeType.isEmpty()) routeType = "linear";
+        
+        // 查找对应的实体
+        GeoEntity* entity = entityManager_->getEntity(entityId);
+        if (!entity) {
+            qDebug() << "加载航线失败：找不到实体" << entityId;
+            continue;
+        }
+        
+        // 创建航点组
+        QString newGroupId = entityManager_->createWaypointGroup(routeObj["name"].toString());
+        
+        // 加载航点
+        QJsonArray waypointsArray = routeObj["waypoints"].toArray();
+        for (const auto& wpValue : waypointsArray) {
+            QJsonObject wpObj = wpValue.toObject();
+            double lon = wpObj["longitude"].toDouble();
+            double lat = wpObj["latitude"].toDouble();
+            double alt = wpObj["altitude"].toDouble();
+            entityManager_->addWaypointToGroup(newGroupId, lon, lat, alt);
+        }
+        
+        // 绑定航线到实体
+        entityManager_->bindRouteToEntity(newGroupId, entityId);
+        
+        // 保存航线组ID和类型到实体属性
+        entity->setProperty("routeGroupId", newGroupId);
+        entity->setProperty("routeType", routeType);
+        
+        // 如果航点数量>=2，生成路线
+        if (waypointsArray.size() >= 2) {
+            entityManager_->generateRouteForGroup(newGroupId, routeType);
+        }
+        
+        qDebug() << "加载航线成功:" << groupId << "->" << newGroupId << "实体:" << entityId << "航点数:" << waypointsArray.size();
     }
     
     // 加载相机视角

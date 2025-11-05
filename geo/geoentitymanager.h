@@ -185,6 +185,15 @@ public:
     bool generateRouteForGroup(const QString& groupId, const QString& model /* 'linear' | 'bezier' */);
     /** @brief 将生成的航线绑定到实体（随实体移动/显示） */
     bool bindRouteToEntity(const QString& groupId, const QString& targetEntityId);
+    
+    /** @brief 获取指定实体的航线组ID（通过routeBinding查找） */
+    QString getRouteGroupIdForEntity(const QString& entityId) const;
+    
+    /** @brief 获取所有航点组信息（用于保存） */
+    QList<WaypointGroupInfo> getAllWaypointGroups() const;
+    
+    /** @brief 获取航点组信息 */
+    WaypointGroupInfo getWaypointGroup(const QString& groupId) const;
 
     // 点标绘：直接添加一个带自定义标签的航点（不依赖组）
     /** @brief 添加独立航点（带标签），用于快速标绘 */

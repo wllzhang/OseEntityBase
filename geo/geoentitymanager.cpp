@@ -635,6 +635,34 @@ bool GeoEntityManager::bindRouteToEntity(const QString& groupId, const QString& 
     return true;
 }
 
+QString GeoEntityManager::getRouteGroupIdForEntity(const QString& entityId) const
+{
+    for (auto it = routeBinding_.begin(); it != routeBinding_.end(); ++it) {
+        if (it.value() == entityId) {
+            return it.key();
+        }
+    }
+    return QString();
+}
+
+QList<GeoEntityManager::WaypointGroupInfo> GeoEntityManager::getAllWaypointGroups() const
+{
+    QList<WaypointGroupInfo> result;
+    for (auto it = waypointGroups_.begin(); it != waypointGroups_.end(); ++it) {
+        result.append(it.value());
+    }
+    return result;
+}
+
+GeoEntityManager::WaypointGroupInfo GeoEntityManager::getWaypointGroup(const QString& groupId) const
+{
+    auto it = waypointGroups_.find(groupId);
+    if (it != waypointGroups_.end()) {
+        return it.value();
+    }
+    return WaypointGroupInfo();
+}
+
 WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText)
 {
     WaypointEntity* wp = new WaypointEntity(generateEntityId("waypoint", "plot"),

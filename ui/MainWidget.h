@@ -231,8 +231,13 @@ private:
     QString pendingWaypointLabel_;   // 待放置的航点标签
     
     // 航线标绘：是否处于连点模式
-    bool isPlacingRoute_;            // 是否正在放置航线
+    bool isPlacingRoute_;            // 是否正在放置航线（独立航线）
     QString currentWaypointGroupId_; // 当前航点组ID
+    
+    // 实体航线规划相关
+    bool isPlanningEntityRoute_;     // 是否正在为实体规划航线
+    QString entityRouteEntityId_;     // 正在规划航线的实体ID
+    QString entityRouteGroupId_;     // 实体航线组ID
 
 };
 

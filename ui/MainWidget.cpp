@@ -35,6 +35,7 @@ MainWidget::MainWidget(QWidget *parent)
     , is3DMode_(true)
     , isPlacingWaypoint_(false)
     , isPlacingRoute_(false)
+    , isPlanningEntityRoute_(false)
     , componentConfigDialog_(nullptr)
     , modelAssemblyDialog_(nullptr)
     , modelDeployDialog_(nullptr)
@@ -997,13 +998,46 @@ void MainWidget::onMapLoaded()
         // 创建右键菜单
         QMenu menu(this);
         QAction* editAction = menu.addAction("编辑属性");
+        QAction* routePlanAction = menu.addAction("航线规划");
+        menu.addSeparator();
         QAction* deleteAction = menu.addAction("删除");
         
         // 转换为全局坐标
         QPoint globalPos = osgMapWidget_->mapToGlobal(screenPos);
         QAction* selectedAction = menu.exec(globalPos);
         
-        if (selectedAction == editAction) {
+        if (selectedAction == routePlanAction) {
+            // 开始为实体规划航线
+            if (isPlanningEntityRoute_) {
+                QMessageBox::information(this, "提示", "已有航线规划正在进行中，请先完成或取消当前航线规划");
+                return;
+            }
+            
+            // 获取实体位置作为第一个航点
+            double entityLon, entityLat, entityAlt;
+            entity->getPosition(entityLon, entityLat, entityAlt);
+            
+            // 创建航点组
+            QString groupId = entityManager->createWaypointGroup(QString("route_%1").arg(entity->getId()));
+            
+            // 添加第一个航点（实体位置）
+            entityManager->addWaypointToGroup(groupId, entityLon, entityLat, entityAlt);
+            
+            // 绑定航线到实体
+            entityManager->bindRouteToEntity(groupId, entity->getId());
+            
+            // 保存航线组ID到实体属性
+            entity->setProperty("routeGroupId", groupId);
+            
+            // 设置状态
+            isPlanningEntityRoute_ = true;
+            entityRouteEntityId_ = entity->getId();
+            entityRouteGroupId_ = groupId;
+            
+            QMessageBox::information(this, "航线规划", 
+                QString("已开始为实体 '%1' 规划航线\n第一个航点已设置为实体位置\n请在地图上左键点击添加航点，右键结束规划").arg(entity->getName()));
+            qDebug() << "[EntityRoute] 开始为实体规划航线:" << entity->getId() << "组ID:" << groupId;
+        } else if (selectedAction == editAction) {
             // 打开属性编辑对话框
             EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
             dialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -1040,7 +1074,7 @@ void MainWidget::onMapLoaded()
             isPlacingWaypoint_ = false;
         }
 
-        // 航线标绘：左键连加
+        // 独立航线标绘：左键连加
         if (isPlacingRoute_ && !currentWaypointGroupId_.isEmpty()) {
             double lon=0, lat=0, alt=0;
             // 统一使用 MapStateManager 获取坐标信息（mapStateManager 必然存在）
@@ -1049,10 +1083,21 @@ void MainWidget::onMapLoaded()
             auto wp = entityManager->addWaypointToGroup(currentWaypointGroupId_, lon, lat, alt);
             qDebug() << "[Route] 添加航点:" << lon << lat << alt << (wp?"成功":"失败");
         }
+        
+        // 实体航线规划：左键连加
+        if (isPlanningEntityRoute_ && !entityRouteGroupId_.isEmpty()) {
+            double lon=0, lat=0, alt=0;
+            // 统一使用 MapStateManager 获取坐标信息（mapStateManager 必然存在）
+            auto mapStateManager = osgMapWidget_->getMapStateManager();
+            mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
+            auto wp = entityManager->addWaypointToGroup(entityRouteGroupId_, lon, lat, alt);
+            qDebug() << "[EntityRoute] 添加航点:" << lon << lat << alt << (wp?"成功":"失败");
+        }
     });
 
     // 航线标绘：右键结束并生成路线
     connect(entityManager, &GeoEntityManager::mapRightClicked, this, [this, entityManager](QPoint /*screenPos*/) {
+        // 独立航线标绘：右键结束并生成路线
         if (isPlacingRoute_ && !currentWaypointGroupId_.isEmpty()) {
             qDebug() << "[Route] 右键结束，准备生成路线，groupId=" << currentWaypointGroupId_;
             // 选择路径算法
@@ -1070,6 +1115,45 @@ void MainWidget::onMapLoaded()
             }
             isPlacingRoute_ = false;
             currentWaypointGroupId_.clear();
+        }
+        
+        // 实体航线规划：右键结束并生成路线
+        if (isPlanningEntityRoute_ && !entityRouteGroupId_.isEmpty()) {
+            qDebug() << "[EntityRoute] 右键结束，准备生成路线，groupId=" << entityRouteGroupId_;
+            
+            // 检查航点数量（至少需要2个点）
+            auto groupInfo = entityManager->getWaypointGroup(entityRouteGroupId_);
+            if (groupInfo.waypoints.size() < 2) {
+                QMessageBox::warning(this, "航线规划", "航线至少需要2个航点（包括起始点）");
+                return;
+            }
+            
+            // 选择路径算法
+            QStringList items; items << "linear" << "bezier";
+            bool okSel = false;
+            QString choice = QInputDialog::getItem(this, "生成航线", "选择生成算法:", items, 0, false, &okSel);
+            if (!okSel || choice.isEmpty()) choice = "linear";
+
+            bool ok = entityManager->generateRouteForGroup(entityRouteGroupId_, choice);
+            if (!ok) {
+                QMessageBox::warning(this, "航线规划", "生成路线失败（点数不足或错误）。");
+                qDebug() << "[EntityRoute] 生成路线失败";
+            } else {
+                qDebug() << "[EntityRoute] 生成路线成功:" << choice;
+                // 保存路线类型到实体属性
+                if (entityManager->getEntity(entityRouteEntityId_)) {
+                    entityManager->getEntity(entityRouteEntityId_)->setProperty("routeType", choice);
+                }
+                // 标记方案有未保存更改
+                if (planFileManager_) {
+                    emit planFileManager_->planDataChanged();
+                }
+            }
+            
+            // 结束规划状态
+            isPlanningEntityRoute_ = false;
+            entityRouteEntityId_.clear();
+            entityRouteGroupId_.clear();
         }
     });
     
