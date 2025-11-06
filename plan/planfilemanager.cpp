@@ -158,7 +158,9 @@ bool PlanFileManager::savePlan(const QString& filePath)
     QJsonArray entitiesArray;
     QList<GeoEntity*> entities = entityManager_->getEntitiesByPlanFile(currentPlanFile_);
     for (GeoEntity* entity : entities) {
-        entitiesArray.append(entityToJson(entity));
+        QJsonObject obj = entityToJson(entity);
+        obj["uid"] = entity->getUid(); // 写入实体实例UID
+        entitiesArray.append(obj);
     }
     planObject["entities"] = entitiesArray;
 
@@ -166,8 +168,8 @@ bool PlanFileManager::savePlan(const QString& filePath)
     QJsonArray routesArray;
     QList<GeoEntityManager::WaypointGroupInfo> allGroups = entityManager_->getAllWaypointGroups();
     for (const auto& groupInfo : allGroups) {
-        // 通过routeBinding查找关联的实体ID（反向查找）
-        QString entityId;
+        // 通过routeBinding查找关联的实体UID（反向查找）
+        QString entityUid;
         for (auto it = groupInfo.waypoints.begin(); it != groupInfo.waypoints.end(); ++it) {
             // 通过groupInfo无法直接获取entityId，需要通过entityManager的routeBinding查找
             // 这里使用另一种方式：遍历所有实体，检查其routeGroupId属性
@@ -179,20 +181,25 @@ bool PlanFileManager::savePlan(const QString& filePath)
         for (GeoEntity* entity : planEntities) {
             QString routeGroupId = entity->getProperty("routeGroupId").toString();
             if (routeGroupId == groupInfo.groupId) {
-                entityId = entity->getId();
+                entityUid = entity->getUid();
                 break;
             }
         }
         
-        if (entityId.isEmpty()) {
+        if (entityUid.isEmpty()) {
             continue;  // 跳过未关联到实体的航线
         }
         
-        // 构建路线JSON对象
+        // 构建路线JSON对象（使用实体实例UID作为唯一主键）
         QJsonObject routeObj;
         routeObj["groupId"] = groupInfo.groupId;
         routeObj["name"] = groupInfo.name;
-        routeObj["entityId"] = entityId;
+        {
+            GeoEntity* entity = entityManager_->getEntity(entityUid);
+            if (entity) {
+                routeObj["targetUid"] = entity->getUid();
+            }
+        }
         
         // 保存航点列表
         QJsonArray waypointsArray;
@@ -209,7 +216,7 @@ bool PlanFileManager::savePlan(const QString& filePath)
         routeObj["waypoints"] = waypointsArray;
         
         // 检查是否有生成的路线类型（从实体属性中获取）
-        GeoEntity* entity = entityManager_->getEntity(entityId);
+        GeoEntity* entity = entityManager_->getEntity(entityUid);
         QString routeType = "linear"; // 默认类型
         if (entity && entity->getProperty("routeType").isValid()) {
             routeType = entity->getProperty("routeType").toString();
@@ -310,7 +317,12 @@ bool PlanFileManager::loadPlan(const QString& filePath)
         GeoEntity* entity = jsonToEntity(entityObj);
         if (entity) {
             entity->setProperty("planFile", filePath);
-            entity->setProperty("planEntityId", entityObj["id"].toString());
+            // 方案文件中的uid字段（统一标识符）
+            QString planFileUid = entityObj["uid"].toString();
+            if (!planFileUid.isEmpty()) {
+                // 保存方案文件中的uid到实体属性，用于航线匹配
+                entity->setProperty("planFileUid", planFileUid);
+            }
             entity->setProperty("modelId", entityObj["modelId"].toString());
 
             // 保存模型组装和组件配置覆盖到entity属性中
@@ -330,14 +342,27 @@ bool PlanFileManager::loadPlan(const QString& filePath)
     for (const auto& routeValue : routesArray) {
         QJsonObject routeObj = routeValue.toObject();
         QString groupId = routeObj["groupId"].toString();
-        QString entityId = routeObj["entityId"].toString();
+        QString targetUid = routeObj["targetUid"].toString();
         QString routeType = routeObj["routeType"].toString();
         if (routeType.isEmpty()) routeType = "linear";
         
-        // 查找对应的实体
-        GeoEntity* entity = entityManager_->getEntity(entityId);
+        // 查找对应的实体（通过稳定UID）
+        GeoEntity* entity = entityManager_->getEntityByUid(targetUid);
         if (!entity) {
-            qDebug() << "加载航线失败：找不到实体" << entityId;
+            // 如果通过UID找不到，尝试通过方案文件中的UID匹配（兼容旧方案文件）
+            qDebug() << "通过UID找不到实体，尝试通过方案文件UID匹配:" << targetUid;
+            QList<GeoEntity*> planEntities = entityManager_->getEntitiesByPlanFile(filePath);
+            for (GeoEntity* e : planEntities) {
+                QString planFileUid = e->getProperty("planFileUid").toString();
+                if (planFileUid == targetUid) {
+                    entity = e;
+                    qDebug() << "通过方案文件UID找到实体:" << e->getName() << "新UID:" << e->getUid();
+                    break;
+                }
+            }
+        }
+        if (!entity) {
+            qDebug() << "加载航线失败：找不到实体UID" << targetUid;
             continue;
         }
         
@@ -354,8 +379,8 @@ bool PlanFileManager::loadPlan(const QString& filePath)
             entityManager_->addWaypointToGroup(newGroupId, lon, lat, alt);
         }
         
-        // 绑定航线到实体
-        entityManager_->bindRouteToEntity(newGroupId, entityId);
+        // 绑定航线到实体（使用uid作为统一标识符）
+        entityManager_->bindRouteToEntity(newGroupId, entity->getUid());
         
         // 保存航线组ID和类型到实体属性
         entity->setProperty("routeGroupId", newGroupId);
@@ -366,7 +391,7 @@ bool PlanFileManager::loadPlan(const QString& filePath)
             entityManager_->generateRouteForGroup(newGroupId, routeType);
         }
         
-        qDebug() << "加载航线成功:" << groupId << "->" << newGroupId << "实体:" << entityId << "航点数:" << waypointsArray.size();
+        qDebug() << "加载航线成功:" << groupId << "->" << newGroupId << "实体UID:" << targetUid << "航点数:" << waypointsArray.size();
     }
     
     // 加载相机视角
@@ -460,20 +485,20 @@ void PlanFileManager::addEntityToPlan(GeoEntity* entity)
 
     hasUnsavedChanges_ = true;
     emit planDataChanged();
-    qDebug() << "实体已添加到方案:" << entity->getId();
+    qDebug() << "实体已添加到方案:" << entity->getUid();
 }
 
-void PlanFileManager::removeEntityFromPlan(const QString& entityId)
+void PlanFileManager::removeEntityFromPlan(const QString& uid)
 {
     if (currentPlanFile_.isEmpty()) {
         return;
     }
 
-    GeoEntity* entity = entityManager_->getEntity(entityId);
+    GeoEntity* entity = entityManager_->getEntity(uid);
     if (entity && entity->getProperty("planFile").toString() == currentPlanFile_) {
         hasUnsavedChanges_ = true;
         emit planDataChanged();
-        qDebug() << "实体已从方案中移除:" << entityId;
+        qDebug() << "实体已从方案中移除:" << uid;
     }
 }
 
@@ -490,7 +515,7 @@ void PlanFileManager::updateEntityInPlan(GeoEntity* entity)
     if (entity->getProperty("planFile").toString() == currentPlanFile_) {
         hasUnsavedChanges_ = true;
         emit planDataChanged();
-        qDebug() << "方案中的实体已更新:" << entity->getId();
+        qDebug() << "方案中的实体已更新:" << entity->getUid();
     }
 }
 
@@ -516,8 +541,8 @@ QJsonObject PlanFileManager::entityToJson(GeoEntity* entity)
 
     QJsonObject entityObj;
 
-    // 基本信息
-    entityObj["id"] = entity->getProperty("planEntityId").toString();
+    // 基本信息（统一使用uid作为标识符）
+    entityObj["uid"] = entity->getUid();
     QString displayName = entity->getProperty("displayName").toString();
     entityObj["name"] = displayName.isEmpty() ? entity->getName() : displayName;
     entityObj["type"] = entity->getType();

@@ -18,13 +18,12 @@
 #include <osgEarthAnnotation/PlaceNode>
 #include <osgEarthAnnotation/CircleNode>
 
-WaypointEntity::WaypointEntity(const QString& id,
-                               const QString& name,
+WaypointEntity::WaypointEntity(const QString& name,
                                double longitude,
                                double latitude,
                                double altitude,
                                QObject* parent)
-    : GeoEntity(id, name, "waypoint", longitude, latitude, altitude, parent)
+    : GeoEntity(name, "waypoint", longitude, latitude, altitude, parent)
 {
 
     setProperty("size", 8000.0);

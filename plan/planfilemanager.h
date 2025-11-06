@@ -77,9 +77,9 @@ public:
 
     /**
      * @brief 从方案中移除实体
-     * @param entityId 实体ID
+     * @param uid 实体UID
      */
-    void removeEntityFromPlan(const QString& entityId);
+    void removeEntityFromPlan(const QString& uid);
 
     /**
      * @brief 更新方案中的实体

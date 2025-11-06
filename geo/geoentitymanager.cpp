@@ -60,9 +60,8 @@ GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QStri
                 return nullptr;
             }
             
-            // 创建图片实体
-            entity = new ImageEntity(generateEntityId(entityType, entityName), 
-                                   entityName, imagePath, longitude, latitude, altitude, this);
+            // 创建图片实体（不再需要generateEntityId，使用uid作为统一标识符）
+            entity = new ImageEntity(entityName, imagePath, longitude, latitude, altitude, this);
         }
         
         if (!entity) {
@@ -76,10 +75,11 @@ GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QStri
         // 添加到场景
         if (entity->getNode()) {
             entityGroup_->addChild(entity->getNode());
-            entities_[entity->getId()] = entity;
+            entities_[entity->getUid()] = entity;
+            uidToEntity_.insert(entity->getUid(), entity);
             
             emit entityCreated(entity);
-            qDebug() << "实体创建成功:" << entity->getId();
+            qDebug() << "实体创建成功:" << entity->getUid();
             return entity;
         } else {
             qDebug() << "实体节点创建失败";
@@ -135,9 +135,14 @@ bool GeoEntityManager::addEntityFromDrag(const QString& dragData, double longitu
     }
 }
 
-GeoEntity* GeoEntityManager::getEntity(const QString& entityId)
+GeoEntity* GeoEntityManager::getEntity(const QString& uid)
 {
-    return entities_.value(entityId, nullptr);
+    return entities_.value(uid, nullptr);
+}
+
+GeoEntity* GeoEntityManager::getEntityByUid(const QString& uid) const
+{
+    return uidToEntity_.value(uid, nullptr);
 }
 
 QStringList GeoEntityManager::getEntityIds() const
@@ -173,13 +178,13 @@ QList<GeoEntity*> GeoEntityManager::getEntitiesByPlanFile(const QString& planFil
     return result;
 }
 
-void GeoEntityManager::removeEntity(const QString& entityId)
+void GeoEntityManager::removeEntity(const QString& uid)
 {
-    qDebug() << "标记实体待删除:" << entityId;
+    qDebug() << "标记实体待删除:" << uid;
     
-    GeoEntity* entity = entities_.value(entityId);
+    GeoEntity* entity = entities_.value(uid);
     if (!entity) {
-        qDebug() << "未找到要移除的实体:" << entityId;
+        qDebug() << "未找到要移除的实体:" << uid;
         return;
     }
     
@@ -202,17 +207,20 @@ void GeoEntityManager::removeEntity(const QString& entityId)
     }
     
     // 从映射中移除（但不删除entity对象）
-    entities_.remove(entityId);
+    entities_.remove(uid);
+    if (entity) {
+        uidToEntity_.remove(entity->getUid());
+    }
     
     // 保存到待删除队列，延迟真正删除（避免在渲染过程中删除对象）
-    pendingEntities_[entityId] = entity;
-    if (!pendingDeletions_.contains(entityId)) {
-        pendingDeletions_.enqueue(entityId);
+    pendingEntities_[uid] = entity;
+    if (!pendingDeletions_.contains(uid)) {
+        pendingDeletions_.enqueue(uid);
     }
     
     // 立即发出删除信号（UI可以立即更新）
-    emit entityRemoved(entityId);
-    qDebug() << "实体已标记为待删除:" << entityId << "将在下一帧渲染后真正删除";
+    emit entityRemoved(uid);
+    qDebug() << "实体已标记为待删除:" << uid << "将在下一帧渲染后真正删除";
 }
 
 void GeoEntityManager::clearAllEntities()
@@ -226,9 +234,9 @@ void GeoEntityManager::clearAllEntities()
     }
     
     // 将所有实体添加到延迟删除队列
-    QStringList entityIds = getEntityIds();
-    for (const QString& entityId : entityIds) {
-        GeoEntity* entity = entities_.value(entityId);
+    QStringList entityUids = getEntityIds();
+    for (const QString& uid : entityUids) {
+        GeoEntity* entity = entities_.value(uid);
         if (entity) {
             // 禁用并移除节点
             if (entity->getNode()) {
@@ -237,10 +245,11 @@ void GeoEntityManager::clearAllEntities()
             }
             
             // 从映射中移除，添加到待删除队列
-            entities_.remove(entityId);
-            pendingEntities_[entityId] = entity;
-            if (!pendingDeletions_.contains(entityId)) {
-                pendingDeletions_.enqueue(entityId);
+            entities_.remove(uid);
+            uidToEntity_.remove(uid);
+            pendingEntities_[uid] = entity;
+            if (!pendingDeletions_.contains(uid)) {
+                pendingDeletions_.enqueue(uid);
             }
         }
     }
@@ -392,9 +401,9 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
         GeoEntity* closestEntity = nullptr;
         double minDistance = std::numeric_limits<double>::max();
         
-        QStringList entityIds = getEntityIds();
-        for (const QString& entityId : entityIds) {
-            GeoEntity* entity = getEntity(entityId);
+        QStringList entityUids = getEntityIds();
+        for (const QString& uid : entityUids) {
+            GeoEntity* entity = getEntity(uid);
             if (!entity) {
                 continue;
             }
@@ -472,8 +481,7 @@ WaypointEntity* GeoEntityManager::addWaypointToGroup(const QString& groupId, dou
     auto it = waypointGroups_.find(groupId);
     if (it == waypointGroups_.end()) return nullptr;
 
-    WaypointEntity* wp = new WaypointEntity(generateEntityId("waypoint", groupId),
-                                            QString("WP-%1").arg(it->waypoints.size()+1),
+    WaypointEntity* wp = new WaypointEntity(QString("WP-%1").arg(it->waypoints.size()+1),
                                             lon, lat, alt, this);
     // 优先绑定 MapNode，确保 PlaceNode 立即可见
     wp->setMapNode(mapNode_.get());
@@ -627,18 +635,18 @@ bool GeoEntityManager::generateRouteForGroup(const QString& groupId, const QStri
     return true;
 }
 
-bool GeoEntityManager::bindRouteToEntity(const QString& groupId, const QString& targetEntityId)
+bool GeoEntityManager::bindRouteToEntity(const QString& groupId, const QString& targetEntityUid)
 {
-    if (!entities_.contains(targetEntityId)) return false;
+    if (!entities_.contains(targetEntityUid)) return false;
     if (!waypointGroups_.contains(groupId)) return false;
-    routeBinding_[groupId] = targetEntityId;
+    routeBinding_[groupId] = targetEntityUid;
     return true;
 }
 
-QString GeoEntityManager::getRouteGroupIdForEntity(const QString& entityId) const
+QString GeoEntityManager::getRouteGroupIdForEntity(const QString& entityUid) const
 {
     for (auto it = routeBinding_.begin(); it != routeBinding_.end(); ++it) {
-        if (it.value() == entityId) {
+        if (it.value() == entityUid) {
             return it.key();
         }
     }
@@ -665,8 +673,7 @@ GeoEntityManager::WaypointGroupInfo GeoEntityManager::getWaypointGroup(const QSt
 
 WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText)
 {
-    WaypointEntity* wp = new WaypointEntity(generateEntityId("waypoint", "plot"),
-                                            QString("WP-%1").arg(entityCounter_),
+    WaypointEntity* wp = new WaypointEntity(QString("WP-%1").arg(entityCounter_),
                                             lon, lat, alt, this);
     // 优先绑定 MapNode，确保 PlaceNode 立即可见
     wp->setMapNode(mapNode_.get());
@@ -704,16 +711,16 @@ void GeoEntityManager::processPendingDeletions()
     // qDebug() << "处理延迟删除队列，共有" << pendingDeletions_.size() << "个实体待删除";
     
     while (!pendingDeletions_.isEmpty()) {
-        QString entityId = pendingDeletions_.dequeue();
+        QString uid = pendingDeletions_.dequeue();
         
         // 从待删除映射中获取实体
-        GeoEntity* entity = pendingEntities_.take(entityId);
+        GeoEntity* entity = pendingEntities_.take(uid);
         if (!entity) {
-            qDebug() << "警告：待删除实体不存在:" << entityId;
+            qDebug() << "警告：待删除实体不存在:" << uid;
             continue;
         }
         
-        qDebug() << "开始真正删除实体:" << entityId;
+        qDebug() << "开始真正删除实体:" << uid;
         
         // 现在可以安全地清理和删除实体了
         // 此时节点已经从场景中移除，且不在渲染过程中
@@ -723,7 +730,7 @@ void GeoEntityManager::processPendingDeletions()
         delete entity;
         entity = nullptr;
         
-        qDebug() << "实体完全删除完成:" << entityId;
+        qDebug() << "实体完全删除完成:" << uid;
     }
     
     // qDebug() << "所有延迟删除完成";

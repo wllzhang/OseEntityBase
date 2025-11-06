@@ -85,23 +85,25 @@ public:
     
     /**
      * @brief 获取实体
-     * @param entityId 实体ID
+     * @param uid 实体UID
      * @return 实体指针，不存在返回nullptr
      */
-    GeoEntity* getEntity(const QString& entityId);
+    GeoEntity* getEntity(const QString& uid);
+    /** @brief 通过稳定UID获取实体（别名，保持兼容） */
+    GeoEntity* getEntityByUid(const QString& uid) const;
     
     /**
-     * @brief 获取所有实体ID列表
-     * @return 实体ID列表
+     * @brief 获取所有实体UID列表
+     * @return 实体UID列表
      */
-    QStringList getEntityIds() const;
+    QStringList getEntityIds() const;  // 保持方法名兼容，实际返回UID列表
     
     /**
-     * @brief 按类型获取实体ID列表
+     * @brief 按类型获取实体UID列表
      * @param entityType 实体类型
-     * @return 实体ID列表
+     * @return 实体UID列表
      */
-    QStringList getEntityIdsByType(const QString& entityType) const;
+    QStringList getEntityIdsByType(const QString& entityType) const;  // 保持方法名兼容，实际返回UID列表
     
     /**
      * @brief 获取属于指定方案文件的所有实体
@@ -112,9 +114,9 @@ public:
     
     /**
      * @brief 删除实体
-     * @param entityId 实体ID
+     * @param uid 实体UID
      */
-    void removeEntity(const QString& entityId);
+    void removeEntity(const QString& uid);
     
     /**
      * @brief 清空所有实体
@@ -184,10 +186,10 @@ public:
     /** @brief 依据模型生成组内航线（linear|bezier） */
     bool generateRouteForGroup(const QString& groupId, const QString& model /* 'linear' | 'bezier' */);
     /** @brief 将生成的航线绑定到实体（随实体移动/显示） */
-    bool bindRouteToEntity(const QString& groupId, const QString& targetEntityId);
+    bool bindRouteToEntity(const QString& groupId, const QString& targetEntityUid);
     
     /** @brief 获取指定实体的航线组ID（通过routeBinding查找） */
-    QString getRouteGroupIdForEntity(const QString& entityId) const;
+    QString getRouteGroupIdForEntity(const QString& entityUid) const;
     
     /** @brief 获取所有航点组信息（用于保存） */
     QList<WaypointGroupInfo> getAllWaypointGroups() const;
@@ -208,9 +210,9 @@ signals:
     
     /**
      * @brief 实体删除信号
-     * @param entityId 删除的实体ID
+     * @param uid 删除的实体UID
      */
-    void entityRemoved(const QString& entityId);
+    void entityRemoved(const QString& uid);
     
     /**
      * @brief 实体选中信号
@@ -257,17 +259,18 @@ private:
     // 用于读取当前相机距离range
     MapStateManager* mapStateManager_;
     
-    QMap<QString, GeoEntity*> entities_;
+    QMap<QString, GeoEntity*> entities_;  // uid -> entity
+    QHash<QString, GeoEntity*> uidToEntity_;  // 保留作为别名索引（实际与entities_相同）
     int entityCounter_;
     
     // 当前选中的实体
     GeoEntity* selectedEntity_;
     
     // 延迟删除机制：避免在渲染过程中删除节点
-    QQueue<QString> pendingDeletions_;  // 待删除的实体ID队列
+    QQueue<QString> pendingDeletions_;  // 待删除的实体UID队列
     QMap<QString, GeoEntity*> pendingEntities_;  // 待删除的实体对象（保持引用直到真正删除）
     
-    /** @brief 生成唯一实体ID */
+    /** @brief 生成唯一实体ID（已废弃，统一使用uid） */
     QString generateEntityId(const QString& entityType, const QString& entityName);
     /** @brief 根据实体名从数据库获取图片路径 */
     QString getImagePathFromDatabase(const QString& entityName);
@@ -276,7 +279,7 @@ private:
 
     // 航点/航线数据
     QMap<QString, WaypointGroupInfo> waypointGroups_;
-    QMap<QString, QString> routeBinding_; // groupId -> targetEntityId
+    QMap<QString, QString> routeBinding_; // groupId -> targetEntityUid
 
     /** @brief 生成线性航线节点 */
     osg::ref_ptr<osg::Geode> buildLinearRoute(const QVector<class WaypointEntity*>& wps);

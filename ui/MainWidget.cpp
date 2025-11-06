@@ -1104,25 +1104,25 @@ void MainWidget::onMapLoaded()
             entity->getPosition(entityLon, entityLat, entityAlt);
             
             // 创建航点组
-            QString groupId = entityManager->createWaypointGroup(QString("route_%1").arg(entity->getId()));
+            QString groupId = entityManager->createWaypointGroup(QString("route_%1").arg(entity->getUid()));
             
             // 添加第一个航点（实体位置）
             entityManager->addWaypointToGroup(groupId, entityLon, entityLat, entityAlt);
             
             // 绑定航线到实体
-            entityManager->bindRouteToEntity(groupId, entity->getId());
+            entityManager->bindRouteToEntity(groupId, entity->getUid());
             
             // 保存航线组ID到实体属性
             entity->setProperty("routeGroupId", groupId);
             
             // 设置状态
             isPlanningEntityRoute_ = true;
-            entityRouteEntityId_ = entity->getId();
+            entityRouteUid_ = entity->getUid();
             entityRouteGroupId_ = groupId;
             
             QMessageBox::information(this, "航线规划", 
                 QString("已开始为实体 '%1' 规划航线\n第一个航点已设置为实体位置\n请在地图上左键点击添加航点，右键结束规划").arg(entity->getName()));
-            qDebug() << "[EntityRoute] 开始为实体规划航线:" << entity->getId() << "组ID:" << groupId;
+            qDebug() << "[EntityRoute] 开始为实体规划航线:" << entity->getUid() << "组ID:" << groupId;
         } else if (selectedAction == editAction) {
             // 打开属性编辑对话框
             EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
@@ -1139,9 +1139,9 @@ void MainWidget::onMapLoaded()
                                            QMessageBox::Yes | QMessageBox::No);
             if (ret == QMessageBox::Yes) {
                 // 从方案中移除
-                planFileManager_->removeEntityFromPlan(entity->getId());
+                planFileManager_->removeEntityFromPlan(entity->getUid());
                 // 从实体管理器中删除
-                entityManager->removeEntity(entity->getId());
+                entityManager->removeEntity(entity->getUid());
                 // 保存方案
                 planFileManager_->savePlan();
             }
@@ -1227,8 +1227,8 @@ void MainWidget::onMapLoaded()
             } else {
                 qDebug() << "[EntityRoute] 生成路线成功:" << choice;
                 // 保存路线类型到实体属性
-                if (entityManager->getEntity(entityRouteEntityId_)) {
-                    entityManager->getEntity(entityRouteEntityId_)->setProperty("routeType", choice);
+                if (entityManager->getEntity(entityRouteUid_)) {
+                    entityManager->getEntity(entityRouteUid_)->setProperty("routeType", choice);
                 }
                 // 标记方案有未保存更改
                 if (planFileManager_) {
@@ -1238,7 +1238,7 @@ void MainWidget::onMapLoaded()
             
             // 结束规划状态
             isPlanningEntityRoute_ = false;
-            entityRouteEntityId_.clear();
+            entityRouteUid_.clear();
             entityRouteGroupId_.clear();
         }
     });

@@ -10,10 +10,10 @@
 #include <QDebug>
 #include <QColor>
 
-GeoEntity::GeoEntity(const QString& id, const QString& name, const QString& type,
+GeoEntity::GeoEntity(const QString& name, const QString& type,
                      double longitude, double latitude, double altitude, QObject* parent)
     : QObject(parent)
-    , entityId_(id)
+    , uid_(QUuid::createUuid().toString(QUuid::WithoutBraces))
     , entityName_(name)
     , entityType_(type)
     , longitude_(longitude)

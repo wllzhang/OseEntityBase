@@ -17,9 +17,9 @@
 #include <osg/LineWidth>
 #include <QDebug>
 
-ImageEntity::ImageEntity(const QString& id, const QString& name, const QString& imagePath,
+ImageEntity::ImageEntity(const QString& name, const QString& imagePath,
                          double longitude, double latitude, double altitude, QObject* parent)
-    : GeoEntity(id, name, "image", longitude, latitude, altitude, parent)
+    : GeoEntity(name, "image", longitude, latitude, altitude, parent)
     , imagePath_(imagePath)
 {
     // 设置默认属性
