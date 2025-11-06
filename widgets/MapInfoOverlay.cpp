@@ -23,7 +23,10 @@
 class CompassWidget : public QWidget
 {
 public:
-    explicit CompassWidget(QWidget* parent = nullptr) : QWidget(parent), heading_(0.0) {}
+    explicit CompassWidget(QWidget* parent = nullptr) : QWidget(parent), heading_(0.0) {
+        setAttribute(Qt::WA_TranslucentBackground, true);
+        setAttribute(Qt::WA_NoSystemBackground, true);
+    }
     void setHeading(double heading) {
         if (heading_ != heading) {
             heading_ = heading;
@@ -34,7 +37,11 @@ protected:
     void paintEvent(QPaintEvent* event) override {
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
-        
+        // 关键：每帧先清空自身区域，避免缩放时重影
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.fillRect(event->rect(), Qt::transparent);
+        painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+
         int compassSize = 80;
         int margin = 10;
         QPoint compassCenter(compassSize / 2 + margin, compassSize / 2 + margin);
@@ -49,7 +56,10 @@ private:
 class ScaleWidget : public QWidget
 {
 public:
-    explicit ScaleWidget(QWidget* parent = nullptr) : QWidget(parent), scaleRange_(0.0) {}
+    explicit ScaleWidget(QWidget* parent = nullptr) : QWidget(parent), scaleRange_(0.0) {
+        setAttribute(Qt::WA_TranslucentBackground, true);
+        setAttribute(Qt::WA_NoSystemBackground, true);
+    }
     void setScaleRange(double range) {
         if (scaleRange_ != range) {
             scaleRange_ = range;
@@ -59,12 +69,20 @@ public:
 protected:
     void paintEvent(QPaintEvent* event) override {
         if (scaleRange_ <= 0) {
+            // 清空以防止残影
+            QPainter clearPainter(this);
+            clearPainter.setCompositionMode(QPainter::CompositionMode_Source);
+            clearPainter.fillRect(event->rect(), Qt::transparent);
             return;
         }
-        
+
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
-        
+        // 关键：每帧先清空自身区域，避免缩放时重影
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.fillRect(event->rect(), Qt::transparent);
+        painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+
         QPoint scalePos(10, 10);
         drawScaleBar(painter, scalePos);
     }
@@ -130,16 +148,7 @@ void MapInfoOverlay::setupUI()
     
     // 创建信息面板
     InfoPanelWidget* infoPanel = new InfoPanelWidget(nullptr);
-    infoPanel->setStyleSheet(
-        "QLabel {"
-        "   color: #FFFFFF;"
-        "   background: transparent;"
-        "   border: none;"
-        "   font-size: 10pt;"
-        "   font-family: 'Microsoft YaHei', 'SimSun', sans-serif;"
-        "   padding: 2px 5px;"
-        "}"
-    );
+    // 移除全局QLabel样式，避免与子标签样式冲突造成重影
     QHBoxLayout* infoLayout = new QHBoxLayout(infoPanel);
     infoLayout->setSpacing(8);
     infoLayout->setContentsMargins(8, 5, 8, 5);
@@ -150,13 +159,25 @@ void MapInfoOverlay::setupUI()
         "color: #90EE90; "
         "font-weight: bold; "
         "background: transparent; "
-        "text-shadow: 1px 1px 2px rgba(0, 0, 0, 200);"
+        "border: none; "
+        "font-size: 10pt; "
+        "font-family: 'Microsoft YaHei', 'SimSun', sans-serif; "
+        "padding: 2px 5px;"
     );
+    mouseCoordLabel_->setAutoFillBackground(false);
     infoLayout->addWidget(mouseCoordLabel_);
     
     // 分隔符
     QLabel* separator1 = new QLabel("|", infoPanel);
-    separator1->setStyleSheet("color: rgba(255, 255, 255, 150); background: transparent;");
+    separator1->setStyleSheet(
+        "color: rgba(255, 255, 255, 150); "
+        "background: transparent; "
+        "border: none; "
+        "font-size: 10pt; "
+        "font-family: 'Microsoft YaHei', 'SimSun', sans-serif; "
+        "padding: 2px 5px;"
+    );
+    separator1->setAutoFillBackground(false);
     infoLayout->addWidget(separator1);
     
     // 航向角
@@ -164,8 +185,12 @@ void MapInfoOverlay::setupUI()
     headingLabel_->setStyleSheet(
         "color: #FFFFFF; "
         "background: transparent; "
-        "text-shadow: 1px 1px 2px rgba(0, 0, 0, 200);"
+        "border: none; "
+        "font-size: 10pt; "
+        "font-family: 'Microsoft YaHei', 'SimSun', sans-serif; "
+        "padding: 2px 5px;"
     );
+    headingLabel_->setAutoFillBackground(false);
     infoLayout->addWidget(headingLabel_);
     
     // 俯仰角
@@ -173,8 +198,12 @@ void MapInfoOverlay::setupUI()
     pitchLabel_->setStyleSheet(
         "color: #FFFFFF; "
         "background: transparent; "
-        "text-shadow: 1px 1px 2px rgba(0, 0, 0, 200);"
+        "border: none; "
+        "font-size: 10pt; "
+        "font-family: 'Microsoft YaHei', 'SimSun', sans-serif; "
+        "padding: 2px 5px;"
     );
+    pitchLabel_->setAutoFillBackground(false);
     infoLayout->addWidget(pitchLabel_);
     
     // 距离
@@ -182,8 +211,12 @@ void MapInfoOverlay::setupUI()
     rangeLabel_->setStyleSheet(
         "color: #FFFFFF; "
         "background: transparent; "
-        "text-shadow: 1px 1px 2px rgba(0, 0, 0, 200);"
+        "border: none; "
+        "font-size: 10pt; "
+        "font-family: 'Microsoft YaHei', 'SimSun', sans-serif; "
+        "padding: 2px 5px;"
     );
+    rangeLabel_->setAutoFillBackground(false);
     infoLayout->addWidget(rangeLabel_);
     
     infoPanel->resize(600, 35);  // 一行显示，调整大小

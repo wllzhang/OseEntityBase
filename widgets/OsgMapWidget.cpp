@@ -131,6 +131,16 @@ OsgMapWidget::OsgMapWidget(QWidget *parent)
             if (entityManager_) {
                 entityManager_->processPendingDeletions();
             }
+
+            // 关键：OpenGL一帧完成后，强制刷新叠加控件，避免缩放时的拖影/重影
+            if (mapInfoOverlay_) {
+                QWidget* infoPanel = mapInfoOverlay_->getInfoPanel();
+                QWidget* compass = mapInfoOverlay_->getCompassWidget();
+                QWidget* scale = mapInfoOverlay_->getScaleWidget();
+                if (infoPanel) infoPanel->update();
+                if (compass) compass->update();
+                if (scale) scale->update();
+            }
         }
     });
     // 不在这里启动，等窗口显示后再启动
