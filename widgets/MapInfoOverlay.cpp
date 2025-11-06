@@ -35,7 +35,7 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         
-        // 先清除整个绘制区域，使用Source模式确保完全清除
+        // 完全清除背景（关键：使用Source模式清除QGLWidget的黑色背景）
         painter.setCompositionMode(QPainter::CompositionMode_Source);
         painter.fillRect(event->rect(), Qt::transparent);
         painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -66,6 +66,7 @@ protected:
         if (scaleRange_ <= 0) {
             // 如果不需要显示，清除整个区域
             QPainter painter(this);
+            painter.setCompositionMode(QPainter::CompositionMode_Source);
             painter.fillRect(event->rect(), Qt::transparent);
             return;
         }
@@ -73,7 +74,7 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         
-        // 先清除整个绘制区域，使用Source模式确保完全清除
+        // 完全清除背景（关键：使用Source模式清除QGLWidget的黑色背景）
         painter.setCompositionMode(QPainter::CompositionMode_Source);
         painter.fillRect(event->rect(), Qt::transparent);
         painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -105,10 +106,9 @@ MapInfoOverlay::MapInfoOverlay(QWidget *parent)
     , scaleWidget_(nullptr)
 {
     // MapInfoOverlay本身不再覆盖整个窗口，只用来管理子widget
-    // 设置完全透明背景
-    setAttribute(Qt::WA_TranslucentBackground, true);
+    // 参考QMapControl的方式：不使用WA_TranslucentBackground
+    setAutoFillBackground(false);
     setAttribute(Qt::WA_TransparentForMouseEvents, true);  // 完全透明，不拦截事件
-    setAttribute(Qt::WA_NoSystemBackground, true);  // 不绘制系统背景
     setStyleSheet("background: transparent;");
     setFocusPolicy(Qt::NoFocus);
     
@@ -126,22 +126,24 @@ void MapInfoOverlay::setupUI()
     class InfoPanelWidget : public QWidget {
     public:
         InfoPanelWidget(QWidget* parent = nullptr) : QWidget(parent) {
+            // 关键：QGLWidget上的透明widget需要设置WA_TranslucentBackground
+            // 但必须配合正确的paintEvent实现
             setAttribute(Qt::WA_TranslucentBackground, true);
-            setAttribute(Qt::WA_NoSystemBackground, true);
+            setAutoFillBackground(false);
         }
     protected:
         void paintEvent(QPaintEvent* event) override {
             QPainter painter(this);
             painter.setRenderHint(QPainter::Antialiasing);
             
-            // 先清除整个绘制区域，使用Source模式确保完全清除
+            // 完全清除背景（包括QGLWidget的黑色背景）
             painter.setCompositionMode(QPainter::CompositionMode_Source);
             painter.fillRect(event->rect(), Qt::transparent);
             painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
             
-            // 绘制半透明圆角矩形背景（不透明，避免透出QGLWidget的黑色背景）
+            // 绘制半透明圆角矩形背景
             QRect bgRect = rect();
-            painter.setBrush(QBrush(QColor(0, 0, 0, 180)));  // 半透明黑色背景，不透明度提高到180
+            painter.setBrush(QBrush(QColor(0, 0, 0, 180)));  // 半透明黑色背景
             painter.setPen(QPen(QColor(255, 255, 255, 200), 1));  // 半透明白色边框
             painter.drawRoundedRect(bgRect, 8, 8);
             
@@ -152,6 +154,7 @@ void MapInfoOverlay::setupUI()
     
     // 创建信息面板，parent设为nullptr，稍后在OsgMapWidget中设置
     InfoPanelWidget* infoPanel = new InfoPanelWidget(nullptr);
+    // QGLWidget上的透明widget需要WA_TranslucentBackground和正确的样式表
     infoPanel->setStyleSheet(
         "QLabel {"
         "   color: #FFFFFF;"  // 白色文字
@@ -162,8 +165,7 @@ void MapInfoOverlay::setupUI()
         "   padding: 2px 5px;"  // 增加垂直padding，确保文字区域完整
         "}"
     );
-    infoPanel->setAutoFillBackground(false);  // 禁用自动填充背景
-    infoPanel->setAttribute(Qt::WA_TranslucentBackground, true);  // 确保完全透明
+    infoPanel->setAutoFillBackground(false);
     QHBoxLayout* infoLayout = new QHBoxLayout(infoPanel);
     infoLayout->setSpacing(8);
     infoLayout->setContentsMargins(8, 5, 8, 5);
@@ -219,9 +221,10 @@ void MapInfoOverlay::setupUI()
     infoPanel_ = infoPanel;  // 保存引用
     
     // 创建指北针widget，parent设为nullptr，稍后在OsgMapWidget中设置
+    // QGLWidget上的透明widget需要WA_TranslucentBackground
     CompassWidget* compass = new CompassWidget(nullptr);
     compass->setAttribute(Qt::WA_TranslucentBackground, true);
-    compass->setAttribute(Qt::WA_NoSystemBackground, true);
+    compass->setAutoFillBackground(false);
     compass->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     compass->setFocusPolicy(Qt::NoFocus);
     compass->setStyleSheet("background: transparent;");
@@ -229,9 +232,10 @@ void MapInfoOverlay::setupUI()
     compassWidget_ = compass;
     
     // 创建比例尺widget，parent设为nullptr，稍后在OsgMapWidget中设置
+    // QGLWidget上的透明widget需要WA_TranslucentBackground
     ScaleWidget* scale = new ScaleWidget(nullptr);
     scale->setAttribute(Qt::WA_TranslucentBackground, true);
-    scale->setAttribute(Qt::WA_NoSystemBackground, true);
+    scale->setAutoFillBackground(false);
     scale->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     scale->setFocusPolicy(Qt::NoFocus);
     scale->setStyleSheet("background: transparent;");

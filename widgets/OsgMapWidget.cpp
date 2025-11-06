@@ -278,6 +278,8 @@ void OsgMapWidget::setupManipulator()
                 QWidget* infoPanel = mapInfoOverlay_ ? mapInfoOverlay_->getInfoPanel() : nullptr;
                 if (infoPanel) {
                     infoPanel->show();
+                    infoPanel->raise();  // 确保在QGLWidget之上
+                    infoPanel->update();  // 强制重绘
                     qDebug() << "信息面板已显示（地图已加载）";
                 }
                 
@@ -285,6 +287,8 @@ void OsgMapWidget::setupManipulator()
                 QWidget* compassWidget = mapInfoOverlay_ ? mapInfoOverlay_->getCompassWidget() : nullptr;
                 if (compassWidget) {
                     compassWidget->show();
+                    compassWidget->raise();  // 确保在QGLWidget之上
+                    compassWidget->update();  // 强制重绘
                     qDebug() << "指北针已显示（地图已加载）";
                 }
                 
@@ -292,6 +296,8 @@ void OsgMapWidget::setupManipulator()
                 QWidget* scaleWidget = mapInfoOverlay_ ? mapInfoOverlay_->getScaleWidget() : nullptr;
                 if (scaleWidget) {
                     scaleWidget->show();
+                    scaleWidget->raise();  // 确保在QGLWidget之上
+                    scaleWidget->update();  // 强制重绘
                     qDebug() << "比例尺已显示（地图已加载）";
                 }
             } else {
