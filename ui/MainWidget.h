@@ -19,6 +19,7 @@
 #include <QFile>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QLabel>
 #include "ComponentConfigDialog.h"
 #include "ModelAssemblyDialog.h"
 #include "../widgets/OsgMapWidget.h"
@@ -102,6 +103,11 @@ private slots:
      * @brief 2D/3D切换按钮点击槽函数
      */
     void onToggle2D3D();
+    
+    /**
+     * @brief 更新工具栏中的方案名称标签
+     */
+    void updatePlanNameLabel();
     
     /**
      * @brief 新建方案槽函数
@@ -225,6 +231,11 @@ private:
     // 2D/3D切换按钮
     QPushButton *toggle2D3DBtn_;     // 2D/3D切换按钮
     bool is3DMode_;                  // 当前是否为3D模式
+    
+    // 工具栏按钮
+    QPushButton *returnBtn_;         // 后退按钮
+    QPushButton *forwardBtn_;        // 前进按钮
+    QLabel *planNameLabel_;          // 当前方案名称标签
     
     // 点标绘：是否进入放置模式与待放置标签
     bool isPlacingWaypoint_;         // 是否正在放置航点

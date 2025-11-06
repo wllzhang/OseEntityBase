@@ -106,8 +106,11 @@ SOURCES += \
     geo/mapstatemanager.cpp \
     geo/waypointentity.cpp \
     geo/geoutils.cpp \
+    geo/navigationhistory.cpp \
     util/databaseutils.cpp \
     plan/planfilemanager.cpp \
+    widgets/OsgMapWidget.cpp \
+    widgets/MapInfoOverlay.cpp \
     widgets/draggablelistwidget.cpp \
     widgets/imageviewerwindow.cpp
 
@@ -127,8 +130,11 @@ HEADERS += \
     geo/mapstatemanager.h \
     geo/waypointentity.h \
     geo/geoutils.h \
+    geo/navigationhistory.h \
     util/databaseutils.h \
     plan/planfilemanager.h \
+    widgets/OsgMapWidget.h \
+    widgets/MapInfoOverlay.h \
     widgets/draggablelistwidget.h \
     widgets/imageviewerwindow.h
 

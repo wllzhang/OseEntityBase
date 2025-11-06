@@ -23,10 +23,13 @@
 #include "../geo/geoentitymanager.h"
 #include "../geo/mapstatemanager.h"
 #include "../geo/geoutils.h"
+#include "../geo/navigationhistory.h"
 #include "../plan/planfilemanager.h"
+#include "MapInfoOverlay.h"
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QFileInfo>
 
 OsgMapWidget::OsgMapWidget(QWidget *parent)
     : QWidget(parent)
@@ -37,12 +40,22 @@ OsgMapWidget::OsgMapWidget(QWidget *parent)
     , entityManager_(nullptr)
     , mapStateManager_(nullptr)
     , planFileManager_(nullptr)
+    , mapInfoOverlay_(nullptr)
+    , navigationHistory_(nullptr)
 {
     // 启用拖放功能
     setAcceptDrops(true);
-    // 设置布局
-    setLayout(new QVBoxLayout(this));
-    layout()->setContentsMargins(0, 0, 0, 0);
+    // 设置布局（使用堆叠布局，让信息叠加层在最上层）
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    
+    // 创建导航历史管理器
+    navigationHistory_ = new NavigationHistory(this);
+    
+    // 创建信息叠加层（在最上层，覆盖OSG地图）
+    mapInfoOverlay_ = new MapInfoOverlay(this);
+    // 注意：MapInfoOverlay内部会处理鼠标事件穿透，这里不需要设置
+    // 导航历史信号和按钮已移到MainWidget的工具栏，这里不再连接
     
     // 初始化OSG
     root_ = new osg::Group;
@@ -68,7 +81,43 @@ OsgMapWidget::OsgMapWidget(QWidget *parent)
     
     // 获取GLWidget并添加到布局
     QGLWidget* glWidget = gw_->getGLWidget();
-    layout()->addWidget(glWidget);
+    mainLayout->addWidget(glWidget);
+    
+    // 信息叠加层不覆盖整个窗口，只用来管理子控件
+    // 所有子控件都直接作为OsgMapWidget的子控件（类似QMapControl的做法）
+    mapInfoOverlay_->setParent(this);
+    mapInfoOverlay_->hide();  // MapInfoOverlay本身不显示
+    
+    // 设置信息面板为OsgMapWidget的直接子控件（初始隐藏，等地图加载完成后再显示）
+    QWidget* infoPanel = mapInfoOverlay_->getInfoPanel();
+    if (infoPanel) {
+        infoPanel->setParent(this);  // 设置正确的parent
+        infoPanel->raise();  // 确保在最上层
+        infoPanel->hide();  // 初始隐藏，等地图加载完成后再显示
+    }
+    
+    // 设置指北针widget为OsgMapWidget的直接子控件（初始隐藏，等地图加载完成后再显示）
+    QWidget* compassWidget = mapInfoOverlay_->getCompassWidget();
+    if (compassWidget) {
+        compassWidget->setParent(this);  // 设置正确的parent
+        compassWidget->raise();  // 确保在最上层
+        compassWidget->hide();  // 初始隐藏，等地图加载完成后再显示
+    }
+    
+    // 设置比例尺widget为OsgMapWidget的直接子控件（初始隐藏，等地图加载完成后再显示）
+    QWidget* scaleWidget = mapInfoOverlay_->getScaleWidget();
+    if (scaleWidget) {
+        scaleWidget->setParent(this);  // 设置正确的parent
+        scaleWidget->raise();  // 确保在最上层
+        scaleWidget->hide();  // 初始隐藏，等地图加载完成后再显示
+    }
+    
+    // 延迟更新位置，确保OSG先初始化（但不显示，等地图加载完成后再显示）
+    QTimer::singleShot(500, this, [this]() {
+        if (mapInfoOverlay_ && width() > 0 && height() > 0) {
+            mapInfoOverlay_->updateOverlayWidgetsPosition(width(), height());
+        }
+    });
     
     // 初始化查看器
     initializeViewer();
@@ -137,7 +186,8 @@ void OsgMapWidget::loadMap()
         root_->addChild(node);
         mapNode_ = osgEarth::MapNode::findMapNode(node.get());
         if (mapNode_) {
-            qDebug() << "地图加载成功";
+            qDebug() << "地图加载成功 - MapNode已找到";
+            qDebug() << "地图节点路径:" << filePath;
             
             // 初始化实体管理器
             if (!entityManager_) {
@@ -163,11 +213,19 @@ void OsgMapWidget::loadMap()
                     entityManager_->setMapStateManager(mapStateManager_);
                 }
             }
+            
+            // 检查OSG渲染状态
+            if (viewer_ && viewer_->getCamera()) {
+                qDebug() << "OSG相机已初始化，清除颜色:" 
+                         << viewer_->getCamera()->getClearColor().r() << ","
+                         << viewer_->getCamera()->getClearColor().g() << ","
+                         << viewer_->getCamera()->getClearColor().b();
+            }
         } else {
-            qDebug() << "警告：未找到MapNode";
+            qDebug() << "警告：未找到MapNode - 地图可能未正确加载";
         }
     } else {
-        qDebug() << "地图加载失败";
+        qDebug() << "错误：地图加载失败 - 无法读取节点文件:" << filePath;
     }
 }
 
@@ -175,6 +233,83 @@ void OsgMapWidget::setupManipulator()
 {
     // 默认设置为3D模式
     setMode3D();
+    
+    // 连接信息叠加层（地图加载完成后）
+    if (mapInfoOverlay_ && mapStateManager_) {
+        mapInfoOverlay_->setMapStateManager(mapStateManager_);
+        mapInfoOverlay_->updateAllInfo();
+        
+        // 连接状态变化信号，记录导航历史（使用防抖，避免频繁记录）
+        QTimer* debounceTimer = new QTimer(this);
+        debounceTimer->setSingleShot(true);
+        debounceTimer->setInterval(1000); // 1秒防抖，只在视角稳定后记录
+        
+        connect(mapStateManager_, &MapStateManager::stateChanged, this, [debounceTimer]() {
+            debounceTimer->stop();
+            debounceTimer->start();
+        });
+        
+        connect(debounceTimer, &QTimer::timeout, this, [this]() {
+            if (navigationHistory_ && viewer_) {
+                osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer_.get());
+                if (em) {
+                    osgEarth::Viewpoint vp = em->getViewpoint();
+                    navigationHistory_->pushViewpoint(vp);
+                }
+            }
+        });
+        
+        // OSG地图加载完成后，延迟显示信息面板（确保地图已经渲染）
+        QTimer::singleShot(500, this, [this]() {
+            // 检查地图是否已正确加载
+            bool mapReady = mapNode_ && mapStateManager_ && viewer_;
+            qDebug() << "检查地图渲染状态:"
+                     << "mapNode=" << (mapNode_ ? "✓" : "✗")
+                     << "mapStateManager=" << (mapStateManager_ ? "✓" : "✗")
+                     << "viewer=" << (viewer_ ? "✓" : "✗");
+            
+            if (mapReady && width() > 0 && height() > 0) {
+                // 更新位置
+                if (mapInfoOverlay_) {
+                    mapInfoOverlay_->updateOverlayWidgetsPosition(width(), height());
+                }
+                
+                // 显示信息面板
+                QWidget* infoPanel = mapInfoOverlay_ ? mapInfoOverlay_->getInfoPanel() : nullptr;
+                if (infoPanel) {
+                    infoPanel->show();
+                    qDebug() << "信息面板已显示（地图已加载）";
+                }
+                
+                // 显示指北针
+                QWidget* compassWidget = mapInfoOverlay_ ? mapInfoOverlay_->getCompassWidget() : nullptr;
+                if (compassWidget) {
+                    compassWidget->show();
+                    qDebug() << "指北针已显示（地图已加载）";
+                }
+                
+                // 显示比例尺
+                QWidget* scaleWidget = mapInfoOverlay_ ? mapInfoOverlay_->getScaleWidget() : nullptr;
+                if (scaleWidget) {
+                    scaleWidget->show();
+                    qDebug() << "比例尺已显示（地图已加载）";
+                }
+            } else {
+                qDebug() << "警告：地图未准备就绪，信息面板延迟显示";
+                // 如果地图未准备就绪，再延迟1秒后重试
+                QTimer::singleShot(1000, this, [this]() {
+                    QWidget* infoPanel = mapInfoOverlay_ ? mapInfoOverlay_->getInfoPanel() : nullptr;
+                    QWidget* compassWidget = mapInfoOverlay_ ? mapInfoOverlay_->getCompassWidget() : nullptr;
+                    QWidget* scaleWidget = mapInfoOverlay_ ? mapInfoOverlay_->getScaleWidget() : nullptr;
+                    
+                    if (infoPanel) infoPanel->show();
+                    if (compassWidget) compassWidget->show();
+                    if (scaleWidget) scaleWidget->show();
+                    qDebug() << "信息面板强制显示（延迟超时）";
+                });
+            }
+        });
+    }
     
     // 发送地图加载完成信号
     emit mapLoaded();
@@ -185,6 +320,15 @@ void OsgMapWidget::setMode2D()
     if (!viewer_ || !mapNode_) {
         qDebug() << "OsgMapWidget: Viewer或MapNode未初始化，无法设置2D模式";
         return;
+    }
+    
+    // 保存当前视角到导航历史
+    if (navigationHistory_ && viewer_) {
+        osgEarth::Util::EarthManipulator* currentEm = GeoUtils::getEarthManipulator(viewer_.get());
+        if (currentEm) {
+            osgEarth::Viewpoint currentVp = currentEm->getViewpoint();
+            navigationHistory_->pushViewpoint(currentVp);
+        }
     }
     
     // 使用EarthManipulator来显示地图
@@ -210,6 +354,15 @@ void OsgMapWidget::setMode3D()
     if (!viewer_ || !mapNode_) {
         qDebug() << "OsgMapWidget: Viewer或MapNode未初始化，无法设置3D模式";
         return;
+    }
+    
+    // 保存当前视角到导航历史
+    if (navigationHistory_ && viewer_) {
+        osgEarth::Util::EarthManipulator* currentEm = GeoUtils::getEarthManipulator(viewer_.get());
+        if (currentEm) {
+            osgEarth::Viewpoint currentVp = currentEm->getViewpoint();
+            navigationHistory_->pushViewpoint(currentVp);
+        }
     }
     
     // 使用EarthManipulator来显示地图
@@ -250,12 +403,22 @@ void OsgMapWidget::resizeEvent(QResizeEvent* event)
         camera->setProjectionMatrixAsPerspective(30.0, aspectRatio, 1.0, 1e7);
     }
     
+    // 更新所有叠加控件的位置
+    if (mapInfoOverlay_) {
+        mapInfoOverlay_->updateOverlayWidgetsPosition(width(), height());
+    }
+    
     QWidget::resizeEvent(event);
 }
 
 void OsgMapWidget::setPlanFileManager(PlanFileManager* planFileManager)
 {
     planFileManager_ = planFileManager;
+    
+    // 方案名称已移到MainWidget工具栏，这里不再处理
+    if (mapInfoOverlay_ && planFileManager_) {
+        mapInfoOverlay_->setPlanFileManager(planFileManager_);
+    }
 }
 
 void OsgMapWidget::dragEnterEvent(QDragEnterEvent* event)

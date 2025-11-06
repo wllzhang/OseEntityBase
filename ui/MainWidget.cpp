@@ -29,6 +29,8 @@
 #include "../geo/geoentitymanager.h"
 #include "../geo/geoutils.h"
 #include "../geo/mapstatemanager.h"
+#include "../geo/navigationhistory.h"
+#include "../widgets/MapInfoOverlay.h"
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent), currentNavIndex(0)
@@ -129,22 +131,32 @@ void MainWidget::createToolBar()
     savePlanAsBtn->setStyleSheet("border: none;");
     connect(savePlanAsBtn, &QPushButton::clicked, this, &MainWidget::onSavePlanAsClicked);
     
-    QPushButton *returnBtn = new QPushButton("后退");
-    returnBtn->setStyleSheet("border: none;");
-    QPushButton *forwardBtn = new QPushButton("前进");
-    forwardBtn->setStyleSheet("border: none;");
+    // 前进后退按钮
+    returnBtn_ = new QPushButton("← 后退");
+    returnBtn_->setStyleSheet("border: none;");
+    returnBtn_->setEnabled(false);
+    forwardBtn_ = new QPushButton("前进 →");
+    forwardBtn_->setStyleSheet("border: none;");
+    forwardBtn_->setEnabled(false);
+    
     QPushButton *helpBtn = new QPushButton("帮助");
     helpBtn->setStyleSheet("border: none;");
 
-    // 设置样式 待补充
+    // 当前方案标签
+    planNameLabel_ = new QLabel("当前方案: 未打开");
+    planNameLabel_->setStyleSheet("color: white; font-weight: bold; padding: 0 10px;");
 
     toolBarLayout->addWidget(newPlanBtn);
     toolBarLayout->addWidget(openPlanBtn);
     toolBarLayout->addWidget(savePlanBtn);
     toolBarLayout->addWidget(savePlanAsBtn);
-    toolBarLayout->addWidget(returnBtn);
-    toolBarLayout->addWidget(forwardBtn);
+    toolBarLayout->addWidget(returnBtn_);
+    toolBarLayout->addWidget(forwardBtn_);
     toolBarLayout->addWidget(helpBtn);
+    
+    // 添加分隔符
+    toolBarLayout->addSpacing(10);
+    toolBarLayout->addWidget(planNameLabel_);
     
     // 添加2D/3D切换按钮
     toggle2D3DBtn_ = new QPushButton("切换到2D");
@@ -715,6 +727,12 @@ void MainWidget::onOpenPlanClicked()
                         if (viewer) {
                             osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
                             if (em) {
+                                // 保存当前视角到导航历史（如果存在）
+                                if (osgMapWidget_->getNavigationHistory()) {
+                                    osgEarth::Viewpoint currentVp = em->getViewpoint();
+                                    osgMapWidget_->getNavigationHistory()->pushViewpoint(currentVp);
+                                }
+                                
                                 osgEarth::Viewpoint vp("Plan", lon, lat, alt, heading, pitch, range);
                                 em->setViewpoint(vp, 2.0);
                                 qDebug() << "恢复相机视角:" << lon << lat << range;
@@ -722,6 +740,9 @@ void MainWidget::onOpenPlanClicked()
                         }
                     }
                 }
+                
+                // 更新工具栏的方案名称
+                updatePlanNameLabel();
                 
                 QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
                 qDebug() << "方案加载成功:" << filePath;
@@ -744,6 +765,12 @@ void MainWidget::onOpenPlanClicked()
                         if (viewer) {
                             osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
                             if (em) {
+                                // 保存当前视角到导航历史（如果存在）
+                                if (osgMapWidget_->getNavigationHistory()) {
+                                    osgEarth::Viewpoint currentVp = em->getViewpoint();
+                                    osgMapWidget_->getNavigationHistory()->pushViewpoint(currentVp);
+                                }
+                                
                                 osgEarth::Viewpoint vp("Plan", lon, lat, alt, heading, pitch, range);
                                 em->setViewpoint(vp, 2.0);
                                 qDebug() << "恢复相机视角:" << lon << lat << range;
@@ -751,6 +778,9 @@ void MainWidget::onOpenPlanClicked()
                         }
                     }
                 }
+                
+                // 更新工具栏的方案名称
+                updatePlanNameLabel();
                 
                 QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
                 qDebug() << "方案加载成功:" << filePath;
@@ -962,6 +992,62 @@ void MainWidget::onMapLoaded()
     if (osgMapWidget_ && planFileManager_) {
         osgMapWidget_->setPlanFileManager(planFileManager_);
         qDebug() << "PlanFileManager已设置到OsgMapWidget";
+        
+        // 更新工具栏的方案名称
+        updatePlanNameLabel();
+    }
+    
+    // 连接导航历史信号到工具栏按钮
+    if (osgMapWidget_ && osgMapWidget_->getNavigationHistory()) {
+        auto navHistory = osgMapWidget_->getNavigationHistory();
+        connect(navHistory, &NavigationHistory::historyStateChanged, this, [this](bool canBack, bool canForward) {
+            if (returnBtn_) returnBtn_->setEnabled(canBack);
+            if (forwardBtn_) forwardBtn_->setEnabled(canForward);
+        });
+        
+        // 连接前进后退按钮
+        if (returnBtn_) {
+            connect(returnBtn_, &QPushButton::clicked, this, [this]() {
+                if (osgMapWidget_ && osgMapWidget_->getNavigationHistory()) {
+                    auto viewer = osgMapWidget_->getViewer();
+                    if (viewer) {
+                        osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+                        if (em) {
+                            osgEarth::Viewpoint currentVp = em->getViewpoint();
+                            osgEarth::Viewpoint backVp;
+                            if (osgMapWidget_->getNavigationHistory()->goBack(currentVp, backVp)) {
+                                em->setViewpoint(backVp, 1.0);
+                                qDebug() << "导航后退到视角";
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        if (forwardBtn_) {
+            connect(forwardBtn_, &QPushButton::clicked, this, [this]() {
+                if (osgMapWidget_ && osgMapWidget_->getNavigationHistory()) {
+                    auto viewer = osgMapWidget_->getViewer();
+                    if (viewer) {
+                        osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+                        if (em) {
+                            osgEarth::Viewpoint currentVp = em->getViewpoint();
+                            osgEarth::Viewpoint forwardVp;
+                            if (osgMapWidget_->getNavigationHistory()->goForward(currentVp, forwardVp)) {
+                                em->setViewpoint(forwardVp, 1.0);
+                                qDebug() << "导航前进到视角";
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
+    // 连接方案文件变化信号
+    if (planFileManager_) {
+        connect(planFileManager_, &PlanFileManager::planFileChanged, this, &MainWidget::updatePlanNameLabel);
     }
     
     // 连接实体双击事件 - 打开属性编辑对话框
@@ -1176,5 +1262,20 @@ void MainWidget::onToggle2D3D()
         toggle2D3DBtn_->setText("切换到2D");
         osgMapWidget_->setMode3D();
         qDebug() << "切换到3D模式";
+    }
+}
+
+void MainWidget::updatePlanNameLabel()
+{
+    if (!planNameLabel_ || !planFileManager_) {
+        return;
+    }
+    
+    QString currentPlan = planFileManager_->getCurrentPlanFile();
+    if (!currentPlan.isEmpty()) {
+        QFileInfo fileInfo(currentPlan);
+        planNameLabel_->setText(QString("当前方案: %1").arg(fileInfo.baseName()));
+    } else {
+        planNameLabel_->setText("当前方案: 未打开");
     }
 }

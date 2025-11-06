@@ -15,10 +15,14 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QPoint>
+#include <QVBoxLayout>
 #include <osgViewer/Viewer>
 #include <osg/Group>
 #include <osg/Camera>
 #include "OsgQt/GraphicsWindowQt.h"
+
+// 前向声明
+class MapInfoOverlay;
 
 // 前向声明
 namespace osgEarth {
@@ -28,6 +32,7 @@ namespace osgEarth {
 // 前向声明管理器类
 class GeoEntityManager;
 class MapStateManager;
+class NavigationHistory;
 
 /**
  * @brief OSG地图Widget组件
@@ -105,6 +110,18 @@ public:
      * @param planFileManager 方案文件管理器指针
      */
     void setPlanFileManager(class PlanFileManager* planFileManager);
+    
+    /**
+     * @brief 获取信息叠加层组件
+     * @return 信息叠加层组件指针
+     */
+    MapInfoOverlay* getMapInfoOverlay() const { return mapInfoOverlay_; }
+    
+    /**
+     * @brief 获取导航历史管理器
+     * @return 导航历史管理器指针
+     */
+    NavigationHistory* getNavigationHistory() const { return navigationHistory_; }
 
 signals:
     /**
@@ -186,6 +203,12 @@ private:
     
     // 方案文件管理器（用于拖拽时添加到方案）
     class PlanFileManager* planFileManager_;
+    
+    // 信息叠加层组件
+    MapInfoOverlay* mapInfoOverlay_;               // 地图信息叠加层
+    
+    // 导航历史管理器
+    NavigationHistory* navigationHistory_;         // 导航历史管理器
 };
 
 #endif // OSGMAPWIDGET_H
