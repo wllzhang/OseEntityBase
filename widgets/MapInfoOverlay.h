@@ -112,22 +112,6 @@ public slots:
 
 protected:
     /**
-     * @brief 窗口显示事件
-     */
-    void showEvent(QShowEvent* event) override;
-    
-    /**
-     * @brief 窗口大小变化事件
-     */
-    void resizeEvent(QResizeEvent* event) override;
-    
-    /**
-     * @brief 绘制事件（MapInfoOverlay本身不再绘制）
-     */
-    void paintEvent(QPaintEvent* event) override;
-    
-    
-    /**
      * @brief 鼠标事件处理（让信息面板外的区域透明传递鼠标事件）
      */
     bool event(QEvent* event) override;

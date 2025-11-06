@@ -35,11 +35,6 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         
-        // 完全清除背景（关键：使用Source模式清除QGLWidget的黑色背景）
-        painter.setCompositionMode(QPainter::CompositionMode_Source);
-        painter.fillRect(event->rect(), Qt::transparent);
-        painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-        
         int compassSize = 80;
         int margin = 10;
         QPoint compassCenter(compassSize / 2 + margin, compassSize / 2 + margin);
@@ -64,20 +59,11 @@ public:
 protected:
     void paintEvent(QPaintEvent* event) override {
         if (scaleRange_ <= 0) {
-            // 如果不需要显示，清除整个区域
-            QPainter painter(this);
-            painter.setCompositionMode(QPainter::CompositionMode_Source);
-            painter.fillRect(event->rect(), Qt::transparent);
             return;
         }
         
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
-        
-        // 完全清除背景（关键：使用Source模式清除QGLWidget的黑色背景）
-        painter.setCompositionMode(QPainter::CompositionMode_Source);
-        painter.fillRect(event->rect(), Qt::transparent);
-        painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
         
         QPoint scalePos(10, 10);
         drawScaleBar(painter, scalePos);
@@ -106,11 +92,9 @@ MapInfoOverlay::MapInfoOverlay(QWidget *parent)
     , scaleWidget_(nullptr)
 {
     // MapInfoOverlay本身不再覆盖整个窗口，只用来管理子widget
-    // 参考QMapControl的方式：不使用WA_TranslucentBackground
-    setAutoFillBackground(false);
-    setAttribute(Qt::WA_TransparentForMouseEvents, true);  // 完全透明，不拦截事件
-    setStyleSheet("background: transparent;");
+    setAttribute(Qt::WA_TransparentForMouseEvents, true);
     setFocusPolicy(Qt::NoFocus);
+    hide();  // 本身不显示
     
     setupUI();
 }
@@ -126,8 +110,6 @@ void MapInfoOverlay::setupUI()
     class InfoPanelWidget : public QWidget {
     public:
         InfoPanelWidget(QWidget* parent = nullptr) : QWidget(parent) {
-            // 关键：QGLWidget上的透明widget需要设置WA_TranslucentBackground
-            // 但必须配合正确的paintEvent实现
             setAttribute(Qt::WA_TranslucentBackground, true);
             setAutoFillBackground(false);
         }
@@ -136,41 +118,33 @@ void MapInfoOverlay::setupUI()
             QPainter painter(this);
             painter.setRenderHint(QPainter::Antialiasing);
             
-            // 完全清除背景（包括QGLWidget的黑色背景）
-            painter.setCompositionMode(QPainter::CompositionMode_Source);
-            painter.fillRect(event->rect(), Qt::transparent);
-            painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-            
             // 绘制半透明圆角矩形背景
             QRect bgRect = rect();
-            painter.setBrush(QBrush(QColor(0, 0, 0, 180)));  // 半透明黑色背景
-            painter.setPen(QPen(QColor(255, 255, 255, 200), 1));  // 半透明白色边框
+            painter.setBrush(QBrush(QColor(0, 0, 0, 180)));
+            painter.setPen(QPen(QColor(255, 255, 255, 200), 1));
             painter.drawRoundedRect(bgRect, 8, 8);
             
-            // 调用父类paintEvent绘制子控件（标签等）
             QWidget::paintEvent(event);
         }
     };
     
-    // 创建信息面板，parent设为nullptr，稍后在OsgMapWidget中设置
+    // 创建信息面板
     InfoPanelWidget* infoPanel = new InfoPanelWidget(nullptr);
-    // QGLWidget上的透明widget需要WA_TranslucentBackground和正确的样式表
     infoPanel->setStyleSheet(
         "QLabel {"
-        "   color: #FFFFFF;"  // 白色文字
+        "   color: #FFFFFF;"
         "   background: transparent;"
         "   border: none;"
         "   font-size: 10pt;"
         "   font-family: 'Microsoft YaHei', 'SimSun', sans-serif;"
-        "   padding: 2px 5px;"  // 增加垂直padding，确保文字区域完整
+        "   padding: 2px 5px;"
         "}"
     );
-    infoPanel->setAutoFillBackground(false);
     QHBoxLayout* infoLayout = new QHBoxLayout(infoPanel);
     infoLayout->setSpacing(8);
     infoLayout->setContentsMargins(8, 5, 8, 5);
     
-    // 鼠标坐标 - 添加文字阴影以提高可读性（透明背景）
+    // 鼠标坐标
     mouseCoordLabel_ = new QLabel("鼠标: 0°E, 0°N", infoPanel);
     mouseCoordLabel_->setStyleSheet(
         "color: #90EE90; "
@@ -178,67 +152,56 @@ void MapInfoOverlay::setupUI()
         "background: transparent; "
         "text-shadow: 1px 1px 2px rgba(0, 0, 0, 200);"
     );
-    mouseCoordLabel_->setAutoFillBackground(false);
     infoLayout->addWidget(mouseCoordLabel_);
     
     // 分隔符
     QLabel* separator1 = new QLabel("|", infoPanel);
     separator1->setStyleSheet("color: rgba(255, 255, 255, 150); background: transparent;");
-    separator1->setAutoFillBackground(false);
     infoLayout->addWidget(separator1);
     
-    // 航向角 - 添加文字阴影以提高可读性（透明背景）
+    // 航向角
     headingLabel_ = new QLabel("航向: 0°", infoPanel);
     headingLabel_->setStyleSheet(
         "color: #FFFFFF; "
         "background: transparent; "
         "text-shadow: 1px 1px 2px rgba(0, 0, 0, 200);"
     );
-    headingLabel_->setAutoFillBackground(false);
     infoLayout->addWidget(headingLabel_);
     
-    // 俯仰角 - 添加文字阴影以提高可读性（透明背景）
+    // 俯仰角
     pitchLabel_ = new QLabel("俯仰: 0°", infoPanel);
     pitchLabel_->setStyleSheet(
         "color: #FFFFFF; "
         "background: transparent; "
         "text-shadow: 1px 1px 2px rgba(0, 0, 0, 200);"
     );
-    pitchLabel_->setAutoFillBackground(false);
     infoLayout->addWidget(pitchLabel_);
     
-    // 距离 - 添加文字阴影以提高可读性（透明背景）
+    // 距离
     rangeLabel_ = new QLabel("距离: 0m", infoPanel);
     rangeLabel_->setStyleSheet(
         "color: #FFFFFF; "
         "background: transparent; "
         "text-shadow: 1px 1px 2px rgba(0, 0, 0, 200);"
     );
-    rangeLabel_->setAutoFillBackground(false);
     infoLayout->addWidget(rangeLabel_);
     
     infoPanel->resize(600, 35);  // 一行显示，调整大小
     infoPanel_ = infoPanel;  // 保存引用
     
-    // 创建指北针widget，parent设为nullptr，稍后在OsgMapWidget中设置
-    // QGLWidget上的透明widget需要WA_TranslucentBackground
+    // 创建指北针widget
     CompassWidget* compass = new CompassWidget(nullptr);
     compass->setAttribute(Qt::WA_TranslucentBackground, true);
-    compass->setAutoFillBackground(false);
     compass->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     compass->setFocusPolicy(Qt::NoFocus);
-    compass->setStyleSheet("background: transparent;");
     compass->resize(100, 100);
     compassWidget_ = compass;
     
-    // 创建比例尺widget，parent设为nullptr，稍后在OsgMapWidget中设置
-    // QGLWidget上的透明widget需要WA_TranslucentBackground
+    // 创建比例尺widget
     ScaleWidget* scale = new ScaleWidget(nullptr);
     scale->setAttribute(Qt::WA_TranslucentBackground, true);
-    scale->setAutoFillBackground(false);
     scale->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     scale->setFocusPolicy(Qt::NoFocus);
-    scale->setStyleSheet("background: transparent;");
     scale->resize(200, 50);
     scaleWidget_ = scale;
     
@@ -321,17 +284,6 @@ void MapInfoOverlay::updateAllInfo()
     updateCameraParameters(state.heading, state.pitch, state.range);
 }
 
-void MapInfoOverlay::resizeEvent(QResizeEvent* event)
-{
-    QWidget::resizeEvent(event);
-    // MapInfoOverlay本身不显示，不需要处理resize事件
-}
-
-void MapInfoOverlay::showEvent(QShowEvent* event)
-{
-    QWidget::showEvent(event);
-    // MapInfoOverlay本身不显示，不需要处理show事件
-}
 
 bool MapInfoOverlay::event(QEvent* event)
 {
@@ -341,11 +293,6 @@ bool MapInfoOverlay::event(QEvent* event)
     return QWidget::event(event);
 }
 
-void MapInfoOverlay::paintEvent(QPaintEvent* event)
-{
-    // MapInfoOverlay本身不再绘制，只确保背景透明
-    // 不调用QWidget::paintEvent，避免绘制默认背景
-}
 
 void MapInfoOverlay::updateOverlayWidgetsPosition(int parentWidth, int parentHeight)
 {
@@ -421,11 +368,10 @@ void CompassWidget::drawCompass(QPainter& painter, const QPoint& center, int rad
     
     painter.restore();  // 恢复变换矩阵
     
-    // 绘制方向标记（东南西北）- 先清除文字区域
+    // 绘制方向标记（东南西北）
     painter.setPen(QPen(QColor(255, 255, 255, 180), 1));
     painter.setFont(QFont("Arial", 8));
     
-    // 为每个方向标记准备清除区域
     QString directions[] = {"N", "E", "S", "W"};
     double angles[] = {0.0, 90.0, 180.0, 270.0};
     
@@ -434,13 +380,6 @@ void CompassWidget::drawCompass(QPainter& painter, const QPoint& center, int rad
         double dirX = center.x() + (radius - 15) * qSin(dirAngleRad);
         double dirY = center.y() - (radius - 15) * qCos(dirAngleRad);
         
-        // 清除文字区域，避免叠加
-        QRectF textClearRect(dirX - 15, dirY - 10, 30, 20);
-        painter.setCompositionMode(QPainter::CompositionMode_Source);
-        painter.fillRect(textClearRect, Qt::transparent);
-        painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-        
-        // 绘制文字
         painter.drawText(QRectF(dirX - 10, dirY - 7, 20, 14), Qt::AlignCenter, directions[i]);
     }
 }
@@ -475,23 +414,17 @@ void ScaleWidget::drawScaleBar(QPainter& painter, const QPoint& pos)
     painter.drawLine(pos.x(), pos.y(), pos.x(), pos.y() + barHeight + 5);
     painter.drawLine(pos.x() + barWidth, pos.y(), pos.x() + barWidth, pos.y() + barHeight + 5);
     
-    // 绘制文字（先清除文字区域，避免叠加）
+    // 绘制文字
     QString distanceText = formatDistance(scaleLengthMeters);
     QFontMetrics fm(QFont("Arial", 9));
     QRect textBoundingRect = fm.boundingRect(distanceText);
     
-    // 计算文字区域，确保完全覆盖可能的文字范围
-    int textMargin = 10;  // 额外的边距
+    int textMargin = 10;
     QRect textRect(pos.x(), pos.y() + barHeight + 8, 
                    qMax(barWidth + textMargin, textBoundingRect.width() + textMargin * 2), 
                    textBoundingRect.height() + textMargin);
     
-    // 使用Source模式完全清除文字区域
-    painter.setCompositionMode(QPainter::CompositionMode_Source);
-    painter.fillRect(textRect, Qt::transparent);
-    
     // 绘制半透明背景
-    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter.fillRect(textRect, QColor(0, 0, 0, 120));
     
     // 绘制文字

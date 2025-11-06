@@ -274,43 +274,26 @@ void OsgMapWidget::setupManipulator()
                     mapInfoOverlay_->updateOverlayWidgetsPosition(width(), height());
                 }
                 
-                // 显示信息面板
-                QWidget* infoPanel = mapInfoOverlay_ ? mapInfoOverlay_->getInfoPanel() : nullptr;
-                if (infoPanel) {
-                    infoPanel->show();
-                    infoPanel->raise();  // 确保在QGLWidget之上
-                    infoPanel->update();  // 强制重绘
-                    qDebug() << "信息面板已显示（地图已加载）";
-                }
+                // 显示叠加控件
+                auto showWidget = [](QWidget* widget, const QString& name) {
+                    if (widget) {
+                        widget->show();
+                        widget->raise();
+                        qDebug() << name << "已显示";
+                    }
+                };
                 
-                // 显示指北针
-                QWidget* compassWidget = mapInfoOverlay_ ? mapInfoOverlay_->getCompassWidget() : nullptr;
-                if (compassWidget) {
-                    compassWidget->show();
-                    compassWidget->raise();  // 确保在QGLWidget之上
-                    compassWidget->update();  // 强制重绘
-                    qDebug() << "指北针已显示（地图已加载）";
-                }
-                
-                // 显示比例尺
-                QWidget* scaleWidget = mapInfoOverlay_ ? mapInfoOverlay_->getScaleWidget() : nullptr;
-                if (scaleWidget) {
-                    scaleWidget->show();
-                    scaleWidget->raise();  // 确保在QGLWidget之上
-                    scaleWidget->update();  // 强制重绘
-                    qDebug() << "比例尺已显示（地图已加载）";
-                }
+                showWidget(mapInfoOverlay_->getInfoPanel(), "信息面板");
+                showWidget(mapInfoOverlay_->getCompassWidget(), "指北针");
+                showWidget(mapInfoOverlay_->getScaleWidget(), "比例尺");
             } else {
                 qDebug() << "警告：地图未准备就绪，信息面板延迟显示";
                 // 如果地图未准备就绪，再延迟1秒后重试
                 QTimer::singleShot(1000, this, [this]() {
-                    QWidget* infoPanel = mapInfoOverlay_ ? mapInfoOverlay_->getInfoPanel() : nullptr;
-                    QWidget* compassWidget = mapInfoOverlay_ ? mapInfoOverlay_->getCompassWidget() : nullptr;
-                    QWidget* scaleWidget = mapInfoOverlay_ ? mapInfoOverlay_->getScaleWidget() : nullptr;
-                    
-                    if (infoPanel) infoPanel->show();
-                    if (compassWidget) compassWidget->show();
-                    if (scaleWidget) scaleWidget->show();
+                    auto showWidget = [](QWidget* widget) { if (widget) widget->show(); };
+                    showWidget(mapInfoOverlay_->getInfoPanel());
+                    showWidget(mapInfoOverlay_->getCompassWidget());
+                    showWidget(mapInfoOverlay_->getScaleWidget());
                     qDebug() << "信息面板强制显示（延迟超时）";
                 });
             }
