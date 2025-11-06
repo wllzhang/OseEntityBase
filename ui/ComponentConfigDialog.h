@@ -174,6 +174,31 @@ private:
      */
     bool isComponentUsed(QString componentId);
 
+    // 20251104 修改 增加对嵌套JSON格式的参数配置
+    //    QWidget* createFormWidget(int type, const QStringList &values = QStringList(), const QVariant &currentValue = QVariant());
+    QVariant getParameterValue(const QString &paramName, int type, const QStringList &values, const QJsonObject &paramConfig, const QJsonObject &configInfo);
+    QVariant getDefaultValue(int type, const QStringList &values, const QJsonObject &paramConfig);
+    QString convertToString(const QJsonValue &jsonValue);
+    int convertToComboBoxIndex(const QJsonValue &jsonValue, const QStringList &values);
+    int convertToInt(const QJsonValue &jsonValue);
+    bool convertToBool(const QJsonValue &jsonValue);
+    double convertToDouble(const QJsonValue &jsonValue);
+    QString convertToRangeString(const QJsonValue &jsonValue);
+    QVariant convertToNestedObject(const QJsonValue &jsonValue, const QJsonObject &paramConfig);
+    QWidget* createFormWidget(QString paramName, int type, const QStringList &values, const QVariant &currentValue, const QJsonObject &paramConfig);
+    QWidget* createLineEditWidget(const QVariant &currentValue);
+    QWidget* createComboBoxWidget(const QStringList &values, const QVariant &currentValue);
+    QWidget* createSpinBoxWidget(const QVariant &currentValue);
+    QWidget* createCheckBoxWidget(const QVariant &currentValue);
+    QWidget* createDoubleSpinBoxWidget(const QVariant &currentValue);
+    QWidget* createRangeWidget(const QVariant &currentValue);
+    QWidget* createNestedJsonWidget(QString parentName, const QVariant &currentValue, const QJsonObject &paramConfig);
+    QWidget* createUnsupportedWidget(int type);
+    // 20251104 修改 增加对嵌套JSON类型参数配置内容的保存
+    QJsonObject collectFormData();
+    QVariant getWidgetValue(QWidget *widget, const QString &paramName);
+    bool validateFormData(const QJsonObject &configInfo);
+
 
     QSqlDatabase db;                        // 数据库连接
     QTreeWidget *componentTree;             // 组件树控件
@@ -191,6 +216,8 @@ private:
     QMap<QString, QWidget*> paramWidgets;   // 参数名 -> 控件映射
     ComponentInfo currentComponentInfo;     // 当前组件信息
     QTreeWidgetItem *currentItem;          // 当前选中的树项
+    QMap<QString, QJsonObject> nestedTemplates;  // 20251104 修改 存储嵌套JSON的模板结构
+
 };
 
 #endif // COMPONENTCONFIGDIALOG_H

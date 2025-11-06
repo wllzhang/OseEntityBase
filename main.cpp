@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     
     // 设置数据库路径（使用绝对路径）
     // 根据实际情况修改为你的项目根目录路径
-    DatabaseUtils::setDatabasePath("E:/osgqtlib/osgEarthmy_osgb/MyDatabase.db");
+    DatabaseUtils::setDatabasePath("D:/OSG/MyDatabase.db");
     qDebug() << "数据库路径设置为:" << DatabaseUtils::getDatabasePath();
     
     MainWidget w;
