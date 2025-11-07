@@ -524,12 +524,10 @@ osg::ref_ptr<osg::Geode> GeoEntityManager::buildLinearRoute(const QVector<Waypoi
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
     osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
     osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array();
-    const double routeAltMeters = 4000.0; // 固定航线高度（米）
 
     for (auto* wp : wps) {
         double lon, lat, alt; wp->getPosition(lon, lat, alt);
-        // 使用工具函数进行地理坐标到世界坐标的转换
-        osg::Vec3d world = GeoUtils::geoToWorldCoordinates(lon, lat, routeAltMeters);
+        osg::Vec3d world = GeoUtils::geoToWorldCoordinates(lon, lat, alt);
         verts->push_back(world);
     }
     geom->setVertexArray(verts.get());
@@ -568,26 +566,22 @@ osg::ref_ptr<osg::Geode> GeoEntityManager::buildBezierRoute(const QVector<Waypoi
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
     osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
     osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array();
-    const double routeAltMeters = 4000.0; // 固定航线高度（米）
-
-    // 使用工具函数进行地理坐标到世界坐标的转换
-    auto toWorld = [routeAltMeters](double lon, double lat, double /*alt*/) {
-        return GeoUtils::geoToWorldCoordinates(lon, lat, routeAltMeters);
-    };
 
     for (int i=0;i<wps.size()-1;++i){
         double lon1,lat1,alt1; wps[i]->getPosition(lon1,lat1,alt1);
         double lon2,lat2,alt2; wps[i+1]->getPosition(lon2,lat2,alt2);
         // 控制点：使用中点作为近似控制
-        double cx = (lon1+lon2)/2.0; double cy=(lat1+lat2)/2.0; double cz=routeAltMeters;
+        double cx = (lon1+lon2)/2.0;
+        double cy = (lat1+lat2)/2.0;
+        double cz = (alt1+alt2)/2.0;
         const int steps = 16;
         for (int t=0;t<=steps;++t){
             double u = double(t)/steps;
             // 二次贝塞尔插值
             double lon = (1-u)*(1-u)*lon1 + 2*u*(1-u)*cx + u*u*lon2;
             double lat = (1-u)*(1-u)*lat1 + 2*u*(1-u)*cy + u*u*lat2;
-            double alt = routeAltMeters;
-            verts->push_back(toWorld(lon,lat,alt));
+            double alt = (1-u)*(1-u)*alt1 + 2*u*(1-u)*cz + u*u*alt2;
+            verts->push_back(GeoUtils::geoToWorldCoordinates(lon, lat, alt));
         }
     }
 
