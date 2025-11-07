@@ -1053,6 +1053,9 @@ void MainWidget::onMapLoaded()
     connect(entityManager, &GeoEntityManager::entityDoubleClicked, this, [this](GeoEntity* entity) {
         focusEntity(entity);
         openEntityPropertyDialog(entity);
+        if (osgMapWidget_) {
+            osgMapWidget_->synthesizeMouseRelease(Qt::LeftButton);
+        }
     });
 
     connect(entityManager, &GeoEntityManager::entityCreated, this, &MainWidget::onEntityCreated, Qt::UniqueConnection);
@@ -1081,6 +1084,9 @@ void MainWidget::onMapLoaded()
             QMenu waypointMenu(this);
             QAction* deleteWaypointAction = waypointMenu.addAction("删除航迹点");
             QAction* selectedAction = waypointMenu.exec(globalPos);
+            if (osgMapWidget_) {
+                osgMapWidget_->synthesizeMouseRelease(Qt::RightButton);
+            }
             if (selectedAction == deleteWaypointAction) {
                 int ret = QMessageBox::question(this, "确认删除", "确定要删除选中的航迹点吗？", QMessageBox::Yes | QMessageBox::No);
                 if (ret == QMessageBox::Yes) {
@@ -1095,6 +1101,9 @@ void MainWidget::onMapLoaded()
         }
 
         QAction* selectedAction = menu.exec(globalPos);
+        if (osgMapWidget_) {
+            osgMapWidget_->synthesizeMouseRelease(Qt::RightButton);
+        }
         
         if (selectedAction == routePlanAction) {
             // 开始为实体规划航线
@@ -1172,6 +1181,9 @@ void MainWidget::onMapLoaded()
 
     // 航线标绘：右键结束并生成路线
     connect(entityManager, &GeoEntityManager::mapRightClicked, this, [this, entityManager](QPoint /*screenPos*/) {
+        if (osgMapWidget_) {
+            osgMapWidget_->synthesizeMouseRelease(Qt::RightButton);
+        }
         // 独立航线标绘：右键结束并生成路线
         if (isPlacingRoute_ && !currentWaypointGroupId_.isEmpty()) {
             qDebug() << "[Route] 右键结束，准备生成路线，groupId=" << currentWaypointGroupId_;

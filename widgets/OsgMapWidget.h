@@ -123,6 +123,17 @@ public:
      */
     NavigationHistory* getNavigationHistory() const { return navigationHistory_; }
 
+    /**
+     * @brief 合成鼠标释放事件
+     *
+     * 某些情况下（如弹出上下文菜单、模态对话框）会吞掉原始的鼠标释放事件，
+     * 从而导致 EarthManipulator 仍认为鼠标按键处于按下状态，这会造成视角被锁定。
+     * 调用该方法可以向底层 GLWidget 注入一次鼠标释放事件以恢复正常状态。
+     *
+     * @param button 需要合成释放的鼠标按键
+     */
+    void synthesizeMouseRelease(Qt::MouseButton button);
+
 signals:
     /**
      * @brief 地图加载完成信号

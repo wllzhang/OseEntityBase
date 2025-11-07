@@ -13,6 +13,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QTimer>
+#include <QElapsedTimer>
 #include "mapstatemanager.h"
 #include <osgUtil/LineSegmentIntersector>
 #include <osgViewer/Viewer>

@@ -30,6 +30,9 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QFileInfo>
+#include <QApplication>
+#include <QCursor>
+#include <QMouseEvent>
 
 OsgMapWidget::OsgMapWidget(QWidget *parent)
     : QWidget(parent)
@@ -241,6 +244,33 @@ void OsgMapWidget::loadMap()
     } else {
         qDebug() << "错误：地图加载失败 - 无法读取节点文件:" << filePath;
     }
+}
+
+void OsgMapWidget::synthesizeMouseRelease(Qt::MouseButton button)
+{
+    if (!gw_) {
+        return;
+    }
+
+    osgQt::GLWidget* glWidget = gw_->getGLWidget();
+    if (!glWidget) {
+        return;
+    }
+
+    QPoint globalPos = QCursor::pos();
+    QPoint widgetPos = glWidget->mapFromGlobal(globalPos);
+
+    Qt::MouseButtons buttons = Qt::NoButton;
+    Qt::KeyboardModifiers modifiers = Qt::NoModifier;
+
+    QMouseEvent releaseEvent(QEvent::MouseButtonRelease,
+                             widgetPos,
+                             globalPos,
+                             button,
+                             buttons,
+                             modifiers);
+
+    QApplication::sendEvent(glWidget, &releaseEvent);
 }
 
 void OsgMapWidget::setupManipulator()
