@@ -68,6 +68,8 @@ void ComponentConfigDialog::setupDatabase()
 void ComponentConfigDialog::setupUI()
 {
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true); // 让内部widget可调整大小
 
     // 左侧组件树
     componentTree = new QTreeWidget(this);
@@ -101,7 +103,14 @@ void ComponentConfigDialog::setupUI()
     QVBoxLayout *paramLayout = new QVBoxLayout(paramGroup);
     paramLayout->addWidget(parameterWidget);
 
-    rightLayout->addWidget(paramGroup, 1);
+//    rightLayout->addWidget(paramGroup, 1);
+
+    scrollArea->setWidget(paramGroup);
+    // 设置滚动条策略，例如垂直滚动条一直显示，水平滚动条自动显示
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+    rightLayout->addWidget(scrollArea, 1);
 
     // 保存按钮
     QPushButton *saveButton = new QPushButton("保存", this);

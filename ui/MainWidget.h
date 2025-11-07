@@ -28,6 +28,7 @@
 class GeoEntity;
 class PlanFileManager;
 class ModelDeployDialog;
+class WeaponMountDialog;
 class EntityManagementDialog;
 
 /**
@@ -141,6 +142,11 @@ private slots:
     void onEntitySelected(GeoEntity* entity);
     void onEntityDeselected();
 
+    /**
+     * @brief 导出方案槽函数（生成AFSIM脚本）
+     */
+    void onExportPlanClicked();
+
 private:
     /**
      * @brief 创建工具栏
@@ -194,6 +200,8 @@ private:
      * @param menu 菜单指针
      */
     void addRecentFileMenuItem(QMenu* menu);
+
+
 
     void showEntityManagementDialog();
     void refreshEntityManagementDialog();

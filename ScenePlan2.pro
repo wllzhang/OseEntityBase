@@ -20,7 +20,7 @@ msvc:QMAKE_CXXFLAGS += -source-charset:utf-8
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # OSG库配置
-OSGDIR = D:/OSG/osgqtlib/11
+OSGDIR = D:/OSG/osgqtlib
 
 CONFIG(release, debug|release) {
     LIBS += -L$${OSGDIR}/lib/ \
@@ -90,12 +90,15 @@ INCLUDEPATH += $${OSGDIR}/include
 DEPENDPATH += $${OSGDIR}/include
 
 SOURCES += \
+    geo/WeaponMountDialog.cpp \
     ui/ComponentConfigDialog.cpp \
     ui/MainWidget.cpp \
     ui/ModelAssemblyDialog.cpp \
     ui/ModelDeployDialog.cpp \
     ui/EntityPropertyDialog.cpp \
     main.cpp \
+    util/AfsimScriptGenerator.cpp \
+    util/AfsimScriptGenerator.cpp \
     widgets/OsgMapWidget.cpp \
     OsgQt/GraphicsWindowQt.cpp \
     OsgQt/QGraphicsViewAdapter.cpp \
@@ -115,11 +118,14 @@ SOURCES += \
     widgets/imageviewerwindow.cpp
 
 HEADERS += \
+    geo/WeaponMountDialog.h \
     ui/ComponentConfigDialog.h \
     ui/MainWidget.h \
     ui/ModelAssemblyDialog.h \
     ui/ModelDeployDialog.h \
     ui/EntityPropertyDialog.h \
+    util/AfsimScriptGenerator.h \
+    util/AfsimScriptGenerator.h \
     widgets/OsgMapWidget.h \
     OsgQt/GraphicsWindowQt.h \
     OsgQt/QGraphicsViewAdapter.h \

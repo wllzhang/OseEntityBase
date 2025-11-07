@@ -32,12 +32,15 @@
 #include <QEventLoop>
 #include <QPushButton>
 
+#include "../geo/WeaponMountDialog.h"
 #include "../geo/geoentitymanager.h"
 #include "../geo/geoutils.h"
 #include "../geo/mapstatemanager.h"
 #include "../geo/navigationhistory.h"
 #include "../geo/waypointentity.h"
 #include "../widgets/MapInfoOverlay.h"
+#include "../util/AfsimScriptGenerator.h"
+
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent), currentNavIndex(0)
@@ -355,6 +358,8 @@ void MainWidget::createSubNavigation()
     exportPlanBtn->setFixedSize(120, 120);
     exportPlanBtn->setObjectName("navToolButton");
     exportPlanBtn->setIconSize(QSize(64, 64));  // 图标大小
+    connect(exportPlanBtn, &QToolButton::clicked, this, &MainWidget::onExportPlanClicked);
+
 
     planLayout->addWidget(modelDeployBtn);
     planLayout->addWidget(entityManageBtn);
@@ -979,6 +984,55 @@ void MainWidget::onSavePlanAsClicked()
     }
 }
 
+
+void MainWidget::onExportPlanClicked()
+{
+    if (!planFileManager_) {
+        QMessageBox::warning(this, "错误", "方案文件管理器未初始化");
+        return;
+    }
+
+    QString currentPlanFile = planFileManager_->getCurrentPlanFile();
+    if (currentPlanFile.isEmpty()) {
+        QMessageBox::warning(this, "错误", "当前没有打开的方案文件");
+        return;
+    }
+
+    // 获取实体管理器
+    GeoEntityManager* entityManager = nullptr;
+    if (osgMapWidget_) {
+        entityManager = osgMapWidget_->getEntityManager();
+    }
+
+    if (!entityManager) {
+        QMessageBox::warning(this, "错误", "实体管理器未初始化");
+        return;
+    }
+
+    // 选择保存路径
+    QString defaultFileName = QFileInfo(currentPlanFile).baseName() + "_afsim.txt";
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        "保存AFSIM脚本",
+        defaultFileName,
+        "文本文件 (*.txt);;所有文件 (*.*)"
+    );
+
+    if (filePath.isEmpty()) {
+        return;  // 用户取消
+    }
+
+    // 生成脚本
+    AfsimScriptGenerator generator(entityManager, planFileManager_);
+    if (generator.generateScript(filePath)) {
+        QMessageBox::information(this, "成功", QString("AFSIM脚本已生成:\n%1").arg(filePath));
+    } else {
+        QMessageBox::warning(this, "错误", "AFSIM脚本生成失败");
+    }
+}
+
+
+
 void MainWidget::updateRecentFiles(const QString& filePath)
 {
     // 移除重复项
@@ -1157,6 +1211,7 @@ void MainWidget::onMapLoaded()
         QMenu menu(this);
         QAction* editAction = menu.addAction("编辑属性");
         QAction* routePlanAction = menu.addAction("航线规划");
+        QAction* weaponMountAction = menu.addAction("武器挂载");
         menu.addSeparator();
         QAction* deleteAction = menu.addAction("删除");
         
@@ -1222,6 +1277,18 @@ void MainWidget::onMapLoaded()
             qDebug() << "[EntityRoute] 开始为实体规划航线:" << entity->getUid() << "组ID:" << groupId;
         } else if (selectedAction == editAction) {
             openEntityPropertyDialog(entity);
+            if (osgMapWidget_) {
+                osgMapWidget_->setFocus();
+            }
+        } else if (selectedAction == weaponMountAction) {
+            // 打开武器挂载对话框
+            WeaponMountDialog* dialog = new WeaponMountDialog(entity, this);
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            if (dialog->exec() == QDialog::Accepted) {
+                // 保存方案
+                planFileManager_->savePlan();
+            }
+            // 对话框关闭后，恢复焦点到地图窗口，确保相机控制正常
             if (osgMapWidget_) {
                 osgMapWidget_->setFocus();
             }
