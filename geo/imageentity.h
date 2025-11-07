@@ -38,8 +38,9 @@ class ImageEntity : public GeoEntity
     Q_OBJECT
 
 public:
-    ImageEntity(const QString& id, const QString& name, const QString& imagePath,
-                double longitude, double latitude, double altitude, QObject* parent = nullptr);
+    ImageEntity(const QString& name, const QString& imagePath,
+                double longitude, double latitude, double altitude,
+                const QString& uidOverride = QString(), QObject* parent = nullptr);
     
     // 实现基类纯虚函数
     void initialize() override;

@@ -29,6 +29,7 @@ class GeoEntity;
 class PlanFileManager;
 class ModelDeployDialog;
 class WeaponMountDialog;
+class EntityManagementDialog;
 
 /**
  * @brief 应用程序主窗口
@@ -130,6 +131,17 @@ private slots:
      */
     void onSavePlanAsClicked();
 
+    void onEntityFocusRequested(const QString& uid);
+    void onEntityEditRequested(const QString& uid);
+    void onEntityDeleteRequested(const QString& uid);
+    void onEntityVisibilityChanged(const QString& uid, bool visible);
+    void onEntitySelectionRequested(const QString& uid);
+    void onEntityRefreshRequested();
+    void onEntityCreated(GeoEntity* entity);
+    void onEntityRemoved(const QString& uid);
+    void onEntitySelected(GeoEntity* entity);
+    void onEntityDeselected();
+
     /**
      * @brief 导出方案槽函数（生成AFSIM脚本）
      */
@@ -191,6 +203,13 @@ private:
 
 
 
+    void showEntityManagementDialog();
+    void refreshEntityManagementDialog();
+    void focusEntity(GeoEntity* entity);
+    void focusEntityByUid(const QString& uid);
+    void openEntityPropertyDialog(GeoEntity* entity);
+    void deleteEntityWithConfirm(GeoEntity* entity);
+
     // 主布局组件
     QVBoxLayout *mainVLayout;        // 主垂直布局
     QHBoxLayout *contentLayout;       // 内容水平布局
@@ -225,6 +244,7 @@ private:
     ComponentConfigDialog *componentConfigDialog_;    // 组件配置对话框
     ModelAssemblyDialog *modelAssemblyDialog_;         // 模型组装对话框
     ModelDeployDialog *modelDeployDialog_;            // 模型部署对话框
+    EntityManagementDialog *entityManagementDialog_;  // 实体管理对话框
     
     // 方案文件管理器
     PlanFileManager *planFileManager_;
@@ -255,7 +275,7 @@ private:
     
     // 实体航线规划相关
     bool isPlanningEntityRoute_;     // 是否正在为实体规划航线
-    QString entityRouteEntityId_;     // 正在规划航线的实体ID
+    QString entityRouteUid_;     // 正在规划航线的实体UID
     QString entityRouteGroupId_;     // 实体航线组ID
 
 };

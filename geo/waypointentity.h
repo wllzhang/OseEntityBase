@@ -32,11 +32,11 @@ class WaypointEntity : public GeoEntity
 {
     Q_OBJECT
 public:
-    WaypointEntity(const QString& id,
-                   const QString& name,
+    WaypointEntity(const QString& name,
                    double longitude,
                    double latitude,
                    double altitude,
+                   const QString& uidOverride = QString(),
                    QObject* parent = nullptr);
 
     void initialize() override;

@@ -9,6 +9,7 @@
 #include "../widgets/OsgMapWidget.h"
 #include "ModelDeployDialog.h"
 #include "EntityPropertyDialog.h"
+#include "EntityManagementDialog.h"
 #include "../plan/planfilemanager.h"
 #include <QLabel>
 #include <qt_windows.h>
@@ -25,12 +26,14 @@
 #include <QAction>
 #include <QSettings>
 #include <QtMath>
+#include <QPair>
 
 #include "../geo/WeaponMountDialog.h"
 #include "../geo/geoentitymanager.h"
 #include "../geo/geoutils.h"
 #include "../geo/mapstatemanager.h"
 #include "../geo/navigationhistory.h"
+#include "../geo/waypointentity.h"
 #include "../widgets/MapInfoOverlay.h"
 #include "../util/AfsimScriptGenerator.h"
 
@@ -44,6 +47,7 @@ MainWidget::MainWidget(QWidget *parent)
     , componentConfigDialog_(nullptr)
     , modelAssemblyDialog_(nullptr)
     , modelDeployDialog_(nullptr)
+    , entityManagementDialog_(nullptr)
     , planFileManager_(nullptr)
 {
     //设置窗口属性
@@ -91,6 +95,9 @@ MainWidget::~MainWidget()
     }
     if (modelDeployDialog_) {
         delete modelDeployDialog_;
+    }
+    if (entityManagementDialog_) {
+        delete entityManagementDialog_;
     }
     // planFileManager_由Qt父对象管理，自动删除
 }
@@ -325,13 +332,12 @@ void MainWidget::createSubNavigation()
     modelDeployBtn->setObjectName("navToolButton");
     modelDeployBtn->setIconSize(QSize(64, 64));  // 图标大小
 
-    QToolButton *trackManageBtn = new QToolButton(this);
-    trackManageBtn->setText("航迹管理");
-//    trackManageBtn->setIcon(QIcon(":/images/航线绘制.png"));
-    trackManageBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    trackManageBtn->setFixedSize(120, 120);
-    trackManageBtn->setObjectName("navToolButton");
-    trackManageBtn->setIconSize(QSize(64, 64));  // 图标大小
+    QToolButton *entityManageBtn = new QToolButton(this);
+    entityManageBtn->setText("实体管理");
+    entityManageBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    entityManageBtn->setFixedSize(120, 120);
+    entityManageBtn->setObjectName("navToolButton");
+    entityManageBtn->setIconSize(QSize(64, 64));
 
     QToolButton *targetMatchBtn = new QToolButton(this);
     targetMatchBtn->setText("目标匹配");
@@ -352,7 +358,7 @@ void MainWidget::createSubNavigation()
 
 
     planLayout->addWidget(modelDeployBtn);
-    planLayout->addWidget(trackManageBtn);
+    planLayout->addWidget(entityManageBtn);
     planLayout->addWidget(targetMatchBtn);
     planLayout->addWidget(exportPlanBtn);
     planLayout->addStretch();
@@ -493,19 +499,8 @@ void MainWidget::createSubNavigation()
     });
     
     // 航迹管理按钮（航线标绘）
-    connect(trackManageBtn, &QPushButton::clicked, this, [this]() {
-        if (!osgMapWidget_ || !osgMapWidget_->getEntityManager()) {
-            qDebug() << "EntityManager未初始化";
-            return;
-        }
-        auto entityManager = osgMapWidget_->getEntityManager();
-        if (isPlacingRoute_) {
-            qDebug() << "航线标绘已在进行中，左键添加点，右键结束。";
-            return;
-        }
-        currentWaypointGroupId_ = entityManager->createWaypointGroup("route");
-        isPlacingRoute_ = true;
-        qDebug() << "航线标绘模式已启动，左键依次添加航点，右键结束";
+    connect(entityManageBtn, &QPushButton::clicked, this, [this]() {
+        showEntityManagementDialog();
     });
     
     // ... 连接其他子导航按钮
@@ -689,6 +684,7 @@ void MainWidget::onNewPlanClicked()
         if (planFileManager_->createPlan(planName.trimmed(), description.trimmed())) {
             QMessageBox::information(this, "成功", QString("方案 '%1' 创建成功").arg(planName));
             qDebug() << "方案创建成功:" << planFileManager_->getCurrentPlanFile();
+            refreshEntityManagementDialog();
         } else {
             QMessageBox::warning(this, "错误", "方案创建失败");
         }
@@ -748,6 +744,7 @@ void MainWidget::onOpenPlanClicked()
                 
                 // 更新工具栏的方案名称
                 updatePlanNameLabel();
+                refreshEntityManagementDialog();
                 
                 QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
                 qDebug() << "方案加载成功:" << filePath;
@@ -786,6 +783,7 @@ void MainWidget::onOpenPlanClicked()
                 
                 // 更新工具栏的方案名称
                 updatePlanNameLabel();
+                refreshEntityManagementDialog();
                 
                 QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
                 qDebug() << "方案加载成功:" << filePath;
@@ -1102,39 +1100,29 @@ void MainWidget::onMapLoaded()
     // 连接方案文件变化信号
     if (planFileManager_) {
         connect(planFileManager_, &PlanFileManager::planFileChanged, this, &MainWidget::updatePlanNameLabel);
+        connect(planFileManager_, &PlanFileManager::planLoaded, this, [this](const QString&){ refreshEntityManagementDialog(); }, Qt::UniqueConnection);
     }
-    
+ 
     // 连接实体双击事件 - 打开属性编辑对话框
     connect(entityManager, &GeoEntityManager::entityDoubleClicked, this, [this](GeoEntity* entity) {
-        if (!entity || !planFileManager_) {
-            return;
+        focusEntity(entity);
+        openEntityPropertyDialog(entity);
+        if (osgMapWidget_) {
+            osgMapWidget_->synthesizeMouseRelease(Qt::LeftButton);
         }
-        
-        // 检查实体是否属于当前方案
-        QString planFile = entity->getProperty("planFile").toString();
-        if (planFile.isEmpty() || planFile != planFileManager_->getCurrentPlanFile()) {
-            QMessageBox::information(this, "提示", "该实体不属于当前方案，无法编辑");
-            return;
-        }
-        
-        // 打开属性编辑对话框
-        EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
-        dialog->setAttribute(Qt::WA_DeleteOnClose);
-        dialog->exec();
     });
-    
+
+    connect(entityManager, &GeoEntityManager::entityCreated, this, &MainWidget::onEntityCreated, Qt::UniqueConnection);
+    connect(entityManager, &GeoEntityManager::entityRemoved, this, &MainWidget::onEntityRemoved, Qt::UniqueConnection);
+    connect(entityManager, &GeoEntityManager::entitySelected, this, &MainWidget::onEntitySelected, Qt::UniqueConnection);
+    connect(entityManager, &GeoEntityManager::entityDeselected, this, &MainWidget::onEntityDeselected, Qt::UniqueConnection);
+
     // 连接实体右键事件 - 显示右键菜单
     connect(entityManager, &GeoEntityManager::entityRightClicked, this, [this, entityManager](GeoEntity* entity, QPoint screenPos) {
         if (!entity || !planFileManager_) {
             return;
         }
-        
-        // 检查实体是否属于当前方案
-        QString planFile = entity->getProperty("planFile").toString();
-        if (planFile.isEmpty() || planFile != planFileManager_->getCurrentPlanFile()) {
-            return;  // 不属于当前方案，不显示菜单
-        }
-        
+
         // 创建右键菜单
         QMenu menu(this);
         QAction* editAction = menu.addAction("编辑属性");
@@ -1145,7 +1133,32 @@ void MainWidget::onMapLoaded()
         
         // 转换为全局坐标
         QPoint globalPos = osgMapWidget_->mapToGlobal(screenPos);
+        WaypointEntity* waypointEntity = dynamic_cast<WaypointEntity*>(entity);
+
+        if (waypointEntity) {
+            QMenu waypointMenu(this);
+            QAction* deleteWaypointAction = waypointMenu.addAction("删除航迹点");
+            QAction* selectedAction = waypointMenu.exec(globalPos);
+            if (osgMapWidget_) {
+                osgMapWidget_->synthesizeMouseRelease(Qt::RightButton);
+            }
+            if (selectedAction == deleteWaypointAction) {
+                int ret = QMessageBox::question(this, "确认删除", "确定要删除选中的航迹点吗？", QMessageBox::Yes | QMessageBox::No);
+                if (ret == QMessageBox::Yes) {
+                    if (entityManager->removeWaypointEntity(waypointEntity)) {
+                        if (planFileManager_) {
+                            planFileManager_->markPlanModified();
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
         QAction* selectedAction = menu.exec(globalPos);
+        if (osgMapWidget_) {
+            osgMapWidget_->synthesizeMouseRelease(Qt::RightButton);
+        }
         
         if (selectedAction == routePlanAction) {
             // 开始为实体规划航线
@@ -1159,31 +1172,27 @@ void MainWidget::onMapLoaded()
             entity->getPosition(entityLon, entityLat, entityAlt);
             
             // 创建航点组
-            QString groupId = entityManager->createWaypointGroup(QString("route_%1").arg(entity->getId()));
+            QString groupId = entityManager->createWaypointGroup(QString("route_%1").arg(entity->getUid()));
             
             // 添加第一个航点（实体位置）
             entityManager->addWaypointToGroup(groupId, entityLon, entityLat, entityAlt);
             
             // 绑定航线到实体
-            entityManager->bindRouteToEntity(groupId, entity->getId());
+            entityManager->bindRouteToEntity(groupId, entity->getUid());
             
             // 保存航线组ID到实体属性
             entity->setProperty("routeGroupId", groupId);
             
             // 设置状态
             isPlanningEntityRoute_ = true;
-            entityRouteEntityId_ = entity->getId();
+            entityRouteUid_ = entity->getUid();
             entityRouteGroupId_ = groupId;
             
             QMessageBox::information(this, "航线规划", 
                 QString("已开始为实体 '%1' 规划航线\n第一个航点已设置为实体位置\n请在地图上左键点击添加航点，右键结束规划").arg(entity->getName()));
-            qDebug() << "[EntityRoute] 开始为实体规划航线:" << entity->getId() << "组ID:" << groupId;
+            qDebug() << "[EntityRoute] 开始为实体规划航线:" << entity->getUid() << "组ID:" << groupId;
         } else if (selectedAction == editAction) {
-            // 打开属性编辑对话框
-            EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
-            dialog->setAttribute(Qt::WA_DeleteOnClose);
-            dialog->exec();
-            // 对话框关闭后，恢复焦点到地图窗口，确保相机控制正常
+            openEntityPropertyDialog(entity);
             if (osgMapWidget_) {
                 osgMapWidget_->setFocus();
             }
@@ -1200,18 +1209,7 @@ void MainWidget::onMapLoaded()
                 osgMapWidget_->setFocus();
             }
         } else if (selectedAction == deleteAction) {
-            // 删除确认
-            int ret = QMessageBox::question(this, "确认删除", 
-                                           QString("确定要删除实体 '%1' 吗？").arg(entity->getName()),
-                                           QMessageBox::Yes | QMessageBox::No);
-            if (ret == QMessageBox::Yes) {
-                // 从方案中移除
-                planFileManager_->removeEntityFromPlan(entity->getId());
-                // 从实体管理器中删除
-                entityManager->removeEntity(entity->getId());
-                // 保存方案
-                planFileManager_->savePlan();
-            }
+            deleteEntityWithConfirm(entity);
         }
     });
     
@@ -1250,6 +1248,9 @@ void MainWidget::onMapLoaded()
 
     // 航线标绘：右键结束并生成路线
     connect(entityManager, &GeoEntityManager::mapRightClicked, this, [this, entityManager](QPoint /*screenPos*/) {
+        if (osgMapWidget_) {
+            osgMapWidget_->synthesizeMouseRelease(Qt::RightButton);
+        }
         // 独立航线标绘：右键结束并生成路线
         if (isPlacingRoute_ && !currentWaypointGroupId_.isEmpty()) {
             qDebug() << "[Route] 右键结束，准备生成路线，groupId=" << currentWaypointGroupId_;
@@ -1294,8 +1295,8 @@ void MainWidget::onMapLoaded()
             } else {
                 qDebug() << "[EntityRoute] 生成路线成功:" << choice;
                 // 保存路线类型到实体属性
-                if (entityManager->getEntity(entityRouteEntityId_)) {
-                    entityManager->getEntity(entityRouteEntityId_)->setProperty("routeType", choice);
+                if (entityManager->getEntity(entityRouteUid_)) {
+                    entityManager->getEntity(entityRouteUid_)->setProperty("routeType", choice);
                 }
                 // 标记方案有未保存更改
                 if (planFileManager_) {
@@ -1305,7 +1306,7 @@ void MainWidget::onMapLoaded()
             
             // 结束规划状态
             isPlanningEntityRoute_ = false;
-            entityRouteEntityId_.clear();
+            entityRouteUid_.clear();
             entityRouteGroupId_.clear();
         }
     });
@@ -1344,5 +1345,268 @@ void MainWidget::updatePlanNameLabel()
         planNameLabel_->setText(QString("当前方案: %1").arg(fileInfo.baseName()));
     } else {
         planNameLabel_->setText("当前方案: 未打开");
+    }
+}
+
+void MainWidget::showEntityManagementDialog()
+{
+    auto entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
+    if (!entityManager) {
+        QMessageBox::information(this, "提示", "地图尚未加载或实体管理器未初始化");
+        return;
+    }
+
+    if (!entityManagementDialog_) {
+        entityManagementDialog_ = new EntityManagementDialog(this);
+        entityManagementDialog_->setModal(false);
+        entityManagementDialog_->setWindowModality(Qt::NonModal);
+
+        connect(entityManagementDialog_, &EntityManagementDialog::requestFocus,
+                this, &MainWidget::onEntityFocusRequested);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestEdit,
+                this, &MainWidget::onEntityEditRequested);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestDelete,
+                this, &MainWidget::onEntityDeleteRequested);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestVisibilityChange,
+                this, &MainWidget::onEntityVisibilityChanged);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestSelection,
+                this, &MainWidget::onEntitySelectionRequested);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestRefresh,
+                this, &MainWidget::onEntityRefreshRequested);
+        connect(entityManagementDialog_, &QDialog::finished, this, [this](int){
+            if (osgMapWidget_) {
+                osgMapWidget_->setFocus(Qt::OtherFocusReason);
+            }
+        });
+    }
+
+    refreshEntityManagementDialog();
+    entityManagementDialog_->show();
+    entityManagementDialog_->raise();
+    entityManagementDialog_->activateWindow();
+}
+
+void MainWidget::refreshEntityManagementDialog()
+{
+    if (!entityManagementDialog_) {
+        return;
+    }
+    auto entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
+    if (!entityManager) {
+        entityManagementDialog_->refresh(QList<GeoEntity*>(), QList<QPair<QString, QList<GeoEntity*>>>(), QString());
+        return;
+    }
+
+    const QList<GeoEntity*> entities = entityManager->getAllEntities();
+    QList<QPair<QString, QList<GeoEntity*>>> waypointGroups;
+    const auto groups = entityManager->getAllWaypointGroups();
+    for (const auto& info : groups) {
+        QList<GeoEntity*> waypoints;
+        for (auto* wp : info.waypoints) {
+            if (wp) {
+                waypoints.append(wp);
+            }
+        }
+        if (!waypoints.isEmpty()) {
+            QString displayName = info.name.isEmpty() ? info.groupId : info.name;
+            waypointGroups.append(qMakePair(displayName, waypoints));
+        }
+    }
+    QString selectedUid;
+    if (GeoEntity* selected = entityManager->getSelectedEntity()) {
+        selectedUid = selected->getUid();
+    }
+    entityManagementDialog_->refresh(entities, waypointGroups, selectedUid);
+}
+
+void MainWidget::focusEntity(GeoEntity* entity)
+{
+    if (!entity || !osgMapWidget_) {
+        return;
+    }
+
+    osgViewer::Viewer* viewer = osgMapWidget_->getViewer();
+    if (!viewer) {
+        return;
+    }
+
+    osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+    if (!em) {
+        return;
+    }
+
+    double lon = 0.0, lat = 0.0, alt = 0.0;
+    entity->getPosition(lon, lat, alt);
+
+    double heading = em->getViewpoint().getHeading();
+    double pitch = -45.0;
+    double range = qMax(3000.0, em->getViewpoint().getRange() * 0.5);
+
+    if (auto mapState = osgMapWidget_->getMapStateManager()) {
+        const auto& state = mapState->getCurrentState();
+        heading = state.heading;
+        pitch = state.pitch;
+        if (pitch > -10.0) {
+            pitch = -45.0;
+        }
+        range = qMax(3000.0, state.range * 0.5);
+    }
+
+    std::string nameStd = entity->getName().toStdString();
+    osgEarth::Viewpoint vp(nameStd.c_str(), lon, lat, alt, heading, pitch, range);
+    em->setViewpoint(vp, 1.0);
+
+    if (auto entityManager = osgMapWidget_->getEntityManager()) {
+        entityManager->setSelectedEntity(entity);
+    }
+
+    osgMapWidget_->setFocus(Qt::OtherFocusReason);
+    refreshEntityManagementDialog();
+}
+
+void MainWidget::focusEntityByUid(const QString& uid)
+{
+    if (uid.isEmpty()) {
+        return;
+    }
+    auto entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
+    if (!entityManager) {
+        return;
+    }
+    focusEntity(entityManager->getEntity(uid));
+}
+
+void MainWidget::openEntityPropertyDialog(GeoEntity* entity)
+{
+    if (!entity || !planFileManager_) {
+        return;
+    }
+
+    EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->exec();
+
+    refreshEntityManagementDialog();
+}
+
+void MainWidget::deleteEntityWithConfirm(GeoEntity* entity)
+{
+    if (!entity || !planFileManager_ || !osgMapWidget_) {
+        return;
+    }
+
+    auto entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        return;
+    }
+
+    int ret = QMessageBox::question(this, "确认删除",
+                                   QString("确定要删除实体 '%1' 吗？").arg(entity->getName()),
+                                   QMessageBox::Yes | QMessageBox::No);
+    if (ret != QMessageBox::Yes) {
+        return;
+    }
+
+    planFileManager_->removeEntityFromPlan(entity->getUid());
+    entityManager->removeEntity(entity->getUid());
+    planFileManager_->savePlan();
+
+    refreshEntityManagementDialog();
+}
+
+void MainWidget::onEntityFocusRequested(const QString& uid)
+{
+    focusEntityByUid(uid);
+}
+
+void MainWidget::onEntityEditRequested(const QString& uid)
+{
+    if (uid.isEmpty() || !osgMapWidget_) {
+        return;
+    }
+    GeoEntityManager* entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        return;
+    }
+    openEntityPropertyDialog(entityManager->getEntity(uid));
+}
+
+void MainWidget::onEntityDeleteRequested(const QString& uid)
+{
+    if (uid.isEmpty() || !osgMapWidget_) {
+        return;
+    }
+    GeoEntityManager* entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        return;
+    }
+    deleteEntityWithConfirm(entityManager->getEntity(uid));
+}
+
+void MainWidget::onEntityVisibilityChanged(const QString& uid, bool visible)
+{
+    if (uid.isEmpty() || !osgMapWidget_) {
+        return;
+    }
+    GeoEntityManager* entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        return;
+    }
+    if (!entityManager->setEntityVisible(uid, visible)) {
+        return;
+    }
+
+    if (planFileManager_) {
+        planFileManager_->markPlanModified();
+    }
+
+    refreshEntityManagementDialog();
+}
+
+void MainWidget::onEntitySelectionRequested(const QString& uid)
+{
+    if (uid.isEmpty() || !osgMapWidget_) {
+        return;
+    }
+    GeoEntityManager* entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        return;
+    }
+    GeoEntity* entity = entityManager->getEntity(uid);
+    if (!entity) {
+        return;
+    }
+    entityManager->setSelectedEntity(entity);
+    refreshEntityManagementDialog();
+}
+
+void MainWidget::onEntityRefreshRequested()
+{
+    refreshEntityManagementDialog();
+}
+
+void MainWidget::onEntityCreated(GeoEntity* entity)
+{
+    Q_UNUSED(entity);
+    refreshEntityManagementDialog();
+}
+
+void MainWidget::onEntityRemoved(const QString& uid)
+{
+    Q_UNUSED(uid);
+    refreshEntityManagementDialog();
+}
+
+void MainWidget::onEntitySelected(GeoEntity* entity)
+{
+    if (entityManagementDialog_) {
+        entityManagementDialog_->setSelectedUid(entity ? entity->getUid() : QString());
+    }
+}
+
+void MainWidget::onEntityDeselected()
+{
+    if (entityManagementDialog_) {
+        entityManagementDialog_->setSelectedUid(QString());
     }
 }

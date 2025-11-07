@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVariant>
 #include <QMap>
+#include <QUuid>
 #include <QColor>
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
@@ -53,12 +54,15 @@ class GeoEntity : public QObject
     Q_OBJECT
 
 public:
-    GeoEntity(const QString& id, const QString& name, const QString& type,
-              double longitude, double latitude, double altitude, QObject* parent = nullptr);
+    GeoEntity(const QString& name, const QString& type,
+              double longitude, double latitude, double altitude,
+              const QString& uidOverride = QString(), QObject* parent = nullptr);
     virtual ~GeoEntity() = default;
 
     // 基本信息
-    QString getId() const { return entityId_; }
+    /** @brief 获取实体实例的稳定唯一UID（统一标识符，替代原entityId） */
+    const QString& getId() const { return uid_; }
+    const QString& getUid() const { return uid_; }  // 别名，保持兼容
     QString getName() const { return entityName_; }
     QString getType() const { return entityType_; }
     
@@ -134,7 +138,8 @@ signals:
     void propertyChanged(const QString& key, const QVariant& value);
 
 protected:
-    QString entityId_;
+    // 稳定唯一实例UID（统一标识符，用于所有实体查找和管理）
+    QString uid_;
     QString entityName_;
     QString entityType_;
     

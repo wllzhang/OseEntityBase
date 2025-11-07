@@ -77,9 +77,9 @@ public:
 
     /**
      * @brief 从方案中移除实体
-     * @param entityId 实体ID
+     * @param uid 实体UID
      */
-    void removeEntityFromPlan(const QString& entityId);
+    void removeEntityFromPlan(const QString& uid);
 
     /**
      * @brief 更新方案中的实体
@@ -92,6 +92,9 @@ public:
      * @return 有未保存更改返回true
      */
     bool hasUnsavedChanges() const;
+
+    /** @brief 手动标记方案已发生修改（发出planDataChanged信号） */
+    void markPlanModified();
 
     /**
      * @brief 设置实体管理器
@@ -204,12 +207,7 @@ private:
      */
     QJsonObject getComponentFullInfoFromDatabase(const QString& componentId);
 
-    /**
-     * @brief 生成方案内的实体ID
-     * @return 实体ID
-     */
-    QString generatePlanEntityId();
-
+ 
     /**
      * @brief 生成方案文件名
      * @param name 方案名称

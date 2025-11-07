@@ -30,6 +30,9 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QFileInfo>
+#include <QApplication>
+#include <QCursor>
+#include <QMouseEvent>
 
 OsgMapWidget::OsgMapWidget(QWidget *parent)
     : QWidget(parent)
@@ -45,6 +48,8 @@ OsgMapWidget::OsgMapWidget(QWidget *parent)
 {
     // 启用拖放功能
     setAcceptDrops(true);
+    setFocusPolicy(Qt::StrongFocus);
+    setFocus(Qt::OtherFocusReason);
     // 设置布局（使用堆叠布局，让信息叠加层在最上层）
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -60,6 +65,7 @@ OsgMapWidget::OsgMapWidget(QWidget *parent)
     // 初始化OSG
     root_ = new osg::Group;
     viewer_ = new osgViewer::Viewer;
+    viewer_->setKeyEventSetsDone(0);
     
     // 创建GraphicsWindow
     osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;
@@ -127,6 +133,7 @@ OsgMapWidget::OsgMapWidget(QWidget *parent)
     connect(timer_, &QTimer::timeout, this, [this]() {
         if (viewer_) {
             viewer_->frame();
+            // qDebug() << "viewer done?" << viewer_->done();
             // frame()完成后，立即处理延迟删除队列，确保不在渲染过程中删除
             if (entityManager_) {
                 entityManager_->processPendingDeletions();
@@ -237,6 +244,33 @@ void OsgMapWidget::loadMap()
     } else {
         qDebug() << "错误：地图加载失败 - 无法读取节点文件:" << filePath;
     }
+}
+
+void OsgMapWidget::synthesizeMouseRelease(Qt::MouseButton button)
+{
+    if (!gw_) {
+        return;
+    }
+
+    osgQt::GLWidget* glWidget = gw_->getGLWidget();
+    if (!glWidget) {
+        return;
+    }
+
+    QPoint globalPos = QCursor::pos();
+    QPoint widgetPos = glWidget->mapFromGlobal(globalPos);
+
+    Qt::MouseButtons buttons = Qt::NoButton;
+    Qt::KeyboardModifiers modifiers = Qt::NoModifier;
+
+    QMouseEvent releaseEvent(QEvent::MouseButtonRelease,
+                             widgetPos,
+                             globalPos,
+                             button,
+                             buttons,
+                             modifiers);
+
+    QApplication::sendEvent(glWidget, &releaseEvent);
 }
 
 void OsgMapWidget::setupManipulator()

@@ -13,6 +13,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QTimer>
+#include <QElapsedTimer>
 #include "mapstatemanager.h"
 #include <osgUtil/LineSegmentIntersector>
 #include <osgViewer/Viewer>
@@ -23,12 +24,44 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+namespace {
+bool isFinite(double value) {
+    return std::isfinite(value);
+}
+
+QVector<osg::Vec3d> generateBezierCurve(const QVector<osg::Vec3d>& controlPoints, int steps)
+{
+    QVector<osg::Vec3d> result;
+    if (controlPoints.isEmpty()) {
+        return result;
+    }
+
+    steps = qMax(1, steps);
+
+    for (int i = 0; i <= steps; ++i) {
+        double t = static_cast<double>(i) / steps;
+        QVector<osg::Vec3d> temp = controlPoints;
+        int n = temp.size();
+        while (n > 1) {
+            for (int k = 0; k < n - 1; ++k) {
+                temp[k] = temp[k] * (1.0 - t) + temp[k + 1] * t;
+            }
+            --n;
+        }
+        result.append(temp[0]);
+    }
+
+    return result;
+}
+}
+
 GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode, QObject *parent)
     : QObject(parent)
     , root_(root)
     , mapNode_(mapNode)
     , entityCounter_(0)
     , selectedEntity_(nullptr)
+    , hoveredEntity_(nullptr)
     , viewer_(nullptr)
     , mapStateManager_(nullptr)
 {
@@ -41,7 +74,8 @@ GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode,
 }
 
 GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QString& entityName, 
-                                         const QJsonObject& properties, double longitude, double latitude, double altitude)
+                                         const QJsonObject& properties, double longitude, double latitude, double altitude,
+                                         const QString& uidOverride)
 {
     qDebug() << "=== 开始创建实体 ===";
     qDebug() << "实体类型:" << entityType;
@@ -60,9 +94,17 @@ GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QStri
                 return nullptr;
             }
             
-            // 创建图片实体
-            entity = new ImageEntity(generateEntityId(entityType, entityName), 
-                                   entityName, imagePath, longitude, latitude, altitude, this);
+            // 创建图片实体（不再需要generateEntityId，使用uid作为统一标识符）
+            entity = new ImageEntity(entityName, imagePath, longitude, latitude, altitude, uidOverride, this);
+        } else if (entityType == "waypoint") {
+            WaypointEntity* waypointEntity = new WaypointEntity(entityName,
+                                                                longitude,
+                                                                latitude,
+                                                                altitude,
+                                                                uidOverride,
+                                                                this);
+            waypointEntity->setMapNode(mapNode_.get());
+            entity = waypointEntity;
         }
         
         if (!entity) {
@@ -76,10 +118,11 @@ GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QStri
         // 添加到场景
         if (entity->getNode()) {
             entityGroup_->addChild(entity->getNode());
-            entities_[entity->getId()] = entity;
+            entities_[entity->getUid()] = entity;
+            uidToEntity_.insert(entity->getUid(), entity);
             
             emit entityCreated(entity);
-            qDebug() << "实体创建成功:" << entity->getId();
+            qDebug() << "实体创建成功:" << entity->getUid();
             return entity;
         } else {
             qDebug() << "实体节点创建失败";
@@ -135,9 +178,75 @@ bool GeoEntityManager::addEntityFromDrag(const QString& dragData, double longitu
     }
 }
 
-GeoEntity* GeoEntityManager::getEntity(const QString& entityId)
+GeoEntity* GeoEntityManager::getEntity(const QString& uid)
 {
-    return entities_.value(entityId, nullptr);
+    return entities_.value(uid, nullptr);
+}
+
+GeoEntity* GeoEntityManager::getEntityByUid(const QString& uid) const
+{
+    return uidToEntity_.value(uid, nullptr);
+}
+
+QList<GeoEntity*> GeoEntityManager::getAllEntities() const
+{
+    return entities_.values();
+}
+
+GeoEntity* GeoEntityManager::getSelectedEntity() const
+{
+    return selectedEntity_;
+}
+
+void GeoEntityManager::setSelectedEntity(GeoEntity* entity, bool emitSignal)
+{
+    if (selectedEntity_ == entity) {
+        return;
+    }
+
+    if (selectedEntity_) {
+        selectedEntity_->setSelected(false);
+        if (emitSignal) {
+            emit entityDeselected();
+        }
+    }
+
+    selectedEntity_ = entity;
+    if (hoveredEntity_ == selectedEntity_) {
+        hoveredEntity_ = nullptr;
+    }
+
+    if (selectedEntity_) {
+        selectedEntity_->setSelected(true);
+        if (emitSignal) {
+            emit entitySelected(selectedEntity_);
+        }
+    }
+}
+
+bool GeoEntityManager::setEntityVisible(const QString& uid, bool visible)
+{
+    GeoEntity* entity = getEntity(uid);
+    if (!entity) {
+        return false;
+    }
+
+    entity->setVisible(visible);
+    if (!visible) {
+        if (selectedEntity_ == entity) {
+            setSelectedEntity(nullptr);
+        }
+        if (hoveredEntity_ == entity) {
+            hoveredEntity_ = nullptr;
+        }
+    }
+    return true;
+}
+
+bool GeoEntityManager::isEntityVisible(const QString& uid) const
+{
+    GeoEntity* entity = uidToEntity_.value(uid, nullptr);
+    return entity ? entity->isVisible() : false;
 }
 
 QStringList GeoEntityManager::getEntityIds() const
@@ -156,39 +265,23 @@ QStringList GeoEntityManager::getEntityIdsByType(const QString& entityType) cons
     return result;
 }
 
-QList<GeoEntity*> GeoEntityManager::getEntitiesByPlanFile(const QString& planFile) const
+void GeoEntityManager::removeEntity(const QString& uid)
 {
-    QList<GeoEntity*> result;
-    if (planFile.isEmpty()) {
-        return result;
-    }
-
-    for (auto it = entities_.begin(); it != entities_.end(); ++it) {
-        GeoEntity* entity = it.value();
-        if (entity && entity->getProperty("planFile").toString() == planFile) {
-            result.append(entity);
-        }
-    }
-
-    return result;
-}
-
-void GeoEntityManager::removeEntity(const QString& entityId)
-{
-    qDebug() << "标记实体待删除:" << entityId;
+    qDebug() << "标记实体待删除:" << uid;
     
-    GeoEntity* entity = entities_.value(entityId);
+    GeoEntity* entity = entities_.value(uid);
     if (!entity) {
-        qDebug() << "未找到要移除的实体:" << entityId;
+        qDebug() << "未找到要移除的实体:" << uid;
         return;
     }
     
-    // 立即清除选中引用（避免悬空指针，但不调用setSelected避免触发updateNode）
+    // 清除选中/悬停引用
     if (selectedEntity_ == entity) {
-        // 直接清除状态，不调用setSelected(false)避免在删除过程中修改节点
-        selectedEntity_ = nullptr;
-        emit entityDeselected();
+        setSelectedEntity(nullptr);
         qDebug() << "清除选中实体引用";
+    }
+    if (hoveredEntity_ == entity) {
+        hoveredEntity_ = nullptr;
     }
     
     // 立即从场景中移除节点（禁用节点，防止渲染时访问）
@@ -202,17 +295,20 @@ void GeoEntityManager::removeEntity(const QString& entityId)
     }
     
     // 从映射中移除（但不删除entity对象）
-    entities_.remove(entityId);
+    entities_.remove(uid);
+    if (entity) {
+        uidToEntity_.remove(entity->getUid());
+    }
     
     // 保存到待删除队列，延迟真正删除（避免在渲染过程中删除对象）
-    pendingEntities_[entityId] = entity;
-    if (!pendingDeletions_.contains(entityId)) {
-        pendingDeletions_.enqueue(entityId);
+    pendingEntities_[uid] = entity;
+    if (!pendingDeletions_.contains(uid)) {
+        pendingDeletions_.enqueue(uid);
     }
     
     // 立即发出删除信号（UI可以立即更新）
-    emit entityRemoved(entityId);
-    qDebug() << "实体已标记为待删除:" << entityId << "将在下一帧渲染后真正删除";
+    emit entityRemoved(uid);
+    qDebug() << "实体已标记为待删除:" << uid << "将在下一帧渲染后真正删除";
 }
 
 void GeoEntityManager::clearAllEntities()
@@ -221,14 +317,14 @@ void GeoEntityManager::clearAllEntities()
     
     // 清除选中实体引用
     if (selectedEntity_) {
-        selectedEntity_ = nullptr;
-        emit entityDeselected();
+        setSelectedEntity(nullptr);
     }
+    hoveredEntity_ = nullptr;
     
     // 将所有实体添加到延迟删除队列
-    QStringList entityIds = getEntityIds();
-    for (const QString& entityId : entityIds) {
-        GeoEntity* entity = entities_.value(entityId);
+    QStringList entityUids = getEntityIds();
+    for (const QString& uid : entityUids) {
+        GeoEntity* entity = entities_.value(uid);
         if (entity) {
             // 禁用并移除节点
             if (entity->getNode()) {
@@ -237,15 +333,23 @@ void GeoEntityManager::clearAllEntities()
             }
             
             // 从映射中移除，添加到待删除队列
-            entities_.remove(entityId);
-            pendingEntities_[entityId] = entity;
-            if (!pendingDeletions_.contains(entityId)) {
-                pendingDeletions_.enqueue(entityId);
+            entities_.remove(uid);
+            uidToEntity_.remove(uid);
+            pendingEntities_[uid] = entity;
+            if (!pendingDeletions_.contains(uid)) {
+                pendingDeletions_.enqueue(uid);
             }
         }
     }
     
     entityCounter_ = 0;
+    for (auto it = waypointGroups_.begin(); it != waypointGroups_.end(); ++it) {
+        if (it->routeNode.valid()) {
+            entityGroup_->removeChild(it->routeNode.get());
+        }
+    }
+    waypointGroups_.clear();
+    routeBinding_.clear();
     qDebug() << "所有实体已标记为待删除，将在下一帧渲染后真正删除";
 }
 
@@ -310,30 +414,13 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
         qDebug() << "找到的实体:" << (entity ? entity->getName() : "无");
         
         if (entity) {
-            // 如果点击的是已选中的实体，不做任何操作（避免重复设置）
-            if (selectedEntity_ == entity && entity->isSelected()) {
-                qDebug() << "实体已选中，无需重复设置:" << entity->getName();
-                return;
+            if (selectedEntity_ != entity) {
+                setSelectedEntity(entity);
+                qDebug() << "选择实体:" << entity->getName() << "UID:" << entity->getUid();
             }
-            
-            // 取消之前的选择
-            if (selectedEntity_ && selectedEntity_ != entity) {
-                selectedEntity_->setSelected(false);
-                emit entityDeselected();
-            }
-            
-            // 选择新实体
-            selectedEntity_ = entity;
-            entity->setSelected(true);
-            emit entitySelected(entity);
-            
-            qDebug() << "选择实体:" << entity->getName() << "ID:" << entity->getId();
         } else {
-            // 点击空白处，取消选择
             if (selectedEntity_) {
-                selectedEntity_->setSelected(false);
-                selectedEntity_ = nullptr;
-                emit entityDeselected();
+                setSelectedEntity(nullptr);
                 qDebug() << "取消实体选择";
             }
             // 通知空白处左键点击（用于点标绘放置）
@@ -366,6 +453,42 @@ void GeoEntityManager::onMouseDoubleClick(QMouseEvent* event)
     }
 }
 
+void GeoEntityManager::onMouseMove(QMouseEvent* event)
+{
+    if (!mapStateManager_) {
+        return;
+    }
+
+    GeoEntity* entity = findEntityAtPosition(event->pos(), false);
+
+    if (entity == selectedEntity_) {
+        if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
+            hoveredEntity_->setSelected(false);
+        }
+        hoveredEntity_ = nullptr;
+        return;
+    }
+
+    if (entity) {
+        if (hoveredEntity_ != entity) {
+            if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
+                hoveredEntity_->setSelected(false);
+            }
+            if (entity != selectedEntity_) {
+                entity->setSelected(true);
+                hoveredEntity_ = entity;
+            } else {
+                hoveredEntity_ = nullptr;
+            }
+        }
+    } else {
+        if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
+            hoveredEntity_->setSelected(false);
+        }
+        hoveredEntity_ = nullptr;
+    }
+}
+
 /**
  * @brief 查找指定位置的实体
  * 
@@ -375,26 +498,30 @@ void GeoEntityManager::onMouseDoubleClick(QMouseEvent* event)
  * @param screenPos 屏幕坐标（相对于GLWidget）
  * @return 找到的实体指针，未找到返回nullptr
  */
-GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
+GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos, bool verbose)
 {
     double mouseLongitude, mouseLatitude, mouseAltitude;
     
     // 统一使用 MapStateManager 获取坐标信息（mapStateManager_ 必然存在）
     if (!mapStateManager_->getGeoCoordinatesFromScreen(screenPos, mouseLongitude, mouseLatitude, mouseAltitude)) {
-        qDebug() << "findEntityAtPosition: 无法获取鼠标地理坐标";
+        if (verbose) {
+            qDebug() << "findEntityAtPosition: 无法获取鼠标地理坐标";
+        }
         return nullptr;
     }
     
     try {
-        qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude << mouseAltitude;
+        if (verbose) {
+            qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude << mouseAltitude;
+        }
         
         // 遍历所有实体，找到距离最近的可见实体
         GeoEntity* closestEntity = nullptr;
         double minDistance = std::numeric_limits<double>::max();
         
-        QStringList entityIds = getEntityIds();
-        for (const QString& entityId : entityIds) {
-            GeoEntity* entity = getEntity(entityId);
+        QStringList entityUids = getEntityIds();
+        for (const QString& uid : entityUids) {
+            GeoEntity* entity = getEntity(uid);
             if (!entity) {
                 continue;
             }
@@ -414,9 +541,11 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
             
             // 计算距离：使用地理距离（米），更精确
             double distanceMeters = GeoUtils::calculateGeographicDistance(mouseLongitude, mouseLatitude, 
-                                                                          entityLongitude, entityLatitude);
+                                                                           entityLongitude, entityLatitude);
             
-            qDebug() << "实体" << entity->getName() << "距离:" << distanceMeters << "米";
+            if (verbose) {
+                qDebug() << "实体" << entity->getName() << "距离:" << distanceMeters << "米";
+            }
             
             if (distanceMeters < minDistance) {
                 minDistance = distanceMeters;
@@ -444,15 +573,21 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
         }
         
         if (closestEntity && minDistance < thresholdMeters) {
-            qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
+            if (verbose) {
+                qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
+            }
             return closestEntity;
         } else {
-            qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
+            if (verbose) {
+                qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
+            }
         }
         
         return nullptr;
     } catch (const std::exception& e) {
-        qDebug() << "findEntityAtPosition异常:" << e.what();
+        if (verbose) {
+            qDebug() << "findEntityAtPosition异常:" << e.what();
+        }
         return nullptr;
     }
 }
@@ -462,35 +597,86 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
 QString GeoEntityManager::createWaypointGroup(const QString& name)
 {
     QString gid = QString("wpgroup_%1").arg(++entityCounter_);
-    WaypointGroupInfo info; info.groupId = gid; info.name = name; info.routeNode = nullptr;
+    WaypointGroupInfo info; info.groupId = gid; info.name = name; info.routeNode = nullptr; info.routeModel = QStringLiteral("linear");
     waypointGroups_.insert(gid, info);
     return gid;
 }
 
-WaypointEntity* GeoEntityManager::addWaypointToGroup(const QString& groupId, double lon, double lat, double alt)
+WaypointEntity* GeoEntityManager::addWaypointToGroup(const QString& groupId, double lon, double lat, double alt,
+                                                    const QString& uidOverride, const QString& label)
 {
     auto it = waypointGroups_.find(groupId);
     if (it == waypointGroups_.end()) return nullptr;
 
-    WaypointEntity* wp = new WaypointEntity(generateEntityId("waypoint", groupId),
-                                            QString("WP-%1").arg(it->waypoints.size()+1),
-                                            lon, lat, alt, this);
+    QString name = label.isEmpty() ? QString("WP-%1").arg(it->waypoints.size()+1) : label;
+    WaypointEntity* wp = new WaypointEntity(name,
+                                            lon, lat, alt, uidOverride, this);
     // 优先绑定 MapNode，确保 PlaceNode 立即可见
     wp->setMapNode(mapNode_.get());
     wp->initialize();
     // 标记序号
-    wp->setOrderLabel(QString::number(it->waypoints.size()+1));
+    if (label.isEmpty()) {
+        wp->setOrderLabel(QString::number(it->waypoints.size()+1));
+    } else {
+        wp->setOrderLabel(label);
+    }
 
     if (wp->getNode()) {
         entityGroup_->addChild(wp->getNode());
     }
     it->waypoints.push_back(wp);
 
+    wp->setProperty("waypointGroupId", groupId);
+    wp->setProperty("waypointOrder", it->waypoints.size());
+
     // 也注册到通用实体表（可选）
-    entities_.insert(wp->getId(), wp);
+    entities_.insert(wp->getUid(), wp);
+    uidToEntity_.insert(wp->getUid(), wp);
     emit entityCreated(wp);
 
     return wp;
+}
+
+bool GeoEntityManager::attachWaypointToGroup(const QString& groupId, WaypointEntity* waypoint)
+{
+    if (!waypoint || !waypointGroups_.contains(groupId)) {
+        return false;
+    }
+
+    QString currentGroup;
+    int index = -1;
+    if (findWaypointLocation(waypoint, currentGroup, index)) {
+        if (currentGroup == groupId) {
+            return true;
+        }
+        auto currentIt = waypointGroups_.find(currentGroup);
+        if (currentIt != waypointGroups_.end() && index >= 0 && index < currentIt->waypoints.size()) {
+            currentIt->waypoints.removeAt(index);
+            for (int i = 0; i < currentIt->waypoints.size(); ++i) {
+                currentIt->waypoints[i]->setOrderLabel(QString::number(i + 1));
+                currentIt->waypoints[i]->setProperty("waypointOrder", i + 1);
+            }
+        }
+    }
+
+    auto& info = waypointGroups_[groupId];
+    if (!info.waypoints.contains(waypoint)) {
+        info.waypoints.push_back(waypoint);
+    }
+
+    waypoint->setMapNode(mapNode_.get());
+    if (!waypoint->getNode()) {
+        waypoint->initialize();
+    }
+    if (waypoint->getNode() && !entityGroup_->containsNode(waypoint->getNode())) {
+        entityGroup_->addChild(waypoint->getNode());
+    }
+
+    waypoint->setOrderLabel(QString::number(info.waypoints.size()));
+    waypoint->setProperty("waypointGroupId", groupId);
+    waypoint->setProperty("waypointOrder", info.waypoints.size());
+
+    return true;
 }
 
 bool GeoEntityManager::removeWaypointFromGroup(const QString& groupId, int index)
@@ -498,17 +684,7 @@ bool GeoEntityManager::removeWaypointFromGroup(const QString& groupId, int index
     auto it = waypointGroups_.find(groupId);
     if (it == waypointGroups_.end()) return false;
     if (index < 0 || index >= it->waypoints.size()) return false;
-    WaypointEntity* wp = it->waypoints.at(index);
-    if (wp) {
-        if (wp->getNode()) entityGroup_->removeChild(wp->getNode());
-        wp->cleanup();
-        entities_.remove(wp->getId());
-        delete wp;
-    }
-    it->waypoints.remove(index);
-    // 重新编号
-    for (int i=0;i<it->waypoints.size();++i) it->waypoints[i]->setOrderLabel(QString::number(i+1));
-    return true;
+    return removeWaypointEntity(it->waypoints.at(index));
 }
 
 /**
@@ -525,12 +701,10 @@ osg::ref_ptr<osg::Geode> GeoEntityManager::buildLinearRoute(const QVector<Waypoi
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
     osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
     osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array();
-    const double routeAltMeters = 4000.0; // 固定航线高度（米）
 
     for (auto* wp : wps) {
         double lon, lat, alt; wp->getPosition(lon, lat, alt);
-        // 使用工具函数进行地理坐标到世界坐标的转换
-        osg::Vec3d world = GeoUtils::geoToWorldCoordinates(lon, lat, routeAltMeters);
+        osg::Vec3d world = GeoUtils::geoToWorldCoordinates(lon, lat, alt);
         verts->push_back(world);
     }
     geom->setVertexArray(verts.get());
@@ -569,26 +743,27 @@ osg::ref_ptr<osg::Geode> GeoEntityManager::buildBezierRoute(const QVector<Waypoi
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
     osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
     osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array();
-    const double routeAltMeters = 4000.0; // 固定航线高度（米）
-
-    // 使用工具函数进行地理坐标到世界坐标的转换
-    auto toWorld = [routeAltMeters](double lon, double lat, double /*alt*/) {
-        return GeoUtils::geoToWorldCoordinates(lon, lat, routeAltMeters);
-    };
 
     for (int i=0;i<wps.size()-1;++i){
         double lon1,lat1,alt1; wps[i]->getPosition(lon1,lat1,alt1);
         double lon2,lat2,alt2; wps[i+1]->getPosition(lon2,lat2,alt2);
         // 控制点：使用中点作为近似控制
-        double cx = (lon1+lon2)/2.0; double cy=(lat1+lat2)/2.0; double cz=routeAltMeters;
-        const int steps = 16;
-        for (int t=0;t<=steps;++t){
-            double u = double(t)/steps;
-            // 二次贝塞尔插值
-            double lon = (1-u)*(1-u)*lon1 + 2*u*(1-u)*cx + u*u*lon2;
-            double lat = (1-u)*(1-u)*lat1 + 2*u*(1-u)*cy + u*u*lat2;
-            double alt = routeAltMeters;
-            verts->push_back(toWorld(lon,lat,alt));
+        double cx = (lon1+lon2)/2.0;
+        double cy = (lat1+lat2)/2.0;
+        double cz = (alt1+alt2)/2.0;
+        QVector<osg::Vec3d> controlPoints;
+        controlPoints.append(GeoUtils::geoToWorldCoordinates(lon1, lat1, alt1));
+        controlPoints.append(GeoUtils::geoToWorldCoordinates(cx, cy, cz));
+        controlPoints.append(GeoUtils::geoToWorldCoordinates(lon2, lat2, alt2));
+
+        QVector<osg::Vec3d> curve = generateBezierCurve(controlPoints, 16);
+        if (!curve.isEmpty()) {
+            if (!verts->empty()) {
+                curve.removeFirst();
+            }
+            for (const auto& pt : curve) {
+                verts->push_back(pt);
+            }
         }
     }
 
@@ -614,6 +789,7 @@ bool GeoEntityManager::generateRouteForGroup(const QString& groupId, const QStri
     auto it = waypointGroups_.find(groupId);
     if (it == waypointGroups_.end()) return false;
     qDebug() << "[Route] 航点数量=" << it->waypoints.size();
+    it->routeModel = model;
     if (it->routeNode.valid()) {
         entityGroup_->removeChild(it->routeNode.get());
         it->routeNode = nullptr;
@@ -627,18 +803,18 @@ bool GeoEntityManager::generateRouteForGroup(const QString& groupId, const QStri
     return true;
 }
 
-bool GeoEntityManager::bindRouteToEntity(const QString& groupId, const QString& targetEntityId)
+bool GeoEntityManager::bindRouteToEntity(const QString& groupId, const QString& targetEntityUid)
 {
-    if (!entities_.contains(targetEntityId)) return false;
+    if (!entities_.contains(targetEntityUid)) return false;
     if (!waypointGroups_.contains(groupId)) return false;
-    routeBinding_[groupId] = targetEntityId;
+    routeBinding_[groupId] = targetEntityUid;
     return true;
 }
 
-QString GeoEntityManager::getRouteGroupIdForEntity(const QString& entityId) const
+QString GeoEntityManager::getRouteGroupIdForEntity(const QString& entityUid) const
 {
     for (auto it = routeBinding_.begin(); it != routeBinding_.end(); ++it) {
-        if (it.value() == entityId) {
+        if (it.value() == entityUid) {
             return it.key();
         }
     }
@@ -663,21 +839,111 @@ GeoEntityManager::WaypointGroupInfo GeoEntityManager::getWaypointGroup(const QSt
     return WaypointGroupInfo();
 }
 
-WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText)
+WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText,
+                                                        const QString& uidOverride)
 {
-    WaypointEntity* wp = new WaypointEntity(generateEntityId("waypoint", "plot"),
-                                            QString("WP-%1").arg(entityCounter_),
-                                            lon, lat, alt, this);
+    QString name = labelText.isEmpty() ? QString("WP-%1").arg(entityCounter_) : labelText;
+    WaypointEntity* wp = new WaypointEntity(name,
+                                            lon, lat, alt, uidOverride, this);
     // 优先绑定 MapNode，确保 PlaceNode 立即可见
     wp->setMapNode(mapNode_.get());
     wp->initialize();
-    wp->setOrderLabel(labelText);
+    if (!labelText.isEmpty()) {
+        wp->setOrderLabel(labelText);
+    }
     if (wp->getNode()) {
         entityGroup_->addChild(wp->getNode());
     }
-    entities_.insert(wp->getId(), wp);
+    entities_.insert(wp->getUid(), wp);
+    uidToEntity_.insert(wp->getUid(), wp);
     emit entityCreated(wp);
     return wp;
+}
+
+bool GeoEntityManager::findWaypointLocation(WaypointEntity* waypoint, QString& groupIdOut, int& indexOut) const
+{
+    if (!waypoint) {
+        return false;
+    }
+
+    for (auto it = waypointGroups_.constBegin(); it != waypointGroups_.constEnd(); ++it) {
+        const QVector<WaypointEntity*>& wps = it.value().waypoints;
+        for (int i = 0; i < wps.size(); ++i) {
+            if (wps[i] == waypoint) {
+                groupIdOut = it.key();
+                indexOut = i;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
+{
+    if (!waypoint) {
+        return false;
+    }
+
+    QString groupId;
+    int index = -1;
+    if (!findWaypointLocation(waypoint, groupId, index)) {
+        qDebug() << "removeWaypointEntity: 未找到航点所属分组";
+        return false;
+    }
+
+    auto it = waypointGroups_.find(groupId);
+    if (it == waypointGroups_.end() || index < 0 || index >= it->waypoints.size()) {
+        return false;
+    }
+
+    if (selectedEntity_ == waypoint) {
+        setSelectedEntity(nullptr);
+    }
+    if (hoveredEntity_ == waypoint) {
+        hoveredEntity_ = nullptr;
+    }
+
+    if (it->routeNode.valid()) {
+        entityGroup_->removeChild(it->routeNode.get());
+        it->routeNode = nullptr;
+    }
+
+    if (waypoint->getNode()) {
+        waypoint->getNode()->setNodeMask(0x0);
+        entityGroup_->removeChild(waypoint->getNode());
+    }
+    const QString wpUid = waypoint->getUid();
+    entities_.remove(wpUid);
+    uidToEntity_.remove(wpUid);
+
+    it->waypoints.removeAt(index);
+
+    for (int i = 0; i < it->waypoints.size(); ++i) {
+        it->waypoints[i]->setOrderLabel(QString::number(i + 1));
+        it->waypoints[i]->setProperty("waypointOrder", i + 1);
+    }
+
+    waypoint->setProperty("waypointGroupId", QString());
+    waypoint->setProperty("waypointOrder", QVariant());
+
+    pendingEntities_[wpUid] = waypoint;
+    if (!pendingDeletions_.contains(wpUid)) {
+        pendingDeletions_.enqueue(wpUid);
+    }
+
+    if (it->waypoints.size() >= 2) {
+        const QString model = it->routeModel.isEmpty() ? QStringLiteral("linear") : it->routeModel;
+        generateRouteForGroup(groupId, model);
+    } else {
+        if (it->routeNode.valid()) {
+            entityGroup_->removeChild(it->routeNode.get());
+            it->routeNode = nullptr;
+        }
+    }
+
+    return true;
 }
 
 void GeoEntityManager::setViewer(osgViewer::Viewer* viewer)
@@ -704,16 +970,16 @@ void GeoEntityManager::processPendingDeletions()
     // qDebug() << "处理延迟删除队列，共有" << pendingDeletions_.size() << "个实体待删除";
     
     while (!pendingDeletions_.isEmpty()) {
-        QString entityId = pendingDeletions_.dequeue();
+        QString uid = pendingDeletions_.dequeue();
         
         // 从待删除映射中获取实体
-        GeoEntity* entity = pendingEntities_.take(entityId);
+        GeoEntity* entity = pendingEntities_.take(uid);
         if (!entity) {
-            qDebug() << "警告：待删除实体不存在:" << entityId;
+            qDebug() << "警告：待删除实体不存在:" << uid;
             continue;
         }
         
-        qDebug() << "开始真正删除实体:" << entityId;
+        qDebug() << "开始真正删除实体:" << uid;
         
         // 现在可以安全地清理和删除实体了
         // 此时节点已经从场景中移除，且不在渲染过程中
@@ -723,7 +989,7 @@ void GeoEntityManager::processPendingDeletions()
         delete entity;
         entity = nullptr;
         
-        qDebug() << "实体完全删除完成:" << entityId;
+        qDebug() << "实体完全删除完成:" << uid;
     }
     
     // qDebug() << "所有延迟删除完成";
