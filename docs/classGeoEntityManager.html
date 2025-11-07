@@ -118,9 +118,9 @@ $(document).ready(function(){initNavTree('classGeoEntityManager.html',''); initR
 <tr class="memitem:a9a11d094c39874eafd89647788a57091" id="r_a9a11d094c39874eafd89647788a57091"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a9a11d094c39874eafd89647788a57091">entityCreated</a> (<a class="el" href="classGeoEntity.html">GeoEntity</a> *entity)</td></tr>
 <tr class="memdesc:a9a11d094c39874eafd89647788a57091"><td class="mdescLeft">&#160;</td><td class="mdescRight">实体创建信号  <br /></td></tr>
 <tr class="separator:a9a11d094c39874eafd89647788a57091"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02d60e80b32630b23474b52e2d664c70" id="r_a02d60e80b32630b23474b52e2d664c70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a02d60e80b32630b23474b52e2d664c70">entityRemoved</a> (const QString &amp;entityId)</td></tr>
-<tr class="memdesc:a02d60e80b32630b23474b52e2d664c70"><td class="mdescLeft">&#160;</td><td class="mdescRight">实体删除信号  <br /></td></tr>
-<tr class="separator:a02d60e80b32630b23474b52e2d664c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d39c4a755ac643049a67007b5790cc7" id="r_a9d39c4a755ac643049a67007b5790cc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a9d39c4a755ac643049a67007b5790cc7">entityRemoved</a> (const QString &amp;uid)</td></tr>
+<tr class="memdesc:a9d39c4a755ac643049a67007b5790cc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">实体删除信号  <br /></td></tr>
+<tr class="separator:a9d39c4a755ac643049a67007b5790cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40b02c62296b712b7c154e91a04bd52e" id="r_a40b02c62296b712b7c154e91a04bd52e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">entitySelected</a> (<a class="el" href="classGeoEntity.html">GeoEntity</a> *entity)</td></tr>
 <tr class="memdesc:a40b02c62296b712b7c154e91a04bd52e"><td class="mdescLeft">&#160;</td><td class="mdescRight">实体选中信号  <br /></td></tr>
 <tr class="separator:a40b02c62296b712b7c154e91a04bd52e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,27 +145,42 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:a5af14268274a035406e66e1cde49ec02" id="r_a5af14268274a035406e66e1cde49ec02"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a5af14268274a035406e66e1cde49ec02">GeoEntityManager</a> (osg::Group *root, osgEarth::MapNode *mapNode, QObject *parent=nullptr)</td></tr>
 <tr class="memdesc:a5af14268274a035406e66e1cde49ec02"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数  <br /></td></tr>
 <tr class="separator:a5af14268274a035406e66e1cde49ec02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27c1f1bf7e33c65c4f7d869c53b9c56d" id="r_a27c1f1bf7e33c65c4f7d869c53b9c56d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a27c1f1bf7e33c65c4f7d869c53b9c56d">createEntity</a> (const QString &amp;entityType, const QString &amp;entityName, const QJsonObject &amp;properties, double longitude, double latitude, double altitude)</td></tr>
-<tr class="memdesc:a27c1f1bf7e33c65c4f7d869c53b9c56d"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建实体  <br /></td></tr>
-<tr class="separator:a27c1f1bf7e33c65c4f7d869c53b9c56d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f3cb27640f54e0c38f2619f740541f2" id="r_a9f3cb27640f54e0c38f2619f740541f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a9f3cb27640f54e0c38f2619f740541f2">createEntity</a> (const QString &amp;entityType, const QString &amp;entityName, const QJsonObject &amp;properties, double longitude, double latitude, double altitude, const QString &amp;uidOverride=QString())</td></tr>
+<tr class="memdesc:a9f3cb27640f54e0c38f2619f740541f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建实体  <br /></td></tr>
+<tr class="separator:a9f3cb27640f54e0c38f2619f740541f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9307d8b2a33b0b0650038124a67e833" id="r_ae9307d8b2a33b0b0650038124a67e833"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#ae9307d8b2a33b0b0650038124a67e833">addEntityFromDrag</a> (const QString &amp;dragData, double longitude, double latitude, double altitude=0.0)</td></tr>
 <tr class="memdesc:ae9307d8b2a33b0b0650038124a67e833"><td class="mdescLeft">&#160;</td><td class="mdescRight">从拖拽数据添加实体  <br /></td></tr>
 <tr class="separator:ae9307d8b2a33b0b0650038124a67e833"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5be78fe8b0f76367976f38de57cc4f16" id="r_a5be78fe8b0f76367976f38de57cc4f16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a5be78fe8b0f76367976f38de57cc4f16">getEntity</a> (const QString &amp;entityId)</td></tr>
-<tr class="memdesc:a5be78fe8b0f76367976f38de57cc4f16"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取实体  <br /></td></tr>
-<tr class="separator:a5be78fe8b0f76367976f38de57cc4f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e39202934cff54aa6361e9fd4915927" id="r_a8e39202934cff54aa6361e9fd4915927"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a8e39202934cff54aa6361e9fd4915927">getEntity</a> (const QString &amp;uid)</td></tr>
+<tr class="memdesc:a8e39202934cff54aa6361e9fd4915927"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取实体  <br /></td></tr>
+<tr class="separator:a8e39202934cff54aa6361e9fd4915927"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61338c63762bafe5fe298e5e2cee0468" id="r_a61338c63762bafe5fe298e5e2cee0468"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a61338c63762bafe5fe298e5e2cee0468">getEntityByUid</a> (const QString &amp;uid) const</td></tr>
+<tr class="memdesc:a61338c63762bafe5fe298e5e2cee0468"><td class="mdescLeft">&#160;</td><td class="mdescRight">通过稳定UID获取实体（别名，保持兼容）  <br /></td></tr>
+<tr class="separator:a61338c63762bafe5fe298e5e2cee0468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcca1bb05b44eacbda9ad33df44b6c3d" id="r_afcca1bb05b44eacbda9ad33df44b6c3d"><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="classGeoEntity.html">GeoEntity</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#afcca1bb05b44eacbda9ad33df44b6c3d">getAllEntities</a> () const</td></tr>
+<tr class="memdesc:afcca1bb05b44eacbda9ad33df44b6c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取所有实体列表  <br /></td></tr>
+<tr class="separator:afcca1bb05b44eacbda9ad33df44b6c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b17f300e54d5dadd5aa94162214b503" id="r_a6b17f300e54d5dadd5aa94162214b503"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a6b17f300e54d5dadd5aa94162214b503">getSelectedEntity</a> () const</td></tr>
+<tr class="memdesc:a6b17f300e54d5dadd5aa94162214b503"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取当前选中的实体  <br /></td></tr>
+<tr class="separator:a6b17f300e54d5dadd5aa94162214b503"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80911344cf2ef81a434bd744015e07e2" id="r_a80911344cf2ef81a434bd744015e07e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a80911344cf2ef81a434bd744015e07e2">setSelectedEntity</a> (<a class="el" href="classGeoEntity.html">GeoEntity</a> *entity, bool emitSignal=true)</td></tr>
+<tr class="memdesc:a80911344cf2ef81a434bd744015e07e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置当前选中的实体  <br /></td></tr>
+<tr class="separator:a80911344cf2ef81a434bd744015e07e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa27130582281062e53d3cd50d39f852b" id="r_aa27130582281062e53d3cd50d39f852b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#aa27130582281062e53d3cd50d39f852b">setEntityVisible</a> (const QString &amp;uid, bool visible)</td></tr>
+<tr class="memdesc:aa27130582281062e53d3cd50d39f852b"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置实体可见性  <br /></td></tr>
+<tr class="separator:aa27130582281062e53d3cd50d39f852b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9425b3534698e7bad50fb03c1e57f396" id="r_a9425b3534698e7bad50fb03c1e57f396"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a9425b3534698e7bad50fb03c1e57f396">isEntityVisible</a> (const QString &amp;uid) const</td></tr>
+<tr class="memdesc:a9425b3534698e7bad50fb03c1e57f396"><td class="mdescLeft">&#160;</td><td class="mdescRight">查询实体可见性  <br /></td></tr>
+<tr class="separator:a9425b3534698e7bad50fb03c1e57f396"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd0c5ae3fb146c2729078ab6de23f3fd" id="r_acd0c5ae3fb146c2729078ab6de23f3fd"><td class="memItemLeft" align="right" valign="top">QStringList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#acd0c5ae3fb146c2729078ab6de23f3fd">getEntityIds</a> () const</td></tr>
-<tr class="memdesc:acd0c5ae3fb146c2729078ab6de23f3fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取所有实体ID列表  <br /></td></tr>
+<tr class="memdesc:acd0c5ae3fb146c2729078ab6de23f3fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取所有实体UID列表  <br /></td></tr>
 <tr class="separator:acd0c5ae3fb146c2729078ab6de23f3fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f4b149ab8bb85e0762cf997dad48d2b" id="r_a3f4b149ab8bb85e0762cf997dad48d2b"><td class="memItemLeft" align="right" valign="top">QStringList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a3f4b149ab8bb85e0762cf997dad48d2b">getEntityIdsByType</a> (const QString &amp;entityType) const</td></tr>
-<tr class="memdesc:a3f4b149ab8bb85e0762cf997dad48d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">按类型获取实体ID列表  <br /></td></tr>
+<tr class="memdesc:a3f4b149ab8bb85e0762cf997dad48d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">按类型获取实体UID列表  <br /></td></tr>
 <tr class="separator:a3f4b149ab8bb85e0762cf997dad48d2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4894f07bd533832b6e7f6dafc4502120" id="r_a4894f07bd533832b6e7f6dafc4502120"><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="classGeoEntity.html">GeoEntity</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a4894f07bd533832b6e7f6dafc4502120">getEntitiesByPlanFile</a> (const QString &amp;planFile) const</td></tr>
-<tr class="memdesc:a4894f07bd533832b6e7f6dafc4502120"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取属于指定方案文件的所有实体  <br /></td></tr>
-<tr class="separator:a4894f07bd533832b6e7f6dafc4502120"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae91c1a957907a514c925c6c6f1156315" id="r_ae91c1a957907a514c925c6c6f1156315"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#ae91c1a957907a514c925c6c6f1156315">removeEntity</a> (const QString &amp;entityId)</td></tr>
-<tr class="memdesc:ae91c1a957907a514c925c6c6f1156315"><td class="mdescLeft">&#160;</td><td class="mdescRight">删除实体  <br /></td></tr>
-<tr class="separator:ae91c1a957907a514c925c6c6f1156315"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e3c56fd606deeb8d96321422bfb185a" id="r_a6e3c56fd606deeb8d96321422bfb185a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a6e3c56fd606deeb8d96321422bfb185a">removeEntity</a> (const QString &amp;uid)</td></tr>
+<tr class="memdesc:a6e3c56fd606deeb8d96321422bfb185a"><td class="mdescLeft">&#160;</td><td class="mdescRight">删除实体  <br /></td></tr>
+<tr class="separator:a6e3c56fd606deeb8d96321422bfb185a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add4094a50dfe6be95352b42291240378" id="r_add4094a50dfe6be95352b42291240378"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#add4094a50dfe6be95352b42291240378">clearAllEntities</a> ()</td></tr>
 <tr class="memdesc:add4094a50dfe6be95352b42291240378"><td class="mdescLeft">&#160;</td><td class="mdescRight">清空所有实体  <br /></td></tr>
 <tr class="separator:add4094a50dfe6be95352b42291240378"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -187,27 +202,44 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:aa37d1ad81e3692ba5bab05031ffcf948" id="r_aa37d1ad81e3692ba5bab05031ffcf948"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#aa37d1ad81e3692ba5bab05031ffcf948">processPendingDeletions</a> ()</td></tr>
 <tr class="memdesc:aa37d1ad81e3692ba5bab05031ffcf948"><td class="mdescLeft">&#160;</td><td class="mdescRight">处理延迟删除队列（应该在frame()完成后调用） 公共方法，供外部在渲染完成后调用  <br /></td></tr>
 <tr class="separator:aa37d1ad81e3692ba5bab05031ffcf948"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5999d837cc2260cf7a9b88f66a8e2aaf" id="r_a5999d837cc2260cf7a9b88f66a8e2aaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a5999d837cc2260cf7a9b88f66a8e2aaf">findEntityAtPosition</a> (QPoint screenPos)</td></tr>
-<tr class="memdesc:a5999d837cc2260cf7a9b88f66a8e2aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">查找指定位置的实体  <br /></td></tr>
-<tr class="separator:a5999d837cc2260cf7a9b88f66a8e2aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f337630547dccbbc189a3b50172a55a" id="r_a7f337630547dccbbc189a3b50172a55a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a7f337630547dccbbc189a3b50172a55a">findEntityAtPosition</a> (QPoint screenPos, bool verbose=true)</td></tr>
+<tr class="memdesc:a7f337630547dccbbc189a3b50172a55a"><td class="mdescLeft">&#160;</td><td class="mdescRight">查找指定位置的实体  <br /></td></tr>
+<tr class="separator:a7f337630547dccbbc189a3b50172a55a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa4a9d5e0d57dcbb97243ed78061a8ee" id="r_afa4a9d5e0d57dcbb97243ed78061a8ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#afa4a9d5e0d57dcbb97243ed78061a8ee">onMouseMove</a> (QMouseEvent *event)</td></tr>
+<tr class="memdesc:afa4a9d5e0d57dcbb97243ed78061a8ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">处理鼠标移动事件（用于实体悬停高亮）  <br /></td></tr>
+<tr class="separator:afa4a9d5e0d57dcbb97243ed78061a8ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4317c1529ab9d02ef84fa55ce91b142c" id="r_a4317c1529ab9d02ef84fa55ce91b142c"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a4317c1529ab9d02ef84fa55ce91b142c">createWaypointGroup</a> (const QString &amp;name)</td></tr>
 <tr class="memdesc:a4317c1529ab9d02ef84fa55ce91b142c"><td class="mdescLeft">&#160;</td><td class="mdescRight">创建航点组  <br /></td></tr>
 <tr class="separator:a4317c1529ab9d02ef84fa55ce91b142c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bb45dd93fa43c7b977fb2aad0da43f7" id="r_a0bb45dd93fa43c7b977fb2aad0da43f7"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a0bb45dd93fa43c7b977fb2aad0da43f7">addWaypointToGroup</a> (const QString &amp;groupId, double lon, double lat, double alt)</td></tr>
-<tr class="memdesc:a0bb45dd93fa43c7b977fb2aad0da43f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">在指定组中添加航点  <br /></td></tr>
-<tr class="separator:a0bb45dd93fa43c7b977fb2aad0da43f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cbbb0af1efb77b52834b81253a9af7d" id="r_a0cbbb0af1efb77b52834b81253a9af7d"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a0cbbb0af1efb77b52834b81253a9af7d">addWaypointToGroup</a> (const QString &amp;groupId, double lon, double lat, double alt, const QString &amp;uidOverride=QString(), const QString &amp;label=QString())</td></tr>
+<tr class="memdesc:a0cbbb0af1efb77b52834b81253a9af7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">在指定组中添加航点  <br /></td></tr>
+<tr class="separator:a0cbbb0af1efb77b52834b81253a9af7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac746fa7385a7747297fc11fd727282d1" id="r_ac746fa7385a7747297fc11fd727282d1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#ac746fa7385a7747297fc11fd727282d1">attachWaypointToGroup</a> (const QString &amp;groupId, class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *waypoint)</td></tr>
+<tr class="separator:ac746fa7385a7747297fc11fd727282d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3437b4819a56e1fca25c27d3fe313be" id="r_aa3437b4819a56e1fca25c27d3fe313be"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#aa3437b4819a56e1fca25c27d3fe313be">removeWaypointFromGroup</a> (const QString &amp;groupId, int index)</td></tr>
 <tr class="memdesc:aa3437b4819a56e1fca25c27d3fe313be"><td class="mdescLeft">&#160;</td><td class="mdescRight">从组中按序号删除航点  <br /></td></tr>
 <tr class="separator:aa3437b4819a56e1fca25c27d3fe313be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4be4ddccea6c09abc84e016c58e8f999" id="r_a4be4ddccea6c09abc84e016c58e8f999"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a4be4ddccea6c09abc84e016c58e8f999">removeWaypointEntity</a> (class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *waypoint)</td></tr>
+<tr class="memdesc:a4be4ddccea6c09abc84e016c58e8f999"><td class="mdescLeft">&#160;</td><td class="mdescRight">删除指定航点实体（自动更新所属航线）  <br /></td></tr>
+<tr class="separator:a4be4ddccea6c09abc84e016c58e8f999"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b333e25d047237e1469443cfb7ab19b" id="r_a5b333e25d047237e1469443cfb7ab19b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a5b333e25d047237e1469443cfb7ab19b">generateRouteForGroup</a> (const QString &amp;groupId, const QString &amp;model)</td></tr>
 <tr class="memdesc:a5b333e25d047237e1469443cfb7ab19b"><td class="mdescLeft">&#160;</td><td class="mdescRight">依据模型生成组内航线（linear|bezier）  <br /></td></tr>
 <tr class="separator:a5b333e25d047237e1469443cfb7ab19b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad85197a953618aedc21fea07b999a1c3" id="r_ad85197a953618aedc21fea07b999a1c3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#ad85197a953618aedc21fea07b999a1c3">bindRouteToEntity</a> (const QString &amp;groupId, const QString &amp;targetEntityId)</td></tr>
-<tr class="memdesc:ad85197a953618aedc21fea07b999a1c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">将生成的航线绑定到实体（随实体移动/显示）  <br /></td></tr>
-<tr class="separator:ad85197a953618aedc21fea07b999a1c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49188d65e5b30b1e3bea41946f85186e" id="r_a49188d65e5b30b1e3bea41946f85186e"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a49188d65e5b30b1e3bea41946f85186e">addStandaloneWaypoint</a> (double lon, double lat, double alt, const QString &amp;labelText)</td></tr>
-<tr class="memdesc:a49188d65e5b30b1e3bea41946f85186e"><td class="mdescLeft">&#160;</td><td class="mdescRight">添加独立航点（带标签），用于快速标绘  <br /></td></tr>
-<tr class="separator:a49188d65e5b30b1e3bea41946f85186e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ae6ebe94f23e41c67d9aaca3ed1849e" id="r_a7ae6ebe94f23e41c67d9aaca3ed1849e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a7ae6ebe94f23e41c67d9aaca3ed1849e">bindRouteToEntity</a> (const QString &amp;groupId, const QString &amp;targetEntityUid)</td></tr>
+<tr class="memdesc:a7ae6ebe94f23e41c67d9aaca3ed1849e"><td class="mdescLeft">&#160;</td><td class="mdescRight">将生成的航线绑定到实体（随实体移动/显示）  <br /></td></tr>
+<tr class="separator:a7ae6ebe94f23e41c67d9aaca3ed1849e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9965b40dc247b2b1673fe775032a992d" id="r_a9965b40dc247b2b1673fe775032a992d"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a9965b40dc247b2b1673fe775032a992d">getRouteGroupIdForEntity</a> (const QString &amp;entityUid) const</td></tr>
+<tr class="memdesc:a9965b40dc247b2b1673fe775032a992d"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取指定实体的航线组ID（通过routeBinding查找）  <br /></td></tr>
+<tr class="separator:a9965b40dc247b2b1673fe775032a992d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accf6e8d10bce37ab5ecf63b52567feed" id="r_accf6e8d10bce37ab5ecf63b52567feed"><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="structGeoEntityManager_1_1WaypointGroupInfo.html">WaypointGroupInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#accf6e8d10bce37ab5ecf63b52567feed">getAllWaypointGroups</a> () const</td></tr>
+<tr class="memdesc:accf6e8d10bce37ab5ecf63b52567feed"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取所有航点组信息（用于保存）  <br /></td></tr>
+<tr class="separator:accf6e8d10bce37ab5ecf63b52567feed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf191c79509b2d03764a5dc9e118fd8a" id="r_acf191c79509b2d03764a5dc9e118fd8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structGeoEntityManager_1_1WaypointGroupInfo.html">WaypointGroupInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#acf191c79509b2d03764a5dc9e118fd8a">getWaypointGroup</a> (const QString &amp;groupId) const</td></tr>
+<tr class="memdesc:acf191c79509b2d03764a5dc9e118fd8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取航点组信息  <br /></td></tr>
+<tr class="separator:acf191c79509b2d03764a5dc9e118fd8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab610dca00b345ccaec4d4b412c6bd2e0" id="r_ab610dca00b345ccaec4d4b412c6bd2e0"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#ab610dca00b345ccaec4d4b412c6bd2e0">addStandaloneWaypoint</a> (double lon, double lat, double alt, const QString &amp;labelText, const QString &amp;uidOverride=QString())</td></tr>
+<tr class="memdesc:ab610dca00b345ccaec4d4b412c6bd2e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">添加独立航点（带标签），用于快速标绘  <br /></td></tr>
+<tr class="separator:ab610dca00b345ccaec4d4b412c6bd2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>地理实体管理器 </p>
@@ -337,8 +369,8 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a49188d65e5b30b1e3bea41946f85186e" name="a49188d65e5b30b1e3bea41946f85186e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a49188d65e5b30b1e3bea41946f85186e">&#9670;&#160;</a></span>addStandaloneWaypoint()</h2>
+<a id="ab610dca00b345ccaec4d4b412c6bd2e0" name="ab610dca00b345ccaec4d4b412c6bd2e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab610dca00b345ccaec4d4b412c6bd2e0">&#9670;&#160;</a></span>addStandaloneWaypoint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -365,7 +397,13 @@ Public 成员函数</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>labelText</em>&#160;</td>
+          <td class="paramname"><em>labelText</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>uidOverride</em> = <code>QString()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -379,8 +417,8 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a0bb45dd93fa43c7b977fb2aad0da43f7" name="a0bb45dd93fa43c7b977fb2aad0da43f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0bb45dd93fa43c7b977fb2aad0da43f7">&#9670;&#160;</a></span>addWaypointToGroup()</h2>
+<a id="a0cbbb0af1efb77b52834b81253a9af7d" name="a0cbbb0af1efb77b52834b81253a9af7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cbbb0af1efb77b52834b81253a9af7d">&#9670;&#160;</a></span>addWaypointToGroup()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -407,7 +445,19 @@ Public 成员函数</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>alt</em>&#160;</td>
+          <td class="paramname"><em>alt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>uidOverride</em> = <code>QString()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>label</em> = <code>QString()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -421,8 +471,36 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="ad85197a953618aedc21fea07b999a1c3" name="ad85197a953618aedc21fea07b999a1c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad85197a953618aedc21fea07b999a1c3">&#9670;&#160;</a></span>bindRouteToEntity()</h2>
+<a id="ac746fa7385a7747297fc11fd727282d1" name="ac746fa7385a7747297fc11fd727282d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac746fa7385a7747297fc11fd727282d1">&#9670;&#160;</a></span>attachWaypointToGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool GeoEntityManager::attachWaypointToGroup </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>groupId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td>
+          <td class="paramname"><em>waypoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7ae6ebe94f23e41c67d9aaca3ed1849e" name="a7ae6ebe94f23e41c67d9aaca3ed1849e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ae6ebe94f23e41c67d9aaca3ed1849e">&#9670;&#160;</a></span>bindRouteToEntity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -437,7 +515,7 @@ Public 成员函数</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>targetEntityId</em>&#160;</td>
+          <td class="paramname"><em>targetEntityUid</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -470,8 +548,8 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a27c1f1bf7e33c65c4f7d869c53b9c56d" name="a27c1f1bf7e33c65c4f7d869c53b9c56d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27c1f1bf7e33c65c4f7d869c53b9c56d">&#9670;&#160;</a></span>createEntity()</h2>
+<a id="a9f3cb27640f54e0c38f2619f740541f2" name="a9f3cb27640f54e0c38f2619f740541f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f3cb27640f54e0c38f2619f740541f2">&#9670;&#160;</a></span>createEntity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -510,7 +588,13 @@ Public 成员函数</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>altitude</em>&#160;</td>
+          <td class="paramname"><em>altitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>uidOverride</em> = <code>QString()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -651,8 +735,8 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a02d60e80b32630b23474b52e2d664c70" name="a02d60e80b32630b23474b52e2d664c70"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02d60e80b32630b23474b52e2d664c70">&#9670;&#160;</a></span>entityRemoved</h2>
+<a id="a9d39c4a755ac643049a67007b5790cc7" name="a9d39c4a755ac643049a67007b5790cc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d39c4a755ac643049a67007b5790cc7">&#9670;&#160;</a></span>entityRemoved</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -664,7 +748,7 @@ Public 成员函数</h2></td></tr>
           <td class="memname">void GeoEntityManager::entityRemoved </td>
           <td>(</td>
           <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>entityId</em></td><td>)</td>
+          <td class="paramname"><em>uid</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -678,7 +762,7 @@ Public 成员函数</h2></td></tr>
 <p>实体删除信号 </p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">entityId</td><td>删除的实体ID </td></tr>
+    <tr><td class="paramname">uid</td><td>删除的实体UID </td></tr>
   </table>
   </dd>
 </dl>
@@ -764,8 +848,8 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a5999d837cc2260cf7a9b88f66a8e2aaf" name="a5999d837cc2260cf7a9b88f66a8e2aaf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5999d837cc2260cf7a9b88f66a8e2aaf">&#9670;&#160;</a></span>findEntityAtPosition()</h2>
+<a id="a7f337630547dccbbc189a3b50172a55a" name="a7f337630547dccbbc189a3b50172a55a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f337630547dccbbc189a3b50172a55a">&#9670;&#160;</a></span>findEntityAtPosition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -774,8 +858,18 @@ Public 成员函数</h2></td></tr>
           <td class="memname"><a class="el" href="classGeoEntity.html">GeoEntity</a> * GeoEntityManager::findEntityAtPosition </td>
           <td>(</td>
           <td class="paramtype">QPoint&#160;</td>
-          <td class="paramname"><em>screenPos</em></td><td>)</td>
+          <td class="paramname"><em>screenPos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>verbose</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -829,35 +923,46 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a4894f07bd533832b6e7f6dafc4502120" name="a4894f07bd533832b6e7f6dafc4502120"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4894f07bd533832b6e7f6dafc4502120">&#9670;&#160;</a></span>getEntitiesByPlanFile()</h2>
+<a id="afcca1bb05b44eacbda9ad33df44b6c3d" name="afcca1bb05b44eacbda9ad33df44b6c3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcca1bb05b44eacbda9ad33df44b6c3d">&#9670;&#160;</a></span>getAllEntities()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">QList&lt; <a class="el" href="classGeoEntity.html">GeoEntity</a> * &gt; GeoEntityManager::getEntitiesByPlanFile </td>
+          <td class="memname">QList&lt; <a class="el" href="classGeoEntity.html">GeoEntity</a> * &gt; GeoEntityManager::getAllEntities </td>
           <td>(</td>
-          <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>planFile</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>获取属于指定方案文件的所有实体 </p>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">planFile</td><td>方案文件路径 </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>返回</dt><dd>实体列表 </dd></dl>
+<p>获取所有实体列表 </p>
 
 </div>
 </div>
-<a id="a5be78fe8b0f76367976f38de57cc4f16" name="a5be78fe8b0f76367976f38de57cc4f16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5be78fe8b0f76367976f38de57cc4f16">&#9670;&#160;</a></span>getEntity()</h2>
+<a id="accf6e8d10bce37ab5ecf63b52567feed" name="accf6e8d10bce37ab5ecf63b52567feed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accf6e8d10bce37ab5ecf63b52567feed">&#9670;&#160;</a></span>getAllWaypointGroups()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QList&lt; <a class="el" href="structGeoEntityManager_1_1WaypointGroupInfo.html">GeoEntityManager::WaypointGroupInfo</a> &gt; GeoEntityManager::getAllWaypointGroups </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获取所有航点组信息（用于保存） </p>
+
+</div>
+</div>
+<a id="a8e39202934cff54aa6361e9fd4915927" name="a8e39202934cff54aa6361e9fd4915927"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e39202934cff54aa6361e9fd4915927">&#9670;&#160;</a></span>getEntity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -866,7 +971,7 @@ Public 成员函数</h2></td></tr>
           <td class="memname"><a class="el" href="classGeoEntity.html">GeoEntity</a> * GeoEntityManager::getEntity </td>
           <td>(</td>
           <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>entityId</em></td><td>)</td>
+          <td class="paramname"><em>uid</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -875,11 +980,31 @@ Public 成员函数</h2></td></tr>
 <p>获取实体 </p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">entityId</td><td>实体ID </td></tr>
+    <tr><td class="paramname">uid</td><td>实体UID </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>返回</dt><dd>实体指针，不存在返回nullptr </dd></dl>
+
+</div>
+</div>
+<a id="a61338c63762bafe5fe298e5e2cee0468" name="a61338c63762bafe5fe298e5e2cee0468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61338c63762bafe5fe298e5e2cee0468">&#9670;&#160;</a></span>getEntityByUid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGeoEntity.html">GeoEntity</a> * GeoEntityManager::getEntityByUid </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>uid</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>通过稳定UID获取实体（别名，保持兼容） </p>
 
 </div>
 </div>
@@ -898,8 +1023,8 @@ Public 成员函数</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>获取所有实体ID列表 </p>
-<dl class="section return"><dt>返回</dt><dd>实体ID列表 </dd></dl>
+<p>获取所有实体UID列表 </p>
+<dl class="section return"><dt>返回</dt><dd>实体UID列表 </dd></dl>
 
 </div>
 </div>
@@ -919,14 +1044,93 @@ Public 成员函数</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>按类型获取实体ID列表 </p>
+<p>按类型获取实体UID列表 </p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
     <tr><td class="paramname">entityType</td><td>实体类型 </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>返回</dt><dd>实体ID列表 </dd></dl>
+<dl class="section return"><dt>返回</dt><dd>实体UID列表 </dd></dl>
+
+</div>
+</div>
+<a id="a9965b40dc247b2b1673fe775032a992d" name="a9965b40dc247b2b1673fe775032a992d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9965b40dc247b2b1673fe775032a992d">&#9670;&#160;</a></span>getRouteGroupIdForEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString GeoEntityManager::getRouteGroupIdForEntity </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>entityUid</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获取指定实体的航线组ID（通过routeBinding查找） </p>
+
+</div>
+</div>
+<a id="a6b17f300e54d5dadd5aa94162214b503" name="a6b17f300e54d5dadd5aa94162214b503"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b17f300e54d5dadd5aa94162214b503">&#9670;&#160;</a></span>getSelectedEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classGeoEntity.html">GeoEntity</a> * GeoEntityManager::getSelectedEntity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获取当前选中的实体 </p>
+
+</div>
+</div>
+<a id="acf191c79509b2d03764a5dc9e118fd8a" name="acf191c79509b2d03764a5dc9e118fd8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf191c79509b2d03764a5dc9e118fd8a">&#9670;&#160;</a></span>getWaypointGroup()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structGeoEntityManager_1_1WaypointGroupInfo.html">GeoEntityManager::WaypointGroupInfo</a> GeoEntityManager::getWaypointGroup </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>groupId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获取航点组信息 </p>
+
+</div>
+</div>
+<a id="a9425b3534698e7bad50fb03c1e57f396" name="a9425b3534698e7bad50fb03c1e57f396"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9425b3534698e7bad50fb03c1e57f396">&#9670;&#160;</a></span>isEntityVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool GeoEntityManager::isEntityVisible </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>uid</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>查询实体可见性 </p>
 
 </div>
 </div>
@@ -1012,6 +1216,26 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
+<a id="afa4a9d5e0d57dcbb97243ed78061a8ee" name="afa4a9d5e0d57dcbb97243ed78061a8ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa4a9d5e0d57dcbb97243ed78061a8ee">&#9670;&#160;</a></span>onMouseMove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GeoEntityManager::onMouseMove </td>
+          <td>(</td>
+          <td class="paramtype">QMouseEvent *&#160;</td>
+          <td class="paramname"><em>event</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>处理鼠标移动事件（用于实体悬停高亮） </p>
+
+</div>
+</div>
 <a id="ad9cbcb2a80eb716c0112feab412b6e5d" name="ad9cbcb2a80eb716c0112feab412b6e5d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad9cbcb2a80eb716c0112feab412b6e5d">&#9670;&#160;</a></span>onMousePress()</h2>
 
@@ -1060,8 +1284,8 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="ae91c1a957907a514c925c6c6f1156315" name="ae91c1a957907a514c925c6c6f1156315"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae91c1a957907a514c925c6c6f1156315">&#9670;&#160;</a></span>removeEntity()</h2>
+<a id="a6e3c56fd606deeb8d96321422bfb185a" name="a6e3c56fd606deeb8d96321422bfb185a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e3c56fd606deeb8d96321422bfb185a">&#9670;&#160;</a></span>removeEntity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1070,7 +1294,7 @@ Public 成员函数</h2></td></tr>
           <td class="memname">void GeoEntityManager::removeEntity </td>
           <td>(</td>
           <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>entityId</em></td><td>)</td>
+          <td class="paramname"><em>uid</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -1079,10 +1303,30 @@ Public 成员函数</h2></td></tr>
 <p>删除实体 </p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">entityId</td><td>实体ID </td></tr>
+    <tr><td class="paramname">uid</td><td>实体UID </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a4be4ddccea6c09abc84e016c58e8f999" name="a4be4ddccea6c09abc84e016c58e8f999"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4be4ddccea6c09abc84e016c58e8f999">&#9670;&#160;</a></span>removeWaypointEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool GeoEntityManager::removeWaypointEntity </td>
+          <td>(</td>
+          <td class="paramtype">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td>
+          <td class="paramname"><em>waypoint</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>删除指定航点实体（自动更新所属航线） </p>
 
 </div>
 </div>
@@ -1143,6 +1387,36 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
+<a id="aa27130582281062e53d3cd50d39f852b" name="aa27130582281062e53d3cd50d39f852b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa27130582281062e53d3cd50d39f852b">&#9670;&#160;</a></span>setEntityVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool GeoEntityManager::setEntityVisible </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>uid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>visible</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置实体可见性 </p>
+
+</div>
+</div>
 <a id="aed299b1e38310a07b5a4cb472a6afb5e" name="aed299b1e38310a07b5a4cb472a6afb5e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aed299b1e38310a07b5a4cb472a6afb5e">&#9670;&#160;</a></span>setMapStateManager()</h2>
 
@@ -1160,6 +1434,36 @@ Public 成员函数</h2></td></tr>
 </div><div class="memdoc">
 
 <p>设置MapStateManager用于读取相机range </p>
+
+</div>
+</div>
+<a id="a80911344cf2ef81a434bd744015e07e2" name="a80911344cf2ef81a434bd744015e07e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80911344cf2ef81a434bd744015e07e2">&#9670;&#160;</a></span>setSelectedEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GeoEntityManager::setSelectedEntity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classGeoEntity.html">GeoEntity</a> *&#160;</td>
+          <td class="paramname"><em>entity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>emitSignal</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>设置当前选中的实体 </p>
 
 </div>
 </div>

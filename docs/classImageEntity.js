@@ -1,6 +1,6 @@
 var classImageEntity =
 [
-    [ "ImageEntity", "classImageEntity.html#abfd588715513cfe27e6d7fb9c6392fba", null ],
+    [ "ImageEntity", "classImageEntity.html#a27a418eeac8e84f0be9ffa383a7e92e0", null ],
     [ "cleanup", "classImageEntity.html#a9dd2098b688a64a5b256347c776a56bb", null ],
     [ "initialize", "classImageEntity.html#ac989e34961165cf385b58ff05802a583", null ],
     [ "onAfterCleanup", "classImageEntity.html#aab2419adb4b5435c95037ec2f45c2c48", null ],

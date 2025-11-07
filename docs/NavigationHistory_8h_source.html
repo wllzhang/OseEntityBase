@@ -1,0 +1,165 @@
+<!-- HTML header for doxygen 1.9.1-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>数字地图脚手架库: geo/NavigationHistory.h 源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('NavigationHistory_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">NavigationHistory.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="NavigationHistory_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#ifndef NAVIGATIONHISTORY_H</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#define NAVIGATIONHISTORY_H</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;QObject&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;QStack&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;QString&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;osgEarth/Viewpoint&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classNavigationHistory.html">   21</a></span><span class="keyword">class </span><a class="code hl_class" href="classNavigationHistory.html">NavigationHistory</a> : <span class="keyword">public</span> QObject</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    Q_OBJECT</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classNavigationHistory.html">NavigationHistory</a>(QObject* parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_function" href="classNavigationHistory.html#a20feaf76847c8799448fb86135ac100a">~NavigationHistory</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNavigationHistory.html#afa6cd0a6bf6fffa1b2ffc7798cf34638">pushViewpoint</a>(<span class="keyword">const</span> osgEarth::Viewpoint&amp; viewpoint);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classNavigationHistory.html#a5e9418d26a863c10472f0eab882cb9c7">goBack</a>(<span class="keyword">const</span> osgEarth::Viewpoint&amp; currentViewpoint, osgEarth::Viewpoint&amp; backViewpoint);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classNavigationHistory.html#acaf96972438b3c25426281733c897ada">goForward</a>(<span class="keyword">const</span> osgEarth::Viewpoint&amp; currentViewpoint, osgEarth::Viewpoint&amp; forwardViewpoint);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classNavigationHistory.html#a72a7efc7278446fe3beabbf7330ac0b7">clear</a>();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classNavigationHistory.html#a467a8da819a38f5c596f231dac69f859">canGoBack</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classNavigationHistory.html#a5b7122856a59467eb97ba15dce427bba">canGoForward</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classNavigationHistory.html#ae3269ed5600b8ac9b804e35786773b43">getHistoryCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>signals:</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classNavigationHistory.html#a15b668987b2275bc6b2950314c06c70c">   88</a></span>    <span class="keywordtype">void</span> <a class="code hl_signal" href="classNavigationHistory.html#a15b668987b2275bc6b2950314c06c70c">historyStateChanged</a>(<span class="keywordtype">bool</span> canBack, <span class="keywordtype">bool</span> canForward);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    QStack&lt;osgEarth::Viewpoint&gt; backStack_;      <span class="comment">// 后退历史栈</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    QStack&lt;osgEarth::Viewpoint&gt; forwardStack_;   <span class="comment">// 前进历史栈</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">int</span> maxHistorySize_;                         <span class="comment">// 最大历史记录数量</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">void</span> emitStateChanged();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>};</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">#endif </span><span class="comment">// NAVIGATIONHISTORY_H</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="ttc" id="aclassNavigationHistory_html"><div class="ttname"><a href="classNavigationHistory.html">NavigationHistory</a></div><div class="ttdoc">导航历史管理类</div><div class="ttdef"><b>Definition</b> NavigationHistory.h:22</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_a15b668987b2275bc6b2950314c06c70c"><div class="ttname"><a href="classNavigationHistory.html#a15b668987b2275bc6b2950314c06c70c">NavigationHistory::historyStateChanged</a></div><div class="ttdeci">void historyStateChanged(bool canBack, bool canForward)</div><div class="ttdoc">历史记录状态变化信号</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_a20feaf76847c8799448fb86135ac100a"><div class="ttname"><a href="classNavigationHistory.html#a20feaf76847c8799448fb86135ac100a">NavigationHistory::~NavigationHistory</a></div><div class="ttdeci">~NavigationHistory()</div><div class="ttdoc">析构函数</div><div class="ttdef"><b>Definition</b> NavigationHistory.cpp:17</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_a467a8da819a38f5c596f231dac69f859"><div class="ttname"><a href="classNavigationHistory.html#a467a8da819a38f5c596f231dac69f859">NavigationHistory::canGoBack</a></div><div class="ttdeci">bool canGoBack() const</div><div class="ttdoc">是否可以后退</div><div class="ttdef"><b>Definition</b> NavigationHistory.cpp:86</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_a5b7122856a59467eb97ba15dce427bba"><div class="ttname"><a href="classNavigationHistory.html#a5b7122856a59467eb97ba15dce427bba">NavigationHistory::canGoForward</a></div><div class="ttdeci">bool canGoForward() const</div><div class="ttdoc">是否可以前进</div><div class="ttdef"><b>Definition</b> NavigationHistory.cpp:91</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_a5e9418d26a863c10472f0eab882cb9c7"><div class="ttname"><a href="classNavigationHistory.html#a5e9418d26a863c10472f0eab882cb9c7">NavigationHistory::goBack</a></div><div class="ttdeci">bool goBack(const osgEarth::Viewpoint &amp;currentViewpoint, osgEarth::Viewpoint &amp;backViewpoint)</div><div class="ttdoc">保存当前视角并后退到上一个视角</div><div class="ttdef"><b>Definition</b> NavigationHistory.cpp:37</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_a72a7efc7278446fe3beabbf7330ac0b7"><div class="ttname"><a href="classNavigationHistory.html#a72a7efc7278446fe3beabbf7330ac0b7">NavigationHistory::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">清除所有历史记录</div><div class="ttdef"><b>Definition</b> NavigationHistory.cpp:79</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_acaf96972438b3c25426281733c897ada"><div class="ttname"><a href="classNavigationHistory.html#acaf96972438b3c25426281733c897ada">NavigationHistory::goForward</a></div><div class="ttdeci">bool goForward(const osgEarth::Viewpoint &amp;currentViewpoint, osgEarth::Viewpoint &amp;forwardViewpoint)</div><div class="ttdoc">保存当前视角并前进到下一个视角</div><div class="ttdef"><b>Definition</b> NavigationHistory.cpp:58</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_ae3269ed5600b8ac9b804e35786773b43"><div class="ttname"><a href="classNavigationHistory.html#ae3269ed5600b8ac9b804e35786773b43">NavigationHistory::getHistoryCount</a></div><div class="ttdeci">int getHistoryCount() const</div><div class="ttdoc">获取历史记录数量</div><div class="ttdef"><b>Definition</b> NavigationHistory.cpp:96</div></div>
+<div class="ttc" id="aclassNavigationHistory_html_afa6cd0a6bf6fffa1b2ffc7798cf34638"><div class="ttname"><a href="classNavigationHistory.html#afa6cd0a6bf6fffa1b2ffc7798cf34638">NavigationHistory::pushViewpoint</a></div><div class="ttdeci">void pushViewpoint(const osgEarth::Viewpoint &amp;viewpoint)</div><div class="ttdoc">添加新的视角到历史记录</div><div class="ttdef"><b>Definition</b> NavigationHistory.cpp:21</div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_2bcd72cd0b092dad44d5d2bb06eea6c2.html">geo</a></li><li class="navelem"><a class="el" href="NavigationHistory_8h.html">NavigationHistory.h</a></li>
+    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

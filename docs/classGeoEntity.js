@@ -1,18 +1,19 @@
 var classGeoEntity =
 [
-    [ "GeoEntity", "classGeoEntity.html#a69e6778428094edac2586c048b079cd1", null ],
+    [ "GeoEntity", "classGeoEntity.html#a6aec866289631936cfd3e9cff4431810", null ],
     [ "~GeoEntity", "classGeoEntity.html#ab2c887fce8784f32b877ceb485203b05", null ],
     [ "cleanup", "classGeoEntity.html#af8cd99fa8ecb25657293866b61f2fe95", null ],
     [ "createNode", "classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0", null ],
     [ "createPATNode", "classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908", null ],
     [ "getAllProperties", "classGeoEntity.html#ac320715315aec5d714c5004b7280e237", null ],
     [ "getHeading", "classGeoEntity.html#ac667aeccfc0ea26129a61502aab39b63", null ],
-    [ "getId", "classGeoEntity.html#ab78f768f2aa145296002208b8cd68c90", null ],
+    [ "getId", "classGeoEntity.html#a1ea9f0cafb6b2039402cdc7eb7371bd3", null ],
     [ "getName", "classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb", null ],
     [ "getNode", "classGeoEntity.html#ac504d7ba5d8ef6e777a5f14c6b5ab8fc", null ],
     [ "getPosition", "classGeoEntity.html#a5cf31f2eea5a30f11187bd00545cd315", null ],
     [ "getProperty", "classGeoEntity.html#a0f9297fc1e04f5a59bd06931473a2477", null ],
     [ "getType", "classGeoEntity.html#a595ddae945baa66a6b938f82e9569aa3", null ],
+    [ "getUid", "classGeoEntity.html#af307357b2e88847c0dcfcff513666324", null ],
     [ "headingChanged", "classGeoEntity.html#a6a61c0c20511a8606ec1fe9e6fc21472", null ],
     [ "initialize", "classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f", null ],
     [ "isSelected", "classGeoEntity.html#a702fb0d3febe1ee981d74111ed07fb24", null ],
@@ -34,7 +35,6 @@ var classGeoEntity =
     [ "updateNode", "classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf", null ],
     [ "visibilityChanged", "classGeoEntity.html#a34bcccbf69f11d28c2abb36877c1dc56", null ],
     [ "altitude_", "classGeoEntity.html#ab6502ade106744348520f53537f6ceb8", null ],
-    [ "entityId_", "classGeoEntity.html#a815aa68dbac662b53cca04e3cdeaf7bc", null ],
     [ "entityName_", "classGeoEntity.html#a46fcb51df99e5aeb0ed80b5f0a1fde95", null ],
     [ "entityType_", "classGeoEntity.html#ac7fea1dda82d851845ab54cd50740970", null ],
     [ "heading_", "classGeoEntity.html#a35f4063239394a545abda0a1afbcfb23", null ],
@@ -43,5 +43,6 @@ var classGeoEntity =
     [ "node_", "classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a", null ],
     [ "properties_", "classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d", null ],
     [ "selected_", "classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045", null ],
+    [ "uid_", "classGeoEntity.html#a725a7cd448f00497815059e72cd974f9", null ],
     [ "visible_", "classGeoEntity.html#a168ca55410f5fb94b74f4931e7ab7501", null ]
 ];

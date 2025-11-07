@@ -12,5 +12,6 @@ var annotated_dup =
     [ "ImageEntity", "classImageEntity.html", "classImageEntity" ],
     [ "MapStateInfo", "structMapStateInfo.html", "structMapStateInfo" ],
     [ "MapStateManager", "classMapStateManager.html", "classMapStateManager" ],
+    [ "NavigationHistory", "classNavigationHistory.html", "classNavigationHistory" ],
     [ "WaypointEntity", "classWaypointEntity.html", "classWaypointEntity" ]
 ];

@@ -127,12 +127,15 @@ $(document).ready(function(){initNavTree('classGeoEntity.html',''); initResizabl
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
-<tr class="memitem:a69e6778428094edac2586c048b079cd1" id="r_a69e6778428094edac2586c048b079cd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a69e6778428094edac2586c048b079cd1">GeoEntity</a> (const QString &amp;id, const QString &amp;name, const QString &amp;type, double longitude, double latitude, double altitude, QObject *parent=nullptr)</td></tr>
-<tr class="separator:a69e6778428094edac2586c048b079cd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6aec866289631936cfd3e9cff4431810" id="r_a6aec866289631936cfd3e9cff4431810"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a6aec866289631936cfd3e9cff4431810">GeoEntity</a> (const QString &amp;name, const QString &amp;type, double longitude, double latitude, double altitude, const QString &amp;uidOverride=QString(), QObject *parent=nullptr)</td></tr>
+<tr class="separator:a6aec866289631936cfd3e9cff4431810"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2c887fce8784f32b877ceb485203b05" id="r_ab2c887fce8784f32b877ceb485203b05"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ab2c887fce8784f32b877ceb485203b05">~GeoEntity</a> ()=default</td></tr>
 <tr class="separator:ab2c887fce8784f32b877ceb485203b05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab78f768f2aa145296002208b8cd68c90" id="r_ab78f768f2aa145296002208b8cd68c90"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ab78f768f2aa145296002208b8cd68c90">getId</a> () const</td></tr>
-<tr class="separator:ab78f768f2aa145296002208b8cd68c90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ea9f0cafb6b2039402cdc7eb7371bd3" id="r_a1ea9f0cafb6b2039402cdc7eb7371bd3"><td class="memItemLeft" align="right" valign="top">const QString &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a1ea9f0cafb6b2039402cdc7eb7371bd3">getId</a> () const</td></tr>
+<tr class="memdesc:a1ea9f0cafb6b2039402cdc7eb7371bd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取实体实例的稳定唯一UID（统一标识符，替代原entityId）  <br /></td></tr>
+<tr class="separator:a1ea9f0cafb6b2039402cdc7eb7371bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af307357b2e88847c0dcfcff513666324" id="r_af307357b2e88847c0dcfcff513666324"><td class="memItemLeft" align="right" valign="top">const QString &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#af307357b2e88847c0dcfcff513666324">getUid</a> () const</td></tr>
+<tr class="separator:af307357b2e88847c0dcfcff513666324"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a245b06bf476b8d9dbee5d4f0d074a7eb" id="r_a245b06bf476b8d9dbee5d4f0d074a7eb"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">getName</a> () const</td></tr>
 <tr class="separator:a245b06bf476b8d9dbee5d4f0d074a7eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a595ddae945baa66a6b938f82e9569aa3" id="r_a595ddae945baa66a6b938f82e9569aa3"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a595ddae945baa66a6b938f82e9569aa3">getType</a> () const</td></tr>
@@ -207,8 +210,8 @@ Protected 成员函数</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected 属性</h2></td></tr>
-<tr class="memitem:a815aa68dbac662b53cca04e3cdeaf7bc" id="r_a815aa68dbac662b53cca04e3cdeaf7bc"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a815aa68dbac662b53cca04e3cdeaf7bc">entityId_</a></td></tr>
-<tr class="separator:a815aa68dbac662b53cca04e3cdeaf7bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a725a7cd448f00497815059e72cd974f9" id="r_a725a7cd448f00497815059e72cd974f9"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a725a7cd448f00497815059e72cd974f9">uid_</a></td></tr>
+<tr class="separator:a725a7cd448f00497815059e72cd974f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46fcb51df99e5aeb0ed80b5f0a1fde95" id="r_a46fcb51df99e5aeb0ed80b5f0a1fde95"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a46fcb51df99e5aeb0ed80b5f0a1fde95">entityName_</a></td></tr>
 <tr class="separator:a46fcb51df99e5aeb0ed80b5f0a1fde95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7fea1dda82d851845ab54cd50740970" id="r_ac7fea1dda82d851845ab54cd50740970"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ac7fea1dda82d851845ab54cd50740970">entityType_</a></td></tr>
@@ -243,15 +246,15 @@ Protected 属性</h2></td></tr>
 <div class="line">  └─ <a class="code hl_class" href="classGeoEntity.html">GeoEntity</a></div>
 <div class="line">      ├─ <a class="code hl_class" href="classImageEntity.html">ImageEntity</a></div>
 <div class="line">      └─ <a class="code hl_class" href="classWaypointEntity.html">WaypointEntity</a></div>
-<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:52</div></div>
+<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:53</div></div>
 <div class="ttc" id="aclassImageEntity_html"><div class="ttname"><a href="classImageEntity.html">ImageEntity</a></div><div class="ttdoc">图片实体类</div><div class="ttdef"><b>Definition</b> imageentity.h:37</div></div>
 <div class="ttc" id="aclassWaypointEntity_html"><div class="ttname"><a href="classWaypointEntity.html">WaypointEntity</a></div><div class="ttdoc">航点实体</div><div class="ttdef"><b>Definition</b> waypointentity.h:32</div></div>
 </div><!-- fragment --><p>子类必须实现生命周期与节点构建：</p><ul>
 <li><a class="el" href="classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f" title="初始化实体资源与节点">initialize()</a>, <a class="el" href="classGeoEntity.html#ad9348d4bdf3955e77482da960d334158" title="根据业务状态更新实体">update()</a>, <a class="el" href="classGeoEntity.html#af8cd99fa8ecb25657293866b61f2fe95" title="释放资源与场景引用">cleanup()</a>, <a class="el" href="classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0">createNode()</a> </li>
 </ul>
 </div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="a69e6778428094edac2586c048b079cd1" name="a69e6778428094edac2586c048b079cd1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a69e6778428094edac2586c048b079cd1">&#9670;&#160;</a></span>GeoEntity()</h2>
+<a id="a6aec866289631936cfd3e9cff4431810" name="a6aec866289631936cfd3e9cff4431810"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6aec866289631936cfd3e9cff4431810">&#9670;&#160;</a></span>GeoEntity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -259,12 +262,6 @@ Protected 属性</h2></td></tr>
         <tr>
           <td class="memname">GeoEntity::GeoEntity </td>
           <td>(</td>
-          <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">const QString &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
         </tr>
@@ -291,6 +288,12 @@ Protected 属性</h2></td></tr>
           <td></td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>altitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>uidOverride</em> = <code>QString()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -483,8 +486,8 @@ Protected 属性</h2></td></tr>
 
 </div>
 </div>
-<a id="ab78f768f2aa145296002208b8cd68c90" name="ab78f768f2aa145296002208b8cd68c90"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab78f768f2aa145296002208b8cd68c90">&#9670;&#160;</a></span>getId()</h2>
+<a id="a1ea9f0cafb6b2039402cdc7eb7371bd3" name="a1ea9f0cafb6b2039402cdc7eb7371bd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ea9f0cafb6b2039402cdc7eb7371bd3">&#9670;&#160;</a></span>getId()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -493,7 +496,7 @@ Protected 属性</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">QString GeoEntity::getId </td>
+          <td class="memname">const QString &amp; GeoEntity::getId </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -505,6 +508,8 @@ Protected 属性</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>获取实体实例的稳定唯一UID（统一标识符，替代原entityId） </p>
 
 </div>
 </div>
@@ -639,6 +644,31 @@ Protected 属性</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">QString GeoEntity::getType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af307357b2e88847c0dcfcff513666324" name="af307357b2e88847c0dcfcff513666324"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af307357b2e88847c0dcfcff513666324">&#9670;&#160;</a></span>getUid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const QString &amp; GeoEntity::getUid </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1324,28 +1354,6 @@ Protected 属性</h2></td></tr>
 
 </div>
 </div>
-<a id="a815aa68dbac662b53cca04e3cdeaf7bc" name="a815aa68dbac662b53cca04e3cdeaf7bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a815aa68dbac662b53cca04e3cdeaf7bc">&#9670;&#160;</a></span>entityId_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">QString GeoEntity::entityId_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a46fcb51df99e5aeb0ed80b5f0a1fde95" name="a46fcb51df99e5aeb0ed80b5f0a1fde95"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a46fcb51df99e5aeb0ed80b5f0a1fde95">&#9670;&#160;</a></span>entityName_</h2>
 
@@ -1531,6 +1539,28 @@ Protected 属性</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section examples"><dt>示例</dt><dd><a class="el" href="_2home_2runner_2work_2OseEntityBase_2OseEntityBase_2geo_2geoentity_8cpp-example.html#a16">/home/runner/work/OseEntityBase/OseEntityBase/geo/geoentity.cpp</a>.</dd>
 </dl>
+
+</div>
+</div>
+<a id="a725a7cd448f00497815059e72cd974f9" name="a725a7cd448f00497815059e72cd974f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a725a7cd448f00497815059e72cd974f9">&#9670;&#160;</a></span>uid_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString GeoEntity::uid_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

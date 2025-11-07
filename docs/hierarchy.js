@@ -18,6 +18,7 @@ var hierarchy =
       ] ],
       [ "GeoEntityManager", "classGeoEntityManager.html", null ],
       [ "MapStateManager", "classMapStateManager.html", null ],
+      [ "NavigationHistory", "classNavigationHistory.html", null ],
       [ "osgQt::QGraphicsViewAdapter", "classosgQt_1_1QGraphicsViewAdapter.html", null ]
     ] ],
     [ "osg::Referenced", null, [

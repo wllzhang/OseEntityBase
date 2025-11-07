@@ -1,0 +1,443 @@
+<!-- HTML header for doxygen 1.9.1-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>数字地图脚手架库: NavigationHistory类 参考</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('classNavigationHistory.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#signals">信号</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classNavigationHistory-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">NavigationHistory类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>导航历史管理类  
+ <a href="classNavigationHistory.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="NavigationHistory_8h_source.html">NavigationHistory.h</a>&gt;</code></p>
+<div class="dynheader">
+类 NavigationHistory 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classNavigationHistory.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="signals" name="signals"></a>
+信号</h2></td></tr>
+<tr class="memitem:a15b668987b2275bc6b2950314c06c70c" id="r_a15b668987b2275bc6b2950314c06c70c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a15b668987b2275bc6b2950314c06c70c">historyStateChanged</a> (bool canBack, bool canForward)</td></tr>
+<tr class="memdesc:a15b668987b2275bc6b2950314c06c70c"><td class="mdescLeft">&#160;</td><td class="mdescRight">历史记录状态变化信号  <br /></td></tr>
+<tr class="separator:a15b668987b2275bc6b2950314c06c70c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a137b36437167fcb5464448ed84716eda" id="r_a137b36437167fcb5464448ed84716eda"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a137b36437167fcb5464448ed84716eda">NavigationHistory</a> (QObject *parent=nullptr)</td></tr>
+<tr class="memdesc:a137b36437167fcb5464448ed84716eda"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造函数  <br /></td></tr>
+<tr class="separator:a137b36437167fcb5464448ed84716eda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20feaf76847c8799448fb86135ac100a" id="r_a20feaf76847c8799448fb86135ac100a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a20feaf76847c8799448fb86135ac100a">~NavigationHistory</a> ()</td></tr>
+<tr class="memdesc:a20feaf76847c8799448fb86135ac100a"><td class="mdescLeft">&#160;</td><td class="mdescRight">析构函数  <br /></td></tr>
+<tr class="separator:a20feaf76847c8799448fb86135ac100a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa6cd0a6bf6fffa1b2ffc7798cf34638" id="r_afa6cd0a6bf6fffa1b2ffc7798cf34638"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#afa6cd0a6bf6fffa1b2ffc7798cf34638">pushViewpoint</a> (const osgEarth::Viewpoint &amp;viewpoint)</td></tr>
+<tr class="memdesc:afa6cd0a6bf6fffa1b2ffc7798cf34638"><td class="mdescLeft">&#160;</td><td class="mdescRight">添加新的视角到历史记录  <br /></td></tr>
+<tr class="separator:afa6cd0a6bf6fffa1b2ffc7798cf34638"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e9418d26a863c10472f0eab882cb9c7" id="r_a5e9418d26a863c10472f0eab882cb9c7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a5e9418d26a863c10472f0eab882cb9c7">goBack</a> (const osgEarth::Viewpoint &amp;currentViewpoint, osgEarth::Viewpoint &amp;backViewpoint)</td></tr>
+<tr class="memdesc:a5e9418d26a863c10472f0eab882cb9c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">保存当前视角并后退到上一个视角  <br /></td></tr>
+<tr class="separator:a5e9418d26a863c10472f0eab882cb9c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaf96972438b3c25426281733c897ada" id="r_acaf96972438b3c25426281733c897ada"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#acaf96972438b3c25426281733c897ada">goForward</a> (const osgEarth::Viewpoint &amp;currentViewpoint, osgEarth::Viewpoint &amp;forwardViewpoint)</td></tr>
+<tr class="memdesc:acaf96972438b3c25426281733c897ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">保存当前视角并前进到下一个视角  <br /></td></tr>
+<tr class="separator:acaf96972438b3c25426281733c897ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a7efc7278446fe3beabbf7330ac0b7" id="r_a72a7efc7278446fe3beabbf7330ac0b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a72a7efc7278446fe3beabbf7330ac0b7">clear</a> ()</td></tr>
+<tr class="memdesc:a72a7efc7278446fe3beabbf7330ac0b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">清除所有历史记录  <br /></td></tr>
+<tr class="separator:a72a7efc7278446fe3beabbf7330ac0b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a467a8da819a38f5c596f231dac69f859" id="r_a467a8da819a38f5c596f231dac69f859"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a467a8da819a38f5c596f231dac69f859">canGoBack</a> () const</td></tr>
+<tr class="memdesc:a467a8da819a38f5c596f231dac69f859"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否可以后退  <br /></td></tr>
+<tr class="separator:a467a8da819a38f5c596f231dac69f859"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b7122856a59467eb97ba15dce427bba" id="r_a5b7122856a59467eb97ba15dce427bba"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a5b7122856a59467eb97ba15dce427bba">canGoForward</a> () const</td></tr>
+<tr class="memdesc:a5b7122856a59467eb97ba15dce427bba"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否可以前进  <br /></td></tr>
+<tr class="separator:a5b7122856a59467eb97ba15dce427bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3269ed5600b8ac9b804e35786773b43" id="r_ae3269ed5600b8ac9b804e35786773b43"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#ae3269ed5600b8ac9b804e35786773b43">getHistoryCount</a> () const</td></tr>
+<tr class="memdesc:ae3269ed5600b8ac9b804e35786773b43"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取历史记录数量  <br /></td></tr>
+<tr class="separator:ae3269ed5600b8ac9b804e35786773b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>导航历史管理类 </p>
+<p>管理相机视角的导航历史，支持前进/后退功能 </p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a137b36437167fcb5464448ed84716eda" name="a137b36437167fcb5464448ed84716eda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a137b36437167fcb5464448ed84716eda">&#9670;&#160;</a></span>NavigationHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">NavigationHistory::NavigationHistory </td>
+          <td>(</td>
+          <td class="paramtype">QObject *&#160;</td>
+          <td class="paramname"><em>parent</em> = <code>nullptr</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>构造函数 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>父对象 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a20feaf76847c8799448fb86135ac100a" name="a20feaf76847c8799448fb86135ac100a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20feaf76847c8799448fb86135ac100a">&#9670;&#160;</a></span>~NavigationHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NavigationHistory::~NavigationHistory </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>析构函数 </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a467a8da819a38f5c596f231dac69f859" name="a467a8da819a38f5c596f231dac69f859"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a467a8da819a38f5c596f231dac69f859">&#9670;&#160;</a></span>canGoBack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NavigationHistory::canGoBack </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>是否可以后退 </p>
+<dl class="section return"><dt>返回</dt><dd>可以后退返回true </dd></dl>
+
+</div>
+</div>
+<a id="a5b7122856a59467eb97ba15dce427bba" name="a5b7122856a59467eb97ba15dce427bba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b7122856a59467eb97ba15dce427bba">&#9670;&#160;</a></span>canGoForward()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NavigationHistory::canGoForward </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>是否可以前进 </p>
+<dl class="section return"><dt>返回</dt><dd>可以前进返回true </dd></dl>
+
+</div>
+</div>
+<a id="a72a7efc7278446fe3beabbf7330ac0b7" name="a72a7efc7278446fe3beabbf7330ac0b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72a7efc7278446fe3beabbf7330ac0b7">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NavigationHistory::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>清除所有历史记录 </p>
+
+</div>
+</div>
+<a id="ae3269ed5600b8ac9b804e35786773b43" name="ae3269ed5600b8ac9b804e35786773b43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3269ed5600b8ac9b804e35786773b43">&#9670;&#160;</a></span>getHistoryCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NavigationHistory::getHistoryCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获取历史记录数量 </p>
+<dl class="section return"><dt>返回</dt><dd>历史记录数量 </dd></dl>
+
+</div>
+</div>
+<a id="a5e9418d26a863c10472f0eab882cb9c7" name="a5e9418d26a863c10472f0eab882cb9c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e9418d26a863c10472f0eab882cb9c7">&#9670;&#160;</a></span>goBack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NavigationHistory::goBack </td>
+          <td>(</td>
+          <td class="paramtype">const osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>currentViewpoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>backViewpoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>保存当前视角并后退到上一个视角 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">currentViewpoint</td><td>当前视角（将被保存到前进栈） </td></tr>
+    <tr><td class="paramname">backViewpoint</td><td>输出后退的视角 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回true，无历史记录返回false </dd></dl>
+
+</div>
+</div>
+<a id="acaf96972438b3c25426281733c897ada" name="acaf96972438b3c25426281733c897ada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acaf96972438b3c25426281733c897ada">&#9670;&#160;</a></span>goForward()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NavigationHistory::goForward </td>
+          <td>(</td>
+          <td class="paramtype">const osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>currentViewpoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>forwardViewpoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>保存当前视角并前进到下一个视角 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">currentViewpoint</td><td>当前视角（将被保存到后退栈） </td></tr>
+    <tr><td class="paramname">forwardViewpoint</td><td>输出前进的视角 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>成功返回true，无历史记录返回false </dd></dl>
+
+</div>
+</div>
+<a id="a15b668987b2275bc6b2950314c06c70c" name="a15b668987b2275bc6b2950314c06c70c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15b668987b2275bc6b2950314c06c70c">&#9670;&#160;</a></span>historyStateChanged</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NavigationHistory::historyStateChanged </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>canBack</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>canForward</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">signal</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>历史记录状态变化信号 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">canBack</td><td>是否可以后退 </td></tr>
+    <tr><td class="paramname">canForward</td><td>是否可以前进 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="afa6cd0a6bf6fffa1b2ffc7798cf34638" name="afa6cd0a6bf6fffa1b2ffc7798cf34638"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa6cd0a6bf6fffa1b2ffc7798cf34638">&#9670;&#160;</a></span>pushViewpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NavigationHistory::pushViewpoint </td>
+          <td>(</td>
+          <td class="paramtype">const osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>viewpoint</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>添加新的视角到历史记录 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewpoint</td><td>相机视角 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>geo/<a class="el" href="NavigationHistory_8h_source.html">NavigationHistory.h</a></li>
+<li>geo/<a class="el" href="NavigationHistory_8cpp.html">NavigationHistory.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="classNavigationHistory.html">NavigationHistory</a></li>
+    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>
