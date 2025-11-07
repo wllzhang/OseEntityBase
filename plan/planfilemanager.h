@@ -15,6 +15,7 @@
 #include <QDateTime>
 #include <QList>
 #include <QTimer>
+#include <atomic>
 
 // 前向声明
 class GeoEntity;
@@ -56,6 +57,7 @@ public:
      * @return 成功返回true
      */
     bool loadPlan(const QString& filePath);
+    void requestCancelLoad();
 
     /**
      * @brief 获取当前方案文件路径
@@ -215,6 +217,11 @@ private:
      */
     QString generatePlanFileName(const QString& name);
 
+signals:
+    void loadProgress(int current, int total, const QString& message);
+    void loadCancelled();
+
+private:
     /**
      * @brief 比较两个JSON对象是否有差异
      * @param obj1 第一个对象
@@ -243,6 +250,8 @@ private:
     double cameraHeading_;
     double cameraPitch_;
     double cameraRange_;
+
+    std::atomic_bool cancelLoad_;
 };
 
 #endif // PLANFILEMANAGER_H

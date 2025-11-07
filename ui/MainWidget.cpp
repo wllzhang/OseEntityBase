@@ -27,6 +27,10 @@
 #include <QSettings>
 #include <QtMath>
 #include <QPair>
+#include <QMetaObject>
+#include <QProgressDialog>
+#include <QEventLoop>
+#include <QPushButton>
 
 #include "../geo/geoentitymanager.h"
 #include "../geo/geoutils.h"
@@ -704,6 +708,84 @@ void MainWidget::onOpenPlanClicked()
     
     QAction* selectedAction = menu.exec(mapToGlobal(QPoint(0, 50)));
     
+    auto loadPlanWithProgress = [this](const QString& filePath, bool& cancelledOut) -> bool {
+        cancelledOut = false;
+        if (!planFileManager_) {
+            return false;
+        }
+
+        QProgressDialog progressDialog(QString::fromUtf8(u8"正在加载方案，请稍候..."), QString(), 0, 0, this);
+        progressDialog.setWindowTitle(QString::fromUtf8(u8"加载方案"));
+        QPushButton* cancelButton = new QPushButton(QString::fromUtf8(u8"取消"), &progressDialog);
+        progressDialog.setCancelButton(cancelButton);
+        progressDialog.setWindowModality(Qt::ApplicationModal);
+        progressDialog.setMinimumDuration(0);
+        progressDialog.setAutoClose(false);
+        progressDialog.show();
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
+
+        bool cancelSignalReceived = false;
+        bool cancelButtonPressed = false;
+
+        QMetaObject::Connection progressConn;
+        QMetaObject::Connection cancelConn;
+        QMetaObject::Connection cancelButtonConn;
+
+        if (planFileManager_) {
+            progressConn = connect(planFileManager_, &PlanFileManager::loadProgress,
+                                   this, [&, defaultMessage = QString::fromUtf8(u8"正在加载方案，请稍候...")](int current, int total, const QString& message) {
+                                        if (cancelSignalReceived) {
+                                            return;
+                                        }
+                                        if (total <= 0) {
+                                            progressDialog.setRange(0, 0);
+                                        } else {
+                                            if (progressDialog.maximum() != total) {
+                                                progressDialog.setRange(0, total);
+                                            }
+                                            progressDialog.setValue(qBound(0, current, total));
+                                        }
+                                        QString text = message.isEmpty() ? defaultMessage : message;
+                                        progressDialog.setLabelText(text);
+                                        progressDialog.repaint();
+                                        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
+                                   });
+
+            cancelConn = connect(planFileManager_, &PlanFileManager::loadCancelled,
+                                  this, [&]() {
+                                      cancelSignalReceived = true;
+                                      progressDialog.setLabelText(QString::fromUtf8(u8"正在取消..."));
+                                      progressDialog.repaint();
+                                  });
+
+            cancelButtonConn = connect(&progressDialog, &QProgressDialog::canceled, this, [&]() {
+                cancelButtonPressed = true;
+                progressDialog.setLabelText(QString::fromUtf8(u8"正在取消..."));
+                progressDialog.repaint();
+                planFileManager_->requestCancelLoad();
+            });
+        }
+
+        bool result = planFileManager_->loadPlan(filePath);
+
+        progressDialog.close();
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
+
+        if (planFileManager_) {
+            QObject::disconnect(progressConn);
+            QObject::disconnect(cancelConn);
+            QObject::disconnect(cancelButtonConn);
+        }
+
+        cancelledOut = cancelSignalReceived;
+
+        if (cancelSignalReceived) {
+            return false;
+        }
+
+        return result;
+    };
+
     if (selectedAction == openAction) {
         // 打开文件对话框
         QString filePath = QFileDialog::getOpenFileName(this, 
@@ -712,7 +794,8 @@ void MainWidget::onOpenPlanClicked()
                                                         "方案文件 (*.plan.json);;所有文件 (*.*)");
         
         if (!filePath.isEmpty()) {
-            if (planFileManager_ && planFileManager_->loadPlan(filePath)) {
+            bool cancelled = false;
+            if (loadPlanWithProgress(filePath, cancelled)) {
                 updateRecentFiles(filePath);
                 
                 // 恢复相机视角
@@ -743,7 +826,7 @@ void MainWidget::onOpenPlanClicked()
                 
                 QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
                 qDebug() << "方案加载成功:" << filePath;
-            } else {
+            } else if (!cancelled) {
                 QMessageBox::warning(this, "错误", "方案文件加载失败");
             }
         }
@@ -751,7 +834,8 @@ void MainWidget::onOpenPlanClicked()
         // 检查是否是最近文件菜单项
         QString filePath = selectedAction->data().toString();
         if (!filePath.isEmpty() && QFile::exists(filePath)) {
-            if (planFileManager_ && planFileManager_->loadPlan(filePath)) {
+            bool cancelled = false;
+            if (loadPlanWithProgress(filePath, cancelled)) {
                 updateRecentFiles(filePath);
                 
                 // 恢复相机视角
@@ -782,7 +866,7 @@ void MainWidget::onOpenPlanClicked()
                 
                 QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
                 qDebug() << "方案加载成功:" << filePath;
-            } else {
+            } else if (!cancelled) {
                 QMessageBox::warning(this, "错误", "方案文件加载失败");
             }
         }

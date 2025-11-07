@@ -54,6 +54,7 @@ PlanFileManager::PlanFileManager(GeoEntityManager* entityManager, QObject *paren
     , entityCounter_(0)
     , hasUnsavedChanges_(false)
     , autoSaveEnabled_(false)
+    , cancelLoad_(false)
 {
     if (!entityManager_) {
         qDebug() << "警告: PlanFileManager的entityManager为空，将在后续设置";
@@ -81,6 +82,11 @@ PlanFileManager::PlanFileManager(GeoEntityManager* entityManager, QObject *paren
 
 PlanFileManager::~PlanFileManager()
 {
+}
+
+void PlanFileManager::requestCancelLoad()
+{
+    cancelLoad_.store(true);
 }
 
 void PlanFileManager::setEntityManager(GeoEntityManager* entityManager)
@@ -270,6 +276,8 @@ bool PlanFileManager::savePlan(const QString& filePath)
 
 bool PlanFileManager::loadPlan(const QString& filePath)
 {
+    cancelLoad_.store(false);
+
     if (filePath.isEmpty()) {
         qDebug() << "方案文件路径为空";
         return false;
@@ -312,14 +320,37 @@ bool PlanFileManager::loadPlan(const QString& filePath)
         return false;
     }
 
+    QJsonArray entitiesArray = planObject["entities"].toArray();
+    QJsonArray routesArray = planObject["routes"].toArray();
+
+    int totalSteps = qMax(1, entitiesArray.size() + routesArray.size() + 1);
+    int currentStep = 0;
+
+    emit loadProgress(currentStep, totalSteps, QString::fromUtf8(u8"正在清理当前场景..."));
+
     entityManager_->clearAllEntities();
     entityManager_->processPendingDeletions();
 
     // 加载实体
-    QJsonArray entitiesArray = planObject["entities"].toArray();
     entityCounter_ = 0;
-    for (const auto& entityValue : entitiesArray) {
+    for (int i = 0; i < entitiesArray.size(); ++i) {
+        if (cancelLoad_.load()) {
+            emit loadCancelled();
+            entityManager_->clearAllEntities();
+            entityManager_->processPendingDeletions();
+            return false;
+        }
+        const auto& entityValue = entitiesArray.at(i);
         QJsonObject entityObj = entityValue.toObject();
+        QString entityName = entityObj["name"].toString();
+        if (entityName.isEmpty()) {
+            entityName = entityObj["modelName"].toString();
+        }
+        emit loadProgress(currentStep, totalSteps,
+                          QString::fromUtf8(u8"加载实体 %1/%2：%3")
+                              .arg(i + 1)
+                              .arg(entitiesArray.size())
+                              .arg(entityName));
         GeoEntity* entity = jsonToEntity(entityObj);
         if (entity) {
             entity->setProperty("modelId", entityObj["modelId"].toString());
@@ -334,14 +365,31 @@ bool PlanFileManager::loadPlan(const QString& filePath)
                 entity->setProperty("componentConfigs", componentConfigs);
             }
         }
+        ++currentStep;
+        emit loadProgress(currentStep, totalSteps,
+                          QString::fromUtf8(u8"实体加载进度 %1/%2")
+                              .arg(i + 1)
+                              .arg(entitiesArray.size()));
     }
-    
+
     // 加载航线信息
-    QJsonArray routesArray = planObject["routes"].toArray();
-    for (const auto& routeValue : routesArray) {
+    for (int i = 0; i < routesArray.size(); ++i) {
+        if (cancelLoad_.load()) {
+            emit loadCancelled();
+            entityManager_->clearAllEntities();
+            entityManager_->processPendingDeletions();
+            return false;
+        }
+        const auto& routeValue = routesArray.at(i);
         QJsonObject routeObj = routeValue.toObject();
         QString groupId = routeObj["groupId"].toString();
         QString targetUid = routeObj["targetUid"].toString();
+
+        emit loadProgress(currentStep, totalSteps,
+                          QString::fromUtf8(u8"加载航线 %1/%2：%3")
+                              .arg(i + 1)
+                              .arg(routesArray.size())
+                              .arg(groupId));
 
         // 查找对应的实体（通过稳定UID）
         GeoEntity* entity = entityManager_->getEntityByUid(targetUid);
@@ -400,10 +448,23 @@ bool PlanFileManager::loadPlan(const QString& filePath)
         }
 
         qDebug() << "加载航线成功:" << groupId << "->" << newGroupId << "实体UID:" << targetUid << "航点数:" << groupInfo.waypoints.size();
+
+        ++currentStep;
+        emit loadProgress(currentStep, totalSteps,
+                          QString::fromUtf8(u8"航线加载进度 %1/%2")
+                              .arg(i + 1)
+                              .arg(routesArray.size()));
     }
     
     // 加载相机视角
+    emit loadProgress(currentStep, totalSteps, QString::fromUtf8(u8"恢复相机视角..."));
     if (planObject.contains("camera")) {
+        if (cancelLoad_.load()) {
+            emit loadCancelled();
+            entityManager_->clearAllEntities();
+            entityManager_->processPendingDeletions();
+            return false;
+        }
         QJsonObject camera = planObject["camera"].toObject();
         if (!camera.isEmpty()) {
             double lon = camera["longitude"].toDouble();
@@ -453,10 +514,14 @@ bool PlanFileManager::loadPlan(const QString& filePath)
         hasCameraViewpoint_ = false;
     }
 
+    ++currentStep;
+
     currentPlanFile_ = filePath;
     hasUnsavedChanges_ = false;
     emit planLoaded(filePath);
     qDebug() << "方案加载成功:" << filePath << "实体数量:" << entitiesArray.size();
+
+    emit loadProgress(totalSteps, totalSteps, QString::fromUtf8(u8"方案加载完成"));
 
     return true;
 }
