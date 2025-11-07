@@ -71,7 +71,8 @@ public:
      * @return 创建的实体指针，失败返回nullptr
      */
     GeoEntity* createEntity(const QString& entityType, const QString& entityName, 
-                           const QJsonObject& properties, double longitude, double latitude, double altitude);
+                           const QJsonObject& properties, double longitude, double latitude, double altitude,
+                           const QString& uidOverride = QString());
     
     /**
      * @brief 从拖拽数据添加实体
@@ -114,13 +115,6 @@ public:
      * @return 实体UID列表
      */
     QStringList getEntityIdsByType(const QString& entityType) const;  // 保持方法名兼容，实际返回UID列表
-    
-    /**
-     * @brief 获取属于指定方案文件的所有实体
-     * @param planFile 方案文件路径
-     * @return 实体列表
-     */
-    QList<GeoEntity*> getEntitiesByPlanFile(const QString& planFile) const;
     
     /**
      * @brief 删除实体
@@ -193,7 +187,9 @@ public:
     /** @brief 创建航点组 */
     QString createWaypointGroup(const QString& name);
     /** @brief 在指定组中添加航点 */
-    class WaypointEntity* addWaypointToGroup(const QString& groupId, double lon, double lat, double alt);
+    class WaypointEntity* addWaypointToGroup(const QString& groupId, double lon, double lat, double alt,
+                                             const QString& uidOverride = QString(), const QString& label = QString());
+    bool attachWaypointToGroup(const QString& groupId, class WaypointEntity* waypoint);
     /** @brief 从组中按序号删除航点 */
     bool removeWaypointFromGroup(const QString& groupId, int index);
     /** @brief 删除指定航点实体（自动更新所属航线） */
@@ -214,7 +210,8 @@ public:
 
     // 点标绘：直接添加一个带自定义标签的航点（不依赖组）
     /** @brief 添加独立航点（带标签），用于快速标绘 */
-    class WaypointEntity* addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText);
+    class WaypointEntity* addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText,
+                                                const QString& uidOverride = QString());
 
 signals:
     /**

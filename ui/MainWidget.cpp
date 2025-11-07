@@ -1065,13 +1065,7 @@ void MainWidget::onMapLoaded()
         if (!entity || !planFileManager_) {
             return;
         }
-        
-        // 检查实体是否属于当前方案
-        QString planFile = entity->getProperty("planFile").toString();
-        if (planFile.isEmpty() || planFile != planFileManager_->getCurrentPlanFile()) {
-            return;  // 不属于当前方案，不显示菜单
-        }
-        
+
         // 创建右键菜单
         QMenu menu(this);
         QAction* editAction = menu.addAction("编辑属性");
@@ -1117,11 +1111,7 @@ void MainWidget::onMapLoaded()
             QString groupId = entityManager->createWaypointGroup(QString("route_%1").arg(entity->getUid()));
             
             // 添加第一个航点（实体位置）
-            if (WaypointEntity* wp = entityManager->addWaypointToGroup(groupId, entityLon, entityLat, entityAlt)) {
-                if (planFileManager_) {
-                    wp->setProperty("planFile", planFileManager_->getCurrentPlanFile());
-                }
-            }
+            entityManager->addWaypointToGroup(groupId, entityLon, entityLat, entityAlt);
             
             // 绑定航线到实体
             entityManager->bindRouteToEntity(groupId, entity->getUid());
@@ -1155,9 +1145,6 @@ void MainWidget::onMapLoaded()
             auto mapStateManager = osgMapWidget_->getMapStateManager();
             mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
             auto wp = entityManager->addStandaloneWaypoint(lon, lat, alt, pendingWaypointLabel_);
-            if (wp && planFileManager_) {
-                wp->setProperty("planFile", planFileManager_->getCurrentPlanFile());
-            }
             if (!wp) QMessageBox::warning(this, "点标绘", "创建失败。");
             isPlacingWaypoint_ = false;
         }
@@ -1169,9 +1156,6 @@ void MainWidget::onMapLoaded()
             auto mapStateManager = osgMapWidget_->getMapStateManager();
             mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
             auto wp = entityManager->addWaypointToGroup(currentWaypointGroupId_, lon, lat, alt);
-            if (wp && planFileManager_) {
-                wp->setProperty("planFile", planFileManager_->getCurrentPlanFile());
-            }
             qDebug() << "[Route] 添加航点:" << lon << lat << alt << (wp?"成功":"失败");
         }
         
@@ -1182,9 +1166,6 @@ void MainWidget::onMapLoaded()
             auto mapStateManager = osgMapWidget_->getMapStateManager();
             mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
             auto wp = entityManager->addWaypointToGroup(entityRouteGroupId_, lon, lat, alt);
-            if (wp && planFileManager_) {
-                wp->setProperty("planFile", planFileManager_->getCurrentPlanFile());
-            }
             qDebug() << "[EntityRoute] 添加航点:" << lon << lat << alt << (wp?"成功":"失败");
         }
     });
@@ -1422,12 +1403,6 @@ void MainWidget::openEntityPropertyDialog(GeoEntity* entity)
         return;
     }
 
-    QString planFile = entity->getProperty("planFile").toString();
-    if (planFile.isEmpty() || planFile != planFileManager_->getCurrentPlanFile()) {
-        QMessageBox::information(this, "提示", "该实体不属于当前方案，无法编辑");
-        return;
-    }
-
     EntityPropertyDialog* dialog = new EntityPropertyDialog(entity, planFileManager_, this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
@@ -1443,12 +1418,6 @@ void MainWidget::deleteEntityWithConfirm(GeoEntity* entity)
 
     auto entityManager = osgMapWidget_->getEntityManager();
     if (!entityManager) {
-        return;
-    }
-
-    QString planFile = entity->getProperty("planFile").toString();
-    if (planFile.isEmpty() || planFile != planFileManager_->getCurrentPlanFile()) {
-        QMessageBox::information(this, "提示", "该实体不属于当前方案，无法删除");
         return;
     }
 
@@ -1509,13 +1478,7 @@ void MainWidget::onEntityVisibilityChanged(const QString& uid, bool visible)
     }
 
     if (planFileManager_) {
-        GeoEntity* entity = entityManager->getEntity(uid);
-        if (entity) {
-            QString planFile = entity->getProperty("planFile").toString();
-            if (!planFile.isEmpty() && planFile == planFileManager_->getCurrentPlanFile()) {
-                planFileManager_->markPlanModified();
-            }
-        }
+        planFileManager_->markPlanModified();
     }
 
     refreshEntityManagementDialog();

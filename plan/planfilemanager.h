@@ -207,12 +207,7 @@ private:
      */
     QJsonObject getComponentFullInfoFromDatabase(const QString& componentId);
 
-    /**
-     * @brief 生成方案内的实体ID
-     * @return 实体ID
-     */
-    QString generatePlanEntityId();
-
+ 
     /**
      * @brief 生成方案文件名
      * @param name 方案名称

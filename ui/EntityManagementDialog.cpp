@@ -214,7 +214,7 @@ void EntityManagementDialog::fillWaypointGroup(QTreeWidgetItem* parentItem,
 
         QTreeWidgetItem* child = new QTreeWidgetItem(parentItem);
         child->setText(ColumnName, entity->getName());
-        child->setText(ColumnType, entity->getType());
+        child->setText(ColumnType, QString::fromUtf8(u8"航迹点"));
         child->setText(ColumnUid, entity->getUid());
         child->setData(ColumnName, RoleUid, entity->getUid());
         child->setData(ColumnName, RoleIsEntity, true);
@@ -255,7 +255,7 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
 
         QTreeWidgetItem* groupItem = new QTreeWidgetItem(tree_);
         groupItem->setText(ColumnName, groupName);
-        groupItem->setText(ColumnType, QStringLiteral("航迹点组"));
+        groupItem->setText(ColumnType, QString::fromUtf8(u8"航迹点组"));
         groupItem->setData(ColumnName, RoleIsEntity, false);
         groupItem->setData(ColumnName, RoleUid, QString());
         groupItem->setFlags(groupItem->flags() & ~(Qt::ItemIsUserCheckable));
@@ -274,7 +274,16 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
 
         QTreeWidgetItem* item = new QTreeWidgetItem(tree_);
         item->setText(ColumnName, entity->getName());
-        item->setText(ColumnType, entity->getType());
+        const QString typeId = entity->getType();
+        QString typeDisplay;
+        if (typeId == QStringLiteral("waypoint")) {
+            typeDisplay = QString::fromUtf8(u8"航迹点");
+        } else if (typeId == QStringLiteral("image")) {
+            typeDisplay = QString::fromUtf8(u8"图片实体");
+        } else {
+            typeDisplay = typeId;
+        }
+        item->setText(ColumnType, typeDisplay);
         item->setText(ColumnUid, entity->getUid());
         item->setData(ColumnName, RoleUid, entity->getUid());
         item->setData(ColumnName, RoleIsEntity, true);

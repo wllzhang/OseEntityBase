@@ -55,7 +55,8 @@ class GeoEntity : public QObject
 
 public:
     GeoEntity(const QString& name, const QString& type,
-              double longitude, double latitude, double altitude, QObject* parent = nullptr);
+              double longitude, double latitude, double altitude,
+              const QString& uidOverride = QString(), QObject* parent = nullptr);
     virtual ~GeoEntity() = default;
 
     // 基本信息

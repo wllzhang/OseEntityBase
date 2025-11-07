@@ -36,6 +36,7 @@ public:
                    double longitude,
                    double latitude,
                    double altitude,
+                   const QString& uidOverride = QString(),
                    QObject* parent = nullptr);
 
     void initialize() override;

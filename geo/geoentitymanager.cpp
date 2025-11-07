@@ -73,7 +73,8 @@ GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode,
 }
 
 GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QString& entityName, 
-                                         const QJsonObject& properties, double longitude, double latitude, double altitude)
+                                         const QJsonObject& properties, double longitude, double latitude, double altitude,
+                                         const QString& uidOverride)
 {
     qDebug() << "=== 开始创建实体 ===";
     qDebug() << "实体类型:" << entityType;
@@ -93,7 +94,16 @@ GeoEntity* GeoEntityManager::createEntity(const QString& entityType, const QStri
             }
             
             // 创建图片实体（不再需要generateEntityId，使用uid作为统一标识符）
-            entity = new ImageEntity(entityName, imagePath, longitude, latitude, altitude, this);
+            entity = new ImageEntity(entityName, imagePath, longitude, latitude, altitude, uidOverride, this);
+        } else if (entityType == "waypoint") {
+            WaypointEntity* waypointEntity = new WaypointEntity(entityName,
+                                                                longitude,
+                                                                latitude,
+                                                                altitude,
+                                                                uidOverride,
+                                                                this);
+            waypointEntity->setMapNode(mapNode_.get());
+            entity = waypointEntity;
         }
         
         if (!entity) {
@@ -254,23 +264,6 @@ QStringList GeoEntityManager::getEntityIdsByType(const QString& entityType) cons
     return result;
 }
 
-QList<GeoEntity*> GeoEntityManager::getEntitiesByPlanFile(const QString& planFile) const
-{
-    QList<GeoEntity*> result;
-    if (planFile.isEmpty()) {
-        return result;
-    }
-
-    for (auto it = entities_.begin(); it != entities_.end(); ++it) {
-        GeoEntity* entity = it.value();
-        if (entity && entity->getProperty("planFile").toString() == planFile) {
-            result.append(entity);
-        }
-    }
-
-    return result;
-}
-
 void GeoEntityManager::removeEntity(const QString& uid)
 {
     qDebug() << "标记实体待删除:" << uid;
@@ -349,6 +342,13 @@ void GeoEntityManager::clearAllEntities()
     }
     
     entityCounter_ = 0;
+    for (auto it = waypointGroups_.begin(); it != waypointGroups_.end(); ++it) {
+        if (it->routeNode.valid()) {
+            entityGroup_->removeChild(it->routeNode.get());
+        }
+    }
+    waypointGroups_.clear();
+    routeBinding_.clear();
     qDebug() << "所有实体已标记为待删除，将在下一帧渲染后真正删除";
 }
 
@@ -601,23 +601,32 @@ QString GeoEntityManager::createWaypointGroup(const QString& name)
     return gid;
 }
 
-WaypointEntity* GeoEntityManager::addWaypointToGroup(const QString& groupId, double lon, double lat, double alt)
+WaypointEntity* GeoEntityManager::addWaypointToGroup(const QString& groupId, double lon, double lat, double alt,
+                                                    const QString& uidOverride, const QString& label)
 {
     auto it = waypointGroups_.find(groupId);
     if (it == waypointGroups_.end()) return nullptr;
 
-    WaypointEntity* wp = new WaypointEntity(QString("WP-%1").arg(it->waypoints.size()+1),
-                                            lon, lat, alt, this);
+    QString name = label.isEmpty() ? QString("WP-%1").arg(it->waypoints.size()+1) : label;
+    WaypointEntity* wp = new WaypointEntity(name,
+                                            lon, lat, alt, uidOverride, this);
     // 优先绑定 MapNode，确保 PlaceNode 立即可见
     wp->setMapNode(mapNode_.get());
     wp->initialize();
     // 标记序号
-    wp->setOrderLabel(QString::number(it->waypoints.size()+1));
+    if (label.isEmpty()) {
+        wp->setOrderLabel(QString::number(it->waypoints.size()+1));
+    } else {
+        wp->setOrderLabel(label);
+    }
 
     if (wp->getNode()) {
         entityGroup_->addChild(wp->getNode());
     }
     it->waypoints.push_back(wp);
+
+    wp->setProperty("waypointGroupId", groupId);
+    wp->setProperty("waypointOrder", it->waypoints.size());
 
     // 也注册到通用实体表（可选）
     entities_.insert(wp->getUid(), wp);
@@ -625,6 +634,48 @@ WaypointEntity* GeoEntityManager::addWaypointToGroup(const QString& groupId, dou
     emit entityCreated(wp);
 
     return wp;
+}
+
+bool GeoEntityManager::attachWaypointToGroup(const QString& groupId, WaypointEntity* waypoint)
+{
+    if (!waypoint || !waypointGroups_.contains(groupId)) {
+        return false;
+    }
+
+    QString currentGroup;
+    int index = -1;
+    if (findWaypointLocation(waypoint, currentGroup, index)) {
+        if (currentGroup == groupId) {
+            return true;
+        }
+        auto currentIt = waypointGroups_.find(currentGroup);
+        if (currentIt != waypointGroups_.end() && index >= 0 && index < currentIt->waypoints.size()) {
+            currentIt->waypoints.removeAt(index);
+            for (int i = 0; i < currentIt->waypoints.size(); ++i) {
+                currentIt->waypoints[i]->setOrderLabel(QString::number(i + 1));
+                currentIt->waypoints[i]->setProperty("waypointOrder", i + 1);
+            }
+        }
+    }
+
+    auto& info = waypointGroups_[groupId];
+    if (!info.waypoints.contains(waypoint)) {
+        info.waypoints.push_back(waypoint);
+    }
+
+    waypoint->setMapNode(mapNode_.get());
+    if (!waypoint->getNode()) {
+        waypoint->initialize();
+    }
+    if (waypoint->getNode() && !entityGroup_->containsNode(waypoint->getNode())) {
+        entityGroup_->addChild(waypoint->getNode());
+    }
+
+    waypoint->setOrderLabel(QString::number(info.waypoints.size()));
+    waypoint->setProperty("waypointGroupId", groupId);
+    waypoint->setProperty("waypointOrder", info.waypoints.size());
+
+    return true;
 }
 
 bool GeoEntityManager::removeWaypointFromGroup(const QString& groupId, int index)
@@ -787,14 +838,18 @@ GeoEntityManager::WaypointGroupInfo GeoEntityManager::getWaypointGroup(const QSt
     return WaypointGroupInfo();
 }
 
-WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText)
+WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText,
+                                                        const QString& uidOverride)
 {
-    WaypointEntity* wp = new WaypointEntity(QString("WP-%1").arg(entityCounter_),
-                                            lon, lat, alt, this);
+    QString name = labelText.isEmpty() ? QString("WP-%1").arg(entityCounter_) : labelText;
+    WaypointEntity* wp = new WaypointEntity(name,
+                                            lon, lat, alt, uidOverride, this);
     // 优先绑定 MapNode，确保 PlaceNode 立即可见
     wp->setMapNode(mapNode_.get());
     wp->initialize();
-    wp->setOrderLabel(labelText);
+    if (!labelText.isEmpty()) {
+        wp->setOrderLabel(labelText);
+    }
     if (wp->getNode()) {
         entityGroup_->addChild(wp->getNode());
     }
@@ -866,7 +921,11 @@ bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
 
     for (int i = 0; i < it->waypoints.size(); ++i) {
         it->waypoints[i]->setOrderLabel(QString::number(i + 1));
+        it->waypoints[i]->setProperty("waypointOrder", i + 1);
     }
+
+    waypoint->setProperty("waypointGroupId", QString());
+    waypoint->setProperty("waypointOrder", QVariant());
 
     pendingEntities_[wpUid] = waypoint;
     if (!pendingDeletions_.contains(wpUid)) {
