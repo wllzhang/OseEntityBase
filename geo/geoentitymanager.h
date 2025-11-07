@@ -91,6 +91,16 @@ public:
     GeoEntity* getEntity(const QString& uid);
     /** @brief 通过稳定UID获取实体（别名，保持兼容） */
     GeoEntity* getEntityByUid(const QString& uid) const;
+    /** @brief 获取所有实体列表 */
+    QList<GeoEntity*> getAllEntities() const;
+    /** @brief 获取当前选中的实体 */
+    GeoEntity* getSelectedEntity() const;
+    /** @brief 设置当前选中的实体 */
+    void setSelectedEntity(GeoEntity* entity, bool emitSignal = true);
+    /** @brief 设置实体可见性 */
+    bool setEntityVisible(const QString& uid, bool visible);
+    /** @brief 查询实体可见性 */
+    bool isEntityVisible(const QString& uid) const;
     
     /**
      * @brief 获取所有实体UID列表
@@ -164,7 +174,9 @@ public:
      * @param screenPos 屏幕坐标
      * @return 找到的实体指针，未找到返回nullptr
      */
-    GeoEntity* findEntityAtPosition(QPoint screenPos);
+    GeoEntity* findEntityAtPosition(QPoint screenPos, bool verbose = true);
+    /** @brief 处理鼠标移动事件（用于实体悬停高亮） */
+    void onMouseMove(QMouseEvent* event);
 
     // ===== 航点/航线 API =====
     /**
@@ -268,6 +280,7 @@ private:
     
     // 当前选中的实体
     GeoEntity* selectedEntity_;
+    GeoEntity* hoveredEntity_;       // 当前悬停的实体
     
     // 延迟删除机制：避免在渲染过程中删除节点
     QQueue<QString> pendingDeletions_;  // 待删除的实体UID队列

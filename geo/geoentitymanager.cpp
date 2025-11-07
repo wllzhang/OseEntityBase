@@ -60,6 +60,7 @@ GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode,
     , mapNode_(mapNode)
     , entityCounter_(0)
     , selectedEntity_(nullptr)
+    , hoveredEntity_(nullptr)
     , viewer_(nullptr)
     , mapStateManager_(nullptr)
 {
@@ -176,6 +177,67 @@ GeoEntity* GeoEntityManager::getEntityByUid(const QString& uid) const
     return uidToEntity_.value(uid, nullptr);
 }
 
+QList<GeoEntity*> GeoEntityManager::getAllEntities() const
+{
+    return entities_.values();
+}
+
+GeoEntity* GeoEntityManager::getSelectedEntity() const
+{
+    return selectedEntity_;
+}
+
+void GeoEntityManager::setSelectedEntity(GeoEntity* entity, bool emitSignal)
+{
+    if (selectedEntity_ == entity) {
+        return;
+    }
+
+    if (selectedEntity_) {
+        selectedEntity_->setSelected(false);
+        if (emitSignal) {
+            emit entityDeselected();
+        }
+    }
+
+    selectedEntity_ = entity;
+    if (hoveredEntity_ == selectedEntity_) {
+        hoveredEntity_ = nullptr;
+    }
+
+    if (selectedEntity_) {
+        selectedEntity_->setSelected(true);
+        if (emitSignal) {
+            emit entitySelected(selectedEntity_);
+        }
+    }
+}
+
+bool GeoEntityManager::setEntityVisible(const QString& uid, bool visible)
+{
+    GeoEntity* entity = getEntity(uid);
+    if (!entity) {
+        return false;
+    }
+
+    entity->setVisible(visible);
+    if (!visible) {
+        if (selectedEntity_ == entity) {
+            setSelectedEntity(nullptr);
+        }
+        if (hoveredEntity_ == entity) {
+            hoveredEntity_ = nullptr;
+        }
+    }
+    return true;
+}
+
+bool GeoEntityManager::isEntityVisible(const QString& uid) const
+{
+    GeoEntity* entity = uidToEntity_.value(uid, nullptr);
+    return entity ? entity->isVisible() : false;
+}
+
 QStringList GeoEntityManager::getEntityIds() const
 {
     return entities_.keys();
@@ -219,12 +281,13 @@ void GeoEntityManager::removeEntity(const QString& uid)
         return;
     }
     
-    // 立即清除选中引用（避免悬空指针，但不调用setSelected避免触发updateNode）
+    // 清除选中/悬停引用
     if (selectedEntity_ == entity) {
-        // 直接清除状态，不调用setSelected(false)避免在删除过程中修改节点
-        selectedEntity_ = nullptr;
-        emit entityDeselected();
+        setSelectedEntity(nullptr);
         qDebug() << "清除选中实体引用";
+    }
+    if (hoveredEntity_ == entity) {
+        hoveredEntity_ = nullptr;
     }
     
     // 立即从场景中移除节点（禁用节点，防止渲染时访问）
@@ -260,9 +323,9 @@ void GeoEntityManager::clearAllEntities()
     
     // 清除选中实体引用
     if (selectedEntity_) {
-        selectedEntity_ = nullptr;
-        emit entityDeselected();
+        setSelectedEntity(nullptr);
     }
+    hoveredEntity_ = nullptr;
     
     // 将所有实体添加到延迟删除队列
     QStringList entityUids = getEntityIds();
@@ -350,30 +413,13 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
         qDebug() << "找到的实体:" << (entity ? entity->getName() : "无");
         
         if (entity) {
-            // 如果点击的是已选中的实体，不做任何操作（避免重复设置）
-            if (selectedEntity_ == entity && entity->isSelected()) {
-                qDebug() << "实体已选中，无需重复设置:" << entity->getName();
-                return;
+            if (selectedEntity_ != entity) {
+                setSelectedEntity(entity);
+                qDebug() << "选择实体:" << entity->getName() << "UID:" << entity->getUid();
             }
-            
-            // 取消之前的选择
-            if (selectedEntity_ && selectedEntity_ != entity) {
-                selectedEntity_->setSelected(false);
-                emit entityDeselected();
-            }
-            
-            // 选择新实体
-            selectedEntity_ = entity;
-            entity->setSelected(true);
-            emit entitySelected(entity);
-            
-            qDebug() << "选择实体:" << entity->getName() << "ID:" << entity->getId();
         } else {
-            // 点击空白处，取消选择
             if (selectedEntity_) {
-                selectedEntity_->setSelected(false);
-                selectedEntity_ = nullptr;
-                emit entityDeselected();
+                setSelectedEntity(nullptr);
                 qDebug() << "取消实体选择";
             }
             // 通知空白处左键点击（用于点标绘放置）
@@ -406,6 +452,42 @@ void GeoEntityManager::onMouseDoubleClick(QMouseEvent* event)
     }
 }
 
+void GeoEntityManager::onMouseMove(QMouseEvent* event)
+{
+    if (!mapStateManager_) {
+        return;
+    }
+
+    GeoEntity* entity = findEntityAtPosition(event->pos(), false);
+
+    if (entity == selectedEntity_) {
+        if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
+            hoveredEntity_->setSelected(false);
+        }
+        hoveredEntity_ = nullptr;
+        return;
+    }
+
+    if (entity) {
+        if (hoveredEntity_ != entity) {
+            if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
+                hoveredEntity_->setSelected(false);
+            }
+            if (entity != selectedEntity_) {
+                entity->setSelected(true);
+                hoveredEntity_ = entity;
+            } else {
+                hoveredEntity_ = nullptr;
+            }
+        }
+    } else {
+        if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
+            hoveredEntity_->setSelected(false);
+        }
+        hoveredEntity_ = nullptr;
+    }
+}
+
 /**
  * @brief 查找指定位置的实体
  * 
@@ -415,18 +497,22 @@ void GeoEntityManager::onMouseDoubleClick(QMouseEvent* event)
  * @param screenPos 屏幕坐标（相对于GLWidget）
  * @return 找到的实体指针，未找到返回nullptr
  */
-GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
+GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos, bool verbose)
 {
     double mouseLongitude, mouseLatitude, mouseAltitude;
     
     // 统一使用 MapStateManager 获取坐标信息（mapStateManager_ 必然存在）
     if (!mapStateManager_->getGeoCoordinatesFromScreen(screenPos, mouseLongitude, mouseLatitude, mouseAltitude)) {
-        qDebug() << "findEntityAtPosition: 无法获取鼠标地理坐标";
+        if (verbose) {
+            qDebug() << "findEntityAtPosition: 无法获取鼠标地理坐标";
+        }
         return nullptr;
     }
     
     try {
-        qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude << mouseAltitude;
+        if (verbose) {
+            qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude << mouseAltitude;
+        }
         
         // 遍历所有实体，找到距离最近的可见实体
         GeoEntity* closestEntity = nullptr;
@@ -454,9 +540,11 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
             
             // 计算距离：使用地理距离（米），更精确
             double distanceMeters = GeoUtils::calculateGeographicDistance(mouseLongitude, mouseLatitude, 
-                                                                          entityLongitude, entityLatitude);
+                                                                           entityLongitude, entityLatitude);
             
-            qDebug() << "实体" << entity->getName() << "距离:" << distanceMeters << "米";
+            if (verbose) {
+                qDebug() << "实体" << entity->getName() << "距离:" << distanceMeters << "米";
+            }
             
             if (distanceMeters < minDistance) {
                 minDistance = distanceMeters;
@@ -484,15 +572,21 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
         }
         
         if (closestEntity && minDistance < thresholdMeters) {
-            qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
+            if (verbose) {
+                qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
+            }
             return closestEntity;
         } else {
-            qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
+            if (verbose) {
+                qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
+            }
         }
         
         return nullptr;
     } catch (const std::exception& e) {
-        qDebug() << "findEntityAtPosition异常:" << e.what();
+        if (verbose) {
+            qDebug() << "findEntityAtPosition异常:" << e.what();
+        }
         return nullptr;
     }
 }
@@ -749,8 +843,10 @@ bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
     }
 
     if (selectedEntity_ == waypoint) {
-        selectedEntity_ = nullptr;
-        emit entityDeselected();
+        setSelectedEntity(nullptr);
+    }
+    if (hoveredEntity_ == waypoint) {
+        hoveredEntity_ = nullptr;
     }
 
     if (it->routeNode.valid()) {

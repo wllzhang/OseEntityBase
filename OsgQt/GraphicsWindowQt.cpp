@@ -566,6 +566,11 @@ void GLWidget::mouseMoveEvent( QMouseEvent* event )
 	if (_mapStateManager) {
 		_mapStateManager->onMouseMove(event);
 	}
+
+    // ===== 实体管理器通知 =====
+    if (_entityManager) {
+        _entityManager->onMouseMove(event);
+    }
 }
 
 void GLWidget::wheelEvent( QWheelEvent* event )
