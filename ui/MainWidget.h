@@ -28,6 +28,7 @@
 class GeoEntity;
 class PlanFileManager;
 class ModelDeployDialog;
+class WeaponMountDialog;
 
 /**
  * @brief 应用程序主窗口
@@ -129,6 +130,11 @@ private slots:
      */
     void onSavePlanAsClicked();
 
+    /**
+     * @brief 导出方案槽函数（生成AFSIM脚本）
+     */
+    void onExportPlanClicked();
+
 private:
     /**
      * @brief 创建工具栏
@@ -182,6 +188,8 @@ private:
      * @param menu 菜单指针
      */
     void addRecentFileMenuItem(QMenu* menu);
+
+
 
     // 主布局组件
     QVBoxLayout *mainVLayout;        // 主垂直布局

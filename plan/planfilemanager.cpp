@@ -23,6 +23,7 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QtMath>
+#include <QTextStream>
 
 PlanFileManager::PlanFileManager(GeoEntityManager* entityManager, QObject *parent)
     : QObject(parent)
@@ -66,6 +67,7 @@ void PlanFileManager::setEntityManager(GeoEntityManager* entityManager)
         qDebug() << "PlanFileManager: EntityManager已设置";
     }
 }
+
 
 QString PlanFileManager::getPlansDirectory()
 {
@@ -605,6 +607,12 @@ QJsonObject PlanFileManager::entityToJson(GeoEntity* entity)
         entityObj["componentConfigs"] = entityComponentConfigs;
     }
 
+    // 武器挂载信息：保存武器挂载配置
+    QJsonObject weaponMounts = entity->getProperty("weaponMounts").toJsonObject();
+    if (!weaponMounts.isEmpty()) {
+        entityObj["weaponMounts"] = weaponMounts;
+    }
+
     return entityObj;
 }
 
@@ -692,6 +700,10 @@ GeoEntity* PlanFileManager::jsonToEntity(const QJsonObject& json)
         // 从JSON文件加载完整的组件配置（不再依赖数据库）
         if (json.contains("componentConfigs")) {
             entity->setProperty("componentConfigs", json["componentConfigs"].toObject());
+        }
+        // 从JSON文件加载武器挂载信息
+        if (json.contains("weaponMounts")) {
+            entity->setProperty("weaponMounts", json["weaponMounts"].toObject());
         }
     }
 
