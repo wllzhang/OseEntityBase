@@ -23,6 +23,37 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+namespace {
+bool isFinite(double value) {
+    return std::isfinite(value);
+}
+
+QVector<osg::Vec3d> generateBezierCurve(const QVector<osg::Vec3d>& controlPoints, int steps)
+{
+    QVector<osg::Vec3d> result;
+    if (controlPoints.isEmpty()) {
+        return result;
+    }
+
+    steps = qMax(1, steps);
+
+    for (int i = 0; i <= steps; ++i) {
+        double t = static_cast<double>(i) / steps;
+        QVector<osg::Vec3d> temp = controlPoints;
+        int n = temp.size();
+        while (n > 1) {
+            for (int k = 0; k < n - 1; ++k) {
+                temp[k] = temp[k] * (1.0 - t) + temp[k + 1] * t;
+            }
+            --n;
+        }
+        result.append(temp[0]);
+    }
+
+    return result;
+}
+}
+
 GeoEntityManager::GeoEntityManager(osg::Group* root, osgEarth::MapNode* mapNode, QObject *parent)
     : QObject(parent)
     , root_(root)
@@ -574,14 +605,19 @@ osg::ref_ptr<osg::Geode> GeoEntityManager::buildBezierRoute(const QVector<Waypoi
         double cx = (lon1+lon2)/2.0;
         double cy = (lat1+lat2)/2.0;
         double cz = (alt1+alt2)/2.0;
-        const int steps = 16;
-        for (int t=0;t<=steps;++t){
-            double u = double(t)/steps;
-            // 二次贝塞尔插值
-            double lon = (1-u)*(1-u)*lon1 + 2*u*(1-u)*cx + u*u*lon2;
-            double lat = (1-u)*(1-u)*lat1 + 2*u*(1-u)*cy + u*u*lat2;
-            double alt = (1-u)*(1-u)*alt1 + 2*u*(1-u)*cz + u*u*alt2;
-            verts->push_back(GeoUtils::geoToWorldCoordinates(lon, lat, alt));
+        QVector<osg::Vec3d> controlPoints;
+        controlPoints.append(GeoUtils::geoToWorldCoordinates(lon1, lat1, alt1));
+        controlPoints.append(GeoUtils::geoToWorldCoordinates(cx, cy, cz));
+        controlPoints.append(GeoUtils::geoToWorldCoordinates(lon2, lat2, alt2));
+
+        QVector<osg::Vec3d> curve = generateBezierCurve(controlPoints, 16);
+        if (!curve.isEmpty()) {
+            if (!verts->empty()) {
+                curve.removeFirst();
+            }
+            for (const auto& pt : curve) {
+                verts->push_back(pt);
+            }
         }
     }
 
