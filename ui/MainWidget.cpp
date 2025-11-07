@@ -1313,6 +1313,11 @@ void MainWidget::showEntityManagementDialog()
                 this, &MainWidget::onEntitySelectionRequested);
         connect(entityManagementDialog_, &EntityManagementDialog::requestRefresh,
                 this, &MainWidget::onEntityRefreshRequested);
+        connect(entityManagementDialog_, &QDialog::finished, this, [this](int){
+            if (osgMapWidget_) {
+                osgMapWidget_->setFocus(Qt::OtherFocusReason);
+            }
+        });
     }
 
     refreshEntityManagementDialog();
@@ -1395,6 +1400,7 @@ void MainWidget::focusEntity(GeoEntity* entity)
         entityManager->setSelectedEntity(entity);
     }
 
+    osgMapWidget_->setFocus(Qt::OtherFocusReason);
     refreshEntityManagementDialog();
 }
 
