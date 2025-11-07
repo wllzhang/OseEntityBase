@@ -6,5 +6,6 @@ var searchData=
   ['_7emapstatemanager_3',['~MapStateManager',['../classMapStateManager.html#af620fb087049571249d7f9f8fa0cff19',1,'MapStateManager']]],
   ['_7enavigationhistory_4',['~NavigationHistory',['../classNavigationHistory.html#a20feaf76847c8799448fb86135ac100a',1,'NavigationHistory']]],
   ['_7eqgraphicsviewadapter_5',['~QGraphicsViewAdapter',['../classosgQt_1_1QGraphicsViewAdapter.html#a8893f176873e7b617c7e9bb4b7024e81',1,'osgQt::QGraphicsViewAdapter']]],
-  ['_7eqwidgetimage_6',['~QWidgetImage',['../classosgQt_1_1QWidgetImage.html#a7cdb83066b7a866e7304254db805b1d9',1,'osgQt::QWidgetImage']]]
+  ['_7eqwidgetimage_6',['~QWidgetImage',['../classosgQt_1_1QWidgetImage.html#a7cdb83066b7a866e7304254db805b1d9',1,'osgQt::QWidgetImage']]],
+  ['_7eweaponmountdialog_7',['~WeaponMountDialog',['../classWeaponMountDialog.html#a03da601584bd8b711c37f848772485cb',1,'WeaponMountDialog']]]
 ];

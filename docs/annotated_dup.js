@@ -13,5 +13,7 @@ var annotated_dup =
     [ "MapStateInfo", "structMapStateInfo.html", "structMapStateInfo" ],
     [ "MapStateManager", "classMapStateManager.html", "classMapStateManager" ],
     [ "NavigationHistory", "classNavigationHistory.html", "classNavigationHistory" ],
-    [ "WaypointEntity", "classWaypointEntity.html", "classWaypointEntity" ]
+    [ "WaypointEntity", "classWaypointEntity.html", "classWaypointEntity" ],
+    [ "WeaponMountDialog", "classWeaponMountDialog.html", "classWeaponMountDialog" ],
+    [ "WeaponMountInfo", "structWeaponMountInfo.html", "structWeaponMountInfo" ]
 ];
