@@ -175,6 +175,7 @@ public:
         QString name;
         QVector<class WaypointEntity*> waypoints;
         osg::ref_ptr<osg::Geode> routeNode; // 航线绘制节点
+        QString routeModel;                 // 航线生成模型（linear|bezier）
     };
 
     /** @brief 创建航点组 */
@@ -183,6 +184,8 @@ public:
     class WaypointEntity* addWaypointToGroup(const QString& groupId, double lon, double lat, double alt);
     /** @brief 从组中按序号删除航点 */
     bool removeWaypointFromGroup(const QString& groupId, int index);
+    /** @brief 删除指定航点实体（自动更新所属航线） */
+    bool removeWaypointEntity(class WaypointEntity* waypoint);
     /** @brief 依据模型生成组内航线（linear|bezier） */
     bool generateRouteForGroup(const QString& groupId, const QString& model /* 'linear' | 'bezier' */);
     /** @brief 将生成的航线绑定到实体（随实体移动/显示） */
@@ -285,6 +288,9 @@ private:
     osg::ref_ptr<osg::Geode> buildLinearRoute(const QVector<class WaypointEntity*>& wps);
     /** @brief 生成贝塞尔航线节点 */
     osg::ref_ptr<osg::Geode> buildBezierRoute(const QVector<class WaypointEntity*>& wps);
+
+    /** @brief 查找航点所属分组和序号 */
+    bool findWaypointLocation(class WaypointEntity* waypoint, QString& groupIdOut, int& indexOut) const;
 };
 
 #endif // GEOENTITYMANAGER_H

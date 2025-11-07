@@ -376,7 +376,10 @@ bool PlanFileManager::loadPlan(const QString& filePath)
             double lon = wpObj["longitude"].toDouble();
             double lat = wpObj["latitude"].toDouble();
             double alt = wpObj["altitude"].toDouble();
-            entityManager_->addWaypointToGroup(newGroupId, lon, lat, alt);
+            WaypointEntity* wpEntity = entityManager_->addWaypointToGroup(newGroupId, lon, lat, alt);
+            if (wpEntity) {
+                wpEntity->setProperty("planFile", currentPlanFile_);
+            }
         }
         
         // 绑定航线到实体（使用uid作为统一标识符）
@@ -517,6 +520,15 @@ void PlanFileManager::updateEntityInPlan(GeoEntity* entity)
         emit planDataChanged();
         qDebug() << "方案中的实体已更新:" << entity->getUid();
     }
+}
+
+void PlanFileManager::markPlanModified()
+{
+    if (currentPlanFile_.isEmpty()) {
+        return;
+    }
+    hasUnsavedChanges_ = true;
+    emit planDataChanged();
 }
 
 bool PlanFileManager::hasUnsavedChanges() const

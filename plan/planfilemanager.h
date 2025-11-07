@@ -93,6 +93,9 @@ public:
      */
     bool hasUnsavedChanges() const;
 
+    /** @brief 手动标记方案已发生修改（发出planDataChanged信号） */
+    void markPlanModified();
+
     /**
      * @brief 设置实体管理器
      * @param entityManager 实体管理器指针

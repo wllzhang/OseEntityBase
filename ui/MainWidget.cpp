@@ -30,6 +30,7 @@
 #include "../geo/geoutils.h"
 #include "../geo/mapstatemanager.h"
 #include "../geo/navigationhistory.h"
+#include "../geo/waypointentity.h"
 #include "../widgets/MapInfoOverlay.h"
 
 MainWidget::MainWidget(QWidget *parent)
@@ -1090,6 +1091,25 @@ void MainWidget::onMapLoaded()
         
         // 转换为全局坐标
         QPoint globalPos = osgMapWidget_->mapToGlobal(screenPos);
+        WaypointEntity* waypointEntity = dynamic_cast<WaypointEntity*>(entity);
+
+        if (waypointEntity) {
+            QMenu waypointMenu(this);
+            QAction* deleteWaypointAction = waypointMenu.addAction("删除航迹点");
+            QAction* selectedAction = waypointMenu.exec(globalPos);
+            if (selectedAction == deleteWaypointAction) {
+                int ret = QMessageBox::question(this, "确认删除", "确定要删除选中的航迹点吗？", QMessageBox::Yes | QMessageBox::No);
+                if (ret == QMessageBox::Yes) {
+                    if (entityManager->removeWaypointEntity(waypointEntity)) {
+                        if (planFileManager_) {
+                            planFileManager_->markPlanModified();
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
         QAction* selectedAction = menu.exec(globalPos);
         
         if (selectedAction == routePlanAction) {
@@ -1107,7 +1127,11 @@ void MainWidget::onMapLoaded()
             QString groupId = entityManager->createWaypointGroup(QString("route_%1").arg(entity->getUid()));
             
             // 添加第一个航点（实体位置）
-            entityManager->addWaypointToGroup(groupId, entityLon, entityLat, entityAlt);
+            if (WaypointEntity* wp = entityManager->addWaypointToGroup(groupId, entityLon, entityLat, entityAlt)) {
+                if (planFileManager_) {
+                    wp->setProperty("planFile", planFileManager_->getCurrentPlanFile());
+                }
+            }
             
             // 绑定航线到实体
             entityManager->bindRouteToEntity(groupId, entity->getUid());
@@ -1156,6 +1180,9 @@ void MainWidget::onMapLoaded()
             auto mapStateManager = osgMapWidget_->getMapStateManager();
             mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
             auto wp = entityManager->addStandaloneWaypoint(lon, lat, alt, pendingWaypointLabel_);
+            if (wp && planFileManager_) {
+                wp->setProperty("planFile", planFileManager_->getCurrentPlanFile());
+            }
             if (!wp) QMessageBox::warning(this, "点标绘", "创建失败。");
             isPlacingWaypoint_ = false;
         }
@@ -1167,6 +1194,9 @@ void MainWidget::onMapLoaded()
             auto mapStateManager = osgMapWidget_->getMapStateManager();
             mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
             auto wp = entityManager->addWaypointToGroup(currentWaypointGroupId_, lon, lat, alt);
+            if (wp && planFileManager_) {
+                wp->setProperty("planFile", planFileManager_->getCurrentPlanFile());
+            }
             qDebug() << "[Route] 添加航点:" << lon << lat << alt << (wp?"成功":"失败");
         }
         
@@ -1177,6 +1207,9 @@ void MainWidget::onMapLoaded()
             auto mapStateManager = osgMapWidget_->getMapStateManager();
             mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
             auto wp = entityManager->addWaypointToGroup(entityRouteGroupId_, lon, lat, alt);
+            if (wp && planFileManager_) {
+                wp->setProperty("planFile", planFileManager_->getCurrentPlanFile());
+            }
             qDebug() << "[EntityRoute] 添加航点:" << lon << lat << alt << (wp?"成功":"失败");
         }
     });

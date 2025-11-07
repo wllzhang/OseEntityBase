@@ -471,7 +471,7 @@ GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos)
 QString GeoEntityManager::createWaypointGroup(const QString& name)
 {
     QString gid = QString("wpgroup_%1").arg(++entityCounter_);
-    WaypointGroupInfo info; info.groupId = gid; info.name = name; info.routeNode = nullptr;
+    WaypointGroupInfo info; info.groupId = gid; info.name = name; info.routeNode = nullptr; info.routeModel = QStringLiteral("linear");
     waypointGroups_.insert(gid, info);
     return gid;
 }
@@ -495,7 +495,8 @@ WaypointEntity* GeoEntityManager::addWaypointToGroup(const QString& groupId, dou
     it->waypoints.push_back(wp);
 
     // 也注册到通用实体表（可选）
-    entities_.insert(wp->getId(), wp);
+    entities_.insert(wp->getUid(), wp);
+    uidToEntity_.insert(wp->getUid(), wp);
     emit entityCreated(wp);
 
     return wp;
@@ -506,17 +507,7 @@ bool GeoEntityManager::removeWaypointFromGroup(const QString& groupId, int index
     auto it = waypointGroups_.find(groupId);
     if (it == waypointGroups_.end()) return false;
     if (index < 0 || index >= it->waypoints.size()) return false;
-    WaypointEntity* wp = it->waypoints.at(index);
-    if (wp) {
-        if (wp->getNode()) entityGroup_->removeChild(wp->getNode());
-        wp->cleanup();
-        entities_.remove(wp->getId());
-        delete wp;
-    }
-    it->waypoints.remove(index);
-    // 重新编号
-    for (int i=0;i<it->waypoints.size();++i) it->waypoints[i]->setOrderLabel(QString::number(i+1));
-    return true;
+    return removeWaypointEntity(it->waypoints.at(index));
 }
 
 /**
@@ -622,6 +613,7 @@ bool GeoEntityManager::generateRouteForGroup(const QString& groupId, const QStri
     auto it = waypointGroups_.find(groupId);
     if (it == waypointGroups_.end()) return false;
     qDebug() << "[Route] 航点数量=" << it->waypoints.size();
+    it->routeModel = model;
     if (it->routeNode.valid()) {
         entityGroup_->removeChild(it->routeNode.get());
         it->routeNode = nullptr;
@@ -682,9 +674,90 @@ WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, 
     if (wp->getNode()) {
         entityGroup_->addChild(wp->getNode());
     }
-    entities_.insert(wp->getId(), wp);
+    entities_.insert(wp->getUid(), wp);
+    uidToEntity_.insert(wp->getUid(), wp);
     emit entityCreated(wp);
     return wp;
+}
+
+bool GeoEntityManager::findWaypointLocation(WaypointEntity* waypoint, QString& groupIdOut, int& indexOut) const
+{
+    if (!waypoint) {
+        return false;
+    }
+
+    for (auto it = waypointGroups_.constBegin(); it != waypointGroups_.constEnd(); ++it) {
+        const QVector<WaypointEntity*>& wps = it.value().waypoints;
+        for (int i = 0; i < wps.size(); ++i) {
+            if (wps[i] == waypoint) {
+                groupIdOut = it.key();
+                indexOut = i;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
+{
+    if (!waypoint) {
+        return false;
+    }
+
+    QString groupId;
+    int index = -1;
+    if (!findWaypointLocation(waypoint, groupId, index)) {
+        qDebug() << "removeWaypointEntity: 未找到航点所属分组";
+        return false;
+    }
+
+    auto it = waypointGroups_.find(groupId);
+    if (it == waypointGroups_.end() || index < 0 || index >= it->waypoints.size()) {
+        return false;
+    }
+
+    if (selectedEntity_ == waypoint) {
+        selectedEntity_ = nullptr;
+        emit entityDeselected();
+    }
+
+    if (it->routeNode.valid()) {
+        entityGroup_->removeChild(it->routeNode.get());
+        it->routeNode = nullptr;
+    }
+
+    if (waypoint->getNode()) {
+        waypoint->getNode()->setNodeMask(0x0);
+        entityGroup_->removeChild(waypoint->getNode());
+    }
+    const QString wpUid = waypoint->getUid();
+    entities_.remove(wpUid);
+    uidToEntity_.remove(wpUid);
+
+    it->waypoints.removeAt(index);
+
+    for (int i = 0; i < it->waypoints.size(); ++i) {
+        it->waypoints[i]->setOrderLabel(QString::number(i + 1));
+    }
+
+    pendingEntities_[wpUid] = waypoint;
+    if (!pendingDeletions_.contains(wpUid)) {
+        pendingDeletions_.enqueue(wpUid);
+    }
+
+    if (it->waypoints.size() >= 2) {
+        const QString model = it->routeModel.isEmpty() ? QStringLiteral("linear") : it->routeModel;
+        generateRouteForGroup(groupId, model);
+    } else {
+        if (it->routeNode.valid()) {
+            entityGroup_->removeChild(it->routeNode.get());
+            it->routeNode = nullptr;
+        }
+    }
+
+    return true;
 }
 
 void GeoEntityManager::setViewer(osgViewer::Viewer* viewer)
