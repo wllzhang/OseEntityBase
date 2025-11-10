@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonParseError>
 
 WeaponMountDialog::WeaponMountDialog(GeoEntity* entity, QWidget *parent)
     : QDialog(parent)
@@ -280,6 +281,15 @@ void WeaponMountDialog::onSaveButtonClicked()
         weaponObj["weaponId"] = info.weaponId;
         weaponObj["weaponName"] = info.weaponName;
         weaponObj["quantity"] = info.quantity;
+
+        QJsonObject weaponDetails = getWeaponFullInfo(info.weaponId);
+        if (!weaponDetails.isEmpty()) {
+            QString weaponType = weaponDetails.value("type").toString();
+            if (!weaponType.isEmpty()) {
+                weaponObj["weaponType"] = weaponType;
+            }
+            weaponObj["weaponDetails"] = weaponDetails;
+        }
         weaponsArray.append(weaponObj);
     }
 
@@ -297,4 +307,136 @@ void WeaponMountDialog::onSaveButtonClicked()
 void WeaponMountDialog::onCancelButtonClicked()
 {
     reject();
+}
+
+QJsonObject WeaponMountDialog::getWeaponFullInfo(const QString& weaponId) const
+{
+    QJsonObject result;
+
+    if (weaponId.isEmpty()) {
+        return result;
+    }
+
+    if (!DatabaseUtils::openDatabase()) {
+        qWarning() << "无法打开数据库，无法获取武器信息:" << weaponId;
+        return result;
+    }
+
+    QSqlQuery query;
+    query.prepare("SELECT mi.id, mi.name, mt.type, mi.location, mi.icon, mi.componentlist "
+                  "FROM ModelInformation mi "
+                  "JOIN ModelType mt ON mi.modeltypeid = mt.id "
+                  "WHERE mi.id = ?");
+    query.addBindValue(weaponId);
+
+    if (!query.exec()) {
+        qWarning() << "查询武器信息失败:" << weaponId << query.lastError().text();
+        return result;
+    }
+
+    if (!query.next()) {
+        qWarning() << "未找到武器信息:" << weaponId;
+        return result;
+    }
+
+    QString modelId = query.value(0).toString();
+    QString modelName = query.value(1).toString();
+    QString type = query.value(2).toString();
+    QString location = query.value(3).toString();
+    QString icon = query.value(4).toString();
+    QString componentListStr = query.value(5).toString();
+
+    result["modelId"] = modelId;
+    result["modelName"] = modelName;
+    result["type"] = type;
+    result["location"] = location;
+    result["icon"] = icon;
+
+    QStringList componentIds = parseComponentList(componentListStr);
+    QJsonArray componentListArray;
+    for (const QString& compId : componentIds) {
+        componentListArray.append(compId);
+    }
+    result["componentList"] = componentListArray;
+
+    QJsonArray componentsArray;
+    for (const QString& compId : componentIds) {
+        QJsonObject compInfo = getComponentFullInfoFromDatabase(compId);
+        if (!compInfo.isEmpty()) {
+            componentsArray.append(compInfo);
+        }
+    }
+    result["components"] = componentsArray;
+
+    return result;
+}
+
+QJsonObject WeaponMountDialog::getComponentFullInfoFromDatabase(const QString& componentId) const
+{
+    QJsonObject result;
+
+    if (componentId.isEmpty()) {
+        return result;
+    }
+
+    if (!DatabaseUtils::openDatabase()) {
+        qWarning() << "无法打开数据库，无法获取组件信息:" << componentId;
+        return result;
+    }
+
+    QSqlQuery query;
+    query.prepare("SELECT ci.componentid, ci.name, ci.type, ci.configinfo, "
+                  "ct.wsf, ct.subtype, ct.template "
+                  "FROM ComponentInformation ci "
+                  "JOIN ComponentType ct ON ci.componenttypeid = ct.ctypeid "
+                  "WHERE ci.componentid = ?");
+    query.addBindValue(componentId);
+
+    if (!query.exec()) {
+        qWarning() << "查询组件信息失败:" << componentId << query.lastError().text();
+        return result;
+    }
+
+    if (!query.next()) {
+        qWarning() << "未找到组件信息:" << componentId;
+        return result;
+    }
+
+    result["componentId"] = query.value(0).toString();
+    result["name"] = query.value(1).toString();
+    result["type"] = query.value(2).toString();
+    result["wsf"] = query.value(4).toString();
+    result["subtype"] = query.value(5).toString();
+
+    QString configStr = query.value(3).toString();
+    if (!configStr.isEmpty()) {
+        QJsonParseError parseError;
+        QJsonDocument configDoc = QJsonDocument::fromJson(configStr.toUtf8(), &parseError);
+        if (parseError.error == QJsonParseError::NoError) {
+            result["configInfo"] = configDoc.object();
+        } else {
+            qWarning() << "解析组件配置失败:" << componentId << parseError.errorString();
+        }
+    }
+
+    return result;
+}
+
+QStringList WeaponMountDialog::parseComponentList(const QString& componentListStr) const
+{
+    QStringList componentIds;
+
+    if (componentListStr.isEmpty()) {
+        return componentIds;
+    }
+
+    const QStringList rawIds = componentListStr.split(',', Qt::SkipEmptyParts);
+    for (const QString& rawId : rawIds) {
+        QString trimmed = rawId.trimmed();
+        if (!trimmed.isEmpty()) {
+            componentIds.append(trimmed);
+        }
+    }
+
+    return componentIds;
 }
