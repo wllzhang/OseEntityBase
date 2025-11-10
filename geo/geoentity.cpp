@@ -7,8 +7,10 @@
 
 #include "geoentity.h"
 #include "geoutils.h"
-#include <QDebug>
 #include <QColor>
+#include <osg/LineWidth>
+#include <osg/StateSet>
+#include <osg/Array>
 
 GeoEntity::GeoEntity(const QString& name, const QString& type,
                      double longitude, double latitude, double altitude,
@@ -23,6 +25,8 @@ GeoEntity::GeoEntity(const QString& name, const QString& type,
     , heading_(0.0)
     , visible_(true)
     , selected_(false)
+    , hovered_(false)
+    , lastHighlightSize_(0.0)
 {
     // 设置默认属性
     setProperty("size", 100.0);
@@ -76,20 +80,32 @@ void GeoEntity::setVisible(bool visible)
 
 void GeoEntity::setSelected(bool selected)
 {
+    if (selected_ == selected) {
+        return;
+    }
+
     selected_ = selected;
-    
-    // 自我更新渲染节点（比如改变颜色或边框）
+    updateHighlightState();
     updateNode();
     
     // 发出信号
     emit selectionChanged(selected);
 }
 
+void GeoEntity::setHovered(bool hovered)
+{
+    if (hovered_ == hovered) {
+        return;
+    }
+
+    hovered_ = hovered;
+    updateHighlightState();
+}
+
 void GeoEntity::setProperty(const QString& key, const QVariant& value)
 {
     properties_[key] = value;
-    
-    // 自我更新渲染节点
+    updateHighlightState();
     updateNode();
     
     // 发出信号
@@ -116,15 +132,53 @@ QVariant GeoEntity::getProperty(const QString& key) const
 void GeoEntity::initialize()
 {
     // 创建渲染节点
-    node_ = createNode();
+    contentNode_ = createNode();
     
-    if (node_) {
+    if (contentNode_) {
+        osg::PositionAttitudeTransform* existingPat = dynamic_cast<osg::PositionAttitudeTransform*>(contentNode_.get());
+
+        double highlightSize = resolveHighlightSize();
+
+        if (existingPat) {
+            rootNode_ = existingPat;
+            node_ = contentNode_.get();
+
+            highlightNode_ = buildHighlightGeometry(highlightSize);
+            if (highlightNode_) {
+                highlightNode_->setNodeMask(0x0);
+                rootNode_->insertChild(0, highlightNode_.get());
+            }
+        } else if (entityType_ == "waypoint") {
+            rootNode_ = createPATNode();
+            highlightNode_ = buildHighlightGeometry(highlightSize);
+            if (highlightNode_) {
+                highlightNode_->setNodeMask(0x0);
+                rootNode_->addChild(highlightNode_);
+            }
+
+            osg::ref_ptr<osg::Group> group = new osg::Group();
+            group->addChild(rootNode_.get());
+            group->addChild(contentNode_.get());
+            node_ = group.get();
+        } else {
+            rootNode_ = createPATNode();
+            highlightNode_ = buildHighlightGeometry(highlightSize);
+            if (highlightNode_) {
+                highlightNode_->setNodeMask(0x0);
+                rootNode_->addChild(highlightNode_);
+            }
+            rootNode_->addChild(contentNode_.get());
+            node_ = rootNode_.get();
+        }
+
         // 设置初始状态
         setVisible(true);
         setSelected(false);
+        hovered_ = false;
+        updateHighlightState();
         
-        // 设置节点的初始变换（如果是PAT节点）
-        setupNodeTransform(node_.get());
+        // 设置节点的初始变换（如果控制PAT节点）
+        updateNode();
     }
     
     // 调用子类特定的初始化回调
@@ -168,6 +222,17 @@ void GeoEntity::cleanup()
     // 子类清理特定资源（如高亮节点）
     onBeforeCleanup();
     
+    if (rootNode_ && highlightNode_) {
+        rootNode_->removeChild(highlightNode_.get());
+    }
+
+    highlightNode_ = nullptr;
+    contentNode_ = nullptr;
+    rootNode_ = nullptr;
+    hovered_ = false;
+    selected_ = false;
+    lastHighlightSize_ = 0.0;
+
     // 清除节点引用
     node_ = nullptr;
     
@@ -186,10 +251,11 @@ void GeoEntity::cleanup()
  */
 void GeoEntity::updateNode()
 {
-    if (!node_) return;
-    
-    // 更新PositionAttitudeTransform的位置和旋转
-    setupNodeTransform(node_.get());
+    if (rootNode_) {
+        setupNodeTransform(rootNode_.get());
+    } else if (node_) {
+        setupNodeTransform(node_.get());
+    }
 }
 
 /**
@@ -245,4 +311,97 @@ osg::ref_ptr<osg::PositionAttitudeTransform> GeoEntity::createPATNode()
     osg::ref_ptr<osg::PositionAttitudeTransform> pat = new osg::PositionAttitudeTransform();
     setupNodeTransform(pat.get());
     return pat;
+}
+
+void GeoEntity::updateHighlightState()
+{
+    if (!rootNode_) {
+        return;
+    }
+
+    bool shouldShow = visible_ && (selected_ || hovered_);
+    double highlightSize = resolveHighlightSize();
+
+    if (!highlightNode_ || std::abs(highlightSize - lastHighlightSize_) > 1e-3) {
+        if (highlightNode_) {
+            rootNode_->removeChild(highlightNode_.get());
+        }
+        highlightNode_ = buildHighlightGeometry(highlightSize);
+        if (highlightNode_) {
+            rootNode_->insertChild(0, highlightNode_.get());
+            lastHighlightSize_ = highlightSize;
+        } else {
+            lastHighlightSize_ = highlightSize;
+        }
+    }
+
+    if (highlightNode_) {
+        highlightNode_->setNodeMask(shouldShow ? 0xffffffff : 0x0);
+    }
+}
+
+osg::ref_ptr<osg::Geode> GeoEntity::buildHighlightGeometry(double size) const
+{
+    if (size <= 0.0) {
+        return nullptr;
+    }
+
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+    osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry;
+    osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
+
+    // if (entityType_ == "waypoint") {
+    //     const int segments = 64;
+    //     for (int i = 0; i <= segments; ++i) {
+    //         double angle = (2.0 * M_PI * i) / static_cast<double>(segments);
+    //         double x = std::cos(angle) * size;
+    //         double z = std::sin(angle) * size;
+    //         vertices->push_back(osg::Vec3(x, 0.0, z));
+    //     }
+    //     geometry->setVertexArray(vertices.get());
+    //     geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, vertices->size()));
+    // }  
+
+        float borderSize = static_cast<float>(size * 1.1);
+        float borderHalf = borderSize * 0.5f;
+        vertices->push_back(osg::Vec3(-borderHalf, 0.0f, -borderHalf));
+        vertices->push_back(osg::Vec3(borderHalf, 0.0f, -borderHalf));
+        vertices->push_back(osg::Vec3(borderHalf, 0.0f, borderHalf));
+        vertices->push_back(osg::Vec3(-borderHalf, 0.0f, borderHalf));
+        vertices->push_back(osg::Vec3(-borderHalf, 0.0f, -borderHalf));
+        geometry->setVertexArray(vertices.get());
+        geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, vertices->size()));
+     
+
+    osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+    colors->push_back(osg::Vec4(1.0f, 0.1f, 0.1f, 1.0f));
+    geometry->setColorArray(colors.get(), osg::Array::BIND_OVERALL);
+
+    osg::ref_ptr<osg::StateSet> stateSet = geometry->getOrCreateStateSet();
+    stateSet->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    stateSet->setMode(GL_BLEND, osg::StateAttribute::ON);
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+    stateSet->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    stateSet->setAttributeAndModes(new osg::LineWidth(3.0f), osg::StateAttribute::ON);
+
+    geometry->setUseDisplayList(false);
+    geometry->setUseVertexBufferObjects(true);
+    geode->setCullingActive(false);
+
+    geode->addDrawable(geometry.get());
+    return geode.get();
+}
+
+double GeoEntity::resolveHighlightSize() const
+{
+    double highlightSize = properties_.value("highlightSize").toDouble();
+    if (highlightSize <= 0.0) {
+        double baseSize = properties_.value("size").toDouble();
+        if (baseSize > 0.0) {
+            highlightSize = baseSize;
+        } else {
+            highlightSize = 100.0;
+        }
+    }
+    return highlightSize;
 }

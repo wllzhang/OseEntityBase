@@ -80,7 +80,6 @@ osgEarth::GeoPoint MapStateManager::getMouseGeoPosition() const
 
 void MapStateManager::onMousePress(QMouseEvent* event)
 {
-    // qDebug() << "MapStateManager::onMousePress 被调用" << event->pos();
     // 更新鼠标地理坐标
     updateMouseGeoPosition(event->pos());
     // 更新状态

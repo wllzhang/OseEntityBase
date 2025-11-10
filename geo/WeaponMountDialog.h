@@ -12,6 +12,9 @@
 #include <QLabel>
 #include <QSpinBox>
 #include <QMap>
+#include <QStringList>
+#include <QJsonObject>
+#include <QJsonArray>
 #include "../util/databaseutils.h"
 
 // 前向声明
@@ -106,6 +109,27 @@ private:
      * @return 武器挂载信息列表
      */
     QList<WeaponMountInfo> getAllMountInfo() const;
+
+    /**
+     * @brief 从数据库获取武器的完整信息
+     * @param weaponId 武器ID
+     * @return 武器信息JSON对象
+     */
+    QJsonObject getWeaponFullInfo(const QString& weaponId) const;
+
+    /**
+     * @brief 从数据库获取组件完整信息
+     * @param componentId 组件ID
+     * @return 组件信息JSON对象
+     */
+    QJsonObject getComponentFullInfoFromDatabase(const QString& componentId) const;
+
+    /**
+     * @brief 解析组件列表字符串为ID列表
+     * @param componentListStr 组件列表字符串
+     * @return 组件ID列表
+     */
+    QStringList parseComponentList(const QString& componentListStr) const;
 
     GeoEntity* entity_;                    // 要配置的实体指针
     QTreeWidget* weaponTree_;              // 武器树控件

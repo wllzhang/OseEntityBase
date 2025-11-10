@@ -20,7 +20,7 @@ msvc:QMAKE_CXXFLAGS += -source-charset:utf-8
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # OSG库配置
-OSGDIR = D:/OSG/osgqtlib
+OSGDIR = D:/OSG/osgqtlib/
 
 CONFIG(release, debug|release) {
     LIBS += -L$${OSGDIR}/lib/ \
@@ -94,11 +94,11 @@ SOURCES += \
     geo/WeaponMountDialog.cpp \
     ui/ComponentConfigDialog.cpp \
     ui/MainWidget.cpp \
+    ui/EntityManagementDialog.cpp \
     ui/ModelAssemblyDialog.cpp \
     ui/ModelDeployDialog.cpp \
     ui/EntityPropertyDialog.cpp \
     main.cpp \
-    util/AfsimScriptGenerator.cpp \
     util/AfsimScriptGenerator.cpp \
     widgets/OsgMapWidget.cpp \
     OsgQt/GraphicsWindowQt.cpp \
@@ -113,12 +113,12 @@ SOURCES += \
     geo/navigationhistory.cpp \
     util/databaseutils.cpp \
     plan/planfilemanager.cpp \
-    widgets/OsgMapWidget.cpp \
     widgets/MapInfoOverlay.cpp \
     widgets/draggablelistwidget.cpp \
     widgets/imageviewerwindow.cpp
 
 HEADERS += \
+    ui/EntityManagementDialog.h \
     geo/WeaponMountDialog.h \
     ui/ComponentConfigDialog.h \
     ui/EntityManagementDialog.h \
@@ -126,7 +126,6 @@ HEADERS += \
     ui/ModelAssemblyDialog.h \
     ui/ModelDeployDialog.h \
     ui/EntityPropertyDialog.h \
-    util/AfsimScriptGenerator.h \
     util/AfsimScriptGenerator.h \
     widgets/OsgMapWidget.h \
     OsgQt/GraphicsWindowQt.h \
@@ -141,7 +140,6 @@ HEADERS += \
     geo/navigationhistory.h \
     util/databaseutils.h \
     plan/planfilemanager.h \
-    widgets/OsgMapWidget.h \
     widgets/MapInfoOverlay.h \
     widgets/draggablelistwidget.h \
     widgets/imageviewerwindow.h

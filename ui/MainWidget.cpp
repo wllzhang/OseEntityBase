@@ -26,7 +26,11 @@
 #include <QAction>
 #include <QSettings>
 #include <QtMath>
-#include <QPair>
+#include <QMetaObject>
+#include <QProgressDialog>
+#include <QEventLoop>
+#include <QPushButton>
+#include <QMap>
 #include <QVector>
 #include <QMetaObject>
 
@@ -63,6 +67,7 @@ MainWidget::MainWidget(QWidget *parent)
     
     // 启用自动保存（默认启用，2秒间隔）
     planFileManager_->setAutoSaveEnabled(true, 2000);
+    dialogHoverEntity_ = nullptr;
     
     // 加载最近打开的文件列表
     loadRecentFiles();
@@ -1141,6 +1146,84 @@ void MainWidget::onOpenPlanClicked()
     
     QAction* selectedAction = menu.exec(mapToGlobal(QPoint(0, 50)));
     
+    auto loadPlanWithProgress = [this](const QString& filePath, bool& cancelledOut) -> bool {
+        cancelledOut = false;
+        if (!planFileManager_) {
+            return false;
+        }
+
+        QProgressDialog progressDialog(QString::fromUtf8(u8"正在加载方案，请稍候..."), QString(), 0, 0, this);
+        progressDialog.setWindowTitle(QString::fromUtf8(u8"加载方案"));
+        QPushButton* cancelButton = new QPushButton(QString::fromUtf8(u8"取消"), &progressDialog);
+        progressDialog.setCancelButton(cancelButton);
+        progressDialog.setWindowModality(Qt::ApplicationModal);
+        progressDialog.setMinimumDuration(0);
+        progressDialog.setAutoClose(false);
+        progressDialog.show();
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
+
+        bool cancelSignalReceived = false;
+        bool cancelButtonPressed = false;
+
+        QMetaObject::Connection progressConn;
+        QMetaObject::Connection cancelConn;
+        QMetaObject::Connection cancelButtonConn;
+
+        if (planFileManager_) {
+            progressConn = connect(planFileManager_, &PlanFileManager::loadProgress,
+                                   this, [&, defaultMessage = QString::fromUtf8(u8"正在加载方案，请稍候...")](int current, int total, const QString& message) {
+                                        if (cancelSignalReceived) {
+                                            return;
+                                        }
+                                        if (total <= 0) {
+                                            progressDialog.setRange(0, 0);
+                                        } else {
+                                            if (progressDialog.maximum() != total) {
+                                                progressDialog.setRange(0, total);
+                                            }
+                                            progressDialog.setValue(qBound(0, current, total));
+                                        }
+                                        QString text = message.isEmpty() ? defaultMessage : message;
+                                        progressDialog.setLabelText(text);
+                                        progressDialog.repaint();
+                                        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
+                                   });
+
+            cancelConn = connect(planFileManager_, &PlanFileManager::loadCancelled,
+                                  this, [&]() {
+                                      cancelSignalReceived = true;
+                                      progressDialog.setLabelText(QString::fromUtf8(u8"正在取消..."));
+                                      progressDialog.repaint();
+                                  });
+
+            cancelButtonConn = connect(&progressDialog, &QProgressDialog::canceled, this, [&]() {
+                cancelButtonPressed = true;
+                progressDialog.setLabelText(QString::fromUtf8(u8"正在取消..."));
+                progressDialog.repaint();
+                planFileManager_->requestCancelLoad();
+            });
+        }
+
+        bool result = planFileManager_->loadPlan(filePath);
+
+        progressDialog.close();
+        QApplication::processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
+
+        if (planFileManager_) {
+            QObject::disconnect(progressConn);
+            QObject::disconnect(cancelConn);
+            QObject::disconnect(cancelButtonConn);
+        }
+
+        cancelledOut = cancelSignalReceived;
+
+        if (cancelSignalReceived) {
+            return false;
+        }
+
+        return result;
+    };
+
     if (selectedAction == openAction) {
         // 打开文件对话框
         QString filePath = QFileDialog::getOpenFileName(this, 
@@ -1149,7 +1232,8 @@ void MainWidget::onOpenPlanClicked()
                                                         "方案文件 (*.plan.json);;所有文件 (*.*)");
         
         if (!filePath.isEmpty()) {
-            if (planFileManager_ && planFileManager_->loadPlan(filePath)) {
+            bool cancelled = false;
+            if (loadPlanWithProgress(filePath, cancelled)) {
                 updateRecentFiles(filePath);
                 
                 // 恢复相机视角
@@ -1180,7 +1264,7 @@ void MainWidget::onOpenPlanClicked()
                 
                 QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
                 qDebug() << "方案加载成功:" << filePath;
-            } else {
+            } else if (!cancelled) {
                 QMessageBox::warning(this, "错误", "方案文件加载失败");
             }
         }
@@ -1188,7 +1272,8 @@ void MainWidget::onOpenPlanClicked()
         // 检查是否是最近文件菜单项
         QString filePath = selectedAction->data().toString();
         if (!filePath.isEmpty() && QFile::exists(filePath)) {
-            if (planFileManager_ && planFileManager_->loadPlan(filePath)) {
+            bool cancelled = false;
+            if (loadPlanWithProgress(filePath, cancelled)) {
                 updateRecentFiles(filePath);
                 
                 // 恢复相机视角
@@ -1219,7 +1304,7 @@ void MainWidget::onOpenPlanClicked()
                 
                 QMessageBox::information(this, "成功", QString("方案文件 '%1' 加载成功").arg(filePath));
                 qDebug() << "方案加载成功:" << filePath;
-            } else {
+            } else if (!cancelled) {
                 QMessageBox::warning(this, "错误", "方案文件加载失败");
             }
         }
@@ -1805,7 +1890,39 @@ void MainWidget::showEntityManagementDialog()
                 this, &MainWidget::onEntitySelectionRequested);
         connect(entityManagementDialog_, &EntityManagementDialog::requestRefresh,
                 this, &MainWidget::onEntityRefreshRequested);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestWeaponQuantityChange,
+                this, &MainWidget::onEntityWeaponQuantityChanged);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestHover,
+                this, [this](const QString& uid, bool hovered){
+                    auto entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
+                    if (!entityManager) {
+                        return;
+                    }
+                    GeoEntity* entity = uid.isEmpty() ? nullptr : entityManager->getEntity(uid);
+                    if (hovered) {
+                        if (dialogHoverEntity_ && dialogHoverEntity_ != entity) {
+                            dialogHoverEntity_->setHovered(false);
+                        }
+                        dialogHoverEntity_ = entity;
+                        if (dialogHoverEntity_) {
+                            dialogHoverEntity_->setHovered(true);
+                        }
+                    } else {
+                        if (!entity || entity == dialogHoverEntity_) {
+                            if (dialogHoverEntity_) {
+                                dialogHoverEntity_->setHovered(false);
+                                dialogHoverEntity_ = nullptr;
+                            }
+                        } else if (entity) {
+                            entity->setHovered(false);
+                        }
+                    }
+                });
         connect(entityManagementDialog_, &QDialog::finished, this, [this](int){
+            if (dialogHoverEntity_) {
+                dialogHoverEntity_->setHovered(false);
+                dialogHoverEntity_ = nullptr;
+            }
             if (osgMapWidget_) {
                 osgMapWidget_->setFocus(Qt::OtherFocusReason);
             }
@@ -1825,30 +1942,37 @@ void MainWidget::refreshEntityManagementDialog()
     }
     auto entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
     if (!entityManager) {
-        entityManagementDialog_->refresh(QList<GeoEntity*>(), QList<QPair<QString, QList<GeoEntity*>>>(), QString());
+        entityManagementDialog_->refresh(QList<GeoEntity*>(), QMap<QString, QList<RouteGroupData>>(), QString());
         return;
     }
 
     const QList<GeoEntity*> entities = entityManager->getAllEntities();
-    QList<QPair<QString, QList<GeoEntity*>>> waypointGroups;
-    const auto groups = entityManager->getAllWaypointGroups();
-    for (const auto& info : groups) {
-        QList<GeoEntity*> waypoints;
-        for (auto* wp : info.waypoints) {
+    QMap<QString, QList<RouteGroupData>> entityRouteMap;
+    for (GeoEntity* entity : entities) {
+        if (!entity) {
+            continue;
+        }
+        QString groupId = entityManager->getRouteGroupIdForEntity(entity->getUid());
+        if (groupId.isEmpty()) {
+            continue;
+        }
+        GeoEntityManager::WaypointGroupInfo groupInfo = entityManager->getWaypointGroup(groupId);
+        RouteGroupData data;
+        data.groupId = groupInfo.groupId;
+        data.groupName = groupInfo.name.isEmpty() ? groupInfo.groupId : groupInfo.name;
+        for (auto* wp : groupInfo.waypoints) {
             if (wp) {
-                waypoints.append(wp);
+                data.waypoints.append(wp);
             }
         }
-        if (!waypoints.isEmpty()) {
-            QString displayName = info.name.isEmpty() ? info.groupId : info.name;
-            waypointGroups.append(qMakePair(displayName, waypoints));
-        }
+        entityRouteMap[entity->getUid()].append(data);
     }
+
     QString selectedUid;
     if (GeoEntity* selected = entityManager->getSelectedEntity()) {
         selectedUid = selected->getUid();
     }
-    entityManagementDialog_->refresh(entities, waypointGroups, selectedUid);
+    entityManagementDialog_->refresh(entities, entityRouteMap, selectedUid);
 }
 
 void MainWidget::focusEntity(GeoEntity* entity)
@@ -2034,6 +2158,9 @@ void MainWidget::onEntitySelected(GeoEntity* entity)
     if (entityManagementDialog_) {
         entityManagementDialog_->setSelectedUid(entity ? entity->getUid() : QString());
     }
+    if (osgMapWidget_) {
+        osgMapWidget_->synthesizeMouseRelease(Qt::LeftButton);
+    }
 }
 
 void MainWidget::onEntityDeselected()
@@ -2042,3 +2169,51 @@ void MainWidget::onEntityDeselected()
         entityManagementDialog_->setSelectedUid(QString());
     }
 }
+
+void MainWidget::onEntityWeaponQuantityChanged(const QString& entityUid,
+                                               const QString& weaponId,
+                                               const QString& weaponName,
+                                               int quantity)
+{
+    if (!osgMapWidget_) {
+        return;
+    }
+    auto entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        return;
+    }
+    GeoEntity* entity = entityManager->getEntity(entityUid);
+    if (!entity) {
+        return;
+    }
+
+    QJsonObject mounts = entity->getProperty("weaponMounts").toJsonObject();
+    QJsonArray weapons = mounts["weapons"].toArray();
+    bool updated = false;
+    for (int i = 0; i < weapons.size(); ++i) {
+        QJsonObject weaponObj = weapons.at(i).toObject();
+        const QString currentId = weaponObj["weaponId"].toString();
+        const QString currentName = weaponObj["weaponName"].toString();
+        if ((!weaponId.isEmpty() && currentId == weaponId) ||
+            (weaponId.isEmpty() && currentName == weaponName)) {
+            weaponObj["quantity"] = quantity;
+            weapons[i] = weaponObj;
+            updated = true;
+            break;
+        }
+    }
+
+    if (!updated) {
+        return;
+    }
+
+    mounts["weapons"] = weapons;
+    entity->setProperty("weaponMounts", mounts);
+
+    if (planFileManager_) {
+        planFileManager_->markPlanModified();
+    }
+
+    refreshEntityManagementDialog();
+}
+

@@ -9,6 +9,8 @@
 #include <QColor>
 #include <osg/Node>
 #include <osg/PositionAttitudeTransform>
+#include <osg/Geometry>
+#include <osg/Geode>
 #include <osgEarth/GeoData>
 #include <osgEarth/SpatialReference>
 #include <cmath>
@@ -106,6 +108,11 @@ public:
     /** @brief 读取自定义属性 */
     QVariant getProperty(const QString& key) const;
     QMap<QString, QVariant> getAllProperties() const { return properties_; }
+
+    /** @brief 设置悬停状态 */
+    void setHovered(bool hovered);
+    /** @brief 是否处于悬停状态 */
+    bool isHovered() const { return hovered_; }
     
     // 生命周期（基类提供默认实现，子类可重写扩展）
     /** 
@@ -147,9 +154,14 @@ protected:
     double heading_;
     bool visible_;
     bool selected_;
+    bool hovered_;
     
     QMap<QString, QVariant> properties_;
     osg::ref_ptr<osg::Node> node_;
+    osg::ref_ptr<osg::Node> contentNode_;
+    osg::ref_ptr<osg::PositionAttitudeTransform> rootNode_;
+    osg::ref_ptr<osg::Geode> highlightNode_;
+    double lastHighlightSize_;
     
     // 子类需要实现的纯虚函数
     virtual osg::ref_ptr<osg::Node> createNode() = 0;
@@ -183,6 +195,11 @@ protected:
      * @return 已设置好变换的PAT节点
      */
     osg::ref_ptr<osg::PositionAttitudeTransform> createPATNode();
+
+private:
+    void updateHighlightState();
+    osg::ref_ptr<osg::Geode> buildHighlightGeometry(double size) const;
+    double resolveHighlightSize() const;
 };
 
 #endif // GEOENTITY_H

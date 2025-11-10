@@ -143,6 +143,10 @@ private slots:
     void onEntityRemoved(const QString& uid);
     void onEntitySelected(GeoEntity* entity);
     void onEntityDeselected();
+    void onEntityWeaponQuantityChanged(const QString& entityUid,
+                                       const QString& weaponId,
+                                       const QString& weaponName,
+                                       int quantity);
 
     /**
      * @brief 导出方案槽函数（生成AFSIM脚本）
@@ -293,6 +297,7 @@ private:
     bool isPlanningEntityRoute_;     // 是否正在为实体规划航线
     QString entityRouteUid_;     // 正在规划航线的实体UID
     QString entityRouteGroupId_;     // 实体航线组ID
+    GeoEntity* dialogHoverEntity_;
 
     // 距离测算：状态与中间结果
     bool isMeasuringDistance_ = false;               // 是否处于测距模式
