@@ -213,6 +213,9 @@ void GeoEntityManager::setSelectedEntity(GeoEntity* entity, bool emitSignal)
 
     selectedEntity_ = entity;
     if (hoveredEntity_ == selectedEntity_) {
+        if (hoveredEntity_) {
+            hoveredEntity_->setHovered(false);
+        }
         hoveredEntity_ = nullptr;
     }
 
@@ -237,6 +240,7 @@ bool GeoEntityManager::setEntityVisible(const QString& uid, bool visible)
             setSelectedEntity(nullptr);
         }
         if (hoveredEntity_ == entity) {
+            hoveredEntity_->setHovered(false);
             hoveredEntity_ = nullptr;
         }
     }
@@ -281,6 +285,7 @@ void GeoEntityManager::removeEntity(const QString& uid)
         qDebug() << "清除选中实体引用";
     }
     if (hoveredEntity_ == entity) {
+        hoveredEntity_->setHovered(false);
         hoveredEntity_ = nullptr;
     }
     
@@ -319,7 +324,10 @@ void GeoEntityManager::clearAllEntities()
     if (selectedEntity_) {
         setSelectedEntity(nullptr);
     }
-    hoveredEntity_ = nullptr;
+    if (hoveredEntity_) {
+        hoveredEntity_->setHovered(false);
+        hoveredEntity_ = nullptr;
+    }
     
     // 将所有实体添加到延迟删除队列
     QStringList entityUids = getEntityIds();
@@ -452,41 +460,45 @@ void GeoEntityManager::onMouseDoubleClick(QMouseEvent* event)
         }
     }
 }
-
+ 
 void GeoEntityManager::onMouseMove(QMouseEvent* event)
 {
-    if (!mapStateManager_) {
-        return;
-    }
+    //每次移动鼠标都计算最近的实体
+    // if (!mapStateManager_) {
+    //         return;
+    //     }
 
-    GeoEntity* entity = findEntityAtPosition(event->pos(), false);
+    // GeoEntity* entity = findEntityAtPosition(event->pos(), false);
 
-    if (entity == selectedEntity_) {
-        if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
-            hoveredEntity_->setSelected(false);
-        }
-        hoveredEntity_ = nullptr;
-        return;
-    }
+    // if (entity == selectedEntity_) {
+    //     if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
+    //         hoveredEntity_->setHovered(false);
+    //     }
+    //     hoveredEntity_ = nullptr;
+    //     return;
+    // }
 
-    if (entity) {
-        if (hoveredEntity_ != entity) {
-            if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
-                hoveredEntity_->setSelected(false);
-            }
-            if (entity != selectedEntity_) {
-                entity->setSelected(true);
-                hoveredEntity_ = entity;
-            } else {
-                hoveredEntity_ = nullptr;
-            }
-        }
-    } else {
-        if (hoveredEntity_ && hoveredEntity_ != selectedEntity_) {
-            hoveredEntity_->setSelected(false);
-        }
-        hoveredEntity_ = nullptr;
-    }
+    // if (entity) {
+    //     if (hoveredEntity_ != entity) {
+    //         if (hoveredEntity_) {
+    //             hoveredEntity_->setHovered(false);
+    //         }
+    //         if (entity != selectedEntity_) {
+    //             entity->setHovered(true);
+    //             hoveredEntity_ = entity;
+    //         } else {
+    //             hoveredEntity_ = nullptr;
+    //         }
+    //     }
+    // } else {
+    //     if (hoveredEntity_) {
+    //         hoveredEntity_->setHovered(false);
+    //     }
+    //     hoveredEntity_ = nullptr;
+    // }
+
+
+    
 }
 
 /**
