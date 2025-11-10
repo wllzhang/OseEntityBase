@@ -114,7 +114,8 @@ void EntityPropertyDialog::setupBasicInfoTab()
                        entity_->getName() : entity_->getProperty("displayName").toString());
     layout->addRow("实体名称:", nameEdit_);
 
-    modelInfoLabel_ = new QLabel(QString("模型: %1 (ID: %2)").arg(modelName_).arg(modelId_));
+    QString uid = entity_->getUid();
+    modelInfoLabel_ = new QLabel(QString("模型: %1 (UID: %2)").arg(modelName_).arg(uid));
     modelInfoLabel_->setStyleSheet("color: #666;");
     layout->addRow("模型信息:", modelInfoLabel_);
 

@@ -154,9 +154,12 @@ bool AfsimScriptGenerator::generateScript(const QString& filePath)
     QMap<QString, QJsonObject> routeLookup;
     for (const QJsonValue& routeValue : routesArray) {
         QJsonObject routeObj = routeValue.toObject();
-        QString entityId = routeObj["entityId"].toString();
-        if (!entityId.isEmpty()) {
-            routeLookup.insert(entityId, routeObj);
+        QString targetUid = routeObj["targetUid"].toString();
+        if (targetUid.isEmpty()) {
+            targetUid = routeObj["entityId"].toString();
+        }
+        if (!targetUid.isEmpty()) {
+            routeLookup.insert(targetUid, routeObj);
         }
     }
 
@@ -176,12 +179,15 @@ bool AfsimScriptGenerator::generateScript(const QString& filePath)
 
     for (const QJsonValue& value : entitiesArray) {
         QJsonObject entityObj = value.toObject();
-        QString entityId = entityObj["id"].toString();
+        QString entityUid = entityObj["uid"].toString();
+        if (entityUid.isEmpty()) {
+            entityUid = entityObj["id"].toString();
+        }
         QString routeName;
-        if (routeLookup.contains(entityId)) {
-            routeName = routeLookup.value(entityId)["name"].toString();
+        if (!entityUid.isEmpty() && routeLookup.contains(entityUid)) {
+            routeName = routeLookup.value(entityUid)["name"].toString();
             if (routeName.isEmpty()) {
-                routeName = QString("route_%1").arg(entityId);
+                routeName = QString("route_%1").arg(entityUid);
             }
         }
         stream << generatePlatform(entityObj, routeName) << "\n\n";
@@ -449,10 +455,13 @@ QString AfsimScriptGenerator::generatePlatform(const QJsonObject& entityObj, con
         return result;
     }
 
-    QString entityId = entityObj["id"].toString();
+    QString entityUid = entityObj["uid"].toString();
+    if (entityUid.isEmpty()) {
+        entityUid = entityObj["id"].toString();
+    }
     QString displayName = entityObj["name"].toString();
     if (displayName.isEmpty()) {
-        displayName = entityId;
+        displayName = entityUid;
     }
 
     QJsonObject positionObj = entityObj["position"].toObject();

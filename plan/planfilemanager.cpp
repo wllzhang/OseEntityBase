@@ -203,7 +203,7 @@ bool PlanFileManager::savePlan(const QString& filePath)
         // 通过routeBinding查找关联的实体UID（反向查找）
         QString entityUid;
         for (auto it = groupInfo.waypoints.begin(); it != groupInfo.waypoints.end(); ++it) {
-            // 通过groupInfo无法直接获取entityId，需要通过entityManager的routeBinding查找
+            // 通过groupInfo无法直接获取uid，需要通过entityManager的routeBinding查找
             // 这里使用另一种方式：遍历所有实体，检查其routeGroupId属性
             break;
         }
