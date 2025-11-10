@@ -27,6 +27,8 @@
 #include <QSettings>
 #include <QtMath>
 #include <QPair>
+#include <QVector>
+#include <QMetaObject>
 
 #include "../geo/WeaponMountDialog.h"
 #include "../geo/geoentitymanager.h"
@@ -482,7 +484,13 @@ void MainWidget::createSubNavigation()
     connect(modelAssemblyBtn, &QPushButton::clicked, this, &MainWidget::onModelAssemblyBtnClicked);
     // 模型部署
     connect(modelDeployBtn, &QPushButton::clicked, this, &MainWidget::onModelDeployBtnClicked);
-    
+    // 距离测算
+    connect(distanceBtn, &QPushButton::clicked, this, &MainWidget::onDistanceMeasureClicked);
+    // 面积测算
+    connect(areaBtn, &QPushButton::clicked, this, &MainWidget::onAreaMeasureClicked);
+    // 角度测算
+    connect(angleBtn, &QPushButton::clicked, this, &MainWidget::onAngleMeasureClicked);
+
     // 点标绘按钮
     connect(pointBtn, &QPushButton::clicked, this, [this]() {
         if (!osgMapWidget_ || !osgMapWidget_->getEntityManager()) {
@@ -503,12 +511,436 @@ void MainWidget::createSubNavigation()
         showEntityManagementDialog();
     });
     
-    // ... 连接其他子导航按钮
+    // ... 连接其他子导航按钮 待补充
 
     // 添加到主布局
     contentLayout->addWidget(subNavWidget);
     mainVLayout->addLayout(contentLayout, 1);
 }
+
+void MainWidget::onDistanceMeasureClicked()
+{
+    if (!osgMapWidget_ || !osgMapWidget_->getEntityManager()) {
+        QMessageBox::warning(this, "距离测算", "地图或实体管理器未初始化");
+        return;
+    }
+
+    resetMeasurementModes();
+
+    auto entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        QMessageBox::warning(this, "距离测算", "实体管理器未初始化");
+        return;
+    }
+
+    isMeasuringDistance_ = true;
+    distancePointA_ = nullptr;
+    distancePointB_ = nullptr;
+    entityManager->setBlockMapNavigation(true);
+
+    QMessageBox::information(this, "距离测算", "请依次点击两个标注点进行测距，右键可取消。");
+
+    distanceLeftClickConn_ = connect(entityManager, &GeoEntityManager::mapLeftClicked, this, [this](QPoint screenPos) {
+        if (!isMeasuringDistance_) {
+            return;
+        }
+
+        WaypointEntity* wp = pickWaypointNearScreenPos(screenPos, 20);
+        if (!wp) {
+            exitDistanceMeasure("附近未找到标注点，距离测算已退出。");
+            return;
+        }
+
+        if (!distancePointA_) {
+            distancePointA_ = wp;
+            return;
+        }
+
+        if (wp == distancePointA_) {
+            exitDistanceMeasure("请选择两个不同的标注点，距离测算已退出。");
+            return;
+        }
+
+        distancePointB_ = wp;
+
+        double lon1 = 0.0, lat1 = 0.0, alt1 = 0.0;
+        double lon2 = 0.0, lat2 = 0.0, alt2 = 0.0;
+        distancePointA_->getPosition(lon1, lat1, alt1);
+        distancePointB_->getPosition(lon2, lat2, alt2);
+        double meters = computeDistanceMeters(lat1, lon1, lat2, lon2);
+        double km = meters / 1000.0;
+
+        QMessageBox::information(
+            this,
+            "距离测算",
+            QString("两点间距离：%1 米（%2 公里）")
+                .arg(QString::number(meters, 'f', 1))
+                .arg(QString::number(km, 'f', 3)));
+
+        exitDistanceMeasure();
+    });
+
+    distanceRightClickConn_ = connect(entityManager, &GeoEntityManager::mapRightClicked, this, [this](QPoint) {
+        if (!isMeasuringDistance_) {
+            return;
+        }
+        exitDistanceMeasure("已通过右键退出距离测算。");
+    });
+}
+
+
+void MainWidget::onAreaMeasureClicked()
+{
+    if (!osgMapWidget_ || !osgMapWidget_->getEntityManager()) {
+        QMessageBox::warning(this, "面积测算", "地图或实体管理器未初始化");
+        return;
+    }
+
+    resetMeasurementModes();
+
+    auto entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        QMessageBox::warning(this, "面积测算", "实体管理器未初始化");
+        return;
+    }
+
+    isMeasuringArea_ = true;
+    areaMeasurePoints_.clear();
+    entityManager->setBlockMapNavigation(true);
+
+    QMessageBox::information(
+        this,
+        "面积测算",
+        "请依次点击三个及以上的标注点组成多边形，再次单击首个点闭合，右键可取消。");
+
+    auto finalizeArea = [this]() {
+        const double areaMeters = computePolygonAreaMeters(areaMeasurePoints_);
+        if (areaMeters <= 0.0) {
+            exitAreaMeasure("所选点无法组成有效的封闭多边形（面积为0），面积测算已退出。");
+            return;
+        }
+
+        const double areaKm2 = areaMeters / 1'000'000.0;
+        QMessageBox::information(
+            this,
+            "面积测算",
+            QString("多边形面积：%1 平方米（%2 平方公里）")
+                .arg(QString::number(areaMeters, 'f', 2))
+                .arg(QString::number(areaKm2, 'f', 6)));
+
+        exitAreaMeasure();
+    };
+
+    areaLeftClickConn_ = connect(entityManager, &GeoEntityManager::mapLeftClicked, this, [this, finalizeArea](QPoint screenPos) {
+        if (!isMeasuringArea_) {
+            return;
+        }
+
+        WaypointEntity* wp = pickWaypointNearScreenPos(screenPos, 20);
+        if (!wp) {
+            exitAreaMeasure("附近未找到标注点，面积测算已退出。");
+            return;
+        }
+
+        if (areaMeasurePoints_.isEmpty()) {
+            areaMeasurePoints_.append(wp);
+            return;
+        }
+
+        if (wp == areaMeasurePoints_.first()) {
+            if (areaMeasurePoints_.size() < 3) {
+                exitAreaMeasure("至少需要三个不同的标注点才能计算面积，面积测算已退出。");
+                return;
+            }
+            finalizeArea();
+            return;
+        }
+
+        if (areaMeasurePoints_.contains(wp)) {
+            QMessageBox::information(this, "面积测算", "该标注点已选择，请选择其他点或单击首点完成测算。");
+            return;
+        }
+
+        areaMeasurePoints_.append(wp);
+    });
+
+    areaRightClickConn_ = connect(entityManager, &GeoEntityManager::mapRightClicked, this, [this](QPoint) {
+        if (!isMeasuringArea_) {
+            return;
+        }
+        exitAreaMeasure("已通过右键退出面积测算。");
+    });
+}
+
+
+
+void MainWidget::onAngleMeasureClicked()
+{
+    if (!osgMapWidget_ || !osgMapWidget_->getEntityManager()) {
+        QMessageBox::warning(this, "角度测算", "地图或实体管理器未初始化");
+        return;
+    }
+
+    resetMeasurementModes();
+
+    auto entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        QMessageBox::warning(this, "角度测算", "实体管理器未初始化");
+        return;
+    }
+
+    isMeasuringAngle_ = true;
+    angleBasePoint_ = nullptr;
+    angleTargetPoint_ = nullptr;
+    entityManager->setBlockMapNavigation(true);
+
+    QMessageBox::information(
+        this,
+        "角度测算",
+        "请依次点击两个标注点（第一个为基准点，第二个为目标点），右键可取消。");
+
+    angleLeftClickConn_ = connect(entityManager, &GeoEntityManager::mapLeftClicked, this, [this](QPoint screenPos) {
+        if (!isMeasuringAngle_) {
+            return;
+        }
+
+        WaypointEntity* wp = pickWaypointNearScreenPos(screenPos, 12);
+        if (!wp) {
+            exitAngleMeasure("附近未找到标注点，角度测算已退出。");
+            return;
+        }
+
+        if (!angleBasePoint_) {
+            angleBasePoint_ = wp;
+            return;
+        }
+
+        if (wp == angleBasePoint_) {
+            exitAngleMeasure("请选择两个不同的标注点，角度测算已退出。");
+            return;
+        }
+
+        angleTargetPoint_ = wp;
+        showAngleBetweenWaypoints(angleBasePoint_, angleTargetPoint_);
+        exitAngleMeasure();
+    });
+
+    angleRightClickConn_ = connect(entityManager, &GeoEntityManager::mapRightClicked, this, [this](QPoint) {
+        if (!isMeasuringAngle_) {
+            return;
+        }
+        exitAngleMeasure("已通过右键退出角度测算。");
+    });
+}
+
+double MainWidget::computeDistanceMeters(double lat1Deg, double lon1Deg, double lat2Deg, double lon2Deg) const
+{
+    // Haversine 公式：基于球面近似的大圆距离，返回单位：米
+    static const double R = 6371000.0; // 地球半径（米）
+    auto deg2rad = [](double d){ return d * M_PI / 180.0; };
+    double lat1 = deg2rad(lat1Deg);
+    double lon1 = deg2rad(lon1Deg);
+    double lat2 = deg2rad(lat2Deg);
+    double lon2 = deg2rad(lon2Deg);
+    double dlat = lat2 - lat1;
+    double dlon = lon2 - lon1;
+    double a = sin(dlat/2)*sin(dlat/2) + cos(lat1)*cos(lat2)*sin(dlon/2)*sin(dlon/2);
+    double c = 2 * atan2(sqrt(a), sqrt(1.0 - a));
+    return R * c;
+}
+
+double MainWidget::computePolygonAreaMeters(const QVector<WaypointEntity*>& points) const
+{
+    if (points.size() < 3) {
+        return 0.0;
+    }
+
+    double refLon = 0.0, refLat = 0.0, refAlt = 0.0;
+    points.first()->getPosition(refLon, refLat, refAlt);
+    const double refLatRad = qDegreesToRadians(refLat);
+    const double earthRadius = 6371000.0; // 米
+
+    QVector<QPointF> planar;
+    planar.reserve(points.size());
+    for (WaypointEntity* wp : points) {
+        if (!wp) {
+            continue;
+        }
+        double lon = 0.0, lat = 0.0, alt = 0.0;
+        wp->getPosition(lon, lat, alt);
+        double deltaLonRad = qDegreesToRadians(lon - refLon);
+        double deltaLatRad = qDegreesToRadians(lat - refLat);
+        double x = deltaLonRad * earthRadius * qCos(refLatRad);
+        double y = deltaLatRad * earthRadius;
+        planar.append(QPointF(x, y));
+    }
+
+    if (planar.size() < 3) {
+        return 0.0;
+    }
+
+    double area = 0.0;
+    for (int i = 0, j = planar.size() - 1; i < planar.size(); j = i++) {
+        area += (planar[j].x() * planar[i].y()) - (planar[i].x() * planar[j].y());
+    }
+
+    return qFabs(area) * 0.5;
+}
+
+void MainWidget::showAngleBetweenWaypoints(WaypointEntity* from, WaypointEntity* to)
+{
+    if (!from || !to) {
+        return;
+    }
+
+    double lon1 = 0.0, lat1 = 0.0, alt1 = 0.0;
+    double lon2 = 0.0, lat2 = 0.0, alt2 = 0.0;
+    from->getPosition(lon1, lat1, alt1);
+    to->getPosition(lon2, lat2, alt2);
+
+    const double lat1Rad = qDegreesToRadians(lat1);
+    const double lat2Rad = qDegreesToRadians(lat2);
+    const double dLonRad = qDegreesToRadians(lon2 - lon1);
+
+    const double y = qSin(dLonRad) * qCos(lat2Rad);
+    const double x = qCos(lat1Rad) * qSin(lat2Rad) - qSin(lat1Rad) * qCos(lat2Rad) * qCos(dLonRad);
+    double bearingDeg = qRadiansToDegrees(qAtan2(y, x));
+    if (bearingDeg < 0.0) {
+        bearingDeg += 360.0;
+    }
+
+    const double groundDistance = computeDistanceMeters(lat1, lon1, lat2, lon2);
+    const double altitudeDiff = alt2 - alt1;
+    double pitchDeg = 0.0;
+    if (qFabs(groundDistance) < 1e-3) {
+        pitchDeg = (altitudeDiff >= 0.0) ? 90.0 : -90.0;
+    } else {
+        pitchDeg = qRadiansToDegrees(qAtan2(altitudeDiff, groundDistance));
+    }
+
+    QMessageBox::information(
+        this,
+        "角度测算",
+        QString("方位角：%1°\n俯仰角：%2°")
+            .arg(QString::number(bearingDeg, 'f', 2))
+            .arg(QString::number(pitchDeg, 'f', 2))
+    );
+}
+
+void MainWidget::resetMeasurementModes()
+{
+    exitDistanceMeasure();
+    exitAreaMeasure();
+    exitAngleMeasure();
+}
+
+void MainWidget::disconnectMeasurementConnection(QMetaObject::Connection& connection)
+{
+    if (connection) {
+        QObject::disconnect(connection);
+        connection = QMetaObject::Connection();
+    }
+}
+
+void MainWidget::exitDistanceMeasure(const QString& message)
+{
+    const bool wasActive = isMeasuringDistance_ || distanceLeftClickConn_ || distanceRightClickConn_;
+    if (!wasActive && message.isEmpty()) {
+        return;
+    }
+
+    if (!message.isEmpty()) {
+        QMessageBox::information(this, "距离测算", message);
+    }
+
+    isMeasuringDistance_ = false;
+    distancePointA_ = nullptr;
+    distancePointB_ = nullptr;
+
+    disconnectMeasurementConnection(distanceLeftClickConn_);
+    disconnectMeasurementConnection(distanceRightClickConn_);
+
+    if (osgMapWidget_) {
+        auto entityManager = osgMapWidget_->getEntityManager();
+        if (entityManager && !isMeasuringArea_ && !isMeasuringAngle_) {
+            entityManager->setBlockMapNavigation(false);
+        }
+    }
+}
+
+void MainWidget::exitAreaMeasure(const QString& message)
+{
+    const bool wasActive = isMeasuringArea_ || areaLeftClickConn_ || areaRightClickConn_;
+    if (!wasActive && message.isEmpty()) {
+        return;
+    }
+
+    if (!message.isEmpty()) {
+        QMessageBox::information(this, "面积测算", message);
+    }
+
+    isMeasuringArea_ = false;
+    areaMeasurePoints_.clear();
+
+    disconnectMeasurementConnection(areaLeftClickConn_);
+    disconnectMeasurementConnection(areaRightClickConn_);
+
+    if (osgMapWidget_) {
+        auto entityManager = osgMapWidget_->getEntityManager();
+        if (entityManager && !isMeasuringDistance_ && !isMeasuringAngle_) {
+            entityManager->setBlockMapNavigation(false);
+        }
+    }
+}
+
+void MainWidget::exitAngleMeasure(const QString& message)
+{
+    const bool wasActive = isMeasuringAngle_ || angleLeftClickConn_ || angleRightClickConn_;
+    if (!wasActive && message.isEmpty()) {
+        return;
+    }
+
+    if (!message.isEmpty()) {
+        QMessageBox::information(this, "角度测算", message);
+    }
+
+    isMeasuringAngle_ = false;
+    angleBasePoint_ = nullptr;
+    angleTargetPoint_ = nullptr;
+
+    disconnectMeasurementConnection(angleLeftClickConn_);
+    disconnectMeasurementConnection(angleRightClickConn_);
+
+    if (osgMapWidget_) {
+        auto entityManager = osgMapWidget_->getEntityManager();
+        if (entityManager && !isMeasuringDistance_ && !isMeasuringArea_) {
+            entityManager->setBlockMapNavigation(false);
+        }
+    }
+}
+
+
+WaypointEntity* MainWidget::pickWaypointNearScreenPos(const QPoint& screenPos, int radiusPx) const
+{
+    if (!osgMapWidget_ || !osgMapWidget_->getEntityManager()) return nullptr;
+    auto entityManager = osgMapWidget_->getEntityManager();
+
+    // 以曼哈顿/圆形邻域在像素内搜索，优先返回第一个匹配到的航点
+    for (int dy = -radiusPx; dy <= radiusPx; ++dy) {
+        for (int dx = -radiusPx; dx <= radiusPx; ++dx) {
+            if (dx*dx + dy*dy > radiusPx*radiusPx) continue; // 圆形范围
+            QPoint p = screenPos + QPoint(dx, dy);
+            GeoEntity* e = entityManager->findEntityAtPosition(p);
+            if (!e) continue;
+            if (auto wp = dynamic_cast<WaypointEntity*>(e)) {
+                return wp;
+            }
+        }
+    }
+    return nullptr;
+}
+
+
 
 void MainWidget::createMapArea()
 {

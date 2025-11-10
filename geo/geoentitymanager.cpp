@@ -402,8 +402,22 @@ QString GeoEntityManager::getImagePathFromConfig(const QString& entityName)
     return getImagePathFromDatabase(entityName);
 }
 
+
+void GeoEntityManager::setBlockMapNavigation(bool block)
+{
+    blockMapNavigation_ = block;
+}
+
+bool GeoEntityManager::isMapNavigationBlocked() const
+{
+    return blockMapNavigation_;
+}
+
 void GeoEntityManager::onMousePress(QMouseEvent* event)
 {
+    if (event->button() == Qt::LeftButton && blockMapNavigation_) {
+        event->accept();
+    }
     qDebug() << "=== GeoEntityManager::onMousePress 被调用 ===";
     qDebug() << "鼠标位置:" << event->pos();
     qDebug() << "鼠标按钮:" << event->button();

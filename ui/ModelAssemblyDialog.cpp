@@ -34,6 +34,8 @@ ModelAssemblyDialog::ModelAssemblyDialog(QWidget *parent)
     , modelTree(new QTreeWidget(this))
     , componentTree(new QTreeWidget(this))
     , assemblyList(new QListWidget(this))
+    , modelSearchEdit(new QLineEdit(this))
+    , componentSearchEdit(new QLineEdit(this))
     , modelNameEdit(new QLineEdit(this))
     , modelTypeEdit(new QLineEdit(this))
     , modelLocationComboBox(new QComboBox(this))
@@ -46,7 +48,7 @@ ModelAssemblyDialog::ModelAssemblyDialog(QWidget *parent)
     loadComponentTree();
 
     setWindowTitle("模型装配");
-    resize(1000, 700);
+    resize(1600, 1000);
 }
 
 ModelAssemblyDialog::~ModelAssemblyDialog()
@@ -74,6 +76,19 @@ void ModelAssemblyDialog::setupUI()
     modelTree->setHeaderLabel("模型结构");
     modelTree->setContextMenuPolicy(Qt::CustomContextMenu);
     mainLayout->addWidget(modelTree, 1);
+
+    modelTree->setUniformRowHeights(true);
+
+    modelSearchEdit->setPlaceholderText("搜索模型名称");
+
+    QWidget *modelTreePanel = new QWidget(this);
+    QVBoxLayout *modelTreeLayout = new QVBoxLayout(modelTreePanel);
+    modelTreeLayout->setContentsMargins(0, 0, 0, 0);
+    modelTreeLayout->setSpacing(6);
+    modelTreeLayout->addWidget(modelSearchEdit);
+    modelTreeLayout->addWidget(modelTree, 1);
+
+    mainLayout->addWidget(modelTreePanel, 1);
 
     // 右侧配置区域
     QWidget *rightWidget = new QWidget(this);
@@ -123,6 +138,15 @@ void ModelAssemblyDialog::setupUI()
     assemblyRightLayout->addWidget(componentTreeLabel);
     assemblyRightLayout->addWidget(componentTree);
 
+    componentTree->setHeaderLabel("组件结构");
+    componentTree->setContextMenuPolicy(Qt::CustomContextMenu);
+    componentTree->setUniformRowHeights(true);
+
+    componentSearchEdit->setPlaceholderText("搜索组件名称");
+
+    assemblyRightLayout->addWidget(componentSearchEdit);
+    assemblyRightLayout->addWidget(componentTree, 1);
+
     assemblyLayout->addWidget(assemblyLeftWidget, 1);
     assemblyLayout->addWidget(assemblyRightWidget, 1);
 
@@ -147,10 +171,10 @@ void ModelAssemblyDialog::setupUI()
             this, &ModelAssemblyDialog::onSaveButtonClicked);
     connect(browseIconButton, &QPushButton::clicked,
             this, &ModelAssemblyDialog::onBrowseIconButtonClicked);
-//    connect(addModelButton, &QPushButton::clicked,
-//            this, &ModelAssemblyDialog::onAddModelButtonClicked);
-//    connect(deleteModelButton, &QPushButton::clicked,
-//            this, &ModelAssemblyDialog::onDeleteModelButtonClicked);
+    connect(modelSearchEdit, &QLineEdit::textChanged,
+             this, &ModelAssemblyDialog::onModelSearchTextChanged);
+    connect(componentSearchEdit, &QLineEdit::textChanged,
+             this, &ModelAssemblyDialog::onComponentSearchTextChanged);
 }
 
 void ModelAssemblyDialog::loadModelTree()
@@ -158,6 +182,8 @@ void ModelAssemblyDialog::loadModelTree()
     modelTree->clear();
     loadModelTypes();
     loadModels();
+    resetModelTreeFilter();
+
 }
 
 void ModelAssemblyDialog::loadModelTypes()
@@ -269,8 +295,121 @@ void ModelAssemblyDialog::loadComponentTree()
     }
 
     componentTree->expandAll();
+    resetComponentTreeFilter();
+
 }
 
+void ModelAssemblyDialog::onModelSearchTextChanged(const QString &text)
+{
+    const QString keyword = text.trimmed();
+
+    modelTree->setUpdatesEnabled(false);
+
+    if (keyword.isEmpty()) {
+        resetModelTreeFilter();
+        modelTree->setUpdatesEnabled(true);
+        return;
+    }
+
+    for (int i = 0; i < modelTree->topLevelItemCount(); ++i) {
+        QTreeWidgetItem *item = modelTree->topLevelItem(i);
+        bool matched = filterTreeItem(item, keyword);
+        item->setHidden(!matched);
+    }
+
+    modelTree->setUpdatesEnabled(true);
+}
+
+void ModelAssemblyDialog::onComponentSearchTextChanged(const QString &text)
+{
+    const QString keyword = text.trimmed();
+
+    componentTree->setUpdatesEnabled(false);
+
+    if (keyword.isEmpty()) {
+        resetComponentTreeFilter();
+        componentTree->setUpdatesEnabled(true);
+        return;
+    }
+
+    for (int i = 0; i < componentTree->topLevelItemCount(); ++i) {
+        QTreeWidgetItem *item = componentTree->topLevelItem(i);
+        bool matched = filterComponentTreeItem(item, keyword);
+        item->setHidden(!matched);
+    }
+
+    componentTree->setUpdatesEnabled(true);
+}
+
+void ModelAssemblyDialog::resetModelTreeFilter()
+{
+    const std::function<void(QTreeWidgetItem*)> resetItem = [&](QTreeWidgetItem *item) {
+        item->setHidden(false);
+        if (item->childCount() > 0) {
+            item->setExpanded(true);
+        }
+        for (int i = 0; i < item->childCount(); ++i) {
+            resetItem(item->child(i));
+        }
+    };
+
+    for (int i = 0; i < modelTree->topLevelItemCount(); ++i) {
+        resetItem(modelTree->topLevelItem(i));
+    }
+}
+
+bool ModelAssemblyDialog::filterTreeItem(QTreeWidgetItem *item, const QString &keyword)
+{
+    bool matched = item->text(0).contains(keyword, Qt::CaseInsensitive);
+
+    for (int i = 0; i < item->childCount(); ++i) {
+        QTreeWidgetItem *child = item->child(i);
+        bool childMatched = filterTreeItem(child, keyword);
+        matched = matched || childMatched;
+    }
+
+    item->setHidden(!matched);
+    if (item->childCount() > 0) {
+        item->setExpanded(matched);
+    }
+
+    return matched;
+}
+
+void ModelAssemblyDialog::resetComponentTreeFilter()
+{
+    const std::function<void(QTreeWidgetItem*)> resetItem = [&](QTreeWidgetItem *item) {
+        item->setHidden(false);
+        if (item->childCount() > 0) {
+            item->setExpanded(true);
+        }
+        for (int i = 0; i < item->childCount(); ++i) {
+            resetItem(item->child(i));
+        }
+    };
+
+    for (int i = 0; i < componentTree->topLevelItemCount(); ++i) {
+        resetItem(componentTree->topLevelItem(i));
+    }
+}
+
+bool ModelAssemblyDialog::filterComponentTreeItem(QTreeWidgetItem *item, const QString &keyword)
+{
+    bool matched = item->text(0).contains(keyword, Qt::CaseInsensitive);
+
+    for (int i = 0; i < item->childCount(); ++i) {
+        QTreeWidgetItem *child = item->child(i);
+        bool childMatched = filterComponentTreeItem(child, keyword);
+        matched = matched || childMatched;
+    }
+
+    item->setHidden(!matched);
+    if (item->childCount() > 0) {
+        item->setExpanded(matched);
+    }
+
+    return matched;
+}
 
 void ModelAssemblyDialog::onModelTreeItemClicked(QTreeWidgetItem *item, int column)
 {

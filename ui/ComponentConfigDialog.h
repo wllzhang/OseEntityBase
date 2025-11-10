@@ -98,6 +98,12 @@ private slots:
      */
     void deleteComponent();
 
+    /**
+     * @brief 组件搜索框文本变化槽函数
+     * @param text 搜索关键字
+     */
+    void onComponentSearchTextChanged(const QString &text);
+
 private:
     /**
      * @brief 设置UI界面
@@ -199,9 +205,25 @@ private:
     QVariant getWidgetValue(QWidget *widget, const QString &paramName);
     bool validateFormData(const QJsonObject &configInfo);
 
+    /**
+     * @brief 重置组件树过滤状态，恢复所有节点可见
+     */
+    void resetComponentTreeFilter();
+    /**
+     * @brief 递归判断并过滤组件树节点
+     * @param item 当前检索的节点
+     * @param keyword 搜索关键词
+     * @return 节点或其子节点是否匹配
+     */
+    bool filterComponentTreeItem(QTreeWidgetItem *item, const QString &keyword);
+    /**
+     * @brief 递归调用，设置节点隐藏状态，同时控制展开状态
+     */
+    void setTreeItemHiddenRecursive(QTreeWidgetItem *item, bool hidden);
 
     QSqlDatabase db;                        // 数据库连接
     QTreeWidget *componentTree;             // 组件树控件
+    QLineEdit *componentSearchEdit;         // 组件搜索框
     QVBoxLayout *rightLayout;               // 右侧布局
     QWidget *parameterWidget;               // 参数表单widget
     QFormLayout *parameterFormLayout;       // 参数表单布局

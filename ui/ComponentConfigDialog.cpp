@@ -42,7 +42,7 @@ ComponentConfigDialog::ComponentConfigDialog(QWidget *parent)
     loadComponentTree();
 
     setWindowTitle("组件参数配置");
-    resize(1000, 700);
+    resize(1600, 1000);
 }
 
 ComponentConfigDialog::~ComponentConfigDialog()
@@ -76,6 +76,18 @@ void ComponentConfigDialog::setupUI()
     componentTree->setHeaderLabel("组件结构");
     componentTree->setContextMenuPolicy(Qt::CustomContextMenu);
     mainLayout->addWidget(componentTree, 1);
+
+    // 提升渲染性能，避免高度波动
+    componentTree->setUniformRowHeights(true);
+    componentSearchEdit = new QLineEdit(this);
+    componentSearchEdit->setPlaceholderText("搜索组件名称");
+    QWidget *componentTreePanel = new QWidget(this);
+    QVBoxLayout *componentTreeLayout = new QVBoxLayout(componentTreePanel);
+    componentTreeLayout->setContentsMargins(0, 0, 0, 0);
+    componentTreeLayout->setSpacing(6);
+    componentTreeLayout->addWidget(componentSearchEdit);
+    componentTreeLayout->addWidget(componentTree, 1);
+    mainLayout->addWidget(componentTreePanel, 1);
 
     // 右侧配置区域
     rightLayout = new QVBoxLayout();
@@ -117,6 +129,7 @@ void ComponentConfigDialog::setupUI()
     rightLayout->addWidget(saveButton);
 
     // 连接信号槽
+    connect(componentSearchEdit, &QLineEdit::textChanged, this, &ComponentConfigDialog::onComponentSearchTextChanged);
     connect(componentTree, &QTreeWidget::itemClicked, this, &ComponentConfigDialog::onTreeItemClicked);
     connect(componentTree, &QTreeWidget::customContextMenuRequested, this, &ComponentConfigDialog::showContextMenu);
     connect(saveButton, &QPushButton::clicked, this, &ComponentConfigDialog::onSaveButtonClicked);
@@ -234,6 +247,74 @@ void ComponentConfigDialog::onTreeItemClicked(QTreeWidgetItem *item, int column)
         }
     }
 }
+
+
+void ComponentConfigDialog::onComponentSearchTextChanged(const QString &text)
+{
+    const QString keyword = text.trimmed();  // 去除首尾空格以保证匹配准确
+
+    componentTree->setUpdatesEnabled(false);    // 批量更新前先关闭刷新，避免闪烁
+
+    if (keyword.isEmpty()) {
+        resetComponentTreeFilter();
+        componentTree->setUpdatesEnabled(true);
+        return;
+    }
+
+    for (int i = 0; i < componentTree->topLevelItemCount(); ++i) {
+        QTreeWidgetItem *item = componentTree->topLevelItem(i);
+        bool matched = filterComponentTreeItem(item, keyword);
+        item->setHidden(!matched);
+    }
+
+    componentTree->setUpdatesEnabled(true);
+}
+
+void ComponentConfigDialog::resetComponentTreeFilter()
+{
+    // 遍历组件树的所有顶级项
+    for (int i = 0; i < componentTree->topLevelItemCount(); ++i) {
+        QTreeWidgetItem *item = componentTree->topLevelItem(i);
+        // 递归设置该项及其所有子项为显示状态
+        setTreeItemHiddenRecursive(item, false);
+        item->setExpanded(true);  // 将当前顶级项设置为展开状态
+    }
+}
+
+bool ComponentConfigDialog::filterComponentTreeItem(QTreeWidgetItem *item, const QString &keyword)
+{
+    bool matched = item->text(0).contains(keyword, Qt::CaseInsensitive);    // 当前节点文本匹配
+
+    for (int i = 0; i < item->childCount(); ++i) {
+        QTreeWidgetItem *child = item->child(i);
+        // 递归判断子节点是否匹配关键字
+        bool childMatched = filterComponentTreeItem(child, keyword);
+        matched = matched || childMatched;
+    }
+
+    item->setHidden(!matched);
+    if (matched && item->childCount() > 0) {
+        item->setExpanded(true);    // 设置节点展开
+    } else if (!matched) {
+        item->setExpanded(false);   // 设置节点隐藏
+    }
+
+    return matched;
+}
+
+void ComponentConfigDialog::setTreeItemHiddenRecursive(QTreeWidgetItem *item, bool hidden)
+{
+    item->setHidden(hidden);
+    if (!hidden && item->childCount() > 0) {
+        item->setExpanded(true);  // 恢复可见节点默认展开
+    } else if (hidden) {
+        item->setExpanded(false); // 隐藏节点时无需展开
+    }
+    for (int i = 0; i < item->childCount(); ++i) {
+        setTreeItemHiddenRecursive(item->child(i), hidden);
+    }
+}
+
 
 void ComponentConfigDialog::updateComponentInfo(const ComponentInfo &info)
 {
@@ -596,50 +677,6 @@ QWidget* ComponentConfigDialog::createUnsupportedWidget(int type)
     label->setStyleSheet("color: red; font-style: italic;");
     return label;
 }
-
-
-//void ComponentConfigDialog::onSaveButtonClicked()
-//{
-//    if (currentComponentInfo.componentId.isEmpty()) {
-//        QMessageBox::warning(this, "警告", "请先选择要配置的组件");
-//        return;
-//    }
-
-//    // 收集参数值
-//    QJsonObject configInfo;
-//    for (auto it = paramWidgets.begin(); it != paramWidgets.end(); ++it) {
-//        QString paramName = it.key();
-//        QWidget *widget = it.value();
-
-//        if (QLineEdit *edit = qobject_cast<QLineEdit*>(widget)) {
-//            configInfo[paramName] = edit->text();
-//        } else if (QComboBox *combo = qobject_cast<QComboBox*>(widget)) {
-//            configInfo[paramName] = combo->currentIndex();
-//        } else if (QSpinBox *spinBox = qobject_cast<QSpinBox*>(widget)) {
-//            configInfo[paramName] = spinBox->value();
-//        } else if (QCheckBox *checkBox = qobject_cast<QCheckBox*>(widget)) {
-//            configInfo[paramName] = checkBox->isChecked();
-//        }
-//    }
-
-//    // 更新数据库
-//    QSqlQuery query;
-//    query.prepare("UPDATE ComponentInformation SET name = ?, type = ?, configinfo = ? WHERE componentid = ?");
-//    query.addBindValue(nameEdit->text());
-//    query.addBindValue(typeComboBox->currentText());
-//    query.addBindValue(QJsonDocument(configInfo).toJson(QJsonDocument::Compact));
-//    query.addBindValue(currentComponentInfo.componentId);
-
-//    if (query.exec()) {
-//        QMessageBox::information(this, "成功", "组件配置已保存");
-//        // 更新树显示
-//        if (currentItem) {
-//            currentItem->setText(0, nameEdit->text() + " (" + typeComboBox->currentText() + ")");
-//        }
-//    } else {
-//        QMessageBox::critical(this, "错误", "保存失败: " + query.lastError().text());
-//    }
-//}
 
 
 void ComponentConfigDialog::onSaveButtonClicked()

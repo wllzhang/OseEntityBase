@@ -151,12 +151,24 @@ public:
      * @param viewer OSG Viewer指针
      */
     void setViewer(osgViewer::Viewer* viewer);
-    
+
     /**
      * @brief 设置MapStateManager用于读取相机range
      */
     void setMapStateManager(MapStateManager* mapStateManager);
+
+    /**
+     * @brief 控制是否阻止地图导航
+     *
+     * 某些测量模式下需要临时禁止地图拖拽/旋转。
+     */
+    void setBlockMapNavigation(bool block);
     
+    /**
+     * @brief 当前是否禁止地图导航
+     */
+    bool isMapNavigationBlocked() const;
+
     /**
      * @brief 处理延迟删除队列（应该在frame()完成后调用）
      * 公共方法，供外部在渲染完成后调用
@@ -289,6 +301,8 @@ private:
     QString getImagePathFromDatabase(const QString& entityName);
     /** @brief 根据实体名从配置获取图片路径（已废弃，转发到数据库查询） */
     QString getImagePathFromConfig(const QString& entityName);
+
+    bool blockMapNavigation_ = false; ///< 是否阻止地图导航
 
     // 航点/航线数据
     QMap<QString, WaypointGroupInfo> waypointGroups_;

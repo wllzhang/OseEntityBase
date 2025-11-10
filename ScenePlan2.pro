@@ -90,6 +90,7 @@ INCLUDEPATH += $${OSGDIR}/include
 DEPENDPATH += $${OSGDIR}/include
 
 SOURCES += \
+    ui/EntityManagementDialog.cpp\
     geo/WeaponMountDialog.cpp \
     ui/ComponentConfigDialog.cpp \
     ui/MainWidget.cpp \
@@ -120,6 +121,7 @@ SOURCES += \
 HEADERS += \
     geo/WeaponMountDialog.h \
     ui/ComponentConfigDialog.h \
+    ui/EntityManagementDialog.h \
     ui/MainWidget.h \
     ui/ModelAssemblyDialog.h \
     ui/ModelDeployDialog.h \

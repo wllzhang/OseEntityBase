@@ -112,6 +112,18 @@ private slots:
      */
     void onBrowseIconButtonClicked();
 
+    /**
+     * @brief 模型搜索框文本变化
+     * @param text 搜索关键字
+     */
+    void onModelSearchTextChanged(const QString &text);
+
+    /**
+     * @brief 组件搜索框文本变化
+     * @param text 搜索关键字
+     */
+    void onComponentSearchTextChanged(const QString &text);
+
 private:
     /**
      * @brief 设置UI界面
@@ -182,9 +194,17 @@ private:
      */
     ModelInfo getCurrentModelInfo() const;
 
+    void resetModelTreeFilter();
+    bool filterTreeItem(QTreeWidgetItem *item, const QString &keyword);
+    void resetComponentTreeFilter();
+    bool filterComponentTreeItem(QTreeWidgetItem *item, const QString &keyword);
+
+
     QSqlDatabase db;                      // 数据库连接
     QTreeWidget *modelTree;               // 模型树控件
     QTreeWidget *componentTree;           // 组件树控件
+    QLineEdit *modelSearchEdit;           // 模型搜索框
+    QLineEdit *componentSearchEdit;       // 组件搜索框
     QListWidget *assemblyList;            // 组件装配列表
 
     // 模型基本信息控件

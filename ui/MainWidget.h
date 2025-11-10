@@ -22,6 +22,7 @@
 #include <QLabel>
 #include "ComponentConfigDialog.h"
 #include "ModelAssemblyDialog.h"
+#include "../geo/waypointentity.h"
 #include "../widgets/OsgMapWidget.h"
 
 // 前向声明
@@ -30,6 +31,7 @@ class PlanFileManager;
 class ModelDeployDialog;
 class WeaponMountDialog;
 class EntityManagementDialog;
+class WaypointEntity;
 
 /**
  * @brief 应用程序主窗口
@@ -147,6 +149,22 @@ private slots:
      */
     void onExportPlanClicked();
 
+    /**
+     * @brief 距离测算按钮点击
+     */
+    void onDistanceMeasureClicked();
+
+    /**
+     * @brief 面积测算按钮点击：进入多点选择面积测算模式
+     */
+    void onAreaMeasureClicked();
+
+    /**
+     * @brief 角度测算按钮点击：进入方位/俯仰角计算模式
+     */
+    void onAngleMeasureClicked();
+
+
 private:
     /**
      * @brief 创建工具栏
@@ -200,8 +218,6 @@ private:
      * @param menu 菜单指针
      */
     void addRecentFileMenuItem(QMenu* menu);
-
-
 
     void showEntityManagementDialog();
     void refreshEntityManagementDialog();
@@ -277,6 +293,44 @@ private:
     bool isPlanningEntityRoute_;     // 是否正在为实体规划航线
     QString entityRouteUid_;     // 正在规划航线的实体UID
     QString entityRouteGroupId_;     // 实体航线组ID
+
+    // 距离测算：状态与中间结果
+    bool isMeasuringDistance_ = false;               // 是否处于测距模式
+    WaypointEntity* distancePointA_ = nullptr;  // 起点标绘点
+    WaypointEntity* distancePointB_ = nullptr;  // 终点标绘点
+
+    bool isMeasuringArea_ = false;                   // 是否处于面积测算模式
+    QVector<class WaypointEntity*> areaMeasurePoints_; // 面积测算已选航点
+    bool isMeasuringAngle_ = false;                  // 是否处于角度测算模式
+    class WaypointEntity* angleBasePoint_ = nullptr; // 角度测算起点
+    class WaypointEntity* angleTargetPoint_ = nullptr;// 角度测算终点
+
+    QMetaObject::Connection distanceLeftClickConn_;
+    QMetaObject::Connection distanceRightClickConn_;
+    QMetaObject::Connection areaLeftClickConn_;
+    QMetaObject::Connection areaRightClickConn_;
+    QMetaObject::Connection angleLeftClickConn_;
+    QMetaObject::Connection angleRightClickConn_;
+
+    void resetMeasurementModes();
+    void disconnectMeasurementConnection(QMetaObject::Connection& connection);
+    void exitDistanceMeasure(const QString& message = QString());
+    void exitAreaMeasure(const QString& message = QString());
+    void exitAngleMeasure(const QString& message = QString());
+    double computePolygonAreaMeters(const QVector<class WaypointEntity*>& points) const;
+    void showAngleBetweenWaypoints(class WaypointEntity* from, class WaypointEntity* to);
+
+    // 使用 Haversine 公式计算两经纬度点的大圆距离（米）
+    double computeDistanceMeters(double lat1Deg, double lon1Deg, double lat2Deg, double lon2Deg) const;
+
+    /**
+     * @brief 在屏幕坐标附近模糊选择一个航点（标绘点）
+     * @param screenPos 鼠标点击的屏幕坐标
+     * @param radiusPx 搜索半径（像素）
+     * @return 找到的航点指针，未找到返回nullptr
+     */
+    WaypointEntity* pickWaypointNearScreenPos(const QPoint& screenPos, int radiusPx) const;
+
 
 };
 
