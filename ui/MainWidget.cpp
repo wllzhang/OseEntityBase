@@ -65,6 +65,7 @@ MainWidget::MainWidget(QWidget *parent)
     
     // 启用自动保存（默认启用，2秒间隔）
     planFileManager_->setAutoSaveEnabled(true, 2000);
+    dialogHoverEntity_ = nullptr;
     
     // 加载最近打开的文件列表
     loadRecentFiles();
@@ -1457,7 +1458,37 @@ void MainWidget::showEntityManagementDialog()
                 this, &MainWidget::onEntitySelectionRequested);
         connect(entityManagementDialog_, &EntityManagementDialog::requestRefresh,
                 this, &MainWidget::onEntityRefreshRequested);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestHover,
+                this, [this](const QString& uid, bool hovered){
+                    auto entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
+                    if (!entityManager) {
+                        return;
+                    }
+                    GeoEntity* entity = uid.isEmpty() ? nullptr : entityManager->getEntity(uid);
+                    if (hovered) {
+                        if (dialogHoverEntity_ && dialogHoverEntity_ != entity) {
+                            dialogHoverEntity_->setHovered(false);
+                        }
+                        dialogHoverEntity_ = entity;
+                        if (dialogHoverEntity_) {
+                            dialogHoverEntity_->setHovered(true);
+                        }
+                    } else {
+                        if (!entity || entity == dialogHoverEntity_) {
+                            if (dialogHoverEntity_) {
+                                dialogHoverEntity_->setHovered(false);
+                                dialogHoverEntity_ = nullptr;
+                            }
+                        } else if (entity) {
+                            entity->setHovered(false);
+                        }
+                    }
+                });
         connect(entityManagementDialog_, &QDialog::finished, this, [this](int){
+            if (dialogHoverEntity_) {
+                dialogHoverEntity_->setHovered(false);
+                dialogHoverEntity_ = nullptr;
+            }
             if (osgMapWidget_) {
                 osgMapWidget_->setFocus(Qt::OtherFocusReason);
             }

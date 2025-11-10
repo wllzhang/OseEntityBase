@@ -6,6 +6,7 @@
 #include <QPair>
 #include <QTreeWidget>
 #include <QSet>
+#include <QString>
 
 class GeoEntity;
 class QPushButton;
@@ -30,14 +31,19 @@ signals:
     void requestVisibilityChange(const QString& uid, bool visible);
     void requestSelection(const QString& uid);
     void requestRefresh();
+    void requestHover(const QString& uid, bool hovered);
 
 private slots:
     void handleItemChanged(QTreeWidgetItem* item, int column);
     void handleSelectionChanged();
+    void handleItemEntered(QTreeWidgetItem* item, int column);
     void onFocusClicked();
     void onEditClicked();
     void onDeleteClicked();
     void onRefreshClicked();
+
+protected:
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
     QString currentEntityUid() const;
@@ -54,6 +60,7 @@ private:
     QPushButton* deleteButton_;
     QPushButton* refreshButton_;
     bool updating_;
+    QString hoveredUid_;
 };
 
 #endif // ENTITYMANAGEMENTDIALOG_H

@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QSet>
+#include <QEvent>
 
 namespace {
 constexpr int ColumnName = 0;
@@ -40,6 +41,8 @@ EntityManagementDialog::EntityManagementDialog(QWidget* parent)
     tree_->setAllColumnsShowFocus(true);
     tree_->setExpandsOnDoubleClick(true);
     tree_->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tree_->setMouseTracking(true);
+    tree_->viewport()->installEventFilter(this);
     mainLayout->addWidget(tree_);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
@@ -58,6 +61,7 @@ EntityManagementDialog::EntityManagementDialog(QWidget* parent)
     connect(tree_, &QTreeWidget::itemChanged, this, &EntityManagementDialog::handleItemChanged);
     connect(tree_, &QTreeWidget::itemSelectionChanged, this, &EntityManagementDialog::handleSelectionChanged);
     connect(tree_, &QTreeWidget::itemDoubleClicked, this, [this](QTreeWidgetItem*, int){ onFocusClicked(); });
+    connect(tree_, &QTreeWidget::itemEntered, this, &EntityManagementDialog::handleItemEntered);
 
     connect(focusButton_, &QPushButton::clicked, this, &EntityManagementDialog::onFocusClicked);
     connect(editButton_, &QPushButton::clicked, this, &EntityManagementDialog::onEditClicked);
@@ -139,6 +143,28 @@ void EntityManagementDialog::handleSelectionChanged()
     emit requestSelection(currentEntityUid());
 }
 
+void EntityManagementDialog::handleItemEntered(QTreeWidgetItem* item, int)
+{
+    QString newUid;
+    if (item && item->data(ColumnName, RoleIsEntity).toBool()) {
+        newUid = item->data(ColumnName, RoleUid).toString();
+    }
+
+    if (hoveredUid_ == newUid) {
+        return;
+    }
+
+    if (!hoveredUid_.isEmpty()) {
+        emit requestHover(hoveredUid_, false);
+    }
+
+    hoveredUid_ = newUid;
+
+    if (!hoveredUid_.isEmpty()) {
+        emit requestHover(hoveredUid_, true);
+    }
+}
+
 void EntityManagementDialog::onFocusClicked()
 {
     const QString uid = currentEntityUid();
@@ -169,6 +195,19 @@ void EntityManagementDialog::onDeleteClicked()
 void EntityManagementDialog::onRefreshClicked()
 {
     emit requestRefresh();
+}
+
+bool EntityManagementDialog::eventFilter(QObject* watched, QEvent* event)
+{
+    if (watched == tree_->viewport()) {
+        if (event->type() == QEvent::Leave) {
+            if (!hoveredUid_.isEmpty()) {
+                emit requestHover(hoveredUid_, false);
+                hoveredUid_.clear();
+            }
+        }
+    }
+    return QDialog::eventFilter(watched, event);
 }
 
 QString EntityManagementDialog::currentEntityUid() const
@@ -241,6 +280,10 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
                                           const QString& selectedUid)
 {
     updating_ = true;
+    if (!hoveredUid_.isEmpty()) {
+        emit requestHover(hoveredUid_, false);
+        hoveredUid_.clear();
+    }
     tree_->blockSignals(true);
     tree_->clear();
 

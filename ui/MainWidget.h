@@ -277,6 +277,7 @@ private:
     bool isPlanningEntityRoute_;     // 是否正在为实体规划航线
     QString entityRouteUid_;     // 正在规划航线的实体UID
     QString entityRouteGroupId_;     // 实体航线组ID
+    GeoEntity* dialogHoverEntity_;
 
 };
 
