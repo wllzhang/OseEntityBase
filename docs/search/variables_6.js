@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['latitude_5f_0',['latitude_',['../classGeoEntity.html#a99c192552234098b00e3293d97ca9f7c',1,'GeoEntity']]],
-  ['longitude_5f_1',['longitude_',['../classGeoEntity.html#a1b4c07cd86aff844e0a6f136f84cabc3',1,'GeoEntity']]]
+  ['heading_0',['heading',['../structMapStateInfo.html#ab907b39a63403f0eee0eb32e6eb25553',1,'MapStateInfo']]],
+  ['heading_5f_1',['heading_',['../classGeoEntity.html#a35f4063239394a545abda0a1afbcfb23',1,'GeoEntity']]],
+  ['highlightnode_5f_2',['highlightNode_',['../classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581',1,'GeoEntity']]],
+  ['hovered_5f_3',['hovered_',['../classGeoEntity.html#a93cd033bd232c20c897fcdc230b63dcd',1,'GeoEntity']]]
 ];

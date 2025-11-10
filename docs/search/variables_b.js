@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['range_0',['range',['../structMapStateInfo.html#af83c22e926353d6f2afab516efd535a2',1,'MapStateInfo']]],
-  ['routemodel_1',['routeModel',['../structGeoEntityManager_1_1WaypointGroupInfo.html#add9e607f33d1ec69b354a792334c146b',1,'GeoEntityManager::WaypointGroupInfo']]],
-  ['routenode_2',['routeNode',['../structGeoEntityManager_1_1WaypointGroupInfo.html#a15b88f704d7a9c5a0df058f196bdee82',1,'GeoEntityManager::WaypointGroupInfo']]]
+  ['pitch_0',['pitch',['../structMapStateInfo.html#a156b699ac83c3811315947517cc63b01',1,'MapStateInfo']]],
+  ['properties_5f_1',['properties_',['../classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d',1,'GeoEntity']]]
 ];

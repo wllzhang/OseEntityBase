@@ -285,7 +285,7 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 <div class="line">    mapWidget-&gt;setEntityManager(entityManager);</div>
 <div class="line">    mapStateManager-&gt;setMapNode(mapNode);</div>
 <div class="line">});</div>
-<div class="ttc" id="aclassGeoEntityManager_html"><div class="ttname"><a href="classGeoEntityManager.html">GeoEntityManager</a></div><div class="ttdoc">地理实体管理器</div><div class="ttdef"><b>Definition</b> geoentitymanager.h:51</div></div>
+<div class="ttc" id="aclassGeoEntityManager_html"><div class="ttname"><a href="classGeoEntityManager.html">GeoEntityManager</a></div><div class="ttdoc">地理实体管理器</div><div class="ttdef"><b>Definition</b> geoentitymanager.h:52</div></div>
 <div class="ttc" id="aclassMapStateManager_html"><div class="ttname"><a href="classMapStateManager.html">MapStateManager</a></div><div class="ttdoc">地图状态管理器</div><div class="ttdef"><b>Definition</b> mapstatemanager.h:85</div></div>
 <div class="ttc" id="ageoentitymanager_8h_html"><div class="ttname"><a href="geoentitymanager_8h.html">geoentitymanager.h</a></div><div class="ttdoc">地理实体管理器头文件</div></div>
 <div class="ttc" id="amapstatemanager_8h_html"><div class="ttname"><a href="mapstatemanager_8h.html">mapstatemanager.h</a></div><div class="ttdoc">地图状态管理器头文件</div></div>
@@ -305,8 +305,8 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 <div class="line">PlanFileManager* planManager = <span class="keyword">new</span> PlanFileManager(<span class="keyword">this</span>);</div>
 <div class="line">planManager-&gt;setEntityManager(entityManager);</div>
 <div class="line">planManager-&gt;loadPlan(<span class="stringliteral">&quot;path/to/plan.json&quot;</span>);  <span class="comment">// 自动创建实体</span></div>
-<div class="ttc" id="aclassGeoEntityManager_html_a9f3cb27640f54e0c38f2619f740541f2"><div class="ttname"><a href="classGeoEntityManager.html#a9f3cb27640f54e0c38f2619f740541f2">GeoEntityManager::createEntity</a></div><div class="ttdeci">GeoEntity * createEntity(const QString &amp;entityType, const QString &amp;entityName, const QJsonObject &amp;properties, double longitude, double latitude, double altitude, const QString &amp;uidOverride=QString())</div><div class="ttdoc">创建实体</div><div class="ttdef"><b>Definition</b> geoentitymanager.cpp:76</div></div>
-<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:53</div></div>
+<div class="ttc" id="aclassGeoEntityManager_html_a9f3cb27640f54e0c38f2619f740541f2"><div class="ttname"><a href="classGeoEntityManager.html#a9f3cb27640f54e0c38f2619f740541f2">GeoEntityManager::createEntity</a></div><div class="ttdeci">GeoEntity * createEntity(const QString &amp;entityType, const QString &amp;entityName, const QJsonObject &amp;properties, double longitude, double latitude, double altitude, const QString &amp;uidOverride=QString())</div><div class="ttdoc">创建实体</div><div class="ttdef"><b>Definition</b> geoentitymanager.cpp:78</div></div>
+<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:55</div></div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md19"></a>
 3) 连接交互信号</h3>
 <div class="fragment"><div class="line"><span class="comment">// 实体选择信号</span></div>
@@ -340,7 +340,7 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 <div class="ttc" id="aclassGeoEntityManager_html_a40b02c62296b712b7c154e91a04bd52e"><div class="ttname"><a href="classGeoEntityManager.html#a40b02c62296b712b7c154e91a04bd52e">GeoEntityManager::entitySelected</a></div><div class="ttdeci">void entitySelected(GeoEntity *entity)</div><div class="ttdoc">实体选中信号</div></div>
 <div class="ttc" id="aclassGeoEntityManager_html_a892057b37a941a0170d5451da8e0a961"><div class="ttname"><a href="classGeoEntityManager.html#a892057b37a941a0170d5451da8e0a961">GeoEntityManager::entityDoubleClicked</a></div><div class="ttdeci">void entityDoubleClicked(GeoEntity *entity)</div><div class="ttdoc">实体双击信号</div></div>
 <div class="ttc" id="aclassGeoEntityManager_html_af084398c6a492baa68a1cce1a1ce936a"><div class="ttname"><a href="classGeoEntityManager.html#af084398c6a492baa68a1cce1a1ce936a">GeoEntityManager::entityRightClicked</a></div><div class="ttdeci">void entityRightClicked(GeoEntity *entity, QPoint screenPos)</div><div class="ttdoc">实体右键点击信号</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a245b06bf476b8d9dbee5d4f0d074a7eb"><div class="ttname"><a href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">GeoEntity::getName</a></div><div class="ttdeci">QString getName() const</div><div class="ttdef"><b>Definition</b> geoentity.h:66</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a245b06bf476b8d9dbee5d4f0d074a7eb"><div class="ttname"><a href="classGeoEntity.html#a245b06bf476b8d9dbee5d4f0d074a7eb">GeoEntity::getName</a></div><div class="ttdeci">QString getName() const</div><div class="ttdef"><b>Definition</b> geoentity.h:68</div></div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md20"></a>
 4) 地图状态监控</h3>
 <div class="fragment"><div class="line"><span class="comment">// 地图状态变化</span></div>
@@ -420,9 +420,9 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 <div class="line">        <span class="comment">// 更新完成后的自定义逻辑（如更新标签）</span></div>
 <div class="line">    }</div>
 <div class="line">};</div>
-<div class="ttc" id="aclassGeoEntity_html_a8347685965dd2998d0f143c71c3eccfe"><div class="ttname"><a href="classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe">GeoEntity::onUpdated</a></div><div class="ttdeci">virtual void onUpdated()</div><div class="ttdoc">更新完成后的回调，子类可重写添加特定更新逻辑</div><div class="ttdef"><b>Definition</b> geoentity.h:161</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a8347685965dd2998d0f143c71c3eccfe"><div class="ttname"><a href="classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe">GeoEntity::onUpdated</a></div><div class="ttdeci">virtual void onUpdated()</div><div class="ttdoc">更新完成后的回调，子类可重写添加特定更新逻辑</div><div class="ttdef"><b>Definition</b> geoentity.h:173</div></div>
 <div class="ttc" id="aclassGeoEntity_html_ac8e3ca23e7d5ac21b4be1bc68e923bb0"><div class="ttname"><a href="classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0">GeoEntity::createNode</a></div><div class="ttdeci">virtual osg::ref_ptr&lt; osg::Node &gt; createNode()=0</div></div>
-<div class="ttc" id="aclassGeoEntity_html_af9538b518ef0aeb3ef54f2ae3c65a8e9"><div class="ttname"><a href="classGeoEntity.html#af9538b518ef0aeb3ef54f2ae3c65a8e9">GeoEntity::onInitialized</a></div><div class="ttdeci">virtual void onInitialized()</div><div class="ttdoc">节点创建完成后的回调，子类可重写添加特定初始化逻辑</div><div class="ttdef"><b>Definition</b> geoentity.h:159</div></div>
+<div class="ttc" id="aclassGeoEntity_html_af9538b518ef0aeb3ef54f2ae3c65a8e9"><div class="ttname"><a href="classGeoEntity.html#af9538b518ef0aeb3ef54f2ae3c65a8e9">GeoEntity::onInitialized</a></div><div class="ttdeci">virtual void onInitialized()</div><div class="ttdoc">节点创建完成后的回调，子类可重写添加特定初始化逻辑</div><div class="ttdef"><b>Definition</b> geoentity.h:171</div></div>
 <div class="ttc" id="ageoentity_8h_html"><div class="ttname"><a href="geoentity_8h.html">geoentity.h</a></div><div class="ttdoc">通用地理实体抽象接口与基础实现。</div></div>
 </div><!-- fragment --></li>
 <li><b>在GeoEntityManager中注册</b> <div class="fragment"><div class="line"><a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* <a class="code hl_function" href="classGeoEntityManager.html#a9f3cb27640f54e0c38f2619f740541f2">GeoEntityManager::createEntity</a>(...) {</div>
@@ -439,7 +439,7 @@ OSG-Qt集成模块 (OsgQt/)</h3>
 <li><b>在GeoEntityManager中添加事件处理</b> <div class="fragment"><div class="line"><span class="keywordtype">void</span> <a class="code hl_function" href="classGeoEntityManager.html#ad9cbcb2a80eb716c0112feab412b6e5d">GeoEntityManager::onMousePress</a>(QMouseEvent* event) {</div>
 <div class="line">    <span class="comment">// 添加你的自定义鼠标事件处理</span></div>
 <div class="line">}</div>
-<div class="ttc" id="aclassGeoEntityManager_html_ad9cbcb2a80eb716c0112feab412b6e5d"><div class="ttname"><a href="classGeoEntityManager.html#ad9cbcb2a80eb716c0112feab412b6e5d">GeoEntityManager::onMousePress</a></div><div class="ttdeci">void onMousePress(QMouseEvent *event)</div><div class="ttdoc">处理鼠标按下事件</div><div class="ttdef"><b>Definition</b> geoentitymanager.cpp:405</div></div>
+<div class="ttc" id="aclassGeoEntityManager_html_ad9cbcb2a80eb716c0112feab412b6e5d"><div class="ttname"><a href="classGeoEntityManager.html#ad9cbcb2a80eb716c0112feab412b6e5d">GeoEntityManager::onMousePress</a></div><div class="ttdeci">void onMousePress(QMouseEvent *event)</div><div class="ttdoc">处理鼠标按下事件</div><div class="ttdef"><b>Definition</b> geoentitymanager.cpp:516</div></div>
 </div><!-- fragment --></li>
 <li><b>定义新信号（如需要）</b> <div class="fragment"><div class="line">signals:</div>
 <div class="line">    <span class="keywordtype">void</span> customEvent(<a class="code hl_class" href="classGeoEntity.html">GeoEntity</a>* entity);</div>

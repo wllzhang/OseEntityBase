@@ -177,6 +177,12 @@ Public 成员函数</h2></td></tr>
 <tr class="separator:a0f9297fc1e04f5a59bd06931473a2477 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac320715315aec5d714c5004b7280e237 inherit pub_methods_classGeoEntity" id="r_ac320715315aec5d714c5004b7280e237"><td class="memItemLeft" align="right" valign="top">QMap&lt; QString, QVariant &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ac320715315aec5d714c5004b7280e237">getAllProperties</a> () const</td></tr>
 <tr class="separator:ac320715315aec5d714c5004b7280e237 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b3e16070e653c36d836713ff4ac3fbf inherit pub_methods_classGeoEntity" id="r_a5b3e16070e653c36d836713ff4ac3fbf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a5b3e16070e653c36d836713ff4ac3fbf">setHovered</a> (bool hovered)</td></tr>
+<tr class="memdesc:a5b3e16070e653c36d836713ff4ac3fbf inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置悬停状态  <br /></td></tr>
+<tr class="separator:a5b3e16070e653c36d836713ff4ac3fbf inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af89075adbe142fca785ae2cd21f2f38a inherit pub_methods_classGeoEntity" id="r_af89075adbe142fca785ae2cd21f2f38a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#af89075adbe142fca785ae2cd21f2f38a">isHovered</a> () const</td></tr>
+<tr class="memdesc:af89075adbe142fca785ae2cd21f2f38a inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否处于悬停状态  <br /></td></tr>
+<tr class="separator:af89075adbe142fca785ae2cd21f2f38a inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected 成员函数</h2></td></tr>
@@ -232,10 +238,20 @@ Protected 成员函数</h2></td></tr>
 <tr class="separator:a168ca55410f5fb94b74f4931e7ab7501 inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d416dd404d2a056b760d66d33b38045 inherit pro_attribs_classGeoEntity" id="r_a0d416dd404d2a056b760d66d33b38045"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045">selected_</a></td></tr>
 <tr class="separator:a0d416dd404d2a056b760d66d33b38045 inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93cd033bd232c20c897fcdc230b63dcd inherit pro_attribs_classGeoEntity" id="r_a93cd033bd232c20c897fcdc230b63dcd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a93cd033bd232c20c897fcdc230b63dcd">hovered_</a></td></tr>
+<tr class="separator:a93cd033bd232c20c897fcdc230b63dcd inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bc2b40a65faa0c857cf4b03952cf78d inherit pro_attribs_classGeoEntity" id="r_a3bc2b40a65faa0c857cf4b03952cf78d"><td class="memItemLeft" align="right" valign="top">QMap&lt; QString, QVariant &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d">properties_</a></td></tr>
 <tr class="separator:a3bc2b40a65faa0c857cf4b03952cf78d inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68abb6bb8190349bc2cca94728e5678a inherit pro_attribs_classGeoEntity" id="r_a68abb6bb8190349bc2cca94728e5678a"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a></td></tr>
 <tr class="separator:a68abb6bb8190349bc2cca94728e5678a inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2708335595b0b350739e079a017354f0 inherit pro_attribs_classGeoEntity" id="r_a2708335595b0b350739e079a017354f0"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">contentNode_</a></td></tr>
+<tr class="separator:a2708335595b0b350739e079a017354f0 inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21cb611a51261e92c7484360e48465f5 inherit pro_attribs_classGeoEntity" id="r_a21cb611a51261e92c7484360e48465f5"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::PositionAttitudeTransform &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a></td></tr>
+<tr class="separator:a21cb611a51261e92c7484360e48465f5 inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2e4e5f08ceabe1fac836079602a0581 inherit pro_attribs_classGeoEntity" id="r_ad2e4e5f08ceabe1fac836079602a0581"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Geode &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a></td></tr>
+<tr class="separator:ad2e4e5f08ceabe1fac836079602a0581 inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4966213fe504530612a1081dd469f0b inherit pro_attribs_classGeoEntity" id="r_ad4966213fe504530612a1081dd469f0b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ad4966213fe504530612a1081dd469f0b">lastHighlightSize_</a></td></tr>
+<tr class="separator:ad4966213fe504530612a1081dd469f0b inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>航点实体 </p>
@@ -243,7 +259,7 @@ Protected 成员函数</h2></td></tr>
 <p><b>继承关系：</b> </p><div class="fragment"><div class="line">QObject</div>
 <div class="line">  └─ <a class="code hl_class" href="classGeoEntity.html">GeoEntity</a></div>
 <div class="line">      └─ <a class="code hl_class" href="classWaypointEntity.html">WaypointEntity</a></div>
-<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:53</div></div>
+<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:55</div></div>
 <div class="ttc" id="aclassWaypointEntity_html"><div class="ttname"><a href="classWaypointEntity.html">WaypointEntity</a></div><div class="ttdoc">航点实体</div><div class="ttdef"><b>Definition</b> waypointentity.h:32</div></div>
 </div><!-- fragment --> </div><h2 class="groupheader">构造及析构函数说明</h2>
 <a id="a5a086c0cc6f31818cfb14f1b0ab5a438" name="a5a086c0cc6f31818cfb14f1b0ab5a438"></a>

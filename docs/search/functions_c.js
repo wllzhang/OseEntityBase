@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['onaftercleanup_0',['onaftercleanup',['../classGeoEntity.html#ad356b8a7e275eb8109fdf3d70fa5e2d1',1,'GeoEntity::onAfterCleanup()'],['../classImageEntity.html#aab2419adb4b5435c95037ec2f45c2c48',1,'ImageEntity::onAfterCleanup()']]],
-  ['onbeforecleanup_1',['onbeforecleanup',['../classGeoEntity.html#a9de6fff9b1213eda88b58b74106f409e',1,'GeoEntity::onBeforeCleanup()'],['../classImageEntity.html#ac9760ba7b8f34ed61cc7f4c342c2fb24',1,'ImageEntity::onBeforeCleanup()'],['../classWaypointEntity.html#a4293e2785f5986a973bca6a504fc5bd3',1,'WaypointEntity::onBeforeCleanup()']]],
+  ['onaftercleanup_0',['onAfterCleanup',['../classGeoEntity.html#ad356b8a7e275eb8109fdf3d70fa5e2d1',1,'GeoEntity']]],
+  ['onbeforecleanup_1',['onbeforecleanup',['../classGeoEntity.html#a9de6fff9b1213eda88b58b74106f409e',1,'GeoEntity::onBeforeCleanup()'],['../classWaypointEntity.html#a4293e2785f5986a973bca6a504fc5bd3',1,'WaypointEntity::onBeforeCleanup()']]],
   ['oninitialized_2',['onInitialized',['../classGeoEntity.html#af9538b518ef0aeb3ef54f2ae3c65a8e9',1,'GeoEntity']]],
   ['onmousedoubleclick_3',['onMouseDoubleClick',['../classGeoEntityManager.html#a51512b135680aad126dd81f9027e5309',1,'GeoEntityManager']]],
   ['onmousemove_4',['onmousemove',['../classGeoEntityManager.html#afa4a9d5e0d57dcbb97243ed78061a8ee',1,'GeoEntityManager::onMouseMove()'],['../classMapStateManager.html#ab1242384895d0ef25f0eca2c8ced594b',1,'MapStateManager::onMouseMove()']]],

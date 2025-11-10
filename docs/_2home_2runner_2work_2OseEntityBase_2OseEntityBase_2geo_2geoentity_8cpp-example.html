@@ -100,8 +100,10 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2OseEntityBase_2O
 </div><!-- fragment --><div class="fragment"><div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &quot;<a class="code" href="geoentity_8h.html">geoentity.h</a>&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;<a class="code" href="geoutils_8h.html">geoutils.h</a>&quot;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;QDebug&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;QColor&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;osg/LineWidth&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;osg/StateSet&gt;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;osg/Array&gt;</span></div>
 <div class="line"> </div>
 <div class="line"><a id="a0" name="a0"></a><a class="code hl_function" href="classGeoEntity.html#a6aec866289631936cfd3e9cff4431810">GeoEntity::GeoEntity</a>(<span class="keyword">const</span> QString&amp; name, <span class="keyword">const</span> QString&amp; type,</div>
 <div class="line">                     <span class="keywordtype">double</span> longitude, <span class="keywordtype">double</span> latitude, <span class="keywordtype">double</span> altitude,</div>
@@ -116,6 +118,8 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2OseEntityBase_2O
 <div class="line">    , heading_(0.0)</div>
 <div class="line">    , visible_(true)</div>
 <div class="line">    , selected_(false)</div>
+<div class="line">    , hovered_(false)</div>
+<div class="line">    , lastHighlightSize_(0.0)</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// 设置默认属性</span></div>
 <div class="line">    setProperty(<span class="stringliteral">&quot;size&quot;</span>, 100.0);</div>
@@ -169,76 +173,138 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2OseEntityBase_2O
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span> <a id="a15" name="a15"></a><a class="code hl_function" href="classGeoEntity.html#a8e9a30c04f8173c0e66ee7697b13775e">GeoEntity::setSelected</a>(<span class="keywordtype">bool</span> selected)</div>
 <div class="line">{</div>
-<div class="line">    <a id="a16" name="a16"></a><a class="code hl_variable" href="classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045">selected_</a> = selected;</div>
-<div class="line">    </div>
-<div class="line">    <span class="comment">// 自我更新渲染节点（比如改变颜色或边框）</span></div>
+<div class="line">    <span class="keywordflow">if</span> (<a id="a16" name="a16"></a><a class="code hl_variable" href="classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045">selected_</a> == selected) {</div>
+<div class="line">        <span class="keywordflow">return</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <a class="code hl_variable" href="classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045">selected_</a> = selected;</div>
+<div class="line">    updateHighlightState();</div>
 <div class="line">    <a class="code hl_function" href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf">updateNode</a>();</div>
 <div class="line">    </div>
 <div class="line">    <span class="comment">// 发出信号</span></div>
 <div class="line">    emit <a id="a17" name="a17"></a><a class="code hl_signal" href="classGeoEntity.html#accb9f4c2e2510f41109f367d2f6bb5ae">selectionChanged</a>(selected);</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> <a id="a18" name="a18"></a><a class="code hl_function" href="classGeoEntity.html#abc1ac7cae5f0f72791b17d24025cf7d6">GeoEntity::setProperty</a>(<span class="keyword">const</span> QString&amp; key, <span class="keyword">const</span> QVariant&amp; value)</div>
+<div class="line"><span class="keywordtype">void</span> <a id="a18" name="a18"></a><a class="code hl_function" href="classGeoEntity.html#a5b3e16070e653c36d836713ff4ac3fbf">GeoEntity::setHovered</a>(<span class="keywordtype">bool</span> hovered)</div>
 <div class="line">{</div>
-<div class="line">    <a id="a19" name="a19"></a><a class="code hl_variable" href="classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d">properties_</a>[key] = value;</div>
-<div class="line">    </div>
-<div class="line">    <span class="comment">// 自我更新渲染节点</span></div>
+<div class="line">    <span class="keywordflow">if</span> (<a id="a19" name="a19"></a><a class="code hl_variable" href="classGeoEntity.html#a93cd033bd232c20c897fcdc230b63dcd">hovered_</a> == hovered) {</div>
+<div class="line">        <span class="keywordflow">return</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <a class="code hl_variable" href="classGeoEntity.html#a93cd033bd232c20c897fcdc230b63dcd">hovered_</a> = hovered;</div>
+<div class="line">    updateHighlightState();</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> <a id="a20" name="a20"></a><a class="code hl_function" href="classGeoEntity.html#abc1ac7cae5f0f72791b17d24025cf7d6">GeoEntity::setProperty</a>(<span class="keyword">const</span> QString&amp; key, <span class="keyword">const</span> QVariant&amp; value)</div>
+<div class="line">{</div>
+<div class="line">    <a id="a21" name="a21"></a><a class="code hl_variable" href="classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d">properties_</a>[key] = value;</div>
+<div class="line">    updateHighlightState();</div>
 <div class="line">    <a class="code hl_function" href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf">updateNode</a>();</div>
 <div class="line">    </div>
 <div class="line">    <span class="comment">// 发出信号</span></div>
-<div class="line">    emit <a id="a20" name="a20"></a><a class="code hl_signal" href="classGeoEntity.html#a04b39e5b0e76316605b2a36f4be737ca">propertyChanged</a>(key, value);</div>
+<div class="line">    emit <a id="a22" name="a22"></a><a class="code hl_signal" href="classGeoEntity.html#a04b39e5b0e76316605b2a36f4be737ca">propertyChanged</a>(key, value);</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line">QVariant <a id="a21" name="a21"></a><a class="code hl_function" href="classGeoEntity.html#a0f9297fc1e04f5a59bd06931473a2477">GeoEntity::getProperty</a>(<span class="keyword">const</span> QString&amp; key)<span class="keyword"> const</span></div>
+<div class="line">QVariant <a id="a23" name="a23"></a><a class="code hl_function" href="classGeoEntity.html#a0f9297fc1e04f5a59bd06931473a2477">GeoEntity::getProperty</a>(<span class="keyword">const</span> QString&amp; key)<span class="keyword"> const</span></div>
 <div class="line"><span class="keyword"></span>{</div>
 <div class="line">    <span class="keywordflow">return</span> <a class="code hl_variable" href="classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d">properties_</a>.value(key, QVariant());</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> <a id="a22" name="a22"></a><a class="code hl_function" href="classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f">GeoEntity::initialize</a>()</div>
+<div class="line"><span class="keywordtype">void</span> <a id="a24" name="a24"></a><a class="code hl_function" href="classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f">GeoEntity::initialize</a>()</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// 创建渲染节点</span></div>
-<div class="line">    <a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a> = <a id="a23" name="a23"></a><a class="code hl_function" href="classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0">createNode</a>();</div>
+<div class="line">    <a id="a25" name="a25"></a><a class="code hl_variable" href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">contentNode_</a> = <a id="a26" name="a26"></a><a class="code hl_function" href="classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0">createNode</a>();</div>
 <div class="line">    </div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a>) {</div>
+<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">contentNode_</a>) {</div>
+<div class="line">        osg::PositionAttitudeTransform* existingPat = <span class="keyword">dynamic_cast&lt;</span>osg::PositionAttitudeTransform*<span class="keyword">&gt;</span>(<a class="code hl_variable" href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">contentNode_</a>.get());</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordtype">double</span> highlightSize = resolveHighlightSize();</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (existingPat) {</div>
+<div class="line">            <a id="a27" name="a27"></a><a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a> = existingPat;</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a> = <a class="code hl_variable" href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">contentNode_</a>.get();</div>
+<div class="line"> </div>
+<div class="line">            <a id="a28" name="a28"></a><a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a> = buildHighlightGeometry(highlightSize);</div>
+<div class="line">            <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>) {</div>
+<div class="line">                <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>-&gt;setNodeMask(0x0);</div>
+<div class="line">                <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>-&gt;insertChild(0, <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>.get());</div>
+<div class="line">            }</div>
+<div class="line">        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a id="a29" name="a29"></a><a class="code hl_variable" href="classGeoEntity.html#ac7fea1dda82d851845ab54cd50740970">entityType_</a> == <span class="stringliteral">&quot;waypoint&quot;</span>) {</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a> = <a id="a30" name="a30"></a><a class="code hl_function" href="classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908">createPATNode</a>();</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a> = buildHighlightGeometry(highlightSize);</div>
+<div class="line">            <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>) {</div>
+<div class="line">                <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>-&gt;setNodeMask(0x0);</div>
+<div class="line">                <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>-&gt;addChild(<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>);</div>
+<div class="line">            }</div>
+<div class="line"> </div>
+<div class="line">            osg::ref_ptr&lt;osg::Group&gt; group = <span class="keyword">new</span> osg::Group();</div>
+<div class="line">            group-&gt;addChild(<a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>.get());</div>
+<div class="line">            group-&gt;addChild(<a class="code hl_variable" href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">contentNode_</a>.get());</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a> = group.get();</div>
+<div class="line">        } <span class="keywordflow">else</span> {</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a> = <a class="code hl_function" href="classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908">createPATNode</a>();</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a> = buildHighlightGeometry(highlightSize);</div>
+<div class="line">            <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>) {</div>
+<div class="line">                <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>-&gt;setNodeMask(0x0);</div>
+<div class="line">                <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>-&gt;addChild(<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>);</div>
+<div class="line">            }</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>-&gt;addChild(<a class="code hl_variable" href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">contentNode_</a>.get());</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a> = <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>.get();</div>
+<div class="line">        }</div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// 设置初始状态</span></div>
 <div class="line">        <a class="code hl_function" href="classGeoEntity.html#a6ea24102579a7f0b3bdad180599e45a5">setVisible</a>(<span class="keyword">true</span>);</div>
 <div class="line">        <a class="code hl_function" href="classGeoEntity.html#a8e9a30c04f8173c0e66ee7697b13775e">setSelected</a>(<span class="keyword">false</span>);</div>
+<div class="line">        <a class="code hl_variable" href="classGeoEntity.html#a93cd033bd232c20c897fcdc230b63dcd">hovered_</a> = <span class="keyword">false</span>;</div>
+<div class="line">        updateHighlightState();</div>
 <div class="line">        </div>
-<div class="line">        <span class="comment">// 设置节点的初始变换（如果是PAT节点）</span></div>
-<div class="line">        <a id="a24" name="a24"></a><a class="code hl_function" href="classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8">setupNodeTransform</a>(<a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a>.get());</div>
+<div class="line">        <span class="comment">// 设置节点的初始变换（如果控制PAT节点）</span></div>
+<div class="line">        <a class="code hl_function" href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf">updateNode</a>();</div>
 <div class="line">    }</div>
 <div class="line">    </div>
 <div class="line">    <span class="comment">// 调用子类特定的初始化回调</span></div>
-<div class="line">    <a id="a25" name="a25"></a><a class="code hl_function" href="classGeoEntity.html#af9538b518ef0aeb3ef54f2ae3c65a8e9">onInitialized</a>();</div>
+<div class="line">    <a id="a31" name="a31"></a><a class="code hl_function" href="classGeoEntity.html#af9538b518ef0aeb3ef54f2ae3c65a8e9">onInitialized</a>();</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> <a id="a26" name="a26"></a><a class="code hl_function" href="classGeoEntity.html#ad9348d4bdf3955e77482da960d334158">GeoEntity::update</a>()</div>
+<div class="line"><span class="keywordtype">void</span> <a id="a32" name="a32"></a><a class="code hl_function" href="classGeoEntity.html#ad9348d4bdf3955e77482da960d334158">GeoEntity::update</a>()</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// 更新节点变换</span></div>
 <div class="line">    <a class="code hl_function" href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf">updateNode</a>();</div>
 <div class="line">    </div>
 <div class="line">    <span class="comment">// 调用子类特定的更新回调</span></div>
-<div class="line">    <a id="a27" name="a27"></a><a class="code hl_function" href="classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe">onUpdated</a>();</div>
+<div class="line">    <a id="a33" name="a33"></a><a class="code hl_function" href="classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe">onUpdated</a>();</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> <a id="a28" name="a28"></a><a class="code hl_function" href="classGeoEntity.html#af8cd99fa8ecb25657293866b61f2fe95">GeoEntity::cleanup</a>()</div>
+<div class="line"><span class="keywordtype">void</span> <a id="a34" name="a34"></a><a class="code hl_function" href="classGeoEntity.html#af8cd99fa8ecb25657293866b61f2fe95">GeoEntity::cleanup</a>()</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// 子类清理特定资源（如高亮节点）</span></div>
-<div class="line">    <a id="a29" name="a29"></a><a class="code hl_function" href="classGeoEntity.html#a9de6fff9b1213eda88b58b74106f409e">onBeforeCleanup</a>();</div>
+<div class="line">    <a id="a35" name="a35"></a><a class="code hl_function" href="classGeoEntity.html#a9de6fff9b1213eda88b58b74106f409e">onBeforeCleanup</a>();</div>
 <div class="line">    </div>
+<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a> &amp;&amp; <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>) {</div>
+<div class="line">        <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>-&gt;removeChild(<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>.get());</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line">    <a class="code hl_variable" href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">contentNode_</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line">    <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line">    <a class="code hl_variable" href="classGeoEntity.html#a93cd033bd232c20c897fcdc230b63dcd">hovered_</a> = <span class="keyword">false</span>;</div>
+<div class="line">    <a class="code hl_variable" href="classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045">selected_</a> = <span class="keyword">false</span>;</div>
+<div class="line">    <a id="a36" name="a36"></a><a class="code hl_variable" href="classGeoEntity.html#ad4966213fe504530612a1081dd469f0b">lastHighlightSize_</a> = 0.0;</div>
+<div class="line"> </div>
 <div class="line">    <span class="comment">// 清除节点引用</span></div>
 <div class="line">    <a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a> = <span class="keyword">nullptr</span>;</div>
 <div class="line">    </div>
 <div class="line">    <span class="comment">// 子类额外清理</span></div>
-<div class="line">    <a id="a30" name="a30"></a><a class="code hl_function" href="classGeoEntity.html#ad356b8a7e275eb8109fdf3d70fa5e2d1">onAfterCleanup</a>();</div>
+<div class="line">    <a id="a37" name="a37"></a><a class="code hl_function" href="classGeoEntity.html#ad356b8a7e275eb8109fdf3d70fa5e2d1">onAfterCleanup</a>();</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span> <a class="code hl_function" href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf">GeoEntity::updateNode</a>()</div>
 <div class="line">{</div>
-<div class="line">    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a>) <span class="keywordflow">return</span>;</div>
-<div class="line">    </div>
-<div class="line">    <span class="comment">// 更新PositionAttitudeTransform的位置和旋转</span></div>
-<div class="line">    <a class="code hl_function" href="classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8">setupNodeTransform</a>(<a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a>.get());</div>
+<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>) {</div>
+<div class="line">        <a id="a38" name="a38"></a><a class="code hl_function" href="classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8">setupNodeTransform</a>(<a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>.get());</div>
+<div class="line">    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a>) {</div>
+<div class="line">        <a class="code hl_function" href="classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8">setupNodeTransform</a>(<a class="code hl_variable" href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">node_</a>.get());</div>
+<div class="line">    }</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span> <a class="code hl_function" href="classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8">GeoEntity::setupNodeTransform</a>(osg::Node* node)</div>
@@ -248,57 +314,157 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2OseEntityBase_2O
 <div class="line">    osg::PositionAttitudeTransform* pat = <span class="keyword">dynamic_cast&lt;</span>osg::PositionAttitudeTransform*<span class="keyword">&gt;</span>(node);</div>
 <div class="line">    <span class="keywordflow">if</span> (pat) {</div>
 <div class="line">        <span class="comment">// 更新位置：使用工具函数进行地理坐标到世界坐标的转换</span></div>
-<div class="line">        osg::Vec3d worldPos = <a id="a31" name="a31"></a><a class="code hl_function" href="classGeoUtils.html#a4ceae59328088c50b864b87efab29469">GeoUtils::geoToWorldCoordinates</a>(<a class="code hl_variable" href="classGeoEntity.html#a1b4c07cd86aff844e0a6f136f84cabc3">longitude_</a>, <a class="code hl_variable" href="classGeoEntity.html#a99c192552234098b00e3293d97ca9f7c">latitude_</a>, <a class="code hl_variable" href="classGeoEntity.html#ab6502ade106744348520f53537f6ceb8">altitude_</a>);</div>
+<div class="line">        osg::Vec3d worldPos = <a id="a39" name="a39"></a><a class="code hl_function" href="classGeoUtils.html#a4ceae59328088c50b864b87efab29469">GeoUtils::geoToWorldCoordinates</a>(<a class="code hl_variable" href="classGeoEntity.html#a1b4c07cd86aff844e0a6f136f84cabc3">longitude_</a>, <a class="code hl_variable" href="classGeoEntity.html#a99c192552234098b00e3293d97ca9f7c">latitude_</a>, <a class="code hl_variable" href="classGeoEntity.html#ab6502ade106744348520f53537f6ceb8">altitude_</a>);</div>
 <div class="line">        pat-&gt;setPosition(worldPos);</div>
 <div class="line">        </div>
 <div class="line">        <span class="comment">// 更新旋转：将航向角（度）转换为弧度，创建绕Z轴的旋转四元数</span></div>
-<div class="line">        <span class="keywordtype">double</span> angleRad = <a class="code hl_variable" href="classGeoEntity.html#a35f4063239394a545abda0a1afbcfb23">heading_</a> * <a id="a32" name="a32"></a><a class="code hl_define" href="geoentity_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a> / 180.0;</div>
+<div class="line">        <span class="keywordtype">double</span> angleRad = <a class="code hl_variable" href="classGeoEntity.html#a35f4063239394a545abda0a1afbcfb23">heading_</a> * <a id="a40" name="a40"></a><a class="code hl_define" href="geoentity_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a> / 180.0;</div>
 <div class="line">        osg::Quat rotation(angleRad, osg::Vec3d(0.0, 0.0, 1.0));</div>
 <div class="line">        pat-&gt;setAttitude(rotation);</div>
 <div class="line">    }</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line">osg::ref_ptr&lt;osg::PositionAttitudeTransform&gt; <a id="a33" name="a33"></a><a class="code hl_function" href="classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908">GeoEntity::createPATNode</a>()</div>
+<div class="line">osg::ref_ptr&lt;osg::PositionAttitudeTransform&gt; <a class="code hl_function" href="classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908">GeoEntity::createPATNode</a>()</div>
 <div class="line">{</div>
 <div class="line">    osg::ref_ptr&lt;osg::PositionAttitudeTransform&gt; pat = <span class="keyword">new</span> osg::PositionAttitudeTransform();</div>
 <div class="line">    <a class="code hl_function" href="classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8">setupNodeTransform</a>(pat.get());</div>
 <div class="line">    <span class="keywordflow">return</span> pat;</div>
 <div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">void</span> GeoEntity::updateHighlightState()</div>
+<div class="line">{</div>
+<div class="line">    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>) {</div>
+<div class="line">        <span class="keywordflow">return</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">bool</span> shouldShow = <a class="code hl_variable" href="classGeoEntity.html#a168ca55410f5fb94b74f4931e7ab7501">visible_</a> &amp;&amp; (<a class="code hl_variable" href="classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045">selected_</a> || <a class="code hl_variable" href="classGeoEntity.html#a93cd033bd232c20c897fcdc230b63dcd">hovered_</a>);</div>
+<div class="line">    <span class="keywordtype">double</span> highlightSize = resolveHighlightSize();</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a> || std::abs(highlightSize - <a class="code hl_variable" href="classGeoEntity.html#ad4966213fe504530612a1081dd469f0b">lastHighlightSize_</a>) &gt; 1e-3) {</div>
+<div class="line">        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>) {</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>-&gt;removeChild(<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>.get());</div>
+<div class="line">        }</div>
+<div class="line">        <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a> = buildHighlightGeometry(highlightSize);</div>
+<div class="line">        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>) {</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">rootNode_</a>-&gt;insertChild(0, <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>.get());</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#ad4966213fe504530612a1081dd469f0b">lastHighlightSize_</a> = highlightSize;</div>
+<div class="line">        } <span class="keywordflow">else</span> {</div>
+<div class="line">            <a class="code hl_variable" href="classGeoEntity.html#ad4966213fe504530612a1081dd469f0b">lastHighlightSize_</a> = highlightSize;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>) {</div>
+<div class="line">        <a class="code hl_variable" href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">highlightNode_</a>-&gt;setNodeMask(shouldShow ? 0xffffffff : 0x0);</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">osg::ref_ptr&lt;osg::Geode&gt; GeoEntity::buildHighlightGeometry(<span class="keywordtype">double</span> size)<span class="keyword"> const</span></div>
+<div class="line"><span class="keyword"></span>{</div>
+<div class="line">    <span class="keywordflow">if</span> (size &lt;= 0.0) {</div>
+<div class="line">        <span class="keywordflow">return</span> <span class="keyword">nullptr</span>;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    osg::ref_ptr&lt;osg::Geode&gt; geode = <span class="keyword">new</span> osg::Geode;</div>
+<div class="line">    osg::ref_ptr&lt;osg::Geometry&gt; geometry = <span class="keyword">new</span> osg::Geometry;</div>
+<div class="line">    osg::ref_ptr&lt;osg::Vec3Array&gt; vertices = <span class="keyword">new</span> osg::Vec3Array;</div>
+<div class="line"> </div>
+<div class="line">    <span class="comment">// if (entityType_ == &quot;waypoint&quot;) {</span></div>
+<div class="line">    <span class="comment">//     const int segments = 64;</span></div>
+<div class="line">    <span class="comment">//     for (int i = 0; i &lt;= segments; ++i) {</span></div>
+<div class="line">    <span class="comment">//         double angle = (2.0 * M_PI * i) / static_cast&lt;double&gt;(segments);</span></div>
+<div class="line">    <span class="comment">//         double x = std::cos(angle) * size;</span></div>
+<div class="line">    <span class="comment">//         double z = std::sin(angle) * size;</span></div>
+<div class="line">    <span class="comment">//         vertices-&gt;push_back(osg::Vec3(x, 0.0, z));</span></div>
+<div class="line">    <span class="comment">//     }</span></div>
+<div class="line">    <span class="comment">//     geometry-&gt;setVertexArray(vertices.get());</span></div>
+<div class="line">    <span class="comment">//     geometry-&gt;addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, vertices-&gt;size()));</span></div>
+<div class="line">    <span class="comment">// }  </span></div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordtype">float</span> borderSize = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(size * 1.1);</div>
+<div class="line">        <span class="keywordtype">float</span> borderHalf = borderSize * 0.5f;</div>
+<div class="line">        vertices-&gt;push_back(osg::Vec3(-borderHalf, 0.0f, -borderHalf));</div>
+<div class="line">        vertices-&gt;push_back(osg::Vec3(borderHalf, 0.0f, -borderHalf));</div>
+<div class="line">        vertices-&gt;push_back(osg::Vec3(borderHalf, 0.0f, borderHalf));</div>
+<div class="line">        vertices-&gt;push_back(osg::Vec3(-borderHalf, 0.0f, borderHalf));</div>
+<div class="line">        vertices-&gt;push_back(osg::Vec3(-borderHalf, 0.0f, -borderHalf));</div>
+<div class="line">        geometry-&gt;setVertexArray(vertices.get());</div>
+<div class="line">        geometry-&gt;addPrimitiveSet(<span class="keyword">new</span> osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0, vertices-&gt;size()));</div>
+<div class="line">     </div>
+<div class="line"> </div>
+<div class="line">    osg::ref_ptr&lt;osg::Vec4Array&gt; colors = <span class="keyword">new</span> osg::Vec4Array;</div>
+<div class="line">    colors-&gt;push_back(osg::Vec4(1.0f, 0.1f, 0.1f, 1.0f));</div>
+<div class="line">    geometry-&gt;setColorArray(colors.get(), osg::Array::BIND_OVERALL);</div>
+<div class="line"> </div>
+<div class="line">    osg::ref_ptr&lt;osg::StateSet&gt; stateSet = geometry-&gt;getOrCreateStateSet();</div>
+<div class="line">    stateSet-&gt;setMode(GL_LIGHTING, osg::StateAttribute::OFF);</div>
+<div class="line">    stateSet-&gt;setMode(GL_BLEND, osg::StateAttribute::ON);</div>
+<div class="line">    stateSet-&gt;setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);</div>
+<div class="line">    stateSet-&gt;setRenderingHint(osg::StateSet::TRANSPARENT_BIN);</div>
+<div class="line">    stateSet-&gt;setAttributeAndModes(<span class="keyword">new</span> osg::LineWidth(3.0f), osg::StateAttribute::ON);</div>
+<div class="line"> </div>
+<div class="line">    geometry-&gt;setUseDisplayList(<span class="keyword">false</span>);</div>
+<div class="line">    geometry-&gt;setUseVertexBufferObjects(<span class="keyword">true</span>);</div>
+<div class="line">    geode-&gt;setCullingActive(<span class="keyword">false</span>);</div>
+<div class="line"> </div>
+<div class="line">    geode-&gt;addDrawable(geometry.get());</div>
+<div class="line">    <span class="keywordflow">return</span> geode.get();</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">double</span> GeoEntity::resolveHighlightSize()<span class="keyword"> const</span></div>
+<div class="line"><span class="keyword"></span>{</div>
+<div class="line">    <span class="keywordtype">double</span> highlightSize = <a class="code hl_variable" href="classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d">properties_</a>.value(<span class="stringliteral">&quot;highlightSize&quot;</span>).toDouble();</div>
+<div class="line">    <span class="keywordflow">if</span> (highlightSize &lt;= 0.0) {</div>
+<div class="line">        <span class="keywordtype">double</span> baseSize = <a class="code hl_variable" href="classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d">properties_</a>.value(<span class="stringliteral">&quot;size&quot;</span>).toDouble();</div>
+<div class="line">        <span class="keywordflow">if</span> (baseSize &gt; 0.0) {</div>
+<div class="line">            highlightSize = baseSize;</div>
+<div class="line">        } <span class="keywordflow">else</span> {</div>
+<div class="line">            highlightSize = 100.0;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">    <span class="keywordflow">return</span> highlightSize;</div>
+<div class="line">}</div>
 <div class="ttc" id="aclassGeoEntity_html_a04b39e5b0e76316605b2a36f4be737ca"><div class="ttname"><a href="classGeoEntity.html#a04b39e5b0e76316605b2a36f4be737ca">GeoEntity::propertyChanged</a></div><div class="ttdeci">void propertyChanged(const QString &amp;key, const QVariant &amp;value)</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a0d416dd404d2a056b760d66d33b38045"><div class="ttname"><a href="classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045">GeoEntity::selected_</a></div><div class="ttdeci">bool selected_</div><div class="ttdef"><b>Definition</b> geoentity.h:149</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a0f9297fc1e04f5a59bd06931473a2477"><div class="ttname"><a href="classGeoEntity.html#a0f9297fc1e04f5a59bd06931473a2477">GeoEntity::getProperty</a></div><div class="ttdeci">QVariant getProperty(const QString &amp;key) const</div><div class="ttdoc">读取自定义属性</div><div class="ttdef"><b>Definition</b> geoentity.cpp:99</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a168ca55410f5fb94b74f4931e7ab7501"><div class="ttname"><a href="classGeoEntity.html#a168ca55410f5fb94b74f4931e7ab7501">GeoEntity::visible_</a></div><div class="ttdeci">bool visible_</div><div class="ttdef"><b>Definition</b> geoentity.h:148</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a1b4c07cd86aff844e0a6f136f84cabc3"><div class="ttname"><a href="classGeoEntity.html#a1b4c07cd86aff844e0a6f136f84cabc3">GeoEntity::longitude_</a></div><div class="ttdeci">double longitude_</div><div class="ttdef"><b>Definition</b> geoentity.h:146</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a0d416dd404d2a056b760d66d33b38045"><div class="ttname"><a href="classGeoEntity.html#a0d416dd404d2a056b760d66d33b38045">GeoEntity::selected_</a></div><div class="ttdeci">bool selected_</div><div class="ttdef"><b>Definition</b> geoentity.h:156</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a0f9297fc1e04f5a59bd06931473a2477"><div class="ttname"><a href="classGeoEntity.html#a0f9297fc1e04f5a59bd06931473a2477">GeoEntity::getProperty</a></div><div class="ttdeci">QVariant getProperty(const QString &amp;key) const</div><div class="ttdoc">读取自定义属性</div><div class="ttdef"><b>Definition</b> geoentity.cpp:115</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a168ca55410f5fb94b74f4931e7ab7501"><div class="ttname"><a href="classGeoEntity.html#a168ca55410f5fb94b74f4931e7ab7501">GeoEntity::visible_</a></div><div class="ttdeci">bool visible_</div><div class="ttdef"><b>Definition</b> geoentity.h:155</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a1b4c07cd86aff844e0a6f136f84cabc3"><div class="ttname"><a href="classGeoEntity.html#a1b4c07cd86aff844e0a6f136f84cabc3">GeoEntity::longitude_</a></div><div class="ttdeci">double longitude_</div><div class="ttdef"><b>Definition</b> geoentity.h:153</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a21cb611a51261e92c7484360e48465f5"><div class="ttname"><a href="classGeoEntity.html#a21cb611a51261e92c7484360e48465f5">GeoEntity::rootNode_</a></div><div class="ttdeci">osg::ref_ptr&lt; osg::PositionAttitudeTransform &gt; rootNode_</div><div class="ttdef"><b>Definition</b> geoentity.h:162</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a2708335595b0b350739e079a017354f0"><div class="ttname"><a href="classGeoEntity.html#a2708335595b0b350739e079a017354f0">GeoEntity::contentNode_</a></div><div class="ttdeci">osg::ref_ptr&lt; osg::Node &gt; contentNode_</div><div class="ttdef"><b>Definition</b> geoentity.h:161</div></div>
 <div class="ttc" id="aclassGeoEntity_html_a34bcccbf69f11d28c2abb36877c1dc56"><div class="ttname"><a href="classGeoEntity.html#a34bcccbf69f11d28c2abb36877c1dc56">GeoEntity::visibilityChanged</a></div><div class="ttdeci">void visibilityChanged(bool visible)</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a35f4063239394a545abda0a1afbcfb23"><div class="ttname"><a href="classGeoEntity.html#a35f4063239394a545abda0a1afbcfb23">GeoEntity::heading_</a></div><div class="ttdeci">double heading_</div><div class="ttdef"><b>Definition</b> geoentity.h:147</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a3bc2b40a65faa0c857cf4b03952cf78d"><div class="ttname"><a href="classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d">GeoEntity::properties_</a></div><div class="ttdeci">QMap&lt; QString, QVariant &gt; properties_</div><div class="ttdef"><b>Definition</b> geoentity.h:151</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a35f4063239394a545abda0a1afbcfb23"><div class="ttname"><a href="classGeoEntity.html#a35f4063239394a545abda0a1afbcfb23">GeoEntity::heading_</a></div><div class="ttdeci">double heading_</div><div class="ttdef"><b>Definition</b> geoentity.h:154</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a3bc2b40a65faa0c857cf4b03952cf78d"><div class="ttname"><a href="classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d">GeoEntity::properties_</a></div><div class="ttdeci">QMap&lt; QString, QVariant &gt; properties_</div><div class="ttdef"><b>Definition</b> geoentity.h:159</div></div>
 <div class="ttc" id="aclassGeoEntity_html_a42e03c9c28c9bce1f87217dcab47cd67"><div class="ttname"><a href="classGeoEntity.html#a42e03c9c28c9bce1f87217dcab47cd67">GeoEntity::positionChanged</a></div><div class="ttdeci">void positionChanged(double longitude, double latitude, double altitude)</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a443225b2cf103b47f8b73dbb4bd36f1f"><div class="ttname"><a href="classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f">GeoEntity::initialize</a></div><div class="ttdeci">virtual void initialize()</div><div class="ttdoc">初始化实体资源与节点</div><div class="ttdef"><b>Definition</b> geoentity.cpp:116</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a5657253025363aaaf5c01e53d01a7908"><div class="ttname"><a href="classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908">GeoEntity::createPATNode</a></div><div class="ttdeci">osg::ref_ptr&lt; osg::PositionAttitudeTransform &gt; createPATNode()</div><div class="ttdoc">创建并初始化PositionAttitudeTransform节点</div><div class="ttdef"><b>Definition</b> geoentity.cpp:243</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a5cf31f2eea5a30f11187bd00545cd315"><div class="ttname"><a href="classGeoEntity.html#a5cf31f2eea5a30f11187bd00545cd315">GeoEntity::getPosition</a></div><div class="ttdeci">void getPosition(double &amp;longitude, double &amp;latitude, double &amp;altitude) const</div><div class="ttdoc">获取实体的地理位置</div><div class="ttdef"><b>Definition</b> geoentity.cpp:46</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a68abb6bb8190349bc2cca94728e5678a"><div class="ttname"><a href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">GeoEntity::node_</a></div><div class="ttdeci">osg::ref_ptr&lt; osg::Node &gt; node_</div><div class="ttdef"><b>Definition</b> geoentity.h:152</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a443225b2cf103b47f8b73dbb4bd36f1f"><div class="ttname"><a href="classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f">GeoEntity::initialize</a></div><div class="ttdeci">virtual void initialize()</div><div class="ttdoc">初始化实体资源与节点</div><div class="ttdef"><b>Definition</b> geoentity.cpp:132</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a5657253025363aaaf5c01e53d01a7908"><div class="ttname"><a href="classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908">GeoEntity::createPATNode</a></div><div class="ttdeci">osg::ref_ptr&lt; osg::PositionAttitudeTransform &gt; createPATNode()</div><div class="ttdoc">创建并初始化PositionAttitudeTransform节点</div><div class="ttdef"><b>Definition</b> geoentity.cpp:309</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a5b3e16070e653c36d836713ff4ac3fbf"><div class="ttname"><a href="classGeoEntity.html#a5b3e16070e653c36d836713ff4ac3fbf">GeoEntity::setHovered</a></div><div class="ttdeci">void setHovered(bool hovered)</div><div class="ttdoc">设置悬停状态</div><div class="ttdef"><b>Definition</b> geoentity.cpp:95</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a5cf31f2eea5a30f11187bd00545cd315"><div class="ttname"><a href="classGeoEntity.html#a5cf31f2eea5a30f11187bd00545cd315">GeoEntity::getPosition</a></div><div class="ttdeci">void getPosition(double &amp;longitude, double &amp;latitude, double &amp;altitude) const</div><div class="ttdoc">获取实体的地理位置</div><div class="ttdef"><b>Definition</b> geoentity.cpp:50</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a68abb6bb8190349bc2cca94728e5678a"><div class="ttname"><a href="classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a">GeoEntity::node_</a></div><div class="ttdeci">osg::ref_ptr&lt; osg::Node &gt; node_</div><div class="ttdef"><b>Definition</b> geoentity.h:160</div></div>
 <div class="ttc" id="aclassGeoEntity_html_a6a61c0c20511a8606ec1fe9e6fc21472"><div class="ttname"><a href="classGeoEntity.html#a6a61c0c20511a8606ec1fe9e6fc21472">GeoEntity::headingChanged</a></div><div class="ttdeci">void headingChanged(double heading)</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a6aec866289631936cfd3e9cff4431810"><div class="ttname"><a href="classGeoEntity.html#a6aec866289631936cfd3e9cff4431810">GeoEntity::GeoEntity</a></div><div class="ttdeci">GeoEntity(const QString &amp;name, const QString &amp;type, double longitude, double latitude, double altitude, const QString &amp;uidOverride=QString(), QObject *parent=nullptr)</div><div class="ttdef"><b>Definition</b> geoentity.cpp:13</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a6ea24102579a7f0b3bdad180599e45a5"><div class="ttname"><a href="classGeoEntity.html#a6ea24102579a7f0b3bdad180599e45a5">GeoEntity::setVisible</a></div><div class="ttdeci">void setVisible(bool visible)</div><div class="ttdoc">设置可见性</div><div class="ttdef"><b>Definition</b> geoentity.cpp:64</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a71daf93dda8cf16126a98693bfcb88e8"><div class="ttname"><a href="classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8">GeoEntity::setupNodeTransform</a></div><div class="ttdeci">void setupNodeTransform(osg::Node *node)</div><div class="ttdoc">设置节点的位置和旋转变换</div><div class="ttdef"><b>Definition</b> geoentity.cpp:209</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a8347685965dd2998d0f143c71c3eccfe"><div class="ttname"><a href="classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe">GeoEntity::onUpdated</a></div><div class="ttdeci">virtual void onUpdated()</div><div class="ttdoc">更新完成后的回调，子类可重写添加特定更新逻辑</div><div class="ttdef"><b>Definition</b> geoentity.h:161</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a8e9a30c04f8173c0e66ee7697b13775e"><div class="ttname"><a href="classGeoEntity.html#a8e9a30c04f8173c0e66ee7697b13775e">GeoEntity::setSelected</a></div><div class="ttdeci">virtual void setSelected(bool selected)</div><div class="ttdoc">设置选中状态（子类可重写用于高亮等效果）</div><div class="ttdef"><b>Definition</b> geoentity.cpp:77</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a99c192552234098b00e3293d97ca9f7c"><div class="ttname"><a href="classGeoEntity.html#a99c192552234098b00e3293d97ca9f7c">GeoEntity::latitude_</a></div><div class="ttdeci">double latitude_</div><div class="ttdef"><b>Definition</b> geoentity.h:146</div></div>
-<div class="ttc" id="aclassGeoEntity_html_a9de6fff9b1213eda88b58b74106f409e"><div class="ttname"><a href="classGeoEntity.html#a9de6fff9b1213eda88b58b74106f409e">GeoEntity::onBeforeCleanup</a></div><div class="ttdeci">virtual void onBeforeCleanup()</div><div class="ttdoc">清理前的回调，子类可重写清理特定资源（如高亮节点）</div><div class="ttdef"><b>Definition</b> geoentity.h:163</div></div>
-<div class="ttc" id="aclassGeoEntity_html_aa7848e03ee53be03c71ffe675bb357cf"><div class="ttname"><a href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf">GeoEntity::updateNode</a></div><div class="ttdeci">void updateNode()</div><div class="ttdoc">根据当前状态刷新渲染节点</div><div class="ttdef"><b>Definition</b> geoentity.cpp:187</div></div>
-<div class="ttc" id="aclassGeoEntity_html_ab6502ade106744348520f53537f6ceb8"><div class="ttname"><a href="classGeoEntity.html#ab6502ade106744348520f53537f6ceb8">GeoEntity::altitude_</a></div><div class="ttdeci">double altitude_</div><div class="ttdef"><b>Definition</b> geoentity.h:146</div></div>
-<div class="ttc" id="aclassGeoEntity_html_abc1ac7cae5f0f72791b17d24025cf7d6"><div class="ttname"><a href="classGeoEntity.html#abc1ac7cae5f0f72791b17d24025cf7d6">GeoEntity::setProperty</a></div><div class="ttdeci">void setProperty(const QString &amp;key, const QVariant &amp;value)</div><div class="ttdoc">设置自定义属性（可用于外挂业务数据）</div><div class="ttdef"><b>Definition</b> geoentity.cpp:88</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a6aec866289631936cfd3e9cff4431810"><div class="ttname"><a href="classGeoEntity.html#a6aec866289631936cfd3e9cff4431810">GeoEntity::GeoEntity</a></div><div class="ttdeci">GeoEntity(const QString &amp;name, const QString &amp;type, double longitude, double latitude, double altitude, const QString &amp;uidOverride=QString(), QObject *parent=nullptr)</div><div class="ttdef"><b>Definition</b> geoentity.cpp:15</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a6ea24102579a7f0b3bdad180599e45a5"><div class="ttname"><a href="classGeoEntity.html#a6ea24102579a7f0b3bdad180599e45a5">GeoEntity::setVisible</a></div><div class="ttdeci">void setVisible(bool visible)</div><div class="ttdoc">设置可见性</div><div class="ttdef"><b>Definition</b> geoentity.cpp:68</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a71daf93dda8cf16126a98693bfcb88e8"><div class="ttname"><a href="classGeoEntity.html#a71daf93dda8cf16126a98693bfcb88e8">GeoEntity::setupNodeTransform</a></div><div class="ttdeci">void setupNodeTransform(osg::Node *node)</div><div class="ttdoc">设置节点的位置和旋转变换</div><div class="ttdef"><b>Definition</b> geoentity.cpp:275</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a8347685965dd2998d0f143c71c3eccfe"><div class="ttname"><a href="classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe">GeoEntity::onUpdated</a></div><div class="ttdeci">virtual void onUpdated()</div><div class="ttdoc">更新完成后的回调，子类可重写添加特定更新逻辑</div><div class="ttdef"><b>Definition</b> geoentity.h:173</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a8e9a30c04f8173c0e66ee7697b13775e"><div class="ttname"><a href="classGeoEntity.html#a8e9a30c04f8173c0e66ee7697b13775e">GeoEntity::setSelected</a></div><div class="ttdeci">virtual void setSelected(bool selected)</div><div class="ttdoc">设置选中状态（子类可重写用于高亮等效果）</div><div class="ttdef"><b>Definition</b> geoentity.cpp:81</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a93cd033bd232c20c897fcdc230b63dcd"><div class="ttname"><a href="classGeoEntity.html#a93cd033bd232c20c897fcdc230b63dcd">GeoEntity::hovered_</a></div><div class="ttdeci">bool hovered_</div><div class="ttdef"><b>Definition</b> geoentity.h:157</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a99c192552234098b00e3293d97ca9f7c"><div class="ttname"><a href="classGeoEntity.html#a99c192552234098b00e3293d97ca9f7c">GeoEntity::latitude_</a></div><div class="ttdeci">double latitude_</div><div class="ttdef"><b>Definition</b> geoentity.h:153</div></div>
+<div class="ttc" id="aclassGeoEntity_html_a9de6fff9b1213eda88b58b74106f409e"><div class="ttname"><a href="classGeoEntity.html#a9de6fff9b1213eda88b58b74106f409e">GeoEntity::onBeforeCleanup</a></div><div class="ttdeci">virtual void onBeforeCleanup()</div><div class="ttdoc">清理前的回调，子类可重写清理特定资源（如高亮节点）</div><div class="ttdef"><b>Definition</b> geoentity.h:175</div></div>
+<div class="ttc" id="aclassGeoEntity_html_aa7848e03ee53be03c71ffe675bb357cf"><div class="ttname"><a href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf">GeoEntity::updateNode</a></div><div class="ttdeci">void updateNode()</div><div class="ttdoc">根据当前状态刷新渲染节点</div><div class="ttdef"><b>Definition</b> geoentity.cpp:252</div></div>
+<div class="ttc" id="aclassGeoEntity_html_ab6502ade106744348520f53537f6ceb8"><div class="ttname"><a href="classGeoEntity.html#ab6502ade106744348520f53537f6ceb8">GeoEntity::altitude_</a></div><div class="ttdeci">double altitude_</div><div class="ttdef"><b>Definition</b> geoentity.h:153</div></div>
+<div class="ttc" id="aclassGeoEntity_html_abc1ac7cae5f0f72791b17d24025cf7d6"><div class="ttname"><a href="classGeoEntity.html#abc1ac7cae5f0f72791b17d24025cf7d6">GeoEntity::setProperty</a></div><div class="ttdeci">void setProperty(const QString &amp;key, const QVariant &amp;value)</div><div class="ttdoc">设置自定义属性（可用于外挂业务数据）</div><div class="ttdef"><b>Definition</b> geoentity.cpp:105</div></div>
+<div class="ttc" id="aclassGeoEntity_html_ac7fea1dda82d851845ab54cd50740970"><div class="ttname"><a href="classGeoEntity.html#ac7fea1dda82d851845ab54cd50740970">GeoEntity::entityType_</a></div><div class="ttdeci">QString entityType_</div><div class="ttdef"><b>Definition</b> geoentity.h:151</div></div>
 <div class="ttc" id="aclassGeoEntity_html_ac8e3ca23e7d5ac21b4be1bc68e923bb0"><div class="ttname"><a href="classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0">GeoEntity::createNode</a></div><div class="ttdeci">virtual osg::ref_ptr&lt; osg::Node &gt; createNode()=0</div></div>
 <div class="ttc" id="aclassGeoEntity_html_accb9f4c2e2510f41109f367d2f6bb5ae"><div class="ttname"><a href="classGeoEntity.html#accb9f4c2e2510f41109f367d2f6bb5ae">GeoEntity::selectionChanged</a></div><div class="ttdeci">void selectionChanged(bool selected)</div></div>
-<div class="ttc" id="aclassGeoEntity_html_ad356b8a7e275eb8109fdf3d70fa5e2d1"><div class="ttname"><a href="classGeoEntity.html#ad356b8a7e275eb8109fdf3d70fa5e2d1">GeoEntity::onAfterCleanup</a></div><div class="ttdeci">virtual void onAfterCleanup()</div><div class="ttdoc">清理后的回调，子类可重写做额外清理</div><div class="ttdef"><b>Definition</b> geoentity.h:165</div></div>
-<div class="ttc" id="aclassGeoEntity_html_ad9348d4bdf3955e77482da960d334158"><div class="ttname"><a href="classGeoEntity.html#ad9348d4bdf3955e77482da960d334158">GeoEntity::update</a></div><div class="ttdeci">virtual void update()</div><div class="ttdoc">根据业务状态更新实体</div><div class="ttdef"><b>Definition</b> geoentity.cpp:144</div></div>
-<div class="ttc" id="aclassGeoEntity_html_af8cd99fa8ecb25657293866b61f2fe95"><div class="ttname"><a href="classGeoEntity.html#af8cd99fa8ecb25657293866b61f2fe95">GeoEntity::cleanup</a></div><div class="ttdeci">virtual void cleanup()</div><div class="ttdoc">释放资源与场景引用</div><div class="ttdef"><b>Definition</b> geoentity.cpp:166</div></div>
-<div class="ttc" id="aclassGeoEntity_html_af9538b518ef0aeb3ef54f2ae3c65a8e9"><div class="ttname"><a href="classGeoEntity.html#af9538b518ef0aeb3ef54f2ae3c65a8e9">GeoEntity::onInitialized</a></div><div class="ttdeci">virtual void onInitialized()</div><div class="ttdoc">节点创建完成后的回调，子类可重写添加特定初始化逻辑</div><div class="ttdef"><b>Definition</b> geoentity.h:159</div></div>
-<div class="ttc" id="aclassGeoEntity_html_afa0a63c0033ca53b4b7d210e7bc80887"><div class="ttname"><a href="classGeoEntity.html#afa0a63c0033ca53b4b7d210e7bc80887">GeoEntity::setPosition</a></div><div class="ttdeci">void setPosition(double longitude, double latitude, double altitude)</div><div class="ttdoc">设置实体的地理位置</div><div class="ttdef"><b>Definition</b> geoentity.cpp:33</div></div>
-<div class="ttc" id="aclassGeoEntity_html_afb69481a6f212a7a7cb059f324d3c02c"><div class="ttname"><a href="classGeoEntity.html#afb69481a6f212a7a7cb059f324d3c02c">GeoEntity::setHeading</a></div><div class="ttdeci">void setHeading(double headingDegrees)</div><div class="ttdoc">设置航向角</div><div class="ttdef"><b>Definition</b> geoentity.cpp:53</div></div>
+<div class="ttc" id="aclassGeoEntity_html_ad2e4e5f08ceabe1fac836079602a0581"><div class="ttname"><a href="classGeoEntity.html#ad2e4e5f08ceabe1fac836079602a0581">GeoEntity::highlightNode_</a></div><div class="ttdeci">osg::ref_ptr&lt; osg::Geode &gt; highlightNode_</div><div class="ttdef"><b>Definition</b> geoentity.h:163</div></div>
+<div class="ttc" id="aclassGeoEntity_html_ad356b8a7e275eb8109fdf3d70fa5e2d1"><div class="ttname"><a href="classGeoEntity.html#ad356b8a7e275eb8109fdf3d70fa5e2d1">GeoEntity::onAfterCleanup</a></div><div class="ttdeci">virtual void onAfterCleanup()</div><div class="ttdoc">清理后的回调，子类可重写做额外清理</div><div class="ttdef"><b>Definition</b> geoentity.h:177</div></div>
+<div class="ttc" id="aclassGeoEntity_html_ad4966213fe504530612a1081dd469f0b"><div class="ttname"><a href="classGeoEntity.html#ad4966213fe504530612a1081dd469f0b">GeoEntity::lastHighlightSize_</a></div><div class="ttdeci">double lastHighlightSize_</div><div class="ttdef"><b>Definition</b> geoentity.h:164</div></div>
+<div class="ttc" id="aclassGeoEntity_html_ad9348d4bdf3955e77482da960d334158"><div class="ttname"><a href="classGeoEntity.html#ad9348d4bdf3955e77482da960d334158">GeoEntity::update</a></div><div class="ttdeci">virtual void update()</div><div class="ttdoc">根据业务状态更新实体</div><div class="ttdef"><b>Definition</b> geoentity.cpp:198</div></div>
+<div class="ttc" id="aclassGeoEntity_html_af8cd99fa8ecb25657293866b61f2fe95"><div class="ttname"><a href="classGeoEntity.html#af8cd99fa8ecb25657293866b61f2fe95">GeoEntity::cleanup</a></div><div class="ttdeci">virtual void cleanup()</div><div class="ttdoc">释放资源与场景引用</div><div class="ttdef"><b>Definition</b> geoentity.cpp:220</div></div>
+<div class="ttc" id="aclassGeoEntity_html_af9538b518ef0aeb3ef54f2ae3c65a8e9"><div class="ttname"><a href="classGeoEntity.html#af9538b518ef0aeb3ef54f2ae3c65a8e9">GeoEntity::onInitialized</a></div><div class="ttdeci">virtual void onInitialized()</div><div class="ttdoc">节点创建完成后的回调，子类可重写添加特定初始化逻辑</div><div class="ttdef"><b>Definition</b> geoentity.h:171</div></div>
+<div class="ttc" id="aclassGeoEntity_html_afa0a63c0033ca53b4b7d210e7bc80887"><div class="ttname"><a href="classGeoEntity.html#afa0a63c0033ca53b4b7d210e7bc80887">GeoEntity::setPosition</a></div><div class="ttdeci">void setPosition(double longitude, double latitude, double altitude)</div><div class="ttdoc">设置实体的地理位置</div><div class="ttdef"><b>Definition</b> geoentity.cpp:37</div></div>
+<div class="ttc" id="aclassGeoEntity_html_afb69481a6f212a7a7cb059f324d3c02c"><div class="ttname"><a href="classGeoEntity.html#afb69481a6f212a7a7cb059f324d3c02c">GeoEntity::setHeading</a></div><div class="ttdeci">void setHeading(double headingDegrees)</div><div class="ttdoc">设置航向角</div><div class="ttdef"><b>Definition</b> geoentity.cpp:57</div></div>
 <div class="ttc" id="aclassGeoUtils_html_a4ceae59328088c50b864b87efab29469"><div class="ttname"><a href="classGeoUtils.html#a4ceae59328088c50b864b87efab29469">GeoUtils::geoToWorldCoordinates</a></div><div class="ttdeci">static osg::Vec3d geoToWorldCoordinates(double longitude, double latitude, double altitude, osgEarth::AltitudeMode altMode=osgEarth::ALTMODE_ABSOLUTE)</div><div class="ttdoc">将地理坐标转换为世界坐标</div><div class="ttdef"><b>Definition</b> geoutils.cpp:114</div></div>
 <div class="ttc" id="ageoentity_8h_html"><div class="ttname"><a href="geoentity_8h.html">geoentity.h</a></div><div class="ttdoc">通用地理实体抽象接口与基础实现。</div></div>
-<div class="ttc" id="ageoentity_8h_html_ae71449b1cc6e6250b91f539153a7a0d3"><div class="ttname"><a href="geoentity_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a></div><div class="ttdeci">#define M_PI</div><div class="ttdef"><b>Definition</b> geoentity.h:17</div></div>
+<div class="ttc" id="ageoentity_8h_html_ae71449b1cc6e6250b91f539153a7a0d3"><div class="ttname"><a href="geoentity_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a></div><div class="ttdeci">#define M_PI</div><div class="ttdef"><b>Definition</b> geoentity.h:19</div></div>
 <div class="ttc" id="ageoutils_8h_html"><div class="ttname"><a href="geoutils_8h.html">geoutils.h</a></div><div class="ttdoc">地理坐标转换工具头文件</div></div>
 </div><!-- fragment --> </div><!-- contents -->
 </div><!-- doc-content -->
