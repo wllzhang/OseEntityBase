@@ -568,7 +568,10 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
     } else if (event->button() == Qt::RightButton) {
         // 右键：先发结束标绘信号，再按需发实体菜单
         emit mapRightClicked(event->pos());
-        GeoEntity* entity = findEntityAtPosition(event->pos());
+        GeoEntity* entity = selectedEntity_;
+        if (!entity) {
+            entity = findEntityAtPosition(event->pos());
+        }
         if (entity) {
             emit entityRightClicked(entity, event->pos());
             qDebug() << "右键点击实体:" << entity->getName();
