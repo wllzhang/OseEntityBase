@@ -8,8 +8,10 @@
 #include <QHeaderView>
 #include <QPushButton>
 #include <QLabel>
-#include <QSet>
 #include <QEvent>
+#include <QSpinBox>
+#include <QJsonObject>
+#include <QJsonArray>
 
 namespace {
 constexpr int ColumnName = 0;
@@ -70,10 +72,10 @@ EntityManagementDialog::EntityManagementDialog(QWidget* parent)
 }
 
 void EntityManagementDialog::refresh(const QList<GeoEntity*>& entities,
-                                     const QList<QPair<QString, QList<GeoEntity*>>>& waypointGroups,
+                                     const QMap<QString, QList<RouteGroupData>>& entityRouteMap,
                                      const QString& selectedUid)
 {
-    populateTree(entities, waypointGroups, selectedUid);
+    populateTree(entities, entityRouteMap, selectedUid);
 }
 
 void EntityManagementDialog::updateEntityVisibility(const QString& uid, bool visible)
@@ -235,37 +237,6 @@ QTreeWidgetItem* EntityManagementDialog::findItemByUid(const QString& uid) const
     return nullptr;
 }
 
-void EntityManagementDialog::fillWaypointGroup(QTreeWidgetItem* parentItem,
-                                               const QList<GeoEntity*>& waypoints,
-                                               const QString& selectedUid,
-                                               QSet<QString>& waypointUids)
-{
-    if (!parentItem) {
-        return;
-    }
-
-    for (GeoEntity* entity : waypoints) {
-        if (!entity) {
-            continue;
-        }
-
-        waypointUids.insert(entity->getUid());
-
-        QTreeWidgetItem* child = new QTreeWidgetItem(parentItem);
-        child->setText(ColumnName, entity->getName());
-        child->setText(ColumnType, QString::fromUtf8(u8"航迹点"));
-        child->setText(ColumnUid, entity->getUid());
-        child->setData(ColumnName, RoleUid, entity->getUid());
-        child->setData(ColumnName, RoleIsEntity, true);
-        child->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
-        child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
-
-        if (!selectedUid.isEmpty() && entity->getUid() == selectedUid) {
-            tree_->setCurrentItem(child);
-        }
-    }
-}
-
 void EntityManagementDialog::updateButtonsState()
 {
     QTreeWidgetItem* item = tree_->currentItem();
@@ -276,7 +247,7 @@ void EntityManagementDialog::updateButtonsState()
 }
 
 void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
-                                          const QList<QPair<QString, QList<GeoEntity*>>>& waypointGroups,
+                                          const QMap<QString, QList<RouteGroupData>>& entityRouteMap,
                                           const QString& selectedUid)
 {
     updating_ = true;
@@ -287,54 +258,128 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
     tree_->blockSignals(true);
     tree_->clear();
 
-    QSet<QString> waypointUids;
-
-    for (const auto& groupPair : waypointGroups) {
-        const QString& groupName = groupPair.first;
-        const QList<GeoEntity*>& wps = groupPair.second;
-        if (wps.isEmpty()) {
-            continue;
-        }
-
-        QTreeWidgetItem* groupItem = new QTreeWidgetItem(tree_);
-        groupItem->setText(ColumnName, groupName);
-        groupItem->setText(ColumnType, QString::fromUtf8(u8"航迹点组"));
-        groupItem->setData(ColumnName, RoleIsEntity, false);
-        groupItem->setData(ColumnName, RoleUid, QString());
-        groupItem->setFlags(groupItem->flags() & ~(Qt::ItemIsUserCheckable));
-        groupItem->setExpanded(true);
-
-        fillWaypointGroup(groupItem, wps, selectedUid, waypointUids);
-    }
-
     for (GeoEntity* entity : entities) {
         if (!entity) {
             continue;
         }
-        if (waypointUids.contains(entity->getUid())) {
+
+        const QString typeId = entity->getType();
+        if (typeId == QStringLiteral("waypoint")) {
             continue;
         }
 
-        QTreeWidgetItem* item = new QTreeWidgetItem(tree_);
-        item->setText(ColumnName, entity->getName());
-        const QString typeId = entity->getType();
+        QTreeWidgetItem* entityItem = new QTreeWidgetItem(tree_);
+        entityItem->setText(ColumnName, entity->getName());
         QString typeDisplay;
-        if (typeId == QStringLiteral("waypoint")) {
-            typeDisplay = QString::fromUtf8(u8"航迹点");
-        } else if (typeId == QStringLiteral("image")) {
+        if (typeId == QStringLiteral("image")) {
             typeDisplay = QString::fromUtf8(u8"图片实体");
         } else {
             typeDisplay = typeId;
         }
-        item->setText(ColumnType, typeDisplay);
-        item->setText(ColumnUid, entity->getUid());
-        item->setData(ColumnName, RoleUid, entity->getUid());
-        item->setData(ColumnName, RoleIsEntity, true);
-        item->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
-        item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+        entityItem->setText(ColumnType, typeDisplay);
+        entityItem->setText(ColumnUid, entity->getUid());
+        entityItem->setData(ColumnName, RoleUid, entity->getUid());
+        entityItem->setData(ColumnName, RoleIsEntity, true);
+        entityItem->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
+        entityItem->setFlags(entityItem->flags() | Qt::ItemIsUserCheckable);
+        entityItem->setExpanded(true);
 
         if (!selectedUid.isEmpty() && entity->getUid() == selectedUid) {
-            tree_->setCurrentItem(item);
+            tree_->setCurrentItem(entityItem);
+        }
+
+        if (typeId == QStringLiteral("waypoint")) {
+            continue;
+        }
+
+        const QList<RouteGroupData> routeGroups = entityRouteMap.value(entity->getUid());
+        if (!routeGroups.isEmpty()) {
+            for (const RouteGroupData& group : routeGroups) {
+                QString groupLabel = group.groupName.isEmpty() ? group.groupId : group.groupName;
+                QTreeWidgetItem* groupItem = new QTreeWidgetItem(entityItem);
+                groupItem->setText(ColumnName, groupLabel);
+                groupItem->setText(ColumnType, QString::fromUtf8(u8"航线组"));
+                groupItem->setData(ColumnName, RoleIsEntity, false);
+                groupItem->setFlags(groupItem->flags() & ~Qt::ItemIsUserCheckable);
+                groupItem->setExpanded(true);
+
+                if (!group.waypoints.isEmpty()) {
+                    for (GeoEntity* waypoint : group.waypoints) {
+                        if (!waypoint) {
+                            continue;
+                        }
+                        QTreeWidgetItem* wpItem = new QTreeWidgetItem(groupItem);
+                        wpItem->setText(ColumnName, waypoint->getName());
+                        wpItem->setText(ColumnType, QString::fromUtf8(u8"航迹点"));
+                        wpItem->setText(ColumnUid, waypoint->getUid());
+                        wpItem->setData(ColumnName, RoleUid, waypoint->getUid());
+                        wpItem->setData(ColumnName, RoleIsEntity, false);
+                        wpItem->setCheckState(ColumnName, waypoint->isVisible() ? Qt::Checked : Qt::Unchecked);
+                        wpItem->setFlags(wpItem->flags() | Qt::ItemIsUserCheckable);
+                    }
+                } else {
+                    QTreeWidgetItem* emptyWpItem = new QTreeWidgetItem(groupItem);
+                    emptyWpItem->setText(ColumnName, QString::fromUtf8(u8"(无航迹点)"));
+                    emptyWpItem->setData(ColumnName, RoleIsEntity, false);
+                    emptyWpItem->setFlags(emptyWpItem->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable));
+                }
+            }
+        } else {
+            QTreeWidgetItem* emptyRouteGroupItem = new QTreeWidgetItem(entityItem);
+            emptyRouteGroupItem->setText(ColumnName, QString::fromUtf8(u8"(无航线组)"));
+            emptyRouteGroupItem->setText(ColumnType, QString::fromUtf8(u8"航线组"));
+            emptyRouteGroupItem->setData(ColumnName, RoleIsEntity, false);
+            emptyRouteGroupItem->setFlags(emptyRouteGroupItem->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable));
+        }
+
+        QTreeWidgetItem* weaponsItem = new QTreeWidgetItem(entityItem);
+        weaponsItem->setText(ColumnName, QString::fromUtf8(u8"武器挂载"));
+        weaponsItem->setText(ColumnType, QString::fromUtf8(u8"组合"));
+        weaponsItem->setData(ColumnName, RoleIsEntity, false);
+        weaponsItem->setFlags(weaponsItem->flags() & ~Qt::ItemIsUserCheckable);
+        weaponsItem->setExpanded(true);
+
+        QJsonObject weaponMounts = entity->getProperty("weaponMounts").toJsonObject();
+        QJsonArray weaponsArray = weaponMounts["weapons"].toArray();
+        if (!weaponsArray.isEmpty()) {
+            for (const QJsonValue& weaponValue : weaponsArray) {
+                QJsonObject weaponObj = weaponValue.toObject();
+                QString weaponId = weaponObj["weaponId"].toString();
+                QString weaponName = weaponObj["weaponName"].toString();
+                int quantity = weaponObj["quantity"].toInt();
+
+                QTreeWidgetItem* weaponItem = new QTreeWidgetItem(weaponsItem);
+                weaponItem->setText(ColumnName, weaponName.isEmpty() ? weaponId : weaponName);
+                weaponItem->setText(ColumnType, QString::fromUtf8(u8"武器"));
+                weaponItem->setText(ColumnUid, weaponId);
+                weaponItem->setData(ColumnName, RoleUid, entity->getUid());
+                weaponItem->setData(ColumnName, RoleIsEntity, false);
+
+                QSpinBox* spinBox = new QSpinBox(tree_);
+                spinBox->setRange(0, 9999);
+                spinBox->setValue(quantity);
+                spinBox->setProperty("entityUid", entity->getUid());
+                spinBox->setProperty("weaponId", weaponId);
+                spinBox->setProperty("weaponName", weaponName);
+                tree_->setItemWidget(weaponItem, ColumnUid, spinBox);
+
+                connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+                        this, [this](int value) {
+                            QSpinBox* spin = qobject_cast<QSpinBox*>(sender());
+                            if (!spin) {
+                                return;
+                            }
+                            const QString entityUid = spin->property("entityUid").toString();
+                            const QString weaponId = spin->property("weaponId").toString();
+                            const QString weaponName = spin->property("weaponName").toString();
+                            emit requestWeaponQuantityChange(entityUid, weaponId, weaponName, value);
+                        });
+            }
+        } else {
+            QTreeWidgetItem* emptyWeaponItem = new QTreeWidgetItem(weaponsItem);
+            emptyWeaponItem->setText(ColumnName, QString::fromUtf8(u8"(未配置武器)"));
+            emptyWeaponItem->setData(ColumnName, RoleIsEntity, false);
+            emptyWeaponItem->setFlags(emptyWeaponItem->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable));
         }
     }
 

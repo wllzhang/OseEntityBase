@@ -141,6 +141,10 @@ private slots:
     void onEntityRemoved(const QString& uid);
     void onEntitySelected(GeoEntity* entity);
     void onEntityDeselected();
+    void onEntityWeaponQuantityChanged(const QString& entityUid,
+                                       const QString& weaponId,
+                                       const QString& weaponName,
+                                       int quantity);
 
     /**
      * @brief 导出方案槽函数（生成AFSIM脚本）

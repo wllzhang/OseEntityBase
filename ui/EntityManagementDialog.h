@@ -3,13 +3,18 @@
 
 #include <QDialog>
 #include <QList>
-#include <QPair>
 #include <QTreeWidget>
-#include <QSet>
 #include <QString>
+#include <QMap>
 
 class GeoEntity;
 class QPushButton;
+
+struct RouteGroupData {
+    QString groupId;
+    QString groupName;
+    QList<GeoEntity*> waypoints;
+};
 
 class EntityManagementDialog : public QDialog
 {
@@ -19,7 +24,7 @@ public:
     explicit EntityManagementDialog(QWidget* parent = nullptr);
 
     void refresh(const QList<GeoEntity*>& entities,
-                 const QList<QPair<QString, QList<GeoEntity*>>>& waypointGroups,
+                 const QMap<QString, QList<RouteGroupData>>& entityRouteMap,
                  const QString& selectedUid);
     void updateEntityVisibility(const QString& uid, bool visible);
     void setSelectedUid(const QString& uid);
@@ -31,6 +36,10 @@ signals:
     void requestVisibilityChange(const QString& uid, bool visible);
     void requestSelection(const QString& uid);
     void requestRefresh();
+    void requestWeaponQuantityChange(const QString& entityUid,
+                                     const QString& weaponId,
+                                     const QString& weaponName,
+                                     int quantity);
     void requestHover(const QString& uid, bool hovered);
 
 private slots:
@@ -48,10 +57,9 @@ protected:
 private:
     QString currentEntityUid() const;
     QTreeWidgetItem* findItemByUid(const QString& uid) const;
-    void fillWaypointGroup(QTreeWidgetItem* parentItem, const QList<GeoEntity*>& waypoints, const QString& selectedUid, QSet<QString>& waypointUids);
     void updateButtonsState();
     void populateTree(const QList<GeoEntity*>& entities,
-                      const QList<QPair<QString, QList<GeoEntity*>>>& waypointGroups,
+                      const QMap<QString, QList<RouteGroupData>>& entityRouteMap,
                       const QString& selectedUid);
 
     QTreeWidget* tree_;

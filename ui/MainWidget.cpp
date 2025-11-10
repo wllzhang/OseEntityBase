@@ -26,11 +26,11 @@
 #include <QAction>
 #include <QSettings>
 #include <QtMath>
-#include <QPair>
 #include <QMetaObject>
 #include <QProgressDialog>
 #include <QEventLoop>
 #include <QPushButton>
+#include <QMap>
 
 #include "../geo/WeaponMountDialog.h"
 #include "../geo/geoentitymanager.h"
@@ -1458,6 +1458,8 @@ void MainWidget::showEntityManagementDialog()
                 this, &MainWidget::onEntitySelectionRequested);
         connect(entityManagementDialog_, &EntityManagementDialog::requestRefresh,
                 this, &MainWidget::onEntityRefreshRequested);
+        connect(entityManagementDialog_, &EntityManagementDialog::requestWeaponQuantityChange,
+                this, &MainWidget::onEntityWeaponQuantityChanged);
         connect(entityManagementDialog_, &EntityManagementDialog::requestHover,
                 this, [this](const QString& uid, bool hovered){
                     auto entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
@@ -1508,30 +1510,37 @@ void MainWidget::refreshEntityManagementDialog()
     }
     auto entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
     if (!entityManager) {
-        entityManagementDialog_->refresh(QList<GeoEntity*>(), QList<QPair<QString, QList<GeoEntity*>>>(), QString());
+        entityManagementDialog_->refresh(QList<GeoEntity*>(), QMap<QString, QList<RouteGroupData>>(), QString());
         return;
     }
 
     const QList<GeoEntity*> entities = entityManager->getAllEntities();
-    QList<QPair<QString, QList<GeoEntity*>>> waypointGroups;
-    const auto groups = entityManager->getAllWaypointGroups();
-    for (const auto& info : groups) {
-        QList<GeoEntity*> waypoints;
-        for (auto* wp : info.waypoints) {
+    QMap<QString, QList<RouteGroupData>> entityRouteMap;
+    for (GeoEntity* entity : entities) {
+        if (!entity) {
+            continue;
+        }
+        QString groupId = entityManager->getRouteGroupIdForEntity(entity->getUid());
+        if (groupId.isEmpty()) {
+            continue;
+        }
+        GeoEntityManager::WaypointGroupInfo groupInfo = entityManager->getWaypointGroup(groupId);
+        RouteGroupData data;
+        data.groupId = groupInfo.groupId;
+        data.groupName = groupInfo.name.isEmpty() ? groupInfo.groupId : groupInfo.name;
+        for (auto* wp : groupInfo.waypoints) {
             if (wp) {
-                waypoints.append(wp);
+                data.waypoints.append(wp);
             }
         }
-        if (!waypoints.isEmpty()) {
-            QString displayName = info.name.isEmpty() ? info.groupId : info.name;
-            waypointGroups.append(qMakePair(displayName, waypoints));
-        }
+        entityRouteMap[entity->getUid()].append(data);
     }
+
     QString selectedUid;
     if (GeoEntity* selected = entityManager->getSelectedEntity()) {
         selectedUid = selected->getUid();
     }
-    entityManagementDialog_->refresh(entities, waypointGroups, selectedUid);
+    entityManagementDialog_->refresh(entities, entityRouteMap, selectedUid);
 }
 
 void MainWidget::focusEntity(GeoEntity* entity)
@@ -1728,3 +1737,51 @@ void MainWidget::onEntityDeselected()
         entityManagementDialog_->setSelectedUid(QString());
     }
 }
+
+void MainWidget::onEntityWeaponQuantityChanged(const QString& entityUid,
+                                               const QString& weaponId,
+                                               const QString& weaponName,
+                                               int quantity)
+{
+    if (!osgMapWidget_) {
+        return;
+    }
+    auto entityManager = osgMapWidget_->getEntityManager();
+    if (!entityManager) {
+        return;
+    }
+    GeoEntity* entity = entityManager->getEntity(entityUid);
+    if (!entity) {
+        return;
+    }
+
+    QJsonObject mounts = entity->getProperty("weaponMounts").toJsonObject();
+    QJsonArray weapons = mounts["weapons"].toArray();
+    bool updated = false;
+    for (int i = 0; i < weapons.size(); ++i) {
+        QJsonObject weaponObj = weapons.at(i).toObject();
+        const QString currentId = weaponObj["weaponId"].toString();
+        const QString currentName = weaponObj["weaponName"].toString();
+        if ((!weaponId.isEmpty() && currentId == weaponId) ||
+            (weaponId.isEmpty() && currentName == weaponName)) {
+            weaponObj["quantity"] = quantity;
+            weapons[i] = weaponObj;
+            updated = true;
+            break;
+        }
+    }
+
+    if (!updated) {
+        return;
+    }
+
+    mounts["weapons"] = weapons;
+    entity->setProperty("weaponMounts", mounts);
+
+    if (planFileManager_) {
+        planFileManager_->markPlanModified();
+    }
+
+    refreshEntityManagementDialog();
+}
+
