@@ -306,61 +306,92 @@ void EntityPropertyDialog::loadComponentConfigs()
     if (modelId_.isEmpty()) return;
 
     clearComponentConfigForms();
+    componentFullInfo_.clear();
+    componentTemplates_.clear();
+    componentParamWidgets_.clear();
 
-    // 首先尝试从实体属性中获取完整的组件信息（从JSON文件加载的）
+    // 按照组件ID收集配置
     QJsonObject entityModelAssembly = entity_->getProperty("modelAssembly").toJsonObject();
-    QJsonArray componentList;
-    
-    // 检查是否有完整的组件信息数组（深层复制）
+    QStringList componentIds;
+    QMap<QString, QJsonObject> entityConfigMap;
+
+    // 优先处理方案文件中深拷贝的组件信息
     if (entityModelAssembly.contains("components") && entityModelAssembly["components"].isArray()) {
-        // 从JSON文件加载的完整组件信息
-        componentList = entityModelAssembly["components"].toArray();
-        qDebug() << "从JSON文件加载完整的组件信息";
-    } else {
-        // 从数据库加载（初始创建时）
-        QStringList componentIds;
+        QJsonArray componentsArray = entityModelAssembly["components"].toArray();
+        for (const auto& compValue : componentsArray) {
+            QJsonObject compObj = compValue.toObject();
+            QString componentId = compObj["componentId"].toString();
+            if (componentId.isEmpty()) {
+                continue;
+            }
+            if (!componentIds.contains(componentId)) {
+                componentIds.append(componentId);
+            }
+            if (compObj.contains("configInfo") && compObj["configInfo"].isObject()) {
+                entityConfigMap.insert(componentId, compObj["configInfo"].toObject());
+            }
+            componentFullInfo_.insert(componentId, compObj);
+        }
+    }
+
+    // 如果方案中没有组件数组，则根据模型从数据库加载组件列表
+    if (componentIds.isEmpty()) {
         QJsonArray componentIdList = dbModelAssembly_["componentList"].toArray();
         for (const auto& compId : componentIdList) {
-            componentIds << compId.toString();
+            QString id = compId.toString();
+            if (!id.isEmpty() && !componentIds.contains(id)) {
+                componentIds.append(id);
+            }
         }
-
-        // 如果没有组件列表，从数据库查询
         if (componentIds.isEmpty()) {
             if (!DatabaseUtils::openDatabase()) {
                 qDebug() << "无法打开数据库";
                 return;
             }
-
             QSqlQuery query;
             query.prepare("SELECT componentlist FROM ModelInformation WHERE id = ?");
             query.addBindValue(modelId_);
             if (query.exec() && query.next()) {
-                QString componentListStr = query.value(0).toString();
-                componentIds = componentListStr.split(',', Qt::SkipEmptyParts);
+                const QStringList ids = query.value(0).toString().split(',', Qt::SkipEmptyParts);
+                for (const QString& id : ids) {
+                    if (!id.isEmpty() && !componentIds.contains(id)) {
+                        componentIds.append(id);
+                    }
+                }
             }
-        }
-
-        // 从数据库获取完整的组件信息
-        for (const QString& componentId : componentIds) {
-            QJsonObject componentInfo = getComponentFullInfoFromDatabase(componentId);
-            componentFullInfo_[componentId] = componentInfo;
-            componentList.append(componentInfo);
         }
     }
 
-    // 为每个组件创建配置表单
-    for (const auto& compValue : componentList) {
-        QJsonObject componentInfo = compValue.toObject();
-        QString componentId = componentInfo["componentId"].toString();
-        
-        QJsonObject templateInfo = componentInfo["templateInfo"].toObject();
-        QJsonObject configInfo = componentInfo["configInfo"].toObject();
-        
-        // 保存完整的组件信息
-        componentFullInfo_[componentId] = componentInfo;
+    for (const QString& componentId : componentIds) {
+        if (componentId.isEmpty()) {
+            continue;
+        }
+
+        // 获取模板信息（数据库）
+        QJsonObject templateInfo = getComponentTemplateFromDatabase(componentId);
         componentTemplates_[componentId] = templateInfo;
 
-        // 创建配置表单
+        // 获取配置默认值
+        QJsonObject configInfo;
+        if (entityConfigMap.contains(componentId)) {
+            configInfo = entityConfigMap.value(componentId);
+        }
+
+        QJsonObject fullInfo;
+        if (componentFullInfo_.contains(componentId)) {
+            fullInfo = componentFullInfo_.value(componentId);
+        } else {
+            fullInfo = getComponentFullInfoFromDatabase(componentId);
+        }
+
+        if (configInfo.isEmpty()) {
+            configInfo = fullInfo["configInfo"].toObject();
+        }
+        fullInfo["componentId"] = componentId;
+        fullInfo["configInfo"] = configInfo;
+
+        componentFullInfo_[componentId] = fullInfo;
+
         createComponentConfigForm(componentId, templateInfo, configInfo);
     }
 }
