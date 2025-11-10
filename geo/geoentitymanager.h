@@ -16,6 +16,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QMap>
+#include <QHash>
 #include <QMouseEvent>
 #include <QTimer>
 #include <QQueue>
@@ -261,6 +262,11 @@ signals:
     void mapRightClicked(QPoint screenPos);
 
 private:
+    struct PickCandidate {
+        GeoEntity* entity = nullptr;
+        double distanceMeters = 0.0;
+    };
+
     osg::ref_ptr<osg::Group> root_;
     osg::ref_ptr<osgEarth::MapNode> mapNode_;
     osg::ref_ptr<osg::Group> entityGroup_;
@@ -289,6 +295,8 @@ private:
     QString getImagePathFromDatabase(const QString& entityName);
     /** @brief 根据实体名从配置获取图片路径（已废弃，转发到数据库查询） */
     QString getImagePathFromConfig(const QString& entityName);
+    bool collectPickCandidates(QPoint screenPos, QVector<PickCandidate>& outCandidates, double& thresholdMeters, bool verbose = false);
+    double computeSelectionThreshold() const;
 
     // 航点/航线数据
     QMap<QString, WaypointGroupInfo> waypointGroups_;

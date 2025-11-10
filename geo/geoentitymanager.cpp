@@ -23,6 +23,8 @@
 #include <osg/LineWidth>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QMenu>
+#include <algorithm>
 
 namespace {
 bool isFinite(double value) {
@@ -410,6 +412,107 @@ QString GeoEntityManager::getImagePathFromConfig(const QString& entityName)
     return getImagePathFromDatabase(entityName);
 }
 
+double GeoEntityManager::computeSelectionThreshold() const
+{
+    double thresholdMeters = 100.0;
+    if (mapStateManager_) {
+        double rangeMeters = mapStateManager_->getRange();
+        const double baseThreshold = 50.0;
+        double dynamicThreshold = baseThreshold + (rangeMeters * 0.05);
+        const double minThreshold = 50.0;
+        const double maxThreshold = 2000.0;
+        if (dynamicThreshold < minThreshold) {
+            dynamicThreshold = minThreshold;
+        } else if (dynamicThreshold > maxThreshold) {
+            dynamicThreshold = maxThreshold;
+        }
+        thresholdMeters = dynamicThreshold;
+    }
+    return thresholdMeters;
+}
+
+bool GeoEntityManager::collectPickCandidates(QPoint screenPos, QVector<PickCandidate>& outCandidates, double& thresholdMeters, bool verbose)
+{
+    outCandidates.clear();
+    thresholdMeters = computeSelectionThreshold();
+
+    if (!mapStateManager_) {
+        if (verbose) {
+            qDebug() << "collectPickCandidates: mapStateManager_ 未初始化";
+        }
+        return false;
+    }
+
+    double mouseLongitude = 0.0;
+    double mouseLatitude = 0.0;
+    double mouseAltitude = 0.0;
+
+    if (!mapStateManager_->getGeoCoordinatesFromScreen(screenPos, mouseLongitude, mouseLatitude, mouseAltitude)) {
+        if (verbose) {
+            qDebug() << "collectPickCandidates: 无法获取鼠标地理坐标";
+        }
+        return false;
+    }
+
+    if (verbose) {
+        qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude << mouseAltitude;
+    }
+
+    double minDistance = std::numeric_limits<double>::max();
+
+    QStringList entityUids = getEntityIds();
+    for (const QString& uid : entityUids) {
+        GeoEntity* entity = getEntity(uid);
+        if (!entity) {
+            continue;
+        }
+        if (!entity->isVisible() || !entity->getNode()) {
+            continue;
+        }
+
+        double entityLongitude = 0.0;
+        double entityLatitude = 0.0;
+        double entityAltitude = 0.0;
+        entity->getPosition(entityLongitude, entityLatitude, entityAltitude);
+
+        double distanceMeters = GeoUtils::calculateGeographicDistance(mouseLongitude, mouseLatitude,
+                                                                       entityLongitude, entityLatitude);
+
+        if (verbose) {
+            qDebug() << "实体" << entity->getName() << "距离:" << distanceMeters << "米";
+        }
+
+        if (distanceMeters < minDistance) {
+            minDistance = distanceMeters;
+        }
+
+        if (distanceMeters <= thresholdMeters) {
+            PickCandidate candidate;
+            candidate.entity = entity;
+            candidate.distanceMeters = distanceMeters;
+            outCandidates.append(candidate);
+        }
+    }
+
+    std::sort(outCandidates.begin(), outCandidates.end(), [](const PickCandidate& lhs, const PickCandidate& rhs) {
+        return lhs.distanceMeters < rhs.distanceMeters;
+    });
+
+    if (verbose) {
+        if (!outCandidates.isEmpty()) {
+            const auto& first = outCandidates.first();
+            qDebug() << "找到最近实体:" << first.entity->getName()
+                     << "距离:" << first.distanceMeters << "米"
+                     << "阈值:" << thresholdMeters << "米";
+        } else if (minDistance != std::numeric_limits<double>::max()) {
+            qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance
+                     << "米 阈值:" << thresholdMeters << "米";
+        }
+    }
+
+    return true;
+}
+
 void GeoEntityManager::onMousePress(QMouseEvent* event)
 {
     qDebug() << "=== GeoEntityManager::onMousePress 被调用 ===";
@@ -417,22 +520,50 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
     qDebug() << "鼠标按钮:" << event->button();
     
     if (event->button() == Qt::LeftButton) {
-        // 左键点击选择实体
-        GeoEntity* entity = findEntityAtPosition(event->pos());
-        qDebug() << "找到的实体:" << (entity ? entity->getName() : "无");
-        
-        if (entity) {
-            if (selectedEntity_ != entity) {
-                setSelectedEntity(entity);
-                qDebug() << "选择实体:" << entity->getName() << "UID:" << entity->getUid();
-            }
-        } else {
+        QVector<PickCandidate> candidates;
+        double thresholdMeters = 0.0;
+        if (!collectPickCandidates(event->pos(), candidates, thresholdMeters, false)) {
+            emit mapLeftClicked(event->pos());
+            return;
+        }
+
+        if (candidates.isEmpty()) {
             if (selectedEntity_) {
                 setSelectedEntity(nullptr);
                 qDebug() << "取消实体选择";
             }
-            // 通知空白处左键点击（用于点标绘放置）
             emit mapLeftClicked(event->pos());
+            return;
+        }
+
+        if (candidates.size() == 1) {
+            GeoEntity* entity = candidates.first().entity;
+            if (entity && selectedEntity_ != entity) {
+                setSelectedEntity(entity);
+                qDebug() << "选择实体:" << entity->getName() << "UID:" << entity->getUid();
+            }
+            return;
+        }
+
+        QMenu menu;
+        QHash<QAction*, GeoEntity*> actionMap;
+        for (const auto& candidate : candidates) {
+            if (!candidate.entity) {
+                continue;
+            }
+            QString label = QString("%1 (%2 米)").arg(candidate.entity->getName())
+                                .arg(candidate.distanceMeters, 0, 'f', 0);
+            QAction* action = menu.addAction(label);
+            actionMap.insert(action, candidate.entity);
+        }
+
+        QAction* chosen = menu.exec(event->globalPos());
+        if (chosen) {
+            GeoEntity* selected = actionMap.value(chosen, nullptr);
+            if (selected && selectedEntity_ != selected) {
+                setSelectedEntity(selected);
+                qDebug() << "选择实体:" << selected->getName() << "UID:" << selected->getUid();
+            }
         }
     } else if (event->button() == Qt::RightButton) {
         // 右键：先发结束标绘信号，再按需发实体菜单
@@ -512,96 +643,15 @@ void GeoEntityManager::onMouseMove(QMouseEvent* event)
  */
 GeoEntity* GeoEntityManager::findEntityAtPosition(QPoint screenPos, bool verbose)
 {
-    double mouseLongitude, mouseLatitude, mouseAltitude;
-    
-    // 统一使用 MapStateManager 获取坐标信息（mapStateManager_ 必然存在）
-    if (!mapStateManager_->getGeoCoordinatesFromScreen(screenPos, mouseLongitude, mouseLatitude, mouseAltitude)) {
-        if (verbose) {
-            qDebug() << "findEntityAtPosition: 无法获取鼠标地理坐标";
-        }
+    QVector<PickCandidate> candidates;
+    double thresholdMeters = 0.0;
+    if (!collectPickCandidates(screenPos, candidates, thresholdMeters, verbose)) {
         return nullptr;
     }
-    
-    try {
-        if (verbose) {
-            qDebug() << "鼠标地理坐标:" << mouseLongitude << mouseLatitude << mouseAltitude;
-        }
-        
-        // 遍历所有实体，找到距离最近的可见实体
-        GeoEntity* closestEntity = nullptr;
-        double minDistance = std::numeric_limits<double>::max();
-        
-        QStringList entityUids = getEntityIds();
-        for (const QString& uid : entityUids) {
-            GeoEntity* entity = getEntity(uid);
-            if (!entity) {
-                continue;
-            }
-            
-            // 跳过不可见的实体
-            if (!entity->isVisible()) {
-                continue;
-            }
-            
-            // 跳过没有有效节点的实体
-            if (!entity->getNode()) {
-                continue;
-            }
-            
-            double entityLongitude, entityLatitude, entityAltitude;
-            entity->getPosition(entityLongitude, entityLatitude, entityAltitude);
-            
-            // 计算距离：使用地理距离（米），更精确
-            double distanceMeters = GeoUtils::calculateGeographicDistance(mouseLongitude, mouseLatitude, 
-                                                                           entityLongitude, entityLatitude);
-            
-            if (verbose) {
-                qDebug() << "实体" << entity->getName() << "距离:" << distanceMeters << "米";
-            }
-            
-            if (distanceMeters < minDistance) {
-                minDistance = distanceMeters;
-                closestEntity = entity;
-            }
-        }
-        
-        // 基于当前相机距离动态调整选中阈值（米）
-        // 阈值应该根据相机距离动态调整：相机越远，阈值越大；相机越近，阈值越小
-        double thresholdMeters = 100.0; // 默认阈值（100米）
-        if (mapStateManager_) {
-            double rangeMeters = mapStateManager_->getRange();
-            // 基础阈值：50米（近距离时）
-            const double baseThreshold = 50.0;      // 米，基础阈值
-            // 根据相机距离动态调整：相机距离的1/100到1/1000作为阈值
-            // 例如：相机距离1000米时，阈值约10-100米；相机距离10000米时，阈值约100-1000米
-            double dynamicThreshold = baseThreshold + (rangeMeters * 0.05); // 相机距离的5%
-            
-            // 限制阈值范围：最小50米，最大2000米
-            const double minThreshold = 50.0;       // 最小阈值（50米）
-            const double maxThreshold = 2000.0;     // 最大阈值（2公里）
-            if (dynamicThreshold < minThreshold) dynamicThreshold = minThreshold;
-            if (dynamicThreshold > maxThreshold) dynamicThreshold = maxThreshold;
-            thresholdMeters = dynamicThreshold;
-        }
-        
-        if (closestEntity && minDistance < thresholdMeters) {
-            if (verbose) {
-                qDebug() << "找到最近实体:" << closestEntity->getName() << "距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
-            }
-            return closestEntity;
-        } else {
-            if (verbose) {
-                qDebug() << "没有实体在阈值范围内，最近距离:" << minDistance << "米" << "阈值:" << thresholdMeters << "米";
-            }
-        }
-        
-        return nullptr;
-    } catch (const std::exception& e) {
-        if (verbose) {
-            qDebug() << "findEntityAtPosition异常:" << e.what();
-        }
+    if (candidates.isEmpty()) {
         return nullptr;
     }
+    return candidates.first().entity;
 }
 
 // ===== 航点/航线实现 =====

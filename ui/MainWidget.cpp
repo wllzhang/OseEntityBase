@@ -1686,6 +1686,9 @@ void MainWidget::onEntitySelected(GeoEntity* entity)
     if (entityManagementDialog_) {
         entityManagementDialog_->setSelectedUid(entity ? entity->getUid() : QString());
     }
+    if (osgMapWidget_) {
+        osgMapWidget_->synthesizeMouseRelease(Qt::LeftButton);
+    }
 }
 
 void MainWidget::onEntityDeselected()
