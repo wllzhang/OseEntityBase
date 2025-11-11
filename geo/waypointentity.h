@@ -13,6 +13,8 @@
 #include <osgText/Text>
 #include <osgEarth/MapNode>
 #include <osgEarthAnnotation/PlaceNode>
+#include <osgEarthAnnotation/CircleNode>
+
 
 /**
  * @ingroup geo_entities
@@ -59,6 +61,7 @@ protected:
      * 用于更新航点标签文本，使其与位置变化同步。
      */
     void onUpdated() override;
+
     
     /** 
      * @brief 清理前的回调
@@ -71,6 +74,10 @@ protected:
 private:
     osg::ref_ptr<osg::Node> createNode() override;
     void updateLabel();
+    void updateAnnotationPosition();
+
+private slots:
+    void handlePositionChanged(double longitude, double latitude, double altitude);
 
 private:
     osg::ref_ptr<osg::Geode> pointGeode_;
@@ -79,6 +86,11 @@ private:
     QString labelString_;
     osg::ref_ptr<osgEarth::Annotation::PlaceNode> placeNode_;
     osg::ref_ptr<osgEarth::MapNode> mapNodeRef_;
+
+    osg::ref_ptr<osgEarth::Annotation::CircleNode> circleNode_;
+    osg::ref_ptr<osg::Group> annotationGroup_;
+
+private:
 };
 
 #endif // WAYPOINTENTITY_H

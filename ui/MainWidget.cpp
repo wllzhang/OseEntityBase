@@ -122,7 +122,7 @@ void MainWidget::createToolBar()
     toolBarWidget->setStyleSheet(
         "QWidget#toolBarWidget {"
         "   background: qlineargradient(x1:0, y1:0, x2:0, y2:1,"
-        "   stop:0 #6495ED, stop:1 #0066cc);"
+        "   stop:0 #87CEFA, stop:1 #6495ED);"
         "   border: none;"
         "   border-bottom: 1px solid #2C3E50;"
         "}"
@@ -218,7 +218,7 @@ void MainWidget::createNavigation()
     // 设置背景颜色为蓝色
     navWidget->setStyleSheet(
         "QWidget#navWidget {"
-        "background-color: #0066cc;"
+        "background-color: #6495ED;"
         "}"
     );
 
@@ -297,7 +297,7 @@ void MainWidget::createSubNavigation()
     // 设置背景颜色为蓝色
     subNavWidget->setStyleSheet(
         "QWidget#subNavWidget {"
-        "background-color: #0066cc;"
+        "background-color: #6495ED;"
         "}"
     );
 
@@ -333,7 +333,7 @@ void MainWidget::createSubNavigation()
 
     QToolButton *modelDeployBtn = new QToolButton(this);
     modelDeployBtn->setText("模型部署");
-//    modelDeployBtn->setIcon(QIcon(":/images/模型部署.png"));
+    modelDeployBtn->setIcon(QIcon(":/images/模型部署.png"));
     modelDeployBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     modelDeployBtn->setFixedSize(120, 120);
     modelDeployBtn->setObjectName("navToolButton");
@@ -348,7 +348,7 @@ void MainWidget::createSubNavigation()
 
     QToolButton *targetMatchBtn = new QToolButton(this);
     targetMatchBtn->setText("目标匹配");
-//    targetMatchBtn->setIcon(QIcon(":/images/目标匹配.png"));
+    targetMatchBtn->setIcon(QIcon(":/images/目标匹配.png"));
     targetMatchBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     targetMatchBtn->setFixedSize(120, 120);
     targetMatchBtn->setObjectName("navToolButton");
@@ -356,7 +356,7 @@ void MainWidget::createSubNavigation()
 
     QToolButton *exportPlanBtn = new QToolButton(this);
     exportPlanBtn->setText("导出方案");
-//    exportPlanBtn->setIcon(QIcon(":/images/导出方案.png"));
+    exportPlanBtn->setIcon(QIcon(":/images/导出方案.png"));
     exportPlanBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     exportPlanBtn->setFixedSize(120, 120);
     exportPlanBtn->setObjectName("navToolButton");
@@ -378,7 +378,7 @@ void MainWidget::createSubNavigation()
 
     QToolButton *modelComponentBtn = new QToolButton(this);
     modelComponentBtn->setText("模型组件");
-//    modelComponentBtn->setIcon(QIcon(":/images/模型组件.png"));
+    modelComponentBtn->setIcon(QIcon(":/images/模型组件.png"));
     modelComponentBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     modelComponentBtn->setFixedSize(120, 120);
     modelComponentBtn->setObjectName("navToolButton");
@@ -386,7 +386,7 @@ void MainWidget::createSubNavigation()
 
     QToolButton *modelAssemblyBtn = new QToolButton(this);
     modelAssemblyBtn->setText("模型组装");
-//    modelAssemblyBtn->setIcon(QIcon(":/images/模型组装.png"));
+    modelAssemblyBtn->setIcon(QIcon(":/images/模型组装.png"));
     modelAssemblyBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     modelAssemblyBtn->setFixedSize(120, 120);
     modelAssemblyBtn->setObjectName("navToolButton");
@@ -1641,6 +1641,7 @@ void MainWidget::onMapLoaded()
         }
 
         // 创建右键菜单
+
         QMenu menu(this);
         QAction* editAction = menu.addAction("编辑属性");
         QAction* routePlanAction = menu.addAction("航线规划");

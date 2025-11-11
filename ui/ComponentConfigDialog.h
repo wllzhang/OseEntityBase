@@ -217,7 +217,7 @@ private:
      */
     bool filterComponentTreeItem(QTreeWidgetItem *item, const QString &keyword);
     /**
-     * @brief 递归调用，设置节点隐藏状态，同时控制展开状态
+     * @brief 递归调用，设置节点是否为隐藏状态，同时控制展开状态
      */
     void setTreeItemHiddenRecursive(QTreeWidgetItem *item, bool hidden);
 

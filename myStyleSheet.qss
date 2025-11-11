@@ -10,14 +10,14 @@ QToolButton#navToolButton {
     qproperty-spacing: 4;                   /* 图标和文字间距 */
 }
 QToolButton#navToolButton:hover {
-    background-color: #0066cc;     /* 悬停时深蓝色背景 */
+    background-color: #326CDC;     /* 悬停时深蓝色背景 */
     border-color: #0055aa;         /* 悬停时边框颜色 */
 }
 QToolButton#navToolButton:pressed {
-    background-color: #004488;     /* 按下时更深蓝色 */
+    background-color: #0066cc;     /* 按下时更深蓝色 004488*/
     border-color: #003366;
 }
 QToolButton#navToolButton:checked {
-    background-color: #004488;     /* 选中状态 */
+    background-color: #0066cc;     /* 选中状态 */
     border-color: #003366;
 }

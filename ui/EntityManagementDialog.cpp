@@ -264,7 +264,28 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
         }
 
         const QString typeId = entity->getType();
+
+//        if (typeId == QStringLiteral("waypoint")) {
+//            continue;
+//        }
         if (typeId == QStringLiteral("waypoint")) {
+            const QString groupId = entity->getProperty("waypointGroupId").toString();
+            if (!groupId.isEmpty()) {
+                continue;
+            }
+
+            QTreeWidgetItem* waypointItem = new QTreeWidgetItem(tree_);
+            waypointItem->setText(ColumnName, entity->getName());
+            waypointItem->setText(ColumnType, QString::fromUtf8(u8"航点"));
+            waypointItem->setText(ColumnUid, entity->getUid());
+            waypointItem->setData(ColumnName, RoleUid, entity->getUid());
+            waypointItem->setData(ColumnName, RoleIsEntity, true);
+            waypointItem->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
+            waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
+
+            if (!selectedUid.isEmpty() && entity->getUid() == selectedUid) {
+                tree_->setCurrentItem(waypointItem);
+            }
             continue;
         }
 

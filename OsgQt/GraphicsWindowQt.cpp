@@ -492,31 +492,31 @@ void GLWidget::mousePressEvent( QMouseEvent* event )
 
 void GLWidget::mouseReleaseEvent( QMouseEvent* event )
 {
-	// ===== OSG鼠标事件处理 =====
-	// 将Qt鼠标按钮映射到OSG按钮编号
-	int button = 0;
-	switch ( event->button() )
-	{
-	case Qt::LeftButton: button = 1; break;    // 左键 = 1
-	case Qt::MidButton: button = 2; break;     // 中键 = 2  
-	case Qt::RightButton: button = 3; break;   // 右键 = 3
-	case Qt::NoButton: button = 0; break;      // 无按钮 = 0
-	default: button = 0; break;
-	}
+    // ===== OSG鼠标事件处理 =====
+    // 将Qt鼠标按钮映射到OSG按钮编号
+    int button = 0;
+    switch ( event->button() )
+    {
+    case Qt::LeftButton: button = 1; break;    // 左键 = 1
+    case Qt::MidButton: button = 2; break;     // 中键 = 2
+    case Qt::RightButton: button = 3; break;   // 右键 = 3
+    case Qt::NoButton: button = 0; break;      // 无按钮 = 0
+    default: button = 0; break;
+    }
 	
-	// 设置键盘修饰键状态 (Shift、Ctrl、Alt等)
-	setKeyboardModifiers( event );
+    // 设置键盘修饰键状态 (Shift、Ctrl、Alt等)
+    setKeyboardModifiers( event );
 	
-	// 将鼠标释放事件发送到OSG事件队列
-	// 注意：坐标需要乘以设备像素比以处理高DPI显示器
-	_gw->getEventQueue()->mouseButtonRelease( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio, button );
+    // 将鼠标释放事件发送到OSG事件队列
+    // 注意：坐标需要乘以设备像素比以处理高DPI显示器
+    _gw->getEventQueue()->mouseButtonRelease( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio, button );
 	
-	// ===== 地图状态管理器通知 =====
-	// 如果设置了地图状态管理器，则通知它鼠标释放事件
-	// 这样可以让地图状态管理器获取鼠标位置和状态信息
-	if (_mapStateManager) {
-		_mapStateManager->onMouseRelease(event);
-	}
+    // ===== 地图状态管理器通知 =====
+    // 如果设置了地图状态管理器，则通知它鼠标释放事件
+    // 这样可以让地图状态管理器获取鼠标位置和状态信息
+    if (_mapStateManager) {
+        _mapStateManager->onMouseRelease(event);
+    }
 }
 
 /**
@@ -552,20 +552,20 @@ void GLWidget::mouseDoubleClickEvent( QMouseEvent* event )
  */
 void GLWidget::mouseMoveEvent( QMouseEvent* event )
 {
-	// ===== OSG鼠标事件处理 =====
-	// 设置键盘修饰键状态 (Shift、Ctrl、Alt等)
-	setKeyboardModifiers( event );
+    // ===== OSG鼠标事件处理 =====
+    // 设置键盘修饰键状态 (Shift、Ctrl、Alt等)
+    setKeyboardModifiers( event );
 	
-	// 将鼠标移动事件发送到OSG事件队列
-	// 注意：坐标需要乘以设备像素比以处理高DPI显示器
-	_gw->getEventQueue()->mouseMotion( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio );
+    // 将鼠标移动事件发送到OSG事件队列
+    // 注意：坐标需要乘以设备像素比以处理高DPI显示器
+    _gw->getEventQueue()->mouseMotion( event->x()*_devicePixelRatio, event->y()*_devicePixelRatio );
 	
-	// ===== 地图状态管理器通知 =====
-	// 如果设置了地图状态管理器，则通知它鼠标移动事件
-	// 这样可以让地图状态管理器实时获取鼠标位置和状态信息
-	if (_mapStateManager) {
-		_mapStateManager->onMouseMove(event);
-	}
+    // ===== 地图状态管理器通知 =====
+    // 如果设置了地图状态管理器，则通知它鼠标移动事件
+    // 这样可以让地图状态管理器实时获取鼠标位置和状态信息
+    if (_mapStateManager) {
+        _mapStateManager->onMouseMove(event);
+    }
 
     // ===== 实体管理器通知 =====
     if (_entityManager) {

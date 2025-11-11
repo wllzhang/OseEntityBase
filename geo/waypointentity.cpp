@@ -29,6 +29,9 @@ WaypointEntity::WaypointEntity(const QString& name,
 
     setProperty("size", 8000.0);
     labelString_ = "";
+
+    connect(this, &WaypointEntity::positionChanged,
+            this, &WaypointEntity::handlePositionChanged);
 }
 
 /**
@@ -52,6 +55,7 @@ void WaypointEntity::initialize()
 void WaypointEntity::onUpdated()
 {
     // 更新标签（特定逻辑）
+    updateAnnotationPosition();
     updateLabel();
 }
 
@@ -75,9 +79,12 @@ void WaypointEntity::update()
 void WaypointEntity::onBeforeCleanup()
 {
     // 清理特定的节点引用
-    pointGeode_ = nullptr;
-    labelText_ = nullptr;
-    labelGeode_ = nullptr;
+//    pointGeode_ = nullptr;
+//    labelText_ = nullptr;
+//    labelGeode_ = nullptr;
+    circleNode_ = nullptr;
+    placeNode_ = nullptr;
+    annotationGroup_ = nullptr;
 }
 
 /**
@@ -133,8 +140,9 @@ osg::ref_ptr<osg::Node> WaypointEntity::createNode()
     circleStyle.getOrCreate<AltitudeSymbol>()->clamping() = AltitudeSymbol::CLAMP_NONE;
     circleStyle.getOrCreate<RenderSymbol>()->depthTest() = false; // 始终可见
 
-    osg::ref_ptr<CircleNode> circle = new CircleNode();
-    circle->set(
+//    osg::ref_ptr<CircleNode> circle = new CircleNode();
+    circleNode_ = new CircleNode();
+    circleNode_->set(
         gp,
         Distance(200.0, Units::METERS), // 半径按需调整
         circleStyle,
@@ -147,16 +155,21 @@ osg::ref_ptr<osg::Node> WaypointEntity::createNode()
     TextSymbol* ts = labelStyle.getOrCreate<TextSymbol>();
     ts->encoding() = TextSymbol::ENCODING_UTF8;
     ts->font() = "simsun.ttc";
-    ts->size() = 16.0f;
-    ts->fill()->color() = Color::White;
+    ts->size() = 22.0f;
+    ts->fill()->color() = Color(Color::Red, 1.0);
+//    ts->fill()->color() = Color::White;
     ts->halo()->color() = Color(0,0,0,0.6);
     placeNode_ = new PlaceNode(gp, labelString_.toStdString(), labelStyle);
     placeNode_->setMapNode(mapNodeRef_.get());
 
-    osg::ref_ptr<osg::Group> group = new osg::Group();
-    group->addChild(circle.get());
-    group->addChild(placeNode_.get());
-    return group.get();
+//    osg::ref_ptr<osg::Group> group = new osg::Group();
+//    group->addChild(circle.get());
+//    group->addChild(placeNode_.get());
+//    return group.get();
+    annotationGroup_ = new osg::Group();
+    annotationGroup_->addChild(circleNode_.get());
+    annotationGroup_->addChild(placeNode_.get());
+    return annotationGroup_.get();
 }
 
 /**
@@ -174,4 +187,29 @@ void WaypointEntity::updateLabel()
     }
 }
 
+void WaypointEntity::updateAnnotationPosition()
+{
+    if (!mapNodeRef_.valid()) {
+        return;
+    }
 
+    osgEarth::GeoPoint gp(osgEarth::SpatialReference::get("wgs84"),
+                          longitude_, latitude_, altitude_,
+                          osgEarth::ALTMODE_ABSOLUTE);
+
+    if (circleNode_.valid()) {
+        circleNode_->setPosition(gp);
+    }
+    if (placeNode_.valid()) {
+        placeNode_->setPosition(gp);
+    }
+}
+
+void WaypointEntity::handlePositionChanged(double longitude, double latitude, double altitude)
+{
+    Q_UNUSED(longitude);
+    Q_UNUSED(latitude);
+    Q_UNUSED(altitude);
+    updateAnnotationPosition();
+    updateLabel();
+}

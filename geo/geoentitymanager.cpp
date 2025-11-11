@@ -321,7 +321,7 @@ void GeoEntityManager::removeEntity(const QString& uid)
 void GeoEntityManager::clearAllEntities()
 {
     qDebug() << "清空所有实体";
-    
+
     // 清除选中实体引用
     if (selectedEntity_) {
         setSelectedEntity(nullptr);
@@ -330,38 +330,31 @@ void GeoEntityManager::clearAllEntities()
         hoveredEntity_->setHovered(false);
         hoveredEntity_ = nullptr;
     }
-    
+
     // 将所有实体添加到延迟删除队列
-    QStringList entityUids = getEntityIds();
-    for (const QString& uid : entityUids) {
-        GeoEntity* entity = entities_.value(uid);
+    QStringList entityIds = getEntityIds();
+    for (const QString& entityId : entityIds) {
+        GeoEntity* entity = entities_.value(entityId);
         if (entity) {
             // 禁用并移除节点
             if (entity->getNode()) {
                 entity->getNode()->setNodeMask(0x0);
                 entityGroup_->removeChild(entity->getNode());
             }
-            
+
             // 从映射中移除，添加到待删除队列
-            entities_.remove(uid);
-            uidToEntity_.remove(uid);
-            pendingEntities_[uid] = entity;
-            if (!pendingDeletions_.contains(uid)) {
-                pendingDeletions_.enqueue(uid);
+            entities_.remove(entityId);
+            pendingEntities_[entityId] = entity;
+            if (!pendingDeletions_.contains(entityId)) {
+                pendingDeletions_.enqueue(entityId);
             }
         }
     }
-    
+
     entityCounter_ = 0;
-    for (auto it = waypointGroups_.begin(); it != waypointGroups_.end(); ++it) {
-        if (it->routeNode.valid()) {
-            entityGroup_->removeChild(it->routeNode.get());
-        }
-    }
-    waypointGroups_.clear();
-    routeBinding_.clear();
     qDebug() << "所有实体已标记为待删除，将在下一帧渲染后真正删除";
 }
+
 
 QString GeoEntityManager::generateEntityId(const QString& entityType, const QString& entityName)
 {
@@ -608,7 +601,7 @@ void GeoEntityManager::onMouseDoubleClick(QMouseEvent* event)
         }
     }
 }
- 
+
 void GeoEntityManager::onMouseMove(QMouseEvent* event)
 {
     //每次移动鼠标都计算最近的实体
@@ -959,6 +952,7 @@ bool GeoEntityManager::findWaypointLocation(WaypointEntity* waypoint, QString& g
     return false;
 }
 
+
 bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
 {
     if (!waypoint) {
@@ -967,9 +961,15 @@ bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
 
     QString groupId;
     int index = -1;
+//    if (!findWaypointLocation(waypoint, groupId, index)) {
+//        qDebug() << "removeWaypointEntity: 未找到航点所属分组";
+//        return false;
+//    }
+
     if (!findWaypointLocation(waypoint, groupId, index)) {
-        qDebug() << "removeWaypointEntity: 未找到航点所属分组";
-        return false;
+        qDebug() << "removeWaypointEntity: 作为独立航点删除";
+        removeEntity(waypoint->getUid());
+        return true;
     }
 
     auto it = waypointGroups_.find(groupId);
@@ -1022,6 +1022,7 @@ bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
         }
     }
 
+    emit entityRemoved(wpUid);
     return true;
 }
 
