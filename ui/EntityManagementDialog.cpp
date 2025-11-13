@@ -258,16 +258,25 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
     tree_->blockSignals(true);
     tree_->clear();
 
+    QHash<QString, GeoEntity*> entityMap;
+    entityMap.reserve(entities.size());
+    for (GeoEntity* entity : entities) {
+        if (entity) {
+            entityMap.insert(entity->getUid(), entity);
+        }
+    }
+
     for (GeoEntity* entity : entities) {
         if (!entity) {
             continue;
         }
 
+        if (entity->getProperty(QStringLiteral("lineEndpoint")).toBool()) {
+            continue;
+        }
+
         const QString typeId = entity->getType();
 
-//        if (typeId == QStringLiteral("waypoint")) {
-//            continue;
-//        }
         if (typeId == QStringLiteral("waypoint")) {
             const QString groupId = entity->getProperty("waypointGroupId").toString();
             if (!groupId.isEmpty()) {
@@ -294,6 +303,8 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
         QString typeDisplay;
         if (typeId == QStringLiteral("image")) {
             typeDisplay = QString::fromUtf8(u8"图片实体");
+        } else if (typeId == QStringLiteral("line")) {
+            typeDisplay = QString::fromUtf8(u8"直线");
         } else {
             typeDisplay = typeId;
         }
@@ -304,6 +315,40 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
         entityItem->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
         entityItem->setFlags(entityItem->flags() | Qt::ItemIsUserCheckable);
         entityItem->setExpanded(true);
+
+        if (typeId == QStringLiteral("line")) {
+            const QString startUid = entity->getProperty("lineStartWaypointUid").toString();
+            const QString endUid = entity->getProperty("lineEndWaypointUid").toString();
+
+            auto createEndpointItem = [&](const QString& uidValue, const QString& roleLabel) {
+                if (uidValue.isEmpty()) {
+                    return;
+                }
+                GeoEntity* endpoint = entityMap.value(uidValue, nullptr);
+                if (!endpoint) {
+                    return;
+                }
+                QTreeWidgetItem* endpointItem = new QTreeWidgetItem(entityItem);
+                endpointItem->setText(ColumnName, endpoint->getName());
+                endpointItem->setText(ColumnType, QString::fromUtf8(u8"航点 (%1)").arg(roleLabel));
+                endpointItem->setText(ColumnUid, endpoint->getUid());
+                endpointItem->setData(ColumnName, RoleUid, endpoint->getUid());
+                endpointItem->setData(ColumnName, RoleIsEntity, true);
+                endpointItem->setCheckState(ColumnName, endpoint->isVisible() ? Qt::Checked : Qt::Unchecked);
+                endpointItem->setFlags(endpointItem->flags() | Qt::ItemIsUserCheckable);
+
+                double lon = 0.0, lat = 0.0, alt = 0.0;
+                endpoint->getPosition(lon, lat, alt);
+                endpointItem->setToolTip(ColumnName, QString("经度: %1\n纬度: %2\n高度: %3")
+                                                         .arg(QString::number(lon, 'f', 6))
+                                                         .arg(QString::number(lat, 'f', 6))
+                                                         .arg(QString::number(alt, 'f', 2)));
+            };
+
+            createEndpointItem(startUid, QString::fromUtf8(u8"起点"));
+            createEndpointItem(endUid, QString::fromUtf8(u8"终点"));
+            continue;
+        }
 
         if (!selectedUid.isEmpty() && entity->getUid() == selectedUid) {
             tree_->setCurrentItem(entityItem);
@@ -423,4 +468,191 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
         }
     }
 }
+
+//void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
+//                                          const QMap<QString, QList<RouteGroupData>>& entityRouteMap,
+//                                          const QString& selectedUid)
+//{
+//    updating_ = true;
+//    if (!hoveredUid_.isEmpty()) {
+//        emit requestHover(hoveredUid_, false);
+//        hoveredUid_.clear();
+//    }
+//    tree_->blockSignals(true);
+//    tree_->clear();
+
+//    for (GeoEntity* entity : entities) {
+//        if (!entity) {
+//            continue;
+//        }
+
+//        // 增加
+//        if (entity->getProperty(QStringLiteral("lineEndpoint")).toBool()) {
+//            continue;
+//        }
+
+//        const QString typeId = entity->getType();
+
+////        if (typeId == QStringLiteral("waypoint")) {
+////            continue;
+////        }
+//        if (typeId == QStringLiteral("waypoint")) {
+//            const QString groupId = entity->getProperty("waypointGroupId").toString();
+//            if (!groupId.isEmpty()) {
+//                continue;
+//            }
+
+//            QTreeWidgetItem* waypointItem = new QTreeWidgetItem(tree_);
+//            waypointItem->setText(ColumnName, entity->getName());
+//            waypointItem->setText(ColumnType, QString::fromUtf8(u8"航点"));
+//            waypointItem->setText(ColumnUid, entity->getUid());
+//            waypointItem->setData(ColumnName, RoleUid, entity->getUid());
+//            waypointItem->setData(ColumnName, RoleIsEntity, true);
+//            waypointItem->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
+//            waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
+
+//            if (!selectedUid.isEmpty() && entity->getUid() == selectedUid) {
+//                tree_->setCurrentItem(waypointItem);
+//            }
+//            continue;
+//        }
+
+//        QTreeWidgetItem* entityItem = new QTreeWidgetItem(tree_);
+//        entityItem->setText(ColumnName, entity->getName());
+//        QString typeDisplay;
+//        if (typeId == QStringLiteral("image")) {
+//            typeDisplay = QString::fromUtf8(u8"图片实体");
+//        }
+//        else if (typeId == QStringLiteral("line")) {
+//            typeDisplay = QString::fromUtf8(u8"直线");
+//        }
+//        else {
+//            typeDisplay = typeId;
+//        }
+//        entityItem->setText(ColumnType, typeDisplay);
+//        entityItem->setText(ColumnUid, entity->getUid());
+//        entityItem->setData(ColumnName, RoleUid, entity->getUid());
+//        entityItem->setData(ColumnName, RoleIsEntity, true);
+//        entityItem->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
+//        entityItem->setFlags(entityItem->flags() | Qt::ItemIsUserCheckable);
+//        entityItem->setExpanded(true);
+
+//        if (!selectedUid.isEmpty() && entity->getUid() == selectedUid) {
+//            tree_->setCurrentItem(entityItem);
+//        }
+
+//        if (typeId == QStringLiteral("waypoint")) {
+//            continue;
+//        }
+
+//        const QList<RouteGroupData> routeGroups = entityRouteMap.value(entity->getUid());
+//        if (!routeGroups.isEmpty()) {
+//            for (const RouteGroupData& group : routeGroups) {
+//                QString groupLabel = group.groupName.isEmpty() ? group.groupId : group.groupName;
+//                QTreeWidgetItem* groupItem = new QTreeWidgetItem(entityItem);
+//                groupItem->setText(ColumnName, groupLabel);
+//                groupItem->setText(ColumnType, QString::fromUtf8(u8"航线组"));
+//                groupItem->setData(ColumnName, RoleIsEntity, false);
+//                groupItem->setFlags(groupItem->flags() & ~Qt::ItemIsUserCheckable);
+//                groupItem->setExpanded(true);
+
+//                if (!group.waypoints.isEmpty()) {
+//                    for (GeoEntity* waypoint : group.waypoints) {
+//                        if (!waypoint) {
+//                            continue;
+//                        }
+//                        QTreeWidgetItem* wpItem = new QTreeWidgetItem(groupItem);
+//                        wpItem->setText(ColumnName, waypoint->getName());
+//                        wpItem->setText(ColumnType, QString::fromUtf8(u8"航迹点"));
+//                        wpItem->setText(ColumnUid, waypoint->getUid());
+//                        wpItem->setData(ColumnName, RoleUid, waypoint->getUid());
+//                        wpItem->setData(ColumnName, RoleIsEntity, false);
+//                        wpItem->setCheckState(ColumnName, waypoint->isVisible() ? Qt::Checked : Qt::Unchecked);
+//                        wpItem->setFlags(wpItem->flags() | Qt::ItemIsUserCheckable);
+//                    }
+//                } else {
+//                    QTreeWidgetItem* emptyWpItem = new QTreeWidgetItem(groupItem);
+//                    emptyWpItem->setText(ColumnName, QString::fromUtf8(u8"(无航迹点)"));
+//                    emptyWpItem->setData(ColumnName, RoleIsEntity, false);
+//                    emptyWpItem->setFlags(emptyWpItem->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable));
+//                }
+//            }
+//        } else {
+//            QTreeWidgetItem* emptyRouteGroupItem = new QTreeWidgetItem(entityItem);
+//            emptyRouteGroupItem->setText(ColumnName, QString::fromUtf8(u8"(无航线组)"));
+//            emptyRouteGroupItem->setText(ColumnType, QString::fromUtf8(u8"航线组"));
+//            emptyRouteGroupItem->setData(ColumnName, RoleIsEntity, false);
+//            emptyRouteGroupItem->setFlags(emptyRouteGroupItem->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable));
+//        }
+
+//        QTreeWidgetItem* weaponsItem = new QTreeWidgetItem(entityItem);
+//        weaponsItem->setText(ColumnName, QString::fromUtf8(u8"武器挂载"));
+//        weaponsItem->setText(ColumnType, QString::fromUtf8(u8"组合"));
+//        weaponsItem->setData(ColumnName, RoleIsEntity, false);
+//        weaponsItem->setFlags(weaponsItem->flags() & ~Qt::ItemIsUserCheckable);
+//        weaponsItem->setExpanded(true);
+
+//        QJsonObject weaponMounts = entity->getProperty("weaponMounts").toJsonObject();
+//        QJsonArray weaponsArray = weaponMounts["weapons"].toArray();
+//        if (!weaponsArray.isEmpty()) {
+//            for (const QJsonValue& weaponValue : weaponsArray) {
+//                QJsonObject weaponObj = weaponValue.toObject();
+//                QString weaponId = weaponObj["weaponId"].toString();
+//                QString weaponName = weaponObj["weaponName"].toString();
+//                int quantity = weaponObj["quantity"].toInt();
+
+//                QTreeWidgetItem* weaponItem = new QTreeWidgetItem(weaponsItem);
+//                weaponItem->setText(ColumnName, weaponName.isEmpty() ? weaponId : weaponName);
+//                weaponItem->setText(ColumnType, QString::fromUtf8(u8"武器"));
+//                weaponItem->setText(ColumnUid, weaponId);
+//                weaponItem->setData(ColumnName, RoleUid, entity->getUid());
+//                weaponItem->setData(ColumnName, RoleIsEntity, false);
+
+//                QSpinBox* spinBox = new QSpinBox(tree_);
+//                spinBox->setRange(0, 9999);
+//                spinBox->setValue(quantity);
+//                spinBox->setProperty("entityUid", entity->getUid());
+//                spinBox->setProperty("weaponId", weaponId);
+//                spinBox->setProperty("weaponName", weaponName);
+//                tree_->setItemWidget(weaponItem, ColumnUid, spinBox);
+
+//                connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+//                        this, [this](int value) {
+//                            QSpinBox* spin = qobject_cast<QSpinBox*>(sender());
+//                            if (!spin) {
+//                                return;
+//                            }
+//                            const QString entityUid = spin->property("entityUid").toString();
+//                            const QString weaponId = spin->property("weaponId").toString();
+//                            const QString weaponName = spin->property("weaponName").toString();
+//                            emit requestWeaponQuantityChange(entityUid, weaponId, weaponName, value);
+//                        });
+//            }
+//        } else {
+//            QTreeWidgetItem* emptyWeaponItem = new QTreeWidgetItem(weaponsItem);
+//            emptyWeaponItem->setText(ColumnName, QString::fromUtf8(u8"(未配置武器)"));
+//            emptyWeaponItem->setData(ColumnName, RoleIsEntity, false);
+//            emptyWeaponItem->setFlags(emptyWeaponItem->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsUserCheckable));
+//        }
+//    }
+
+//    tree_->blockSignals(false);
+//    updating_ = false;
+//    updateButtonsState();
+
+//    if (!selectedUid.isEmpty()) {
+//        setSelectedUid(selectedUid);
+//    }
+
+//    if (!tree_->currentItem()) {
+//        QTreeWidgetItemIterator it(tree_);
+//        while (*it) {
+//            if ((*it)->data(ColumnName, RoleIsEntity).toBool()) {
+//                tree_->setCurrentItem(*it);
+//                break;
+//            }
+//            ++it;
+//        }
+//    }
+//}
 

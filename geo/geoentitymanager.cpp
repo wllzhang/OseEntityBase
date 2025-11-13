@@ -25,6 +25,7 @@
 #include <QSqlError>
 #include <QMenu>
 #include <algorithm>
+#include <QObject>
 
 namespace {
 bool isFinite(double value) {
@@ -229,6 +230,26 @@ void GeoEntityManager::setSelectedEntity(GeoEntity* entity, bool emitSignal)
     }
 }
 
+//bool GeoEntityManager::setEntityVisible(const QString& uid, bool visible)
+//{
+//    GeoEntity* entity = getEntity(uid);
+//    if (!entity) {
+//        return false;
+//    }
+
+//    entity->setVisible(visible);
+//    if (!visible) {
+//        if (selectedEntity_ == entity) {
+//            setSelectedEntity(nullptr);
+//        }
+//        if (hoveredEntity_ == entity) {
+//            hoveredEntity_->setHovered(false);
+//            hoveredEntity_ = nullptr;
+//        }
+//    }
+//    return true;
+//}
+
 bool GeoEntityManager::setEntityVisible(const QString& uid, bool visible)
 {
     GeoEntity* entity = getEntity(uid);
@@ -244,6 +265,25 @@ bool GeoEntityManager::setEntityVisible(const QString& uid, bool visible)
         if (hoveredEntity_ == entity) {
             hoveredEntity_->setHovered(false);
             hoveredEntity_ = nullptr;
+        }
+    }
+
+    if (entity->getType() == QStringLiteral("line")) {
+        auto it = lineEndpoints_.find(uid);
+        if (it != lineEndpoints_.end()) {
+            const LineEndpointInfo& info = it.value();
+            if (!info.startWaypointUid.isEmpty()) {
+                GeoEntity* start = getEntity(info.startWaypointUid);
+                if (start) {
+                    start->setVisible(visible);
+                }
+            }
+            if (!info.endWaypointUid.isEmpty()) {
+                GeoEntity* end = getEntity(info.endWaypointUid);
+                if (end) {
+                    end->setVisible(visible);
+                }
+            }
         }
     }
     return true;
@@ -271,16 +311,153 @@ QStringList GeoEntityManager::getEntityIdsByType(const QString& entityType) cons
     return result;
 }
 
+//void GeoEntityManager::removeEntity(const QString& uid)
+//{
+//    qDebug() << "标记实体待删除:" << uid;
+    
+//    GeoEntity* entity = entities_.value(uid);
+//    if (!entity) {
+//        qDebug() << "未找到要移除的实体:" << uid;
+//        return;
+//    }
+    
+//    // 清除选中/悬停引用
+//    if (selectedEntity_ == entity) {
+//        setSelectedEntity(nullptr);
+//        qDebug() << "清除选中实体引用";
+//    }
+//    if (hoveredEntity_ == entity) {
+//        hoveredEntity_->setHovered(false);
+//        hoveredEntity_ = nullptr;
+//    }
+    
+//    // 立即从场景中移除节点（禁用节点，防止渲染时访问）
+//    // 这是安全的，因为removeChild不会访问节点内容，只是移除引用
+//    if (entity->getNode()) {
+//        // 先禁用节点，防止渲染时访问
+//        entity->getNode()->setNodeMask(0x0);
+//        // 从场景中移除（这个操作在渲染过程中也是相对安全的）
+//        entityGroup_->removeChild(entity->getNode());
+//        qDebug() << "从场景中移除实体节点";
+//    }
+    
+//    // 从映射中移除（但不删除entity对象）
+//    entities_.remove(uid);
+//    if (entity) {
+//        uidToEntity_.remove(entity->getUid());
+//    }
+    
+//    // 保存到待删除队列，延迟真正删除（避免在渲染过程中删除对象）
+//    pendingEntities_[uid] = entity;
+//    if (!pendingDeletions_.contains(uid)) {
+//        pendingDeletions_.enqueue(uid);
+//    }
+    
+//    // 立即发出删除信号（UI可以立即更新）
+//    emit entityRemoved(uid);
+//    qDebug() << "实体已标记为待删除:" << uid << "将在下一帧渲染后真正删除";
+//}
+
 void GeoEntityManager::removeEntity(const QString& uid)
 {
     qDebug() << "标记实体待删除:" << uid;
-    
+
     GeoEntity* entity = entities_.value(uid);
     if (!entity) {
         qDebug() << "未找到要移除的实体:" << uid;
         return;
     }
-    
+
+//    const bool isLine = (entity->getType() == QStringLiteral("line"));
+//    const bool isLineEndpoint = entity->getProperty(QStringLiteral("lineEndpoint")).toBool();
+//    QString ownerLineUid;
+//    if (isLineEndpoint) {
+//        ownerLineUid = entity->getProperty(QStringLiteral("lineOwnerUid")).toString();
+//    }
+
+//    if (isLine) {
+//        auto endpointsIt = lineEndpoints_.find(uid);
+//        if (endpointsIt != lineEndpoints_.end()) {
+//            LineEndpointInfo info = endpointsIt.value();
+//            lineEndpoints_.erase(endpointsIt);
+//            if (!info.startWaypointUid.isEmpty()) {
+//                if (entities_.contains(info.startWaypointUid)) {
+//                    removeEntity(info.startWaypointUid);
+//                }
+//            }
+//            if (!info.endWaypointUid.isEmpty()) {
+//                if (entities_.contains(info.endWaypointUid)) {
+//                    removeEntity(info.endWaypointUid);
+//                }
+//            }
+//        }
+//    } else if (isLineEndpoint && !ownerLineUid.isEmpty()) {
+//        auto it = lineEndpoints_.find(ownerLineUid);
+//        if (it != lineEndpoints_.end()) {
+//            if (it->startWaypointUid == uid) {
+//                it->startWaypointUid.clear();
+//            }
+//            if (it->endWaypointUid == uid) {
+//                it->endWaypointUid.clear();
+//            }
+//            if (it->startWaypointUid.isEmpty() && it->endWaypointUid.isEmpty()) {
+//                lineEndpoints_.erase(it);
+//            }
+//        }
+//        GeoEntity* ownerLine = getEntity(ownerLineUid);
+//        if (ownerLine) {
+//            ownerLine->setProperty(QStringLiteral("lineStartWaypointUid"),
+//                                   lineEndpoints_.value(ownerLineUid).startWaypointUid);
+//            ownerLine->setProperty(QStringLiteral("lineEndWaypointUid"),
+//                                   lineEndpoints_.value(ownerLineUid).endWaypointUid);
+//        }
+//    }
+
+    const bool isLine = (entity->getType() == QStringLiteral("line"));
+        const bool isLineEndpoint = entity->getProperty(QStringLiteral("lineEndpoint")).toBool();
+        QString ownerLineUid;
+        if (isLineEndpoint) {
+            ownerLineUid = entity->getProperty(QStringLiteral("lineOwnerUid")).toString();
+        }
+
+        if (isLine) {
+            auto endpointsIt = lineEndpoints_.find(uid);
+            if (endpointsIt != lineEndpoints_.end()) {
+                LineEndpointInfo info = endpointsIt.value();
+                disconnectLineEndpointConnections(endpointsIt.value());
+                lineEndpoints_.erase(endpointsIt);
+                if (!info.startWaypointUid.isEmpty() && entities_.contains(info.startWaypointUid)) {
+                    removeEntity(info.startWaypointUid);
+                }
+                if (!info.endWaypointUid.isEmpty() && entities_.contains(info.endWaypointUid)) {
+                    removeEntity(info.endWaypointUid);
+                }
+            }
+        } else if (isLineEndpoint && !ownerLineUid.isEmpty()) {
+            auto it = lineEndpoints_.find(ownerLineUid);
+            if (it != lineEndpoints_.end()) {
+                if (it->startWaypointUid == uid) {
+                    it->startWaypointUid.clear();
+                }
+                if (it->endWaypointUid == uid) {
+                    it->endWaypointUid.clear();
+                }
+                if (it->startWaypointUid.isEmpty() && it->endWaypointUid.isEmpty()) {
+                    disconnectLineEndpointConnections(it.value());
+                    lineEndpoints_.erase(it);
+                }
+            }
+            GeoEntity* ownerLine = getEntity(ownerLineUid);
+            if (ownerLine) {
+                auto infoIt = lineEndpoints_.find(ownerLineUid);
+                QString startUid = infoIt != lineEndpoints_.end() ? infoIt->startWaypointUid : QString();
+                QString endUid = infoIt != lineEndpoints_.end() ? infoIt->endWaypointUid : QString();
+                ownerLine->setProperty(QStringLiteral("lineStartWaypointUid"), startUid);
+                ownerLine->setProperty(QStringLiteral("lineEndWaypointUid"), endUid);
+                updateLineEndpoints(ownerLineUid);
+            }
+        }
+
     // 清除选中/悬停引用
     if (selectedEntity_ == entity) {
         setSelectedEntity(nullptr);
@@ -290,7 +467,7 @@ void GeoEntityManager::removeEntity(const QString& uid)
         hoveredEntity_->setHovered(false);
         hoveredEntity_ = nullptr;
     }
-    
+
     // 立即从场景中移除节点（禁用节点，防止渲染时访问）
     // 这是安全的，因为removeChild不会访问节点内容，只是移除引用
     if (entity->getNode()) {
@@ -300,19 +477,19 @@ void GeoEntityManager::removeEntity(const QString& uid)
         entityGroup_->removeChild(entity->getNode());
         qDebug() << "从场景中移除实体节点";
     }
-    
+
     // 从映射中移除（但不删除entity对象）
     entities_.remove(uid);
     if (entity) {
         uidToEntity_.remove(entity->getUid());
     }
-    
+
     // 保存到待删除队列，延迟真正删除（避免在渲染过程中删除对象）
     pendingEntities_[uid] = entity;
     if (!pendingDeletions_.contains(uid)) {
         pendingDeletions_.enqueue(uid);
     }
-    
+
     // 立即发出删除信号（UI可以立即更新）
     emit entityRemoved(uid);
     qDebug() << "实体已标记为待删除:" << uid << "将在下一帧渲染后真正删除";
@@ -353,8 +530,85 @@ void GeoEntityManager::clearAllEntities()
 
     entityCounter_ = 0;
     qDebug() << "所有实体已标记为待删除，将在下一帧渲染后真正删除";
+
+    for (auto it = lineEndpoints_.begin(); it != lineEndpoints_.end(); ++it) {
+        disconnectLineEndpointConnections(it.value());
+    }
+    lineEndpoints_.clear();
 }
 
+void GeoEntityManager::updateLineEndpoints(const QString& lineUid)
+{
+    auto it = lineEndpoints_.constFind(lineUid);
+    if (it == lineEndpoints_.constEnd()) {
+        return;
+    }
+
+    LineEntity* line = qobject_cast<LineEntity*>(getEntity(lineUid));
+    if (!line) {
+        return;
+    }
+
+    GeoEntity* start = getEntity(it->startWaypointUid);
+    GeoEntity* end = getEntity(it->endWaypointUid);
+    if (!start || !end) {
+        return;
+    }
+
+    double startLon = 0.0, startLat = 0.0, startAlt = 0.0;
+    double endLon = 0.0, endLat = 0.0, endAlt = 0.0;
+    start->getPosition(startLon, startLat, startAlt);
+    end->getPosition(endLon, endLat, endAlt);
+    line->setEndpoints(startLon, startLat, startAlt,
+                       endLon, endLat, endAlt);
+}
+
+void GeoEntityManager::updateLineEndpointDisplayNames(const QString& lineUid, const QString& lineName)
+{
+    auto it = lineEndpoints_.find(lineUid);
+    if (it == lineEndpoints_.end()) {
+        return;
+    }
+
+    LineEntity* line = qobject_cast<LineEntity*>(getEntity(lineUid));
+    QString resolvedName = lineName.trimmed();
+    if (resolvedName.isEmpty() && line) {
+        QString displayName = line->getProperty(QStringLiteral("displayName")).toString();
+        resolvedName = displayName.isEmpty() ? line->getName() : displayName;
+    }
+    if (resolvedName.isEmpty()) {
+        resolvedName = lineUid;
+    }
+
+    if (!it->startWaypointUid.isEmpty()) {
+        if (GeoEntity* start = getEntity(it->startWaypointUid)) {
+            start->setProperty(QStringLiteral("displayName"), resolvedName + QStringLiteral(" 起点"));
+            start->setProperty(QStringLiteral("lineName"), resolvedName);
+        }
+    }
+    if (!it->endWaypointUid.isEmpty()) {
+        if (GeoEntity* end = getEntity(it->endWaypointUid)) {
+            end->setProperty(QStringLiteral("displayName"), resolvedName + QStringLiteral(" 终点"));
+            end->setProperty(QStringLiteral("lineName"), resolvedName);
+        }
+    }
+}
+
+void GeoEntityManager::disconnectLineEndpointConnections(LineEndpointInfo& info)
+{
+    if (info.startPositionConn) {
+        QObject::disconnect(info.startPositionConn);
+        info.startPositionConn = QMetaObject::Connection();
+    }
+    if (info.endPositionConn) {
+        QObject::disconnect(info.endPositionConn);
+        info.endPositionConn = QMetaObject::Connection();
+    }
+    if (info.lineNameConn) {
+        QObject::disconnect(info.lineNameConn);
+        info.lineNameConn = QMetaObject::Connection();
+    }
+}
 
 QString GeoEntityManager::generateEntityId(const QString& entityType, const QString& entityName)
 {
@@ -527,6 +781,13 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
     qDebug() << "鼠标按钮:" << event->button();
     
     if (event->button() == Qt::LeftButton) {
+
+        // 当 blockMapNavigation_ 为 true 且左键点击时，直接触发 mapLeftClicked 并提前返回，确保距离测算/面积测算等模式能收到点击事件，不会被实体选择逻辑拦截
+        if (blockMapNavigation_) {
+            emit mapLeftClicked(event->pos());
+            return;
+        }
+
         QVector<PickCandidate> candidates;
         double thresholdMeters = 0.0;
         if (!collectPickCandidates(event->pos(), candidates, thresholdMeters, false)) {
@@ -931,6 +1192,192 @@ WaypointEntity* GeoEntityManager::addStandaloneWaypoint(double lon, double lat, 
     emit entityCreated(wp);
     return wp;
 }
+
+LineEntity* GeoEntityManager::addLineEntity(const QString& name,
+                                            double startLon, double startLat, double startAlt,
+                                            double endLon, double endLat, double endAlt,
+                                            const QString& uidOverride)
+{
+    static int lineCounter = 0;
+
+    QString finalName = name.trimmed();
+    if (finalName.isEmpty()) {
+        finalName = QStringLiteral("直线-%1").arg(++lineCounter);
+    }
+
+    LineEntity* line = new LineEntity(finalName,
+                                      startLon, startLat, startAlt,
+                                      endLon, endLat, endAlt,
+                                      uidOverride,
+                                      this);
+    line->initialize();
+
+    if (!line->getNode()) {
+        qWarning() << "[LineEntity] 节点创建失败";
+        delete line;
+        return nullptr;
+    }
+
+    entityGroup_->addChild(line->getNode());
+    entities_.insert(line->getUid(), line);
+    uidToEntity_.insert(line->getUid(), line);
+
+    auto createEndpoint = [this, finalName](double lon, double lat, double alt, const QString& labelText) -> WaypointEntity* {
+        WaypointEntity* wp = new WaypointEntity(QStringLiteral("%1-%2").arg(finalName, labelText),
+                                                lon, lat, alt,
+                                                QString(),
+                                                this);
+        wp->setMapNode(mapNode_.get());
+        wp->initialize();
+        wp->setOrderLabel(labelText);
+        if (wp->getNode()) {
+            entityGroup_->addChild(wp->getNode());
+        }
+        entities_.insert(wp->getUid(), wp);
+        uidToEntity_.insert(wp->getUid(), wp);
+        return wp;
+    };
+
+    const QString lineUid = line->getUid();
+    LineEndpointInfo endpointInfo;
+    WaypointEntity* startWaypoint = createEndpoint(startLon, startLat, startAlt, QStringLiteral("S"));
+    WaypointEntity* endWaypoint = createEndpoint(endLon, endLat, endAlt, QStringLiteral("E"));
+
+    if (startWaypoint) {
+        endpointInfo.startWaypointUid = startWaypoint->getUid();
+        startWaypoint->setProperty(QStringLiteral("lineEndpoint"), true);
+        startWaypoint->setProperty(QStringLiteral("lineOwnerUid"), lineUid);
+        startWaypoint->setProperty(QStringLiteral("lineEndpointRole"), QStringLiteral("start"));
+        startWaypoint->setProperty(QStringLiteral("displayName"), finalName + QStringLiteral(" 起点"));
+        startWaypoint->setProperty(QStringLiteral("lineName"), finalName);
+        endpointInfo.startPositionConn = QObject::connect(
+            startWaypoint, &GeoEntity::positionChanged,
+            this, [this, lineUid](double, double, double) {
+                updateLineEndpoints(lineUid);
+            });
+        emit entityCreated(startWaypoint);
+    }
+    if (endWaypoint) {
+        endpointInfo.endWaypointUid = endWaypoint->getUid();
+        endWaypoint->setProperty(QStringLiteral("lineEndpoint"), true);
+        endWaypoint->setProperty(QStringLiteral("lineOwnerUid"), lineUid);
+        endWaypoint->setProperty(QStringLiteral("lineEndpointRole"), QStringLiteral("end"));
+        endWaypoint->setProperty(QStringLiteral("displayName"), finalName + QStringLiteral(" 终点"));
+        endWaypoint->setProperty(QStringLiteral("lineName"), finalName);
+        endpointInfo.endPositionConn = QObject::connect(
+            endWaypoint, &GeoEntity::positionChanged,
+            this, [this, lineUid](double, double, double) {
+                updateLineEndpoints(lineUid);
+            });
+        emit entityCreated(endWaypoint);
+    }
+
+    if (!endpointInfo.startWaypointUid.isEmpty() || !endpointInfo.endWaypointUid.isEmpty()) {
+        endpointInfo.lineNameConn = QObject::connect(
+            line, &GeoEntity::propertyChanged,
+            this, [this, lineUid](const QString& key, const QVariant& value) {
+                if (key == QStringLiteral("displayName")) {
+                    updateLineEndpointDisplayNames(lineUid, value.toString());
+                }
+            });
+        lineEndpoints_.insert(lineUid, endpointInfo);
+        line->setProperty(QStringLiteral("lineStartWaypointUid"), endpointInfo.startWaypointUid);
+        line->setProperty(QStringLiteral("lineEndWaypointUid"), endpointInfo.endWaypointUid);
+        updateLineEndpointDisplayNames(lineUid, line->getProperty(QStringLiteral("displayName")).toString());
+    }
+
+    emit entityCreated(line);
+    qDebug() << "[LineEntity] 创建成功:" << lineUid
+             << "名称:" << finalName
+             << "起点:" << startLon << startLat << startAlt
+             << "终点:" << endLon << endLat << endAlt;
+
+    return line;
+}
+
+//LineEntity* GeoEntityManager::addLineEntity(const QString& name,
+//                                            double startLon, double startLat, double startAlt,
+//                                            double endLon, double endLat, double endAlt,
+//                                            const QString& uidOverride)
+//{
+//    static int lineCounter = 0;
+
+//    QString finalName = name.trimmed();
+//    if (finalName.isEmpty()) {
+//        finalName = QStringLiteral("直线-%1").arg(++lineCounter);
+//    }
+
+//    LineEntity* line = new LineEntity(finalName,
+//                                      startLon, startLat, startAlt,
+//                                      endLon, endLat, endAlt,
+//                                      uidOverride,
+//                                      this);
+//    line->initialize();
+
+//    if (!line->getNode()) {
+//        qWarning() << "[LineEntity] 节点创建失败";
+//        delete line;
+//        return nullptr;
+//    }
+
+//    entityGroup_->addChild(line->getNode());
+//    entities_.insert(line->getUid(), line);
+//    uidToEntity_.insert(line->getUid(), line);
+
+//    auto createEndpoint = [this, finalName](double lon, double lat, double alt, const QString& labelText) -> WaypointEntity* {
+//        WaypointEntity* wp = new WaypointEntity(QStringLiteral("%1-%2").arg(finalName, labelText),
+//                                                lon, lat, alt,
+//                                                QString(),
+//                                                this);
+//        wp->setMapNode(mapNode_.get());
+//        wp->initialize();
+//        wp->setOrderLabel(labelText);
+//        if (wp->getNode()) {
+//            entityGroup_->addChild(wp->getNode());
+//        }
+//        entities_.insert(wp->getUid(), wp);
+//        uidToEntity_.insert(wp->getUid(), wp);
+//        return wp;
+//    };
+
+//    LineEndpointInfo endpointInfo;
+//    WaypointEntity* startWaypoint = createEndpoint(startLon, startLat, startAlt, QStringLiteral("S"));
+//    WaypointEntity* endWaypoint = createEndpoint(endLon, endLat, endAlt, QStringLiteral("E"));
+
+//    if (startWaypoint) {
+//        endpointInfo.startWaypointUid = startWaypoint->getUid();
+//        startWaypoint->setProperty(QStringLiteral("lineEndpoint"), true);
+//        startWaypoint->setProperty(QStringLiteral("lineOwnerUid"), line->getUid());
+//        startWaypoint->setProperty(QStringLiteral("lineEndpointRole"), QStringLiteral("start"));
+//        startWaypoint->setProperty(QStringLiteral("displayName"), finalName + QStringLiteral(" 起点"));
+//        startWaypoint->setProperty(QStringLiteral("lineName"), finalName);
+//        emit entityCreated(startWaypoint);
+//    }
+//    if (endWaypoint) {
+//        endpointInfo.endWaypointUid = endWaypoint->getUid();
+//        endWaypoint->setProperty(QStringLiteral("lineEndpoint"), true);
+//        endWaypoint->setProperty(QStringLiteral("lineOwnerUid"), line->getUid());
+//        endWaypoint->setProperty(QStringLiteral("lineEndpointRole"), QStringLiteral("end"));
+//        endWaypoint->setProperty(QStringLiteral("displayName"), finalName + QStringLiteral(" 终点"));
+//        endWaypoint->setProperty(QStringLiteral("lineName"), finalName);
+//        emit entityCreated(endWaypoint);
+//    }
+
+//    if (!endpointInfo.startWaypointUid.isEmpty() || !endpointInfo.endWaypointUid.isEmpty()) {
+//        lineEndpoints_.insert(line->getUid(), endpointInfo);
+//        line->setProperty(QStringLiteral("lineStartWaypointUid"), endpointInfo.startWaypointUid);
+//        line->setProperty(QStringLiteral("lineEndWaypointUid"), endpointInfo.endWaypointUid);
+//    }
+
+//    emit entityCreated(line);
+//    qDebug() << "[LineEntity] 创建成功:" << line->getUid()
+//             << "名称:" << finalName
+//             << "起点:" << startLon << startLat << startAlt
+//             << "终点:" << endLon << endLat << endAlt;
+
+//    return line;
+//}
+
 
 bool GeoEntityManager::findWaypointLocation(WaypointEntity* waypoint, QString& groupIdOut, int& indexOut) const
 {

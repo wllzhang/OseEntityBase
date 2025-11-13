@@ -406,6 +406,9 @@ QVariant ComponentConfigDialog::getParameterValue(const QString &paramName, int 
     case 6: // 嵌套Json
         return convertToNestedObject(jsonValue, paramConfig);
 
+    case 7: // 组件类型下拉框
+        return convertToComponentComboBox(jsonValue);
+
     default:
         qWarning() << "Unknown parameter type:" << type << "for parameter:" << paramName;
         return QVariant();
@@ -535,6 +538,29 @@ QVariant ComponentConfigDialog::convertToNestedObject(const QJsonValue &jsonValu
     return nestedDefault;
 }
 
+QString ComponentConfigDialog::convertToComponentComboBox(const QJsonValue &jsonValue)
+{
+    QString name = "";
+    if (!jsonValue.isNull())
+    {
+        QSqlQuery query;
+        query.prepare("SELECT ci.name, ci.configinfo "
+                      "FROM ComponentInformation ci "
+                      "WHERE ci.componentid = ? ");
+        query.addBindValue(jsonValue.toInt());
+
+        if (query.exec() && query.next()) {
+            name = query.value(0).toString();
+        } else {
+            qWarning() << "找不到id为：" << jsonValue.toInt() << "的组件";
+        }
+    }
+    else {
+        qWarning() << "找不到id为：" << jsonValue.toInt() << "的组件";
+    }
+    return name;
+}
+
 QWidget* ComponentConfigDialog::createFormWidget(QString paramName, int type, const QStringList &values,
                                                 const QVariant &currentValue,
                                                 const QJsonObject &paramConfig)
@@ -548,10 +574,58 @@ QWidget* ComponentConfigDialog::createFormWidget(QString paramName, int type, co
     case 4: return createDoubleSpinBoxWidget(currentValue);
     case 5: return createRangeWidget(currentValue);
     case 6: return createNestedJsonWidget(paramName, currentValue, paramConfig);
+    case 7: return createComponentComboBoxWidget(values, currentValue);
     default:
         qWarning() << "Unsupported widget type:" << type;
         return createUnsupportedWidget(type);
     }
+}
+
+
+// values：组件的afsimtype, currentValue：下拉框中显示的当前所选组件名称
+QWidget* ComponentConfigDialog::createComponentComboBoxWidget(const QStringList &values, const QVariant &currentValue)
+{
+    QComboBox *combo = new QComboBox(this);
+
+    // 检查输入是否为空
+    if (values.isEmpty() || currentValue.toString() == "") {
+        return combo;
+    }
+
+    QString sql = "SELECT ci.name "
+        "FROM ComponentInformation ci "
+        "INNER JOIN ComponentType ct ON ci.componenttypeid = ct.ctypeid "
+        "WHERE ct.afsimtype IN (";
+
+    // 生成占位符
+    QStringList placeholders;
+    for (int i = 0; i < values.size(); ++i) {
+        placeholders << "?";
+    }
+    sql += placeholders.join(",") + ")";
+
+    QSqlQuery query;
+    query.prepare(sql);
+
+    for (const QString& value : values) {
+        query.addBindValue(value);
+    }
+
+    QStringList nameList;
+    if (query.exec()) {
+        while (query.next()) {
+            QString name = query.value(0).toString();
+            if (!name.isEmpty()) {
+                nameList.append(name);
+            }
+        }
+    } else {
+        qWarning() << "数据库查询失败:" << query.lastError().text();
+    }
+
+    combo->addItems(nameList);
+    combo->setCurrentText(currentValue.toString());
+    return combo;
 }
 
 QWidget* ComponentConfigDialog::createLineEditWidget(const QVariant &currentValue)

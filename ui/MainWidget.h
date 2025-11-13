@@ -171,6 +171,11 @@ private slots:
 
     void onBehaviorPlanningClicked();
 
+    /**
+     * @brief 直线绘制按钮点击：进入直线标绘模式
+     */
+    void onLineDrawClicked();
+
 
 private:
     /**
@@ -303,16 +308,21 @@ private:
     QString entityRouteGroupId_;     // 实体航线组ID
     GeoEntity* dialogHoverEntity_;
 
-    // 距离测算：状态与中间结果
+    // 地图服务相关
     bool isMeasuringDistance_ = false;               // 是否处于测距模式
     WaypointEntity* distancePointA_ = nullptr;  // 起点标绘点
     WaypointEntity* distancePointB_ = nullptr;  // 终点标绘点
-
     bool isMeasuringArea_ = false;                   // 是否处于面积测算模式
     QVector<class WaypointEntity*> areaMeasurePoints_; // 面积测算已选航点
     bool isMeasuringAngle_ = false;                  // 是否处于角度测算模式
     class WaypointEntity* angleBasePoint_ = nullptr; // 角度测算起点
     class WaypointEntity* angleTargetPoint_ = nullptr;// 角度测算终点
+
+    bool isDrawingLine_ = false;                     // 是否处于直线绘制模式
+    bool hasPendingLineStart_ = false;               // 是否已记录直线起点
+    double lineStartLon_ = 0.0;
+    double lineStartLat_ = 0.0;
+    double lineStartAlt_ = 0.0;
 
     QMetaObject::Connection distanceLeftClickConn_;
     QMetaObject::Connection distanceRightClickConn_;
@@ -321,12 +331,21 @@ private:
     QMetaObject::Connection angleLeftClickConn_;
     QMetaObject::Connection angleRightClickConn_;
 
+    // 重置所有测量模式，一次性退出所有正在进行的测量操作
     void resetMeasurementModes();
+    // 安全地断开信号槽连接，避免重复断开和空连接操作
     void disconnectMeasurementConnection(QMetaObject::Connection& connection);
+    // 退出距离测量模式
     void exitDistanceMeasure(const QString& message = QString());
+    // 退出面积测量模式
     void exitAreaMeasure(const QString& message = QString());
+    // 退出角度测量模式
     void exitAngleMeasure(const QString& message = QString());
+    // 退出直线绘制模式
+    void exitLineDrawing(const QString& message = QString());
+    // 计算多边形的面积
     double computePolygonAreaMeters(const QVector<class WaypointEntity*>& points) const;
+    // 计算两个点的角度
     void showAngleBetweenWaypoints(class WaypointEntity* from, class WaypointEntity* to);
 
     // 使用 Haversine 公式计算两经纬度点的大圆距离（米）

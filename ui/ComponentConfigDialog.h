@@ -186,12 +186,14 @@ private:
     QVariant getDefaultValue(int type, const QStringList &values, const QJsonObject &paramConfig);
     QString convertToString(const QJsonValue &jsonValue);
     int convertToComboBoxIndex(const QJsonValue &jsonValue, const QStringList &values);
+    QString convertToComponentComboBox(const QJsonValue &jsonValue);
     int convertToInt(const QJsonValue &jsonValue);
     bool convertToBool(const QJsonValue &jsonValue);
     double convertToDouble(const QJsonValue &jsonValue);
     QString convertToRangeString(const QJsonValue &jsonValue);
     QVariant convertToNestedObject(const QJsonValue &jsonValue, const QJsonObject &paramConfig);
     QWidget* createFormWidget(QString paramName, int type, const QStringList &values, const QVariant &currentValue, const QJsonObject &paramConfig);
+    QWidget* createComponentComboBoxWidget(const QStringList &values, const QVariant &currentValue);
     QWidget* createLineEditWidget(const QVariant &currentValue);
     QWidget* createComboBoxWidget(const QStringList &values, const QVariant &currentValue);
     QWidget* createSpinBoxWidget(const QVariant &currentValue);
