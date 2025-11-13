@@ -11,6 +11,7 @@ class QStackedWidget;
 class QPushButton;
 class QPlainTextEdit;
 class QLineEdit;
+class QLabel;
 class GeoEntityManager;
 class PlanFileManager;
 class GeoEntity;
@@ -29,9 +30,6 @@ public:
 
     void refreshEntities(const QString& selectUid = QString());
 
-signals:
-    void requestRefreshEntities();
-
 protected:
     void closeEvent(QCloseEvent* event) override;
 
@@ -49,6 +47,7 @@ private:
     QJsonObject collectBehaviorFromUi() const;
     void resetUi();
     void updateWindowTitle();
+    void updateEntityInfoLabel(GeoEntity* entity);
 
     QListWidget* entityListWidget_;
     QRadioButton* ruleModeRadio_;
@@ -61,6 +60,7 @@ private:
     QLineEdit* scriptCommentEdit_;
     QPushButton* saveButton_;
     QPushButton* clearButton_;
+    QLabel* entityInfoLabel_;
 
     GeoEntityManager* entityManager_;
     PlanFileManager* planFileManager_;

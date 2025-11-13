@@ -24,6 +24,8 @@
 #include <QGridLayout>
 #include <QListWidgetItem>
 #include <functional>
+#include <QSplitter>
+#include <QFontDatabase>
 
 namespace {
 
@@ -55,6 +57,7 @@ public:
 
         fieldCombo_ = new QComboBox(this);
         fieldCombo_->setEditable(true);
+        fieldCombo_->setMinimumWidth(150);
         for (const auto& option : kFieldOptions) {
             fieldCombo_->addItem(option.label, option.expression);
         }
@@ -62,21 +65,26 @@ public:
 
         opCombo_ = new QComboBox(this);
         opCombo_->addItems({">", "<", ">=", "<=", "==", "!="});
+        opCombo_->setFixedWidth(70);
         layout->addWidget(opCombo_);
 
         valueEdit_ = new QLineEdit(this);
         valueEdit_->setPlaceholderText(QString::fromUtf8(u8"数值/表达式"));
+        valueEdit_->setMinimumWidth(150);
         layout->addWidget(valueEdit_, 1);
 
         actionCombo_ = new QComboBox(this);
+        actionCombo_->setEditable(true);
         actionCombo_->addItem(QString::fromUtf8(u8"发射武器"), QStringLiteral("fire_weapon"));
-        actionCombo_->addItem(QString::fromUtf8(u8"日志记录"), QStringLiteral("log"));
+        actionCombo_->addItem(QString::fromUtf8(u8"停止射击"), QStringLiteral("hold_fire"));
         actionCombo_->addItem(QString::fromUtf8(u8"无动作"), QStringLiteral("none"));
+        actionCombo_->setMinimumWidth(150);
         layout->addWidget(actionCombo_, 1);
 
         auto* removeBtn = new QPushButton(QString::fromUtf8(u8"移除"), this);
         removeBtn->setFixedWidth(60);
         layout->addWidget(removeBtn);
+        layout->setAlignment(removeBtn, Qt::AlignCenter);
 
         connect(removeBtn, &QPushButton::clicked, this, [this]() {
             if (removeCallback_) {
@@ -97,17 +105,34 @@ public:
 
     void setRule(const QJsonObject& obj)
     {
-        QJsonObject cond = obj.value("condition").toObject();
-        if (cond.isEmpty()) {
-            // 兼容旧字段
-            QJsonObject legacy;
-            legacy["left"] = obj.value("left");
-            legacy["operator"] = obj.value("operator");
-            legacy["right"] = obj.value("right");
-            cond = legacy;
+        QString left;
+        QString op;
+        QString right;
+        QString actionType;
+
+        if (obj.contains("condition")) {
+            QJsonObject cond = obj.value("condition").toObject();
+            left = cond.value("left").toString();
+            op = cond.value("operator").toString();
+            right = cond.value("right").toVariant().toString();
+            QJsonValue actionVal = obj.value("action");
+            if (actionVal.isObject()) {
+                actionType = actionVal.toObject().value("type").toString();
+            } else if (actionVal.isString()) {
+                actionType = actionVal.toString();
+            }
+        } else {
+            left = obj.value("left").toString();
+            op = obj.value("operator").toString();
+            right = obj.value("right").toVariant().toString();
+            QJsonValue actionVal = obj.value("action");
+            if (actionVal.isString()) {
+                actionType = actionVal.toString();
+            } else if (actionVal.isObject()) {
+                actionType = actionVal.toObject().value("type").toString();
+            }
         }
 
-        QString left = cond.value("left").toString();
         int index = fieldCombo_->findData(left);
         if (index >= 0) {
             fieldCombo_->setCurrentIndex(index);
@@ -115,20 +140,22 @@ public:
             fieldCombo_->setEditText(left);
         }
 
-        QString op = cond.value("operator").toString();
         int opIndex = opCombo_->findText(op);
         if (opIndex >= 0) {
             opCombo_->setCurrentIndex(opIndex);
         }
 
-        if (cond.contains("right")) {
-            valueEdit_->setText(cond.value("right").toVariant().toString());
+        if (!right.isEmpty()) {
+            valueEdit_->setText(right);
         }
 
-        QString actionType = obj.value("action").toObject().value("type").toString();
-        int actionIndex = actionCombo_->findData(actionType);
-        if (actionIndex >= 0) {
-            actionCombo_->setCurrentIndex(actionIndex);
+        if (!actionType.isEmpty()) {
+            int actionIndex = actionCombo_->findData(actionType);
+            if (actionIndex >= 0) {
+                actionCombo_->setCurrentIndex(actionIndex);
+            } else {
+                actionCombo_->setEditText(actionType);
+            }
         }
     }
 
@@ -150,15 +177,17 @@ public:
         }
 
         QJsonObject rule;
-        QJsonObject condition;
-        condition["left"] = left;
-        condition["operator"] = op;
-        condition["right"] = right;
-        rule["condition"] = condition;
+        rule["left"] = left;
+        rule["operator"] = op;
+        rule["right"] = right;
 
-        QJsonObject action;
-        action["type"] = actionCombo_->currentData().toString();
-        rule["action"] = action;
+        QString actionValue = actionCombo_->currentData().toString();
+        if (actionValue.isEmpty()) {
+            actionValue = actionCombo_->currentText().trimmed();
+        }
+        if (!actionValue.isEmpty()) {
+            rule["action"] = actionValue;
+        }
         return rule;
     }
 
@@ -171,9 +200,6 @@ public:
     {
         changeCallback_ = callback;
     }
-
-signals:
-    void changed();
 
 private:
     QComboBox* fieldCombo_;
@@ -197,7 +223,25 @@ public:
         auto* conditionGroup = new QGroupBox(QString::fromUtf8(u8"规则列表（每行 = 条件 + 动作）"), this);
         auto* conditionGroupLayout = new QVBoxLayout(conditionGroup);
         conditionGroupLayout->setContentsMargins(8, 12, 8, 8);
+        conditionGroupLayout->setSpacing(6);
         mainLayout->addWidget(conditionGroup);
+
+        auto* headerRow = new QWidget(conditionGroup);
+        auto* headerLayout = new QHBoxLayout(headerRow);
+        headerLayout->setContentsMargins(0, 0, 0, 0);
+        headerLayout->setSpacing(8);
+        auto createHeaderLabel = [](const QString& text, Qt::Alignment alignment = Qt::AlignLeft) {
+            QLabel* label = new QLabel(text);
+            label->setStyleSheet("font-weight:600; color:#555;");
+            label->setAlignment(static_cast<Qt::Alignment>(alignment | Qt::AlignVCenter));
+            return label;
+        };
+        headerLayout->addWidget(createHeaderLabel(QString::fromUtf8(u8"条件字段")), 1);
+        headerLayout->addWidget(createHeaderLabel(QString::fromUtf8(u8"比较"), Qt::AlignCenter));
+        headerLayout->addWidget(createHeaderLabel(QString::fromUtf8(u8"值")), 1);
+        headerLayout->addWidget(createHeaderLabel(QString::fromUtf8(u8"动作")), 1);
+        headerLayout->addWidget(createHeaderLabel(QString::fromUtf8(u8"操作"), Qt::AlignCenter));
+        conditionGroupLayout->addWidget(headerRow);
 
         auto* scrollArea = new QScrollArea(conditionGroup);
         scrollArea->setWidgetResizable(true);
@@ -233,17 +277,19 @@ public:
 
     void setRules(const QJsonArray& rules)
     {
-        clear();
+        qDeleteAll(ruleRows_);
+        ruleRows_.clear();
+
         if (!rules.isEmpty()) {
-            qDeleteAll(ruleRows_);
-            ruleRows_.clear();
             for (const QJsonValue& val : rules) {
                 addRuleRow(val.toObject());
             }
         }
+
         if (ruleRows_.isEmpty()) {
             addRuleRow(QJsonObject());
         }
+
         notifyChanged();
     }
 
@@ -302,6 +348,7 @@ private:
         }
     }
 
+private:
     QVBoxLayout* conditionsLayout_;
     QList<ConditionRowWidget*> ruleRows_;
     std::function<void()> changedCallback_;
@@ -324,61 +371,114 @@ BehaviorPlanningDialog::BehaviorPlanningDialog(QWidget* parent)
     , dirty_(false)
 {
     setWindowTitle(QString::fromUtf8(u8"行为规划"));
-    resize(960, 600);
+    resize(1000, 620);
 
     auto* mainLayout = new QHBoxLayout(this);
-    entityListWidget_ = new QListWidget(this);
-    entityListWidget_->setMinimumWidth(220);
+    mainLayout->setContentsMargins(12, 12, 12, 12);
+    mainLayout->setSpacing(10);
+
+    auto* splitter = new QSplitter(Qt::Horizontal, this);
+    splitter->setChildrenCollapsible(false);
+    mainLayout->addWidget(splitter);
+
+    QWidget* entityPanel = new QWidget(splitter);
+    auto* entityPanelLayout = new QVBoxLayout(entityPanel);
+    entityPanelLayout->setContentsMargins(0, 0, 0, 0);
+    entityPanelLayout->setSpacing(8);
+
+    auto* entityLabel = new QLabel(QString::fromUtf8(u8"可配置实体"), entityPanel);
+    entityLabel->setStyleSheet("font-weight:600; color:#444;" );
+    entityPanelLayout->addWidget(entityLabel);
+
+    entityListWidget_ = new QListWidget(entityPanel);
+    entityListWidget_->setMinimumWidth(240);
     entityListWidget_->setSelectionMode(QAbstractItemView::SingleSelection);
-    mainLayout->addWidget(entityListWidget_, 0);
+    entityListWidget_->setSelectionBehavior(QAbstractItemView::SelectRows);
+    entityListWidget_->setAlternatingRowColors(true);
+    entityListWidget_->setUniformItemSizes(true);
+    entityListWidget_->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    entityPanelLayout->addWidget(entityListWidget_, 1);
 
-    auto* rightLayout = new QVBoxLayout;
-    mainLayout->addLayout(rightLayout, 1);
+    splitter->addWidget(entityPanel);
 
-    auto* modeLayout = new QHBoxLayout;
-    ruleModeRadio_ = new QRadioButton(QString::fromUtf8(u8"规则化行为"), this);
-    scriptModeRadio_ = new QRadioButton(QString::fromUtf8(u8"自定义脚本"), this);
+    QWidget* editorPanel = new QWidget(splitter);
+    auto* editorLayout = new QVBoxLayout(editorPanel);
+    editorLayout->setContentsMargins(0, 0, 0, 0);
+    editorLayout->setSpacing(10);
+
+    entityInfoLabel_ = new QLabel(QString::fromUtf8(u8"当前实体：--"), editorPanel);
+    entityInfoLabel_->setStyleSheet("font-weight:600; color:#333;" );
+    entityInfoLabel_->setWordWrap(true);
+    editorLayout->addWidget(entityInfoLabel_);
+
+    auto* modeGroup = new QGroupBox(QString::fromUtf8(u8"行为定义模式"), editorPanel);
+    auto* modeLayout = new QHBoxLayout(modeGroup);
+    modeLayout->setContentsMargins(12, 8, 12, 8);
+    modeLayout->setSpacing(16);
+    ruleModeRadio_ = new QRadioButton(QString::fromUtf8(u8"规则化行为"), modeGroup);
+    scriptModeRadio_ = new QRadioButton(QString::fromUtf8(u8"自定义脚本"), modeGroup);
+    ruleModeRadio_->setChecked(true);
     modeLayout->addWidget(ruleModeRadio_);
     modeLayout->addWidget(scriptModeRadio_);
     modeLayout->addStretch();
-    rightLayout->addLayout(modeLayout);
+    editorLayout->addWidget(modeGroup);
 
-    modeStack_ = new QStackedWidget(this);
-    ruleEditor_ = new RuleEditorWidget(this);
+    modeStack_ = new QStackedWidget(editorPanel);
+    ruleEditor_ = new RuleEditorWidget(modeStack_);
     modeStack_->addWidget(ruleEditor_);
 
-    auto* scriptPage = new QWidget(this);
+    auto* scriptPage = new QWidget(modeStack_);
     auto* scriptLayout = new QVBoxLayout(scriptPage);
     scriptLayout->setContentsMargins(0, 0, 0, 0);
+    scriptLayout->setSpacing(8);
+
+    auto* scriptHint = new QLabel(QString::fromUtf8(u8"在下方编辑 AFSim 脚本，或点击“插入示例”快速填充模板。"), scriptPage);
+    scriptHint->setWordWrap(true);
+    scriptHint->setStyleSheet("color:#666;" );
+    scriptLayout->addWidget(scriptHint);
+
     scriptEdit_ = new QPlainTextEdit(scriptPage);
-    scriptEdit_->setPlaceholderText(QString::fromUtf8(u8"在此输入 AFSim 脚本，或点击示例按钮填充模板"));
-    scriptLayout->addWidget(scriptEdit_);
+    scriptEdit_->setPlaceholderText(QString::fromUtf8(u8"在此输入 AFSim 脚本内容"));
+    scriptEdit_->setLineWrapMode(QPlainTextEdit::NoWrap);
+    scriptEdit_->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+#ifdef QT_VERSION
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    scriptEdit_->setTabStopDistance(4 * scriptEdit_->fontMetrics().horizontalAdvance(QLatin1Char(' ')));
+#endif
+#endif
+    scriptLayout->addWidget(scriptEdit_, 1);
 
     auto* commentLayout = new QHBoxLayout;
+    commentLayout->setContentsMargins(0, 0, 0, 0);
+    commentLayout->setSpacing(8);
     commentLayout->addWidget(new QLabel(QString::fromUtf8(u8"备注"), scriptPage));
     scriptCommentEdit_ = new QLineEdit(scriptPage);
     commentLayout->addWidget(scriptCommentEdit_);
     scriptLayout->addLayout(commentLayout);
 
     auto* templateButton = new QPushButton(QString::fromUtf8(u8"插入示例"), scriptPage);
+    templateButton->setFixedWidth(100);
     scriptLayout->addWidget(templateButton, 0, Qt::AlignLeft);
     scriptLayout->addStretch();
 
     modeStack_->addWidget(scriptPage);
-    rightLayout->addWidget(modeStack_, 1);
+    editorLayout->addWidget(modeStack_, 1);
 
     auto* buttonLayout = new QHBoxLayout;
-    clearButton_ = new QPushButton(QString::fromUtf8(u8"清除行为"), this);
-    saveButton_ = new QPushButton(QString::fromUtf8(u8"保存"), this);
-    auto* closeButton = new QPushButton(QString::fromUtf8(u8"关闭"), this);
+    buttonLayout->setContentsMargins(0, 0, 0, 0);
+    buttonLayout->setSpacing(10);
+    clearButton_ = new QPushButton(QString::fromUtf8(u8"清除行为"), editorPanel);
+    saveButton_ = new QPushButton(QString::fromUtf8(u8"保存"), editorPanel);
+    auto* closeButton = new QPushButton(QString::fromUtf8(u8"关闭"), editorPanel);
     buttonLayout->addWidget(clearButton_);
     buttonLayout->addStretch();
     buttonLayout->addWidget(saveButton_);
     buttonLayout->addWidget(closeButton);
-    rightLayout->addLayout(buttonLayout);
+    editorLayout->addLayout(buttonLayout);
 
-    ruleModeRadio_->setChecked(true);
-    modeStack_->setCurrentIndex(0);
+    splitter->addWidget(editorPanel);
+    splitter->setStretchFactor(0, 0);
+    splitter->setStretchFactor(1, 1);
 
     connect(entityListWidget_, &QListWidget::currentRowChanged, this, &BehaviorPlanningDialog::onEntitySelectionChanged);
     connect(ruleModeRadio_, &QRadioButton::toggled, this, &BehaviorPlanningDialog::onModeChanged);
@@ -418,7 +518,7 @@ void BehaviorPlanningDialog::refreshEntities(const QString& selectUid)
         entityListWidget_->clear();
         currentEntityUid_.clear();
         resetUi();
-        updateWindowTitle();
+        updateEntityInfoLabel(nullptr);
         return;
     }
 
@@ -449,7 +549,7 @@ void BehaviorPlanningDialog::refreshEntities(const QString& selectUid)
     if (entityListWidget_->count() == 0) {
         currentEntityUid_.clear();
         resetUi();
-        updateWindowTitle();
+        updateEntityInfoLabel(nullptr);
         return;
     }
 
@@ -508,6 +608,7 @@ void BehaviorPlanningDialog::onEntitySelectionChanged(int row)
     }
     loadBehaviorForEntity(entity);
     dirty_ = false;
+    updateEntityInfoLabel(entity);
     updateWindowTitle();
 }
 
@@ -541,6 +642,9 @@ void BehaviorPlanningDialog::onClearClicked()
             entity->setProperty("behavior", QJsonObject());
             if (planFileManager_) {
                 planFileManager_->markPlanModified();
+                if (!planFileManager_->getCurrentPlanFile().isEmpty()) {
+                    planFileManager_->savePlan();
+                }
             }
         }
     }
@@ -589,10 +693,15 @@ void BehaviorPlanningDialog::commitCurrentEntity()
     }
 
     QJsonObject behavior = collectBehaviorFromUi();
-    if (!behavior.isEmpty()) {
+    if (behavior.isEmpty()) {
+        entity->setProperty("behavior", QJsonObject());
+    } else {
         entity->setProperty("behavior", behavior);
-        if (planFileManager_) {
-            planFileManager_->markPlanModified();
+    }
+    if (planFileManager_) {
+        planFileManager_->markPlanModified();
+        if (!planFileManager_->getCurrentPlanFile().isEmpty()) {
+            planFileManager_->savePlan();
         }
     }
     dirty_ = false;
@@ -606,6 +715,7 @@ void BehaviorPlanningDialog::loadBehaviorForEntity(GeoEntity* entity)
         resetUi();
         loading_ = false;
         dirty_ = false;
+        updateEntityInfoLabel(nullptr);
         updateWindowTitle();
         return;
     }
@@ -613,6 +723,7 @@ void BehaviorPlanningDialog::loadBehaviorForEntity(GeoEntity* entity)
         resetUi();
         loading_ = false;
         dirty_ = false;
+        updateEntityInfoLabel(nullptr);
         updateWindowTitle();
         return;
     }
@@ -629,21 +740,35 @@ void BehaviorPlanningDialog::loadBehaviorForEntity(GeoEntity* entity)
     loading_ = false;
     onModeChanged();
     dirty_ = false;
+    updateEntityInfoLabel(entity);
     updateWindowTitle();
 }
 
 void BehaviorPlanningDialog::applyBehaviorToUi(const QJsonObject& behavior)
 {
     loading_ = true;
+    QJsonArray rules = behavior.value("rules").toArray();
+    ruleEditor_->setRules(rules);
+
+    scriptEdit_->setPlainText(behavior.value("script").toString());
+    scriptCommentEdit_->setText(behavior.value("comment").toString());
+
+    bool hasRules = !rules.isEmpty();
+    bool hasScript = !scriptEdit_->toPlainText().trimmed().isEmpty();
+
     QString mode = behavior.value("mode").toString();
     if (mode == "script") {
         scriptModeRadio_->setChecked(true);
-        scriptEdit_->setPlainText(behavior.value("script").toString());
-        scriptCommentEdit_->setText(behavior.value("comment").toString());
-    } else {
+    } else if (mode == "rule") {
         ruleModeRadio_->setChecked(true);
-        QJsonArray rules = behavior.value("rules").toArray();
-        ruleEditor_->setRules(rules);
+    } else {
+        if (hasRules) {
+            ruleModeRadio_->setChecked(true);
+        } else if (hasScript) {
+            scriptModeRadio_->setChecked(true);
+        } else {
+            ruleModeRadio_->setChecked(true);
+        }
     }
     loading_ = false;
 }
@@ -651,32 +776,29 @@ void BehaviorPlanningDialog::applyBehaviorToUi(const QJsonObject& behavior)
 QJsonObject BehaviorPlanningDialog::collectBehaviorFromUi() const
 {
     QJsonObject behavior;
-    QString mode = ruleModeRadio_->isChecked() ? QStringLiteral("rule") : QStringLiteral("script");
-    behavior["mode"] = mode;
     behavior["lastModified"] = QDateTime::currentDateTime().toString(Qt::ISODate);
 
-    if (mode == "rule") {
-        QJsonArray rules = ruleEditor_->toRulesJson();
-        if (rules.isEmpty()) {
-            return QJsonObject();
-        }
+    QJsonArray rules = ruleEditor_->toRulesJson();
+    if (!rules.isEmpty()) {
         for (int i = 0; i < rules.size(); ++i) {
             QJsonObject rule = rules[i].toObject();
             rule["id"] = QStringLiteral("%1%2").arg(kRuleIdPrefix).arg(i + 1);
             rules[i] = rule;
         }
         behavior["rules"] = rules;
-        behavior.remove("script");
-        behavior.remove("comment");
-    } else {
-        QString scriptText = scriptEdit_->toPlainText().trimmed();
-        QString comment = scriptCommentEdit_->text().trimmed();
-        if (scriptText.isEmpty() && comment.isEmpty()) {
-            return QJsonObject();
-        }
-        behavior["rules"] = QJsonArray();
+    }
+
+    QString scriptText = scriptEdit_->toPlainText().trimmed();
+    QString comment = scriptCommentEdit_->text().trimmed();
+    if (!scriptText.isEmpty()) {
         behavior["script"] = scriptText;
+    }
+    if (!comment.isEmpty()) {
         behavior["comment"] = comment;
+    }
+
+    if (!behavior.contains("rules") && !behavior.contains("script") && !behavior.contains("comment")) {
+        return QJsonObject();
     }
     return behavior;
 }
@@ -692,6 +814,7 @@ void BehaviorPlanningDialog::resetUi()
     modeStack_->setCurrentIndex(0);
     loading_ = previousLoading;
     dirty_ = false;
+    updateEntityInfoLabel(nullptr);
     updateWindowTitle();
 }
 
@@ -707,4 +830,19 @@ void BehaviorPlanningDialog::updateWindowTitle()
         title += QString::fromUtf8(u8" *未保存");
     }
     setWindowTitle(title);
+}
+
+void BehaviorPlanningDialog::updateEntityInfoLabel(GeoEntity* entity)
+{
+    if (!entityInfoLabel_) {
+        return;
+    }
+    if (entity) {
+        QString typeText = entity->getType();
+        entityInfoLabel_->setText(QString::fromUtf8(u8"当前实体：%1  (类型：%2)")
+                                      .arg(entity->getName())
+                                      .arg(typeText));
+    } else {
+        entityInfoLabel_->setText(QString::fromUtf8(u8"当前实体：--"));
+    }
 }
