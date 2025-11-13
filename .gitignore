@@ -16,6 +16,9 @@ doxygen-awesome-paragraph-link.js
 *.pro.user
 *.pro.user.*
 *.autosave
+.qmake.stash
+Makefile*
+ui_*.h
 
 # 编译输出
 build/
@@ -27,6 +30,10 @@ release/
 *.dll
 *.so
 *.dylib
+
+# 打包输出目录
+ScenePlan2_Release/
+ScenePlan2_Debug/
 
 # IDE文件
 .vscode/

@@ -26,7 +26,7 @@
         <file>images/模型部署.png</file>
         <file>images/模型组件.png</file>
         <file>images/模型组装.png</file>
-        <file>images/目标匹配.png</file>
+        <file>images/行为规划.png</file>
         <file>images/其他.png</file>
         <file>images/曲线.png</file>
         <file>images/设置.png</file>
@@ -35,6 +35,7 @@
         <file>images/直线.png</file>
         <file>images/资源管理.png</file>
         <file>images/资源管理2.png</file>
+        <file>images/entity_management.png</file>
         <file>earth/my.earth</file>
         <file>earth/world.tif</file>
     </qresource>
