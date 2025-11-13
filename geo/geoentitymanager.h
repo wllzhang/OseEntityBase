@@ -22,6 +22,7 @@
 #include <QQueue>
 #include <osgViewer/Viewer>
 #include "geoentity.h"
+#include "LineEntity.h"
 #include <QVector>
 
 // 前置声明，避免头文件循环依赖
@@ -182,6 +183,7 @@ public:
      * @return 找到的实体指针，未找到返回nullptr
      */
     GeoEntity* findEntityAtPosition(QPoint screenPos, bool verbose = true);
+
     /** @brief 处理鼠标移动事件（用于实体悬停高亮） */
     void onMouseMove(QMouseEvent* event);
 
@@ -225,6 +227,21 @@ public:
     /** @brief 添加独立航点（带标签），用于快速标绘 */
     class WaypointEntity* addStandaloneWaypoint(double lon, double lat, double alt, const QString& labelText,
                                                 const QString& uidOverride = QString());
+
+    // ===== 直线航点组 =====
+    struct LineEndpointInfo {
+        QString startWaypointUid;
+        QString endWaypointUid;
+        QMetaObject::Connection startPositionConn;
+        QMetaObject::Connection endPositionConn;
+        QMetaObject::Connection lineNameConn;
+    };
+
+    /** @brief 添加直线实体 */
+    LineEntity* addLineEntity(const QString& name,
+                              double startLon, double startLat, double startAlt,
+                              double endLon, double endLat, double endAlt,
+                              const QString& uidOverride = QString());
 
 signals:
     /**
@@ -316,6 +333,9 @@ private:
     QMap<QString, WaypointGroupInfo> waypointGroups_;
     QMap<QString, QString> routeBinding_; // groupId -> targetEntityUid
 
+    // 直线
+    QMap<QString, LineEndpointInfo> lineEndpoints_;
+
     /** @brief 生成线性航线节点 */
     osg::ref_ptr<osg::Geode> buildLinearRoute(const QVector<class WaypointEntity*>& wps);
     /** @brief 生成贝塞尔航线节点 */
@@ -323,6 +343,12 @@ private:
 
     /** @brief 查找航点所属分组和序号 */
     bool findWaypointLocation(class WaypointEntity* waypoint, QString& groupIdOut, int& indexOut) const;
+
+
+    void updateLineEndpoints(const QString& lineUid);
+    void updateLineEndpointDisplayNames(const QString& lineUid, const QString& lineName);
+    void disconnectLineEndpointConnections(LineEndpointInfo& info);
+
 };
 
 #endif // GEOENTITYMANAGER_H

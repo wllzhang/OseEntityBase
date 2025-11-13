@@ -90,6 +90,7 @@ INCLUDEPATH += $${OSGDIR}/include
 DEPENDPATH += $${OSGDIR}/include
 
 SOURCES += \
+    geo/LineEntity.cpp \
     ui/EntityManagementDialog.cpp\
     geo/WeaponMountDialog.cpp \
     ui/ComponentConfigDialog.cpp \
@@ -118,6 +119,7 @@ SOURCES += \
     widgets/imageviewerwindow.cpp
 
 HEADERS += \
+    geo/LineEntity.h \
     ui/EntityManagementDialog.h \
     geo/WeaponMountDialog.h \
     ui/ComponentConfigDialog.h \

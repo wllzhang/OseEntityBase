@@ -511,6 +511,9 @@ void MainWidget::createSubNavigation()
         qDebug() << "点标绘模式已启动，请在地图上点击放置点";
     });
     
+    // 直线标绘按钮
+    connect(lineBtn, &QPushButton::clicked, this, &MainWidget::onLineDrawClicked);
+
     // 航迹管理按钮（航线标绘）
     connect(entityManageBtn, &QPushButton::clicked, this, [this]() {
         showEntityManagementDialog();
@@ -677,6 +680,21 @@ void MainWidget::onAreaMeasureClicked()
     });
 }
 
+void MainWidget::onLineDrawClicked()
+{
+    if (!osgMapWidget_ || !osgMapWidget_->getEntityManager()) {
+        QMessageBox::warning(this, "直线标绘", "地图或实体管理器未初始化");
+        return;
+    }
+
+    resetMeasurementModes();
+    exitLineDrawing();
+
+    isDrawingLine_ = true;
+    hasPendingLineStart_ = false;
+
+    QMessageBox::information(this, "直线标绘", "请在地图上依次左键点击两个位置绘制直线，右键取消。");
+}
 
 
 void MainWidget::onAngleMeasureClicked()
@@ -737,6 +755,8 @@ void MainWidget::onAngleMeasureClicked()
         exitAngleMeasure("已通过右键退出角度测算。");
     });
 }
+
+
 
 double MainWidget::computeDistanceMeters(double lat1Deg, double lon1Deg, double lat2Deg, double lon2Deg) const
 {
@@ -837,13 +857,14 @@ void MainWidget::resetMeasurementModes()
     exitDistanceMeasure();
     exitAreaMeasure();
     exitAngleMeasure();
+    exitLineDrawing();
 }
 
 void MainWidget::disconnectMeasurementConnection(QMetaObject::Connection& connection)
 {
-    if (connection) {
-        QObject::disconnect(connection);
-        connection = QMetaObject::Connection();
+    if (connection) {  // 检查连接是否有效
+        QObject::disconnect(connection);  // 断开连接
+        connection = QMetaObject::Connection();  // 将连接重置为空连接
     }
 }
 
@@ -858,17 +879,21 @@ void MainWidget::exitDistanceMeasure(const QString& message)
         QMessageBox::information(this, "距离测算", message);
     }
 
-    isMeasuringDistance_ = false;
-    distancePointA_ = nullptr;
-    distancePointB_ = nullptr;
+    // 重置距离测量相关的状态变量
+    isMeasuringDistance_ = false;  // 清除距离测量标志
+    distancePointA_ = nullptr;     // 清空测量点A
+    distancePointB_ = nullptr;     // 清空测量点B
 
-    disconnectMeasurementConnection(distanceLeftClickConn_);
-    disconnectMeasurementConnection(distanceRightClickConn_);
+    // 断开与鼠标点击事件相关的信号槽连接
+    disconnectMeasurementConnection(distanceLeftClickConn_);   // 断开左键连接
+    disconnectMeasurementConnection(distanceRightClickConn_);  // 断开右键连接
 
+    // 恢复地图导航功能（如果没有其他测量模式正在运行）
     if (osgMapWidget_) {
         auto entityManager = osgMapWidget_->getEntityManager();
+        // 只有当没有面积测量和角度测量在进行时，才恢复地图导航
         if (entityManager && !isMeasuringArea_ && !isMeasuringAngle_) {
-            entityManager->setBlockMapNavigation(false);
+            entityManager->setBlockMapNavigation(false);  // 允许地图导航操作
         }
     }
 }
@@ -924,6 +949,20 @@ void MainWidget::exitAngleMeasure(const QString& message)
     }
 }
 
+void MainWidget::exitLineDrawing(const QString& message)
+{
+    const bool wasActive = isDrawingLine_ || hasPendingLineStart_;
+    if (!wasActive && message.isEmpty()) {
+        return;
+    }
+
+    if (!message.isEmpty()) {
+        QMessageBox::information(this, "直线标绘", message);
+    }
+
+    isDrawingLine_ = false;
+    hasPendingLineStart_ = false;
+}
 
 WaypointEntity* MainWidget::pickWaypointNearScreenPos(const QPoint& screenPos, int radiusPx) const
 {
@@ -1732,7 +1771,62 @@ void MainWidget::onMapLoaded()
     });
     
     // 订阅空白处点击，用于点标绘放置
-    connect(entityManager, &GeoEntityManager::mapLeftClicked, this, [this, entityManager](QPoint screenPos) {
+    connect(entityManager, &GeoEntityManager::mapLeftClicked, this, [this, entityManager](QPoint screenPos) {        
+        if (isDrawingLine_) {
+            auto mapStateManager = osgMapWidget_->getMapStateManager();
+            if (!mapStateManager) {
+                QMessageBox::warning(this, "直线标绘", "地图状态管理器未初始化，无法获取坐标。");
+                exitLineDrawing();
+                return;
+            }
+            double lon = 0.0, lat = 0.0, alt = 0.0;
+            mapStateManager->getGeoCoordinatesFromScreen(screenPos, lon, lat, alt);
+            if (!hasPendingLineStart_) {
+                lineStartLon_ = lon;
+                lineStartLat_ = lat;
+                lineStartAlt_ = alt;
+                hasPendingLineStart_ = true;
+                qDebug() << "[Line] 已记录起点:" << lon << lat << alt;
+                return;
+            }
+
+            const double deltaLon = qFabs(lon - lineStartLon_);
+            const double deltaLat = qFabs(lat - lineStartLat_);
+            if (deltaLon < 1e-6 && deltaLat < 1e-6) {
+                QMessageBox::information(this, "直线标绘", "两个点重合，请选择不同的位置。");
+                return;
+            }
+
+            bool ok = false;
+            QString lineName = QInputDialog::getText(
+                this,
+                "直线标绘",
+                "请输入直线名称：",
+                QLineEdit::Normal,
+                "直线",
+                &ok);
+            if (!ok) {
+                QMessageBox::information(this, "直线标绘", "已取消直线创建。");
+                hasPendingLineStart_ = false;
+                return;
+            }
+            lineName = lineName.trimmed();
+
+            auto line = entityManager->addLineEntity(lineName,
+                                                     lineStartLon_, lineStartLat_, lineStartAlt_,
+                                                     lon, lat, alt);
+            if (!line) {
+                QMessageBox::warning(this, "直线标绘", "直线创建失败。");
+            } else {
+                if (planFileManager_) {
+                    planFileManager_->markPlanModified();
+                }
+                entityManager->setSelectedEntity(line);
+            }
+            exitLineDrawing();
+            return;
+        }
+
         if (isPlacingWaypoint_) {
             double lon=0, lat=0, alt=0;
             // 统一使用 MapStateManager 获取坐标信息（mapStateManager 必然存在）
@@ -1768,6 +1862,9 @@ void MainWidget::onMapLoaded()
     connect(entityManager, &GeoEntityManager::mapRightClicked, this, [this, entityManager](QPoint /*screenPos*/) {
         if (osgMapWidget_) {
             osgMapWidget_->synthesizeMouseRelease(Qt::RightButton);
+        }
+        if (isDrawingLine_) {
+            exitLineDrawing("已取消直线标绘。");
         }
         // 独立航线标绘：右键结束并生成路线
         if (isPlacingRoute_ && !currentWaypointGroupId_.isEmpty()) {

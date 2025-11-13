@@ -191,6 +191,9 @@ bool PlanFileManager::savePlan(const QString& filePath)
     QList<GeoEntity*> entities = entityManager_->getAllEntities();
     for (GeoEntity* entity : entities) {
         QJsonObject obj = entityToJson(entity);
+        if (obj.isEmpty()) {
+            continue;
+        }
         obj["uid"] = entity->getUid(); // 写入实体实例UID
         entitiesArray.append(obj);
     }
@@ -612,6 +615,9 @@ QJsonObject PlanFileManager::entityToJson(GeoEntity* entity)
     if (!entity) {
         return QJsonObject();
     }
+    if (entity->getProperty(QStringLiteral("lineEndpoint")).toBool()) {
+        return QJsonObject();
+    }
 
     QJsonObject entityObj;
 
@@ -639,6 +645,27 @@ QJsonObject PlanFileManager::entityToJson(GeoEntity* entity)
     QVariant routeTypeValue = entity->getProperty("routeType");
     if (routeTypeValue.isValid() && !routeTypeValue.toString().isEmpty()) {
         entityObj["routeType"] = routeTypeValue.toString();
+    }
+
+    if (entity->getType() == QStringLiteral("line")) {
+        if (auto lineEntity = qobject_cast<LineEntity*>(entity)) {
+            double startLon = 0.0, startLat = 0.0, startAlt = 0.0;
+            double endLon = 0.0, endLat = 0.0, endAlt = 0.0;
+            lineEntity->getEndpoints(startLon, startLat, startAlt, endLon, endLat, endAlt);
+            QJsonObject lineObj;
+            QJsonObject startObj;
+            startObj["longitude"] = startLon;
+            startObj["latitude"] = startLat;
+            startObj["altitude"] = startAlt;
+            QJsonObject endObj;
+            endObj["longitude"] = endLon;
+            endObj["latitude"] = endLat;
+            endObj["altitude"] = endAlt;
+            lineObj["start"] = startObj;
+            lineObj["end"] = endObj;
+            lineObj["lengthMeters"] = lineEntity->lengthMeters();
+            entityObj["line"] = lineObj;
+        }
     }
 
     // 模型组装属性：保存完整的组件信息（深层复制）
@@ -742,10 +769,55 @@ GeoEntity* PlanFileManager::jsonToEntity(const QJsonObject& json)
     double latitude = position["latitude"].toDouble();
     double altitude = position["altitude"].toDouble();
 
+    QString type = json["type"].toString();
+
+    if (type == QStringLiteral("line")) {
+        QJsonObject lineObj = json["line"].toObject();
+        QJsonObject startObj = lineObj["start"].toObject();
+        QJsonObject endObj = lineObj["end"].toObject();
+
+        double startLon = startObj.contains("longitude") ? startObj["longitude"].toDouble() : longitude;
+        double startLat = startObj.contains("latitude") ? startObj["latitude"].toDouble() : latitude;
+        double startAlt = startObj.contains("altitude") ? startObj["altitude"].toDouble() : altitude;
+        double endLon = endObj.contains("longitude") ? endObj["longitude"].toDouble() : longitude;
+        double endLat = endObj.contains("latitude") ? endObj["latitude"].toDouble() : latitude;
+        double endAlt = endObj.contains("altitude") ? endObj["altitude"].toDouble() : altitude;
+
+        QString name = json["name"].toString();
+        if (name.isEmpty()) {
+            name = json["modelName"].toString();
+        }
+
+        QString uidOverride = json["uid"].toString();
+        LineEntity* lineEntity = entityManager_->addLineEntity(
+            name,
+            startLon, startLat, startAlt,
+            endLon, endLat, endAlt,
+            uidOverride);
+
+        if (lineEntity) {
+            if (json.contains("visible")) {
+                entityManager_->setEntityVisible(lineEntity->getUid(), json["visible"].toBool());
+            }
+            if (json.contains("heading")) {
+                lineEntity->setHeading(json["heading"].toDouble());
+            }
+            if (json.contains("name")) {
+                lineEntity->setProperty("displayName", json["name"].toString());
+            }
+            if (json.contains("routeType")) {
+                lineEntity->setProperty("routeType", json["routeType"].toString());
+            }
+        }
+
+        return lineEntity;
+    }
+
     // 创建实体
     QString uidOverride = json["uid"].toString();
     GeoEntity* entity = entityManager_->createEntity(
-        json["type"].toString(),
+//        json["type"].toString(),
+        type,
         modelName,
         QJsonObject(),  // properties会在后面设置
         longitude,
