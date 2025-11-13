@@ -714,6 +714,17 @@ QJsonObject PlanFileManager::entityToJson(GeoEntity* entity)
         entityObj["weaponMounts"] = weaponMounts;
     }
 
+    QVariant behaviorVar = entity->getProperty("behavior");
+    QJsonObject behaviorObj;
+    if (behaviorVar.canConvert<QJsonObject>()) {
+        behaviorObj = behaviorVar.toJsonObject();
+    } else if (behaviorVar.canConvert<QVariantMap>()) {
+        behaviorObj = QJsonObject::fromVariantMap(behaviorVar.toMap());
+    }
+    if (!behaviorObj.isEmpty()) {
+        entityObj["behavior"] = behaviorObj;
+    }
+
     return entityObj;
 }
 
@@ -810,6 +821,11 @@ GeoEntity* PlanFileManager::jsonToEntity(const QJsonObject& json)
         // 从JSON文件加载武器挂载信息
         if (json.contains("weaponMounts")) {
             entity->setProperty("weaponMounts", json["weaponMounts"].toObject());
+        }
+        if (json.contains("behavior")) {
+            entity->setProperty("behavior", json["behavior"].toObject());
+        } else {
+            entity->setProperty("behavior", QJsonObject());
         }
     }
 
