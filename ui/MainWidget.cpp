@@ -344,6 +344,7 @@ void MainWidget::createSubNavigation()
     entityManageBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     entityManageBtn->setFixedSize(120, 120);
     entityManageBtn->setObjectName("navToolButton");
+    entityManageBtn->setIcon(QIcon(QStringLiteral(":/images/entity_management.png")));
     entityManageBtn->setIconSize(QSize(64, 64));
 
     QToolButton *targetMatchBtn = new QToolButton(this);

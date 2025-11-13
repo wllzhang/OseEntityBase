@@ -35,6 +35,7 @@
         <file>images/直线.png</file>
         <file>images/资源管理.png</file>
         <file>images/资源管理2.png</file>
+        <file>images/entity_management.png</file>
         <file>earth/my.earth</file>
         <file>earth/world.tif</file>
     </qresource>
