@@ -1046,7 +1046,10 @@ void ComponentConfigDialog::deleteComponent()
    }
 
    // 开始事务，确保数据一致性
-   QSqlDatabase::database().transaction();
+   if (!DatabaseUtils::beginTransaction()) {
+       QMessageBox::critical(this, "错误", "无法开始数据库事务");
+       return;
+   }
 
    try {
        // 删除数据库中的组件信息
@@ -1064,7 +1067,9 @@ void ComponentConfigDialog::deleteComponent()
        }
 
        // 提交事务
-       QSqlDatabase::database().commit();
+       if (!DatabaseUtils::commitTransaction()) {
+           throw QString("提交事务失败");
+       }
 
        // 从树形结构中移除
        // 获取组件父节点（WSF节点）
@@ -1082,7 +1087,7 @@ void ComponentConfigDialog::deleteComponent()
    }
    catch (const QString &error) {
        // 回滚事务
-       QSqlDatabase::database().rollback();
+       DatabaseUtils::rollbackTransaction();
        QMessageBox::critical(this, "错误", error);
    }
 
