@@ -131,6 +131,12 @@ void EntityManagementDialog::setSelectedUid(const QString& uid)
         updating_ = true;
         tree_->blockSignals(true);
         tree_->setCurrentItem(item);
+        // 展开选中项的父项，但不展开所有项，避免整列列表都展开
+        QTreeWidgetItem* parent = item->parent();
+        while (parent) {
+            parent->setExpanded(true);
+            parent = parent->parent();
+        }
         tree_->blockSignals(false);
         updating_ = false;
         updateButtonsState();
@@ -319,8 +325,8 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
             waypointItem->setText(ColumnUid, entity->getUid());
             waypointItem->setData(ColumnName, RoleUid, entity->getUid());
             waypointItem->setData(ColumnName, RoleIsEntity, true);
-            waypointItem->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
-            waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
+            // waypoint 不显示勾选框，因为勾选无作用
+            waypointItem->setFlags(waypointItem->flags() & ~Qt::ItemIsUserCheckable);
 
             if (!selectedUid.isEmpty() && entity->getUid() == selectedUid) {
                 tree_->setCurrentItem(waypointItem);
@@ -344,7 +350,8 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
         entityItem->setData(ColumnName, RoleIsEntity, true);
         entityItem->setCheckState(ColumnName, entity->isVisible() ? Qt::Checked : Qt::Unchecked);
         entityItem->setFlags(entityItem->flags() | Qt::ItemIsUserCheckable);
-        entityItem->setExpanded(true);
+        // 不自动展开，避免点击时整列列表都展开
+        // entityItem->setExpanded(true);
 
         if (typeId == QStringLiteral("line")) {
             const QString startUid = entity->getProperty("lineStartWaypointUid").toString();
@@ -364,8 +371,8 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
                 endpointItem->setText(ColumnUid, endpoint->getUid());
                 endpointItem->setData(ColumnName, RoleUid, endpoint->getUid());
                 endpointItem->setData(ColumnName, RoleIsEntity, true);
-                endpointItem->setCheckState(ColumnName, endpoint->isVisible() ? Qt::Checked : Qt::Unchecked);
-                endpointItem->setFlags(endpointItem->flags() | Qt::ItemIsUserCheckable);
+                // waypoint 端点不显示勾选框，因为勾选无作用
+                endpointItem->setFlags(endpointItem->flags() & ~Qt::ItemIsUserCheckable);
 
                 double lon = 0.0, lat = 0.0, alt = 0.0;
                 endpoint->getPosition(lon, lat, alt);
@@ -397,7 +404,8 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
                 groupItem->setText(ColumnType, QString::fromUtf8(u8"航线组"));
                 groupItem->setData(ColumnName, RoleIsEntity, false);
                 groupItem->setFlags(groupItem->flags() & ~Qt::ItemIsUserCheckable);
-                groupItem->setExpanded(true);
+                // 不自动展开，避免点击时整列列表都展开
+                // groupItem->setExpanded(true);
 
                 if (!group.waypoints.isEmpty()) {
                     for (GeoEntity* waypoint : group.waypoints) {
@@ -410,8 +418,8 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
                         wpItem->setText(ColumnUid, waypoint->getUid());
                         wpItem->setData(ColumnName, RoleUid, waypoint->getUid());
                         wpItem->setData(ColumnName, RoleIsEntity, false);
-                        wpItem->setCheckState(ColumnName, waypoint->isVisible() ? Qt::Checked : Qt::Unchecked);
-                        wpItem->setFlags(wpItem->flags() | Qt::ItemIsUserCheckable);
+                        // 航迹点不显示勾选框，因为勾选无作用
+                        wpItem->setFlags(wpItem->flags() & ~Qt::ItemIsUserCheckable);
                     }
                 } else {
                     QTreeWidgetItem* emptyWpItem = new QTreeWidgetItem(groupItem);
@@ -433,7 +441,8 @@ void EntityManagementDialog::populateTree(const QList<GeoEntity*>& entities,
         weaponsItem->setText(ColumnType, QString::fromUtf8(u8"组合"));
         weaponsItem->setData(ColumnName, RoleIsEntity, false);
         weaponsItem->setFlags(weaponsItem->flags() & ~Qt::ItemIsUserCheckable);
-        weaponsItem->setExpanded(true);
+        // 不自动展开，避免点击时整列列表都展开
+        // weaponsItem->setExpanded(true);
 
         QJsonObject weaponMounts = entity->getProperty("weaponMounts").toJsonObject();
         QJsonArray weaponsArray = weaponMounts["weapons"].toArray();
