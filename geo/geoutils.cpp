@@ -90,7 +90,7 @@ bool GeoUtils::screenToGeoCoordinates(
                 return false;
             }
         } else {
-            qDebug() << "GeoUtils::screenToGeoCoordinates: 未找到与地球表面的交点";
+            // qDebug() << "GeoUtils::screenToGeoCoordinates: 未找到与地球表面的交点";
             return false;
         }
     } catch (const std::exception& e) {
