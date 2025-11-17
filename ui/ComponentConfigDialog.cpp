@@ -454,18 +454,27 @@ QString ComponentConfigDialog::convertToString(const QJsonValue &jsonValue)
     return "";
 }
 
-int ComponentConfigDialog::convertToComboBoxIndex(const QJsonValue &jsonValue, const QStringList &values)
+//int ComponentConfigDialog::convertToComboBoxIndex(const QJsonValue &jsonValue, const QStringList &values)
+//{
+//    if (jsonValue.isDouble()) {
+//        int index = jsonValue.toInt();
+//        return (index >= 0 && index < values.size()) ? index : 0;
+//    }
+//    if (jsonValue.isString()) {
+//        QString strValue = jsonValue.toString();
+//        int index = values.indexOf(strValue);
+//        return (index >= 0) ? index : 0;
+//    }
+//    return 0;
+//}
+
+QString ComponentConfigDialog::convertToComboBoxIndex(const QJsonValue &jsonValue, const QStringList &values)
 {
-    if (jsonValue.isDouble()) {
-        int index = jsonValue.toInt();
-        return (index >= 0 && index < values.size()) ? index : 0;
-    }
     if (jsonValue.isString()) {
         QString strValue = jsonValue.toString();
-        int index = values.indexOf(strValue);
-        return (index >= 0) ? index : 0;
+        return strValue;
     }
-    return 0;
+    return "";
 }
 
 int ComponentConfigDialog::convertToInt(const QJsonValue &jsonValue)
@@ -540,25 +549,25 @@ QVariant ComponentConfigDialog::convertToNestedObject(const QJsonValue &jsonValu
 
 QString ComponentConfigDialog::convertToComponentComboBox(const QJsonValue &jsonValue)
 {
-    QString name = "";
     if (!jsonValue.isNull())
     {
         QSqlQuery query;
-        query.prepare("SELECT ci.name, ci.configinfo "
+        query.prepare("SELECT ci.componentid, ci.configinfo "
                       "FROM ComponentInformation ci "
-                      "WHERE ci.componentid = ? ");
-        query.addBindValue(jsonValue.toInt());
+                      "WHERE ci.name = ? ");
+        query.addBindValue(jsonValue.toString());
 
         if (query.exec() && query.next()) {
-            name = query.value(0).toString();
+            QString id = query.value(0).toString();
+            return jsonValue.toString();
         } else {
-            qWarning() << "找不到id为：" << jsonValue.toInt() << "的组件";
+            qWarning() << "找不到name为：" << jsonValue.toString() << "的组件";
         }
     }
     else {
-        qWarning() << "找不到id为：" << jsonValue.toInt() << "的组件";
+        qWarning() << "找不到name为：" << jsonValue.toString() << "的组件";
     }
-    return name;
+    return "";
 }
 
 QWidget* ComponentConfigDialog::createFormWidget(QString paramName, int type, const QStringList &values,
@@ -635,15 +644,25 @@ QWidget* ComponentConfigDialog::createLineEditWidget(const QVariant &currentValu
     return edit;
 }
 
+//QWidget* ComponentConfigDialog::createComboBoxWidget(const QStringList &values, const QVariant &currentValue)
+//{
+//    QComboBox *combo = new QComboBox(this);
+//    combo->addItems(values);
+
+//    int index = currentValue.toInt();
+//    if (index >= 0 && index < combo->count()) {
+//        combo->setCurrentIndex(index);
+//    }
+//    return combo;
+//}
+
 QWidget* ComponentConfigDialog::createComboBoxWidget(const QStringList &values, const QVariant &currentValue)
 {
     QComboBox *combo = new QComboBox(this);
     combo->addItems(values);
 
-    int index = currentValue.toInt();
-    if (index >= 0 && index < combo->count()) {
-        combo->setCurrentIndex(index);
-    }
+    QString text = currentValue.toString();
+    combo->setCurrentText(text);
     return combo;
 }
 
@@ -852,7 +871,8 @@ QVariant ComponentConfigDialog::getWidgetValue(QWidget *widget, const QString &p
     if (QLineEdit *edit = qobject_cast<QLineEdit*>(widget)) {
         return edit->text();
     } else if (QComboBox *combo = qobject_cast<QComboBox*>(widget)) {
-        return combo->currentIndex();
+        return combo->currentText();
+//        return combo->currentIndex();
     } else if (QSpinBox *spinBox = qobject_cast<QSpinBox*>(widget)) {
         return spinBox->value();
     } else if (QCheckBox *checkBox = qobject_cast<QCheckBox*>(widget)) {

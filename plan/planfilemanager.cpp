@@ -978,6 +978,46 @@ QJsonObject PlanFileManager::getModelAssemblyFromDatabase(const QString& modelId
  * @param componentId 组件ID
  * @return 完整的组件信息JSON对象
  */
+//QJsonObject PlanFileManager::getComponentFullInfoFromDatabase(const QString& componentId)
+//{
+//    QJsonObject result;
+
+//    if (!DatabaseUtils::openDatabase()) {
+//        qDebug() << "无法打开数据库";
+//        return result;
+//    }
+
+//    QSqlQuery query;
+//    query.prepare("SELECT ci.componentid, ci.name, ci.type, ci.configinfo, "
+//                  "ct.wsf, ct.subtype, ct.template "
+//                  "FROM ComponentInformation ci "
+//                  "JOIN ComponentType ct ON ci.componenttypeid = ct.ctypeid "
+//                  "WHERE ci.componentid = ?");
+//    query.addBindValue(componentId);
+
+//    if (query.exec() && query.next()) {
+//        result["componentId"] = query.value(0).toString();
+//        result["name"] = query.value(1).toString();
+//        result["type"] = query.value(2).toString();
+//        result["wsf"] = query.value(4).toString();
+//        result["subtype"] = query.value(5).toString();
+        
+//        // 解析配置信息
+//        QString configStr = query.value(3).toString();
+//        if (!configStr.isEmpty()) {
+//            QJsonParseError parseError;
+//            QJsonDocument configDoc = QJsonDocument::fromJson(configStr.toUtf8(), &parseError);
+//            if (parseError.error == QJsonParseError::NoError) {
+//                result["configInfo"] = configDoc.object();
+//            }
+//        }
+
+//        // 模板信息不再写入方案文件，直接忽略
+//    }
+
+//    return result;
+//}
+
 QJsonObject PlanFileManager::getComponentFullInfoFromDatabase(const QString& componentId)
 {
     QJsonObject result;
@@ -1001,17 +1041,79 @@ QJsonObject PlanFileManager::getComponentFullInfoFromDatabase(const QString& com
         result["type"] = query.value(2).toString();
         result["wsf"] = query.value(4).toString();
         result["subtype"] = query.value(5).toString();
-        
+
         // 解析配置信息
+        QJsonObject configInfo;
         QString configStr = query.value(3).toString();
         if (!configStr.isEmpty()) {
             QJsonParseError parseError;
             QJsonDocument configDoc = QJsonDocument::fromJson(configStr.toUtf8(), &parseError);
-            if (parseError.error == QJsonParseError::NoError) {
-                result["configInfo"] = configDoc.object();
+            if (parseError.error == QJsonParseError::NoError && configDoc.isObject()) {
+                configInfo = configDoc.object();
             }
         }
-        
+
+        // 解析模板信息以检查嵌套组件参数
+        QString templateStr = query.value(6).toString();
+        if (!templateStr.isEmpty()) {
+            QJsonParseError templateParseError;
+            QJsonDocument templateDoc = QJsonDocument::fromJson(templateStr.toUtf8(), &templateParseError);
+            if (templateParseError.error == QJsonParseError::NoError && templateDoc.isObject()) {
+                QJsonObject templateInfo = templateDoc.object();
+                for (auto it = templateInfo.begin(); it != templateInfo.end(); ++it) {
+                    const QString& paramName = it.key();
+                    QJsonObject paramConfig = it.value().toObject();
+                    if (paramConfig["type"].toInt() != 7) {
+                        continue;
+                    }
+
+                    QJsonValue currentValue = configInfo.value(paramName);
+                    QString componentName;
+                    QJsonObject paramValueObject;
+
+                    if (currentValue.isObject()) {
+                        paramValueObject = currentValue.toObject();
+                        componentName = paramValueObject.value("value").toString();
+                    } else if (currentValue.isString()) {
+                        componentName = currentValue.toString();
+                    }
+
+                    if (componentName.isEmpty()) {
+                        continue;
+                    }
+
+                    QSqlQuery nestedQuery;
+                    nestedQuery.prepare("SELECT componentid, configinfo FROM ComponentInformation WHERE name = ?");
+                    nestedQuery.addBindValue(componentName);
+                    if (!nestedQuery.exec() || !nestedQuery.next()) {
+                        qWarning() << "找不到名称为" << componentName << "的组件信息";
+                        continue;
+                    }
+
+                    QString nestedConfigStr = nestedQuery.value(1).toString();
+                    QJsonObject nestedConfigObj;
+                    if (!nestedConfigStr.isEmpty()) {
+                        QJsonParseError nestedParseError;
+                        QJsonDocument nestedDoc = QJsonDocument::fromJson(nestedConfigStr.toUtf8(), &nestedParseError);
+                        if (nestedParseError.error == QJsonParseError::NoError && nestedDoc.isObject()) {
+                            nestedConfigObj = nestedDoc.object();
+                        }
+                    }
+
+                    paramValueObject["value"] = componentName;
+                    if (!nestedConfigObj.isEmpty()) {
+                        paramValueObject["configInfo"] = nestedConfigObj;
+                    }
+
+                    configInfo[paramName] = paramValueObject;
+                }
+            }
+        }
+
+        if (!configInfo.isEmpty()) {
+            result["configInfo"] = configInfo;
+        }
+
         // 模板信息不再写入方案文件，直接忽略
     }
 

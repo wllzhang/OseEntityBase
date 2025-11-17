@@ -185,7 +185,7 @@ private:
     QVariant getParameterValue(const QString &paramName, int type, const QStringList &values, const QJsonObject &paramConfig, const QJsonObject &configInfo);
     QVariant getDefaultValue(int type, const QStringList &values, const QJsonObject &paramConfig);
     QString convertToString(const QJsonValue &jsonValue);
-    int convertToComboBoxIndex(const QJsonValue &jsonValue, const QStringList &values);
+    QString convertToComboBoxIndex(const QJsonValue &jsonValue, const QStringList &values);
     QString convertToComponentComboBox(const QJsonValue &jsonValue);
     int convertToInt(const QJsonValue &jsonValue);
     bool convertToBool(const QJsonValue &jsonValue);
