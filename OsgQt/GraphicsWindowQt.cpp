@@ -1189,7 +1189,12 @@ void GraphicsWindowQt::swapBuffersImplementation()
 	// 需要在这里调用makeCurrent以恢复我们之前的当前上下文
 	// 该上下文可能被processDeferredEvents函数改变
 	_widget->makeCurrent();
-	_widget->swapBuffers();
+	
+	// 只有在窗口已显示、可见且未最小化时才调用 swapBuffers，避免 "non-exposed window" 警告
+	// 注意：QGLWidget 在某些 Qt 版本中没有 isExposed() 方法，使用 isVisible() 和 !isMinimized() 代替
+	if (_widget && _widget->isVisible() && !_widget->isMinimized() && _widget->isValid()) {
+		_widget->swapBuffers();
+	}
 }
 
 /**

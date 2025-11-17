@@ -7,7 +7,6 @@ QToolButton#navToolButton {
     font-size: 20px;               /* 字体大小 */
     margin: 0px;                    /* 无外边距 */
     text-align: center;             /* 文字剧中 */
-    qproperty-spacing: 4;                   /* 图标和文字间距 */
 }
 QToolButton#navToolButton:hover {
     background-color: #326CDC;     /* 悬停时深蓝色背景 */
