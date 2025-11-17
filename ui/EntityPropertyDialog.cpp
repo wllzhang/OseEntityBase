@@ -578,10 +578,10 @@ void EntityPropertyDialog::onSaveClicked()
     // 保存组件配置
     saveComponentConfigs();
 
-    // 通知方案管理器更新实体
+    // 通知方案管理器更新实体（会标记为未保存，触发"当前方案: %1 *未保存"提示）
     planFileManager_->updateEntityInPlan(entity_);
 
-    QMessageBox::information(this, "成功", "实体属性已保存");
+    QMessageBox::information(this, "成功", "实体属性已应用");
     accept();
 }
 

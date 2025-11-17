@@ -640,11 +640,9 @@ void BehaviorPlanningDialog::onClearClicked()
     if (!currentEntityUid_.isEmpty() && entityManager_) {
         if (GeoEntity* entity = entityManager_->getEntityByUid(currentEntityUid_)) {
             entity->setProperty("behavior", QJsonObject());
+            // 只标记为已修改，不直接保存文件。真正的保存应该通过"保存方案"按钮
             if (planFileManager_) {
                 planFileManager_->markPlanModified();
-                if (!planFileManager_->getCurrentPlanFile().isEmpty()) {
-                    planFileManager_->savePlan();
-                }
             }
         }
     }
@@ -698,11 +696,9 @@ void BehaviorPlanningDialog::commitCurrentEntity()
     } else {
         entity->setProperty("behavior", behavior);
     }
+    // 只标记为已修改，不直接保存文件。真正的保存应该通过"保存方案"按钮
     if (planFileManager_) {
         planFileManager_->markPlanModified();
-        if (!planFileManager_->getCurrentPlanFile().isEmpty()) {
-            planFileManager_->savePlan();
-        }
     }
     dirty_ = false;
     updateWindowTitle();
@@ -827,7 +823,7 @@ void BehaviorPlanningDialog::updateWindowTitle()
         }
     }
     if (dirty_) {
-        title += QString::fromUtf8(u8" *未保存");
+        title += QString::fromUtf8(u8" *未应用");
     }
     setWindowTitle(title);
 }
