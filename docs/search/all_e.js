@@ -9,7 +9,8 @@ var searchData=
   ['initqtwindowingsystem_6',['initQtWindowingSystem',['../namespaceosgQt.html#a30c127c81c6fdf6fc6b4b01d44348565',1,'osgQt']]],
   ['isentityvisible_7',['isEntityVisible',['../classGeoEntityManager.html#a9425b3534698e7bad50fb03c1e57f396',1,'GeoEntityManager']]],
   ['ishovered_8',['isHovered',['../classGeoEntity.html#af89075adbe142fca785ae2cd21f2f38a',1,'GeoEntity']]],
-  ['isrealizedimplementation_9',['isRealizedImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a9a2efbb9c34b899485c50bbe4feefc2d',1,'osgQt::GraphicsWindowQt']]],
-  ['isselected_10',['isSelected',['../classGeoEntity.html#a702fb0d3febe1ee981d74111ed07fb24',1,'GeoEntity']]],
-  ['isvisible_11',['isVisible',['../classGeoEntity.html#a7415442f3e6f751cefa9636194a2f3e0',1,'GeoEntity']]]
+  ['ismapnavigationblocked_9',['isMapNavigationBlocked',['../classGeoEntityManager.html#a31c5d2bf5056ffff60fd56169860be2e',1,'GeoEntityManager']]],
+  ['isrealizedimplementation_10',['isRealizedImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a9a2efbb9c34b899485c50bbe4feefc2d',1,'osgQt::GraphicsWindowQt']]],
+  ['isselected_11',['isSelected',['../classGeoEntity.html#a702fb0d3febe1ee981d74111ed07fb24',1,'GeoEntity']]],
+  ['isvisible_12',['isVisible',['../classGeoEntity.html#a7415442f3e6f751cefa9636194a2f3e0',1,'GeoEntity']]]
 ];

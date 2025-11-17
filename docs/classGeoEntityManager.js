@@ -1,8 +1,10 @@
 var classGeoEntityManager =
 [
+    [ "LineEndpointInfo", "structGeoEntityManager_1_1LineEndpointInfo.html", "structGeoEntityManager_1_1LineEndpointInfo" ],
     [ "WaypointGroupInfo", "structGeoEntityManager_1_1WaypointGroupInfo.html", "structGeoEntityManager_1_1WaypointGroupInfo" ],
     [ "GeoEntityManager", "classGeoEntityManager.html#a5af14268274a035406e66e1cde49ec02", null ],
     [ "addEntityFromDrag", "classGeoEntityManager.html#ae9307d8b2a33b0b0650038124a67e833", null ],
+    [ "addLineEntity", "classGeoEntityManager.html#ad8f3087bd705fc4aba0e3b9f5e29a783", null ],
     [ "addStandaloneWaypoint", "classGeoEntityManager.html#ab610dca00b345ccaec4d4b412c6bd2e0", null ],
     [ "addWaypointToGroup", "classGeoEntityManager.html#a0cbbb0af1efb77b52834b81253a9af7d", null ],
     [ "attachWaypointToGroup", "classGeoEntityManager.html#ac746fa7385a7747297fc11fd727282d1", null ],
@@ -28,6 +30,7 @@ var classGeoEntityManager =
     [ "getSelectedEntity", "classGeoEntityManager.html#a6b17f300e54d5dadd5aa94162214b503", null ],
     [ "getWaypointGroup", "classGeoEntityManager.html#acf191c79509b2d03764a5dc9e118fd8a", null ],
     [ "isEntityVisible", "classGeoEntityManager.html#a9425b3534698e7bad50fb03c1e57f396", null ],
+    [ "isMapNavigationBlocked", "classGeoEntityManager.html#a31c5d2bf5056ffff60fd56169860be2e", null ],
     [ "mapLeftClicked", "classGeoEntityManager.html#a04fa1ba8d7880882ce4d89c4464ef462", null ],
     [ "mapRightClicked", "classGeoEntityManager.html#a036e4a8b454e4e545dccc741f40ffaf6", null ],
     [ "onMouseDoubleClick", "classGeoEntityManager.html#a51512b135680aad126dd81f9027e5309", null ],
@@ -37,6 +40,7 @@ var classGeoEntityManager =
     [ "removeEntity", "classGeoEntityManager.html#a6e3c56fd606deeb8d96321422bfb185a", null ],
     [ "removeWaypointEntity", "classGeoEntityManager.html#a4be4ddccea6c09abc84e016c58e8f999", null ],
     [ "removeWaypointFromGroup", "classGeoEntityManager.html#aa3437b4819a56e1fca25c27d3fe313be", null ],
+    [ "setBlockMapNavigation", "classGeoEntityManager.html#a75f3e6f15d71c46ebc40ee8c459ca597", null ],
     [ "setEntityConfig", "classGeoEntityManager.html#a977d47adb2b6e8d8cf306a4166be7b7b", null ],
     [ "setEntityVisible", "classGeoEntityManager.html#aa27130582281062e53d3cd50d39f852b", null ],
     [ "setMapStateManager", "classGeoEntityManager.html#aed299b1e38310a07b5a4cb472a6afb5e", null ],

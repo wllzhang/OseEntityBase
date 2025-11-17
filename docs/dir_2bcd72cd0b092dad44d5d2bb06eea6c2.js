@@ -8,6 +8,8 @@ var dir_2bcd72cd0b092dad44d5d2bb06eea6c2 =
     [ "geoutils.h", "geoutils_8h.html", null ],
     [ "imageentity.cpp", "imageentity_8cpp.html", null ],
     [ "imageentity.h", "imageentity_8h.html", null ],
+    [ "LineEntity.cpp", "LineEntity_8cpp.html", null ],
+    [ "LineEntity.h", "LineEntity_8h.html", "LineEntity_8h" ],
     [ "mapstatemanager.cpp", "mapstatemanager_8cpp.html", null ],
     [ "mapstatemanager.h", "mapstatemanager_8h.html", "mapstatemanager_8h" ],
     [ "NavigationHistory.cpp", "NavigationHistory_8cpp.html", null ],

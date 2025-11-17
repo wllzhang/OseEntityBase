@@ -62,8 +62,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "GraphicsWindowQt_8cpp.html",
-"classosgQt_1_1GLWidget.html#ad1792aa34666b3b50fc1f3f91625edd8",
-"functions_func_w.html"
+"classosgQt_1_1GLWidget.html#ab21597e5a40d852e6dceaa1b7b0a2e18",
+"functions_func_i.html"
 ];
 
 var SYNCONMSG = '点击 关闭 面板同步';

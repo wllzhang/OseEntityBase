@@ -7,7 +7,7 @@ var searchData=
   ['onmousemove_4',['onmousemove',['../classGeoEntityManager.html#afa4a9d5e0d57dcbb97243ed78061a8ee',1,'GeoEntityManager::onMouseMove()'],['../classMapStateManager.html#ab1242384895d0ef25f0eca2c8ced594b',1,'MapStateManager::onMouseMove()']]],
   ['onmousepress_5',['onmousepress',['../classGeoEntityManager.html#ad9cbcb2a80eb716c0112feab412b6e5d',1,'GeoEntityManager::onMousePress()'],['../classMapStateManager.html#a0988825bac2a9e205b78cbd7fc078aa3',1,'MapStateManager::onMousePress(QMouseEvent *event)']]],
   ['onmouserelease_6',['onMouseRelease',['../classMapStateManager.html#a6ff70db97572e50fd1794eb2c4796cfa',1,'MapStateManager']]],
-  ['onupdated_7',['onupdated',['../classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe',1,'GeoEntity::onUpdated()'],['../classWaypointEntity.html#af5f0fd1a1c3f529d94577513cc7a8940',1,'WaypointEntity::onUpdated()']]],
+  ['onupdated_7',['onupdated',['../classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe',1,'GeoEntity::onUpdated()'],['../classLineEntity.html#ab37e8bf391e07b90ffa464b0faacd5cc',1,'LineEntity::onUpdated()'],['../classWaypointEntity.html#af5f0fd1a1c3f529d94577513cc7a8940',1,'WaypointEntity::onUpdated()']]],
   ['onwheelevent_8',['onWheelEvent',['../classMapStateManager.html#ad62d75b35803b99c4291dc7eefc482c5',1,'MapStateManager']]],
   ['osg_20qt集成模块_20osgqt_9',['OSG-Qt集成模块 (OsgQt/)',['../index.html#autotoc_md7',1,'']]],
   ['osgqt_10',['osgqt',['../index.html#autotoc_md7',1,'OSG-Qt集成模块 (OsgQt/)'],['../namespaceosgQt.html',1,'osgQt']]],

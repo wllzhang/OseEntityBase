@@ -7,6 +7,7 @@ var hierarchy =
     [ "osg::Image", null, [
       [ "osgQt::QWidgetImage", "classosgQt_1_1QWidgetImage.html", null ]
     ] ],
+    [ "GeoEntityManager::LineEndpointInfo", "structGeoEntityManager_1_1LineEndpointInfo.html", null ],
     [ "MapStateInfo", "structMapStateInfo.html", null ],
     [ "QDialog", null, [
       [ "WeaponMountDialog", "classWeaponMountDialog.html", null ]
@@ -17,6 +18,7 @@ var hierarchy =
     [ "QObject", null, [
       [ "GeoEntity", "classGeoEntity.html", [
         [ "ImageEntity", "classImageEntity.html", null ],
+        [ "LineEntity", "classLineEntity.html", null ],
         [ "WaypointEntity", "classWaypointEntity.html", null ]
       ] ],
       [ "GeoEntityManager", "classGeoEntityManager.html", null ],

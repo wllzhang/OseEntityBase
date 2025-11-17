@@ -109,6 +109,8 @@ $(document).ready(function(){initNavTree('classGeoEntityManager.html',''); initR
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGeoEntityManager_1_1LineEndpointInfo.html">LineEndpointInfo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGeoEntityManager_1_1WaypointGroupInfo.html">WaypointGroupInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">航点组信息结构  <a href="structGeoEntityManager_1_1WaypointGroupInfo.html#details">更多...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -199,6 +201,12 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:aed299b1e38310a07b5a4cb472a6afb5e" id="r_aed299b1e38310a07b5a4cb472a6afb5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#aed299b1e38310a07b5a4cb472a6afb5e">setMapStateManager</a> (<a class="el" href="classMapStateManager.html">MapStateManager</a> *mapStateManager)</td></tr>
 <tr class="memdesc:aed299b1e38310a07b5a4cb472a6afb5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置MapStateManager用于读取相机range  <br /></td></tr>
 <tr class="separator:aed299b1e38310a07b5a4cb472a6afb5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f3e6f15d71c46ebc40ee8c459ca597" id="r_a75f3e6f15d71c46ebc40ee8c459ca597"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a75f3e6f15d71c46ebc40ee8c459ca597">setBlockMapNavigation</a> (bool block)</td></tr>
+<tr class="memdesc:a75f3e6f15d71c46ebc40ee8c459ca597"><td class="mdescLeft">&#160;</td><td class="mdescRight">控制是否阻止地图导航  <br /></td></tr>
+<tr class="separator:a75f3e6f15d71c46ebc40ee8c459ca597"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31c5d2bf5056ffff60fd56169860be2e" id="r_a31c5d2bf5056ffff60fd56169860be2e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#a31c5d2bf5056ffff60fd56169860be2e">isMapNavigationBlocked</a> () const</td></tr>
+<tr class="memdesc:a31c5d2bf5056ffff60fd56169860be2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">当前是否禁止地图导航  <br /></td></tr>
+<tr class="separator:a31c5d2bf5056ffff60fd56169860be2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa37d1ad81e3692ba5bab05031ffcf948" id="r_aa37d1ad81e3692ba5bab05031ffcf948"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#aa37d1ad81e3692ba5bab05031ffcf948">processPendingDeletions</a> ()</td></tr>
 <tr class="memdesc:aa37d1ad81e3692ba5bab05031ffcf948"><td class="mdescLeft">&#160;</td><td class="mdescRight">处理延迟删除队列（应该在frame()完成后调用） 公共方法，供外部在渲染完成后调用  <br /></td></tr>
 <tr class="separator:aa37d1ad81e3692ba5bab05031ffcf948"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,6 +248,9 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:ab610dca00b345ccaec4d4b412c6bd2e0" id="r_ab610dca00b345ccaec4d4b412c6bd2e0"><td class="memItemLeft" align="right" valign="top">class <a class="el" href="classWaypointEntity.html">WaypointEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#ab610dca00b345ccaec4d4b412c6bd2e0">addStandaloneWaypoint</a> (double lon, double lat, double alt, const QString &amp;labelText, const QString &amp;uidOverride=QString())</td></tr>
 <tr class="memdesc:ab610dca00b345ccaec4d4b412c6bd2e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">添加独立航点（带标签），用于快速标绘  <br /></td></tr>
 <tr class="separator:ab610dca00b345ccaec4d4b412c6bd2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8f3087bd705fc4aba0e3b9f5e29a783" id="r_ad8f3087bd705fc4aba0e3b9f5e29a783"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classLineEntity.html">LineEntity</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntityManager.html#ad8f3087bd705fc4aba0e3b9f5e29a783">addLineEntity</a> (const QString &amp;name, double startLon, double startLat, double startAlt, double endLon, double endLat, double endAlt, const QString &amp;uidOverride=QString())</td></tr>
+<tr class="memdesc:ad8f3087bd705fc4aba0e3b9f5e29a783"><td class="mdescLeft">&#160;</td><td class="mdescRight">添加直线实体  <br /></td></tr>
+<tr class="separator:ad8f3087bd705fc4aba0e3b9f5e29a783"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>地理实体管理器 </p>
@@ -366,6 +377,72 @@ Public 成员函数</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>返回</dt><dd>成功返回true，失败返回false </dd></dl>
+
+</div>
+</div>
+<a id="ad8f3087bd705fc4aba0e3b9f5e29a783" name="ad8f3087bd705fc4aba0e3b9f5e29a783"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8f3087bd705fc4aba0e3b9f5e29a783">&#9670;&#160;</a></span>addLineEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classLineEntity.html">LineEntity</a> * GeoEntityManager::addLineEntity </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startLon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startLat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startAlt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endLon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endLat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endAlt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>uidOverride</em> = <code>QString()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>添加直线实体 </p>
 
 </div>
 </div>
@@ -1134,6 +1211,25 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
+<a id="a31c5d2bf5056ffff60fd56169860be2e" name="a31c5d2bf5056ffff60fd56169860be2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31c5d2bf5056ffff60fd56169860be2e">&#9670;&#160;</a></span>isMapNavigationBlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool GeoEntityManager::isMapNavigationBlocked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>当前是否禁止地图导航 </p>
+
+</div>
+</div>
 <a id="a04fa1ba8d7880882ce4d89c4464ef462" name="a04fa1ba8d7880882ce4d89c4464ef462"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a04fa1ba8d7880882ce4d89c4464ef462">&#9670;&#160;</a></span>mapLeftClicked</h2>
 
@@ -1357,6 +1453,27 @@ Public 成员函数</h2></td></tr>
 </div><div class="memdoc">
 
 <p>从组中按序号删除航点 </p>
+
+</div>
+</div>
+<a id="a75f3e6f15d71c46ebc40ee8c459ca597" name="a75f3e6f15d71c46ebc40ee8c459ca597"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75f3e6f15d71c46ebc40ee8c459ca597">&#9670;&#160;</a></span>setBlockMapNavigation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GeoEntityManager::setBlockMapNavigation </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>block</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>控制是否阻止地图导航 </p>
+<p>某些测量模式下需要临时禁止地图拖拽/旋转。 </p>
 
 </div>
 </div>

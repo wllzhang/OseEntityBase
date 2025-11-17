@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>数字地图脚手架库: WaypointEntity类 参考</title>
+<title>数字地图脚手架库: LineEntity类 参考</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,7 +61,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('classWaypointEntity.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('classLineEntity.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -90,44 +90,32 @@ $(document).ready(function(){initNavTree('classWaypointEntity.html',''); initRes
   <div class="summary">
 <a href="#pub-methods">Public 成员函数</a> &#124;
 <a href="#pro-methods">Protected 成员函数</a> &#124;
-<a href="classWaypointEntity-members.html">所有成员列表</a>  </div>
-  <div class="headertitle"><div class="title">WaypointEntity类 参考<div class="ingroups"><a class="el" href="group__geo__entities.html">Geo Entities</a></div></div></div>
+<a href="classLineEntity-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">LineEntity类 参考</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>航点实体  
- <a href="classWaypointEntity.html#details">更多...</a></p>
-
-<p><code>#include &lt;<a class="el" href="waypointentity_8h_source.html">waypointentity.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="LineEntity_8h_source.html">LineEntity.h</a>&gt;</code></p>
 <div class="dynheader">
-类 WaypointEntity 继承关系图:</div>
+类 LineEntity 继承关系图:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classWaypointEntity.png" usemap="#WaypointEntity_map" alt=""/>
-  <map id="WaypointEntity_map" name="WaypointEntity_map">
-<area href="classGeoEntity.html" title="通用地理实体基类" alt="GeoEntity" shape="rect" coords="0,56,95,80"/>
+  <img src="classLineEntity.png" usemap="#LineEntity_map" alt=""/>
+  <map id="LineEntity_map" name="LineEntity_map">
+<area href="classGeoEntity.html" title="通用地理实体基类" alt="GeoEntity" shape="rect" coords="0,56,67,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public 成员函数</h2></td></tr>
-<tr class="memitem:a5a086c0cc6f31818cfb14f1b0ab5a438" id="r_a5a086c0cc6f31818cfb14f1b0ab5a438"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWaypointEntity.html#a5a086c0cc6f31818cfb14f1b0ab5a438">WaypointEntity</a> (const QString &amp;name, double longitude, double latitude, double altitude, const QString &amp;uidOverride=QString(), QObject *parent=nullptr)</td></tr>
-<tr class="separator:a5a086c0cc6f31818cfb14f1b0ab5a438"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19f4660117479549a5face0639980479" id="r_a19f4660117479549a5face0639980479"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWaypointEntity.html#a19f4660117479549a5face0639980479">initialize</a> () override</td></tr>
-<tr class="memdesc:a19f4660117479549a5face0639980479"><td class="mdescLeft">&#160;</td><td class="mdescRight">初始化航点实体  <br /></td></tr>
-<tr class="separator:a19f4660117479549a5face0639980479"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ee61b15368074e6f3685a14ab3ea202" id="r_a4ee61b15368074e6f3685a14ab3ea202"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWaypointEntity.html#a4ee61b15368074e6f3685a14ab3ea202">update</a> () override</td></tr>
-<tr class="memdesc:a4ee61b15368074e6f3685a14ab3ea202"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新航点实体  <br /></td></tr>
-<tr class="separator:a4ee61b15368074e6f3685a14ab3ea202"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36dee7623c9d40c1751e8506e36d81b4" id="r_a36dee7623c9d40c1751e8506e36d81b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWaypointEntity.html#a36dee7623c9d40c1751e8506e36d81b4">cleanup</a> () override</td></tr>
-<tr class="memdesc:a36dee7623c9d40c1751e8506e36d81b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">清理航点实体  <br /></td></tr>
-<tr class="separator:a36dee7623c9d40c1751e8506e36d81b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3af19675e9bb1343afb0b1cf435c3700" id="r_a3af19675e9bb1343afb0b1cf435c3700"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWaypointEntity.html#a3af19675e9bb1343afb0b1cf435c3700">setOrderLabel</a> (const QString &amp;text)</td></tr>
-<tr class="memdesc:a3af19675e9bb1343afb0b1cf435c3700"><td class="mdescLeft">&#160;</td><td class="mdescRight">设置序号标签内容（如 "1"、"2"）  <br /></td></tr>
-<tr class="separator:a3af19675e9bb1343afb0b1cf435c3700"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3050bace5e121072df341be87008940f" id="r_a3050bace5e121072df341be87008940f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWaypointEntity.html#a3050bace5e121072df341be87008940f">setMapNode</a> (osgEarth::MapNode *mapNode)</td></tr>
-<tr class="memdesc:a3050bace5e121072df341be87008940f"><td class="mdescLeft">&#160;</td><td class="mdescRight">绑定 MapNode（优先使用，避免运行时查找失败）  <br /></td></tr>
-<tr class="separator:a3050bace5e121072df341be87008940f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9bfd9b103eca24a39c079ca00701675" id="r_ae9bfd9b103eca24a39c079ca00701675"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLineEntity.html#ae9bfd9b103eca24a39c079ca00701675">LineEntity</a> (const QString &amp;name, double startLongitude, double startLatitude, double startAltitude, double endLongitude, double endLatitude, double endAltitude, const QString &amp;uidOverride=QString(), QObject *parent=nullptr)</td></tr>
+<tr class="separator:ae9bfd9b103eca24a39c079ca00701675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a173dbc91593f5a2cd43ed70a13658429" id="r_a173dbc91593f5a2cd43ed70a13658429"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLineEntity.html#a173dbc91593f5a2cd43ed70a13658429">setEndpoints</a> (double startLongitude, double startLatitude, double startAltitude, double endLongitude, double endLatitude, double endAltitude)</td></tr>
+<tr class="separator:a173dbc91593f5a2cd43ed70a13658429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa624666f08cec7ba09c498d4b1244c71" id="r_aa624666f08cec7ba09c498d4b1244c71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLineEntity.html#aa624666f08cec7ba09c498d4b1244c71">getEndpoints</a> (double &amp;startLongitude, double &amp;startLatitude, double &amp;startAltitude, double &amp;endLongitude, double &amp;endLatitude, double &amp;endAltitude) const</td></tr>
+<tr class="separator:aa624666f08cec7ba09c498d4b1244c71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab272e2cbaea6bb53a4582e156a9f94c0" id="r_ab272e2cbaea6bb53a4582e156a9f94c0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLineEntity.html#ab272e2cbaea6bb53a4582e156a9f94c0">lengthMeters</a> () const</td></tr>
+<tr class="separator:ab272e2cbaea6bb53a4582e156a9f94c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classGeoEntity"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classGeoEntity')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classGeoEntity.html">GeoEntity</a></td></tr>
 <tr class="memitem:a6aec866289631936cfd3e9cff4431810 inherit pub_methods_classGeoEntity" id="r_a6aec866289631936cfd3e9cff4431810"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a6aec866289631936cfd3e9cff4431810">GeoEntity</a> (const QString &amp;name, const QString &amp;type, double longitude, double latitude, double altitude, const QString &amp;uidOverride=QString(), QObject *parent=nullptr)</td></tr>
 <tr class="separator:a6aec866289631936cfd3e9cff4431810 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -183,19 +171,30 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:af89075adbe142fca785ae2cd21f2f38a inherit pub_methods_classGeoEntity" id="r_af89075adbe142fca785ae2cd21f2f38a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#af89075adbe142fca785ae2cd21f2f38a">isHovered</a> () const</td></tr>
 <tr class="memdesc:af89075adbe142fca785ae2cd21f2f38a inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">是否处于悬停状态  <br /></td></tr>
 <tr class="separator:af89075adbe142fca785ae2cd21f2f38a inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a443225b2cf103b47f8b73dbb4bd36f1f inherit pub_methods_classGeoEntity" id="r_a443225b2cf103b47f8b73dbb4bd36f1f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f">initialize</a> ()</td></tr>
+<tr class="memdesc:a443225b2cf103b47f8b73dbb4bd36f1f inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">初始化实体资源与节点  <br /></td></tr>
+<tr class="separator:a443225b2cf103b47f8b73dbb4bd36f1f inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9348d4bdf3955e77482da960d334158 inherit pub_methods_classGeoEntity" id="r_ad9348d4bdf3955e77482da960d334158"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ad9348d4bdf3955e77482da960d334158">update</a> ()</td></tr>
+<tr class="memdesc:ad9348d4bdf3955e77482da960d334158 inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据业务状态更新实体  <br /></td></tr>
+<tr class="separator:ad9348d4bdf3955e77482da960d334158 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8cd99fa8ecb25657293866b61f2fe95 inherit pub_methods_classGeoEntity" id="r_af8cd99fa8ecb25657293866b61f2fe95"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#af8cd99fa8ecb25657293866b61f2fe95">cleanup</a> ()</td></tr>
+<tr class="memdesc:af8cd99fa8ecb25657293866b61f2fe95 inherit pub_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">释放资源与场景引用  <br /></td></tr>
+<tr class="separator:af8cd99fa8ecb25657293866b61f2fe95 inherit pub_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected 成员函数</h2></td></tr>
-<tr class="memitem:af5f0fd1a1c3f529d94577513cc7a8940" id="r_af5f0fd1a1c3f529d94577513cc7a8940"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWaypointEntity.html#af5f0fd1a1c3f529d94577513cc7a8940">onUpdated</a> () override</td></tr>
-<tr class="memdesc:af5f0fd1a1c3f529d94577513cc7a8940"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新完成后的回调  <br /></td></tr>
-<tr class="separator:af5f0fd1a1c3f529d94577513cc7a8940"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4293e2785f5986a973bca6a504fc5bd3" id="r_a4293e2785f5986a973bca6a504fc5bd3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classWaypointEntity.html#a4293e2785f5986a973bca6a504fc5bd3">onBeforeCleanup</a> () override</td></tr>
-<tr class="memdesc:a4293e2785f5986a973bca6a504fc5bd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">清理前的回调  <br /></td></tr>
-<tr class="separator:a4293e2785f5986a973bca6a504fc5bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5123d5929a14d674ec625d96d3084e5b" id="r_a5123d5929a14d674ec625d96d3084e5b"><td class="memItemLeft" align="right" valign="top">osg::ref_ptr&lt; osg::Node &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLineEntity.html#a5123d5929a14d674ec625d96d3084e5b">createNode</a> () override</td></tr>
+<tr class="separator:a5123d5929a14d674ec625d96d3084e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab37e8bf391e07b90ffa464b0faacd5cc" id="r_ab37e8bf391e07b90ffa464b0faacd5cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classLineEntity.html#ab37e8bf391e07b90ffa464b0faacd5cc">onUpdated</a> () override</td></tr>
+<tr class="memdesc:ab37e8bf391e07b90ffa464b0faacd5cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">更新完成后的回调，子类可重写添加特定更新逻辑  <br /></td></tr>
+<tr class="separator:ab37e8bf391e07b90ffa464b0faacd5cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classGeoEntity"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classGeoEntity')"><img src="closed.png" alt="-"/>&#160;Protected 成员函数 继承自 <a class="el" href="classGeoEntity.html">GeoEntity</a></td></tr>
 <tr class="memitem:af9538b518ef0aeb3ef54f2ae3c65a8e9 inherit pro_methods_classGeoEntity" id="r_af9538b518ef0aeb3ef54f2ae3c65a8e9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#af9538b518ef0aeb3ef54f2ae3c65a8e9">onInitialized</a> ()</td></tr>
 <tr class="memdesc:af9538b518ef0aeb3ef54f2ae3c65a8e9 inherit pro_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">节点创建完成后的回调，子类可重写添加特定初始化逻辑  <br /></td></tr>
 <tr class="separator:af9538b518ef0aeb3ef54f2ae3c65a8e9 inherit pro_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9de6fff9b1213eda88b58b74106f409e inherit pro_methods_classGeoEntity" id="r_a9de6fff9b1213eda88b58b74106f409e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#a9de6fff9b1213eda88b58b74106f409e">onBeforeCleanup</a> ()</td></tr>
+<tr class="memdesc:a9de6fff9b1213eda88b58b74106f409e inherit pro_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">清理前的回调，子类可重写清理特定资源（如高亮节点）  <br /></td></tr>
+<tr class="separator:a9de6fff9b1213eda88b58b74106f409e inherit pro_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad356b8a7e275eb8109fdf3d70fa5e2d1 inherit pro_methods_classGeoEntity" id="r_ad356b8a7e275eb8109fdf3d70fa5e2d1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ad356b8a7e275eb8109fdf3d70fa5e2d1">onAfterCleanup</a> ()</td></tr>
 <tr class="memdesc:ad356b8a7e275eb8109fdf3d70fa5e2d1 inherit pro_methods_classGeoEntity"><td class="mdescLeft">&#160;</td><td class="mdescRight">清理后的回调，子类可重写做额外清理  <br /></td></tr>
 <tr class="separator:ad356b8a7e275eb8109fdf3d70fa5e2d1 inherit pro_methods_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -253,23 +252,15 @@ Protected 成员函数</h2></td></tr>
 <tr class="memitem:ad4966213fe504530612a1081dd469f0b inherit pro_attribs_classGeoEntity" id="r_ad4966213fe504530612a1081dd469f0b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGeoEntity.html#ad4966213fe504530612a1081dd469f0b">lastHighlightSize_</a></td></tr>
 <tr class="separator:ad4966213fe504530612a1081dd469f0b inherit pro_attribs_classGeoEntity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
-<div class="textblock"><p>航点实体 </p>
-<p>继承自GeoEntity，用于路线规划与点标绘的基础实体，支持显示序号标签， 并可结合航线生成功能（线性/贝塞尔）使用。</p>
-<p><b>继承关系：</b> </p><div class="fragment"><div class="line">QObject</div>
-<div class="line">  └─ <a class="code hl_class" href="classGeoEntity.html">GeoEntity</a></div>
-<div class="line">      └─ <a class="code hl_class" href="classWaypointEntity.html">WaypointEntity</a></div>
-<div class="ttc" id="aclassGeoEntity_html"><div class="ttname"><a href="classGeoEntity.html">GeoEntity</a></div><div class="ttdoc">通用地理实体基类</div><div class="ttdef"><b>Definition</b> geoentity.h:55</div></div>
-<div class="ttc" id="aclassWaypointEntity_html"><div class="ttname"><a href="classWaypointEntity.html">WaypointEntity</a></div><div class="ttdoc">航点实体</div><div class="ttdef"><b>Definition</b> waypointentity.h:34</div></div>
-</div><!-- fragment --> </div><h2 class="groupheader">构造及析构函数说明</h2>
-<a id="a5a086c0cc6f31818cfb14f1b0ab5a438" name="a5a086c0cc6f31818cfb14f1b0ab5a438"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a086c0cc6f31818cfb14f1b0ab5a438">&#9670;&#160;</a></span>WaypointEntity()</h2>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae9bfd9b103eca24a39c079ca00701675" name="ae9bfd9b103eca24a39c079ca00701675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9bfd9b103eca24a39c079ca00701675">&#9670;&#160;</a></span>LineEntity()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">WaypointEntity::WaypointEntity </td>
+          <td class="memname">LineEntity::LineEntity </td>
           <td>(</td>
           <td class="paramtype">const QString &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -278,19 +269,37 @@ Protected 成员函数</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>longitude</em>, </td>
+          <td class="paramname"><em>startLongitude</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>latitude</em>, </td>
+          <td class="paramname"><em>startLatitude</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>altitude</em>, </td>
+          <td class="paramname"><em>startAltitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endLongitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endLatitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endAltitude</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -315,8 +324,8 @@ Protected 成员函数</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">成员函数说明</h2>
-<a id="a36dee7623c9d40c1751e8506e36d81b4" name="a36dee7623c9d40c1751e8506e36d81b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36dee7623c9d40c1751e8506e36d81b4">&#9670;&#160;</a></span>cleanup()</h2>
+<a id="a5123d5929a14d674ec625d96d3084e5b" name="a5123d5929a14d674ec625d96d3084e5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5123d5929a14d674ec625d96d3084e5b">&#9670;&#160;</a></span>createNode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -325,67 +334,7 @@ Protected 成员函数</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void WaypointEntity::cleanup </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>清理航点实体 </p>
-<p>调用基类清理方法，基类会先调用 <a class="el" href="classWaypointEntity.html#a4293e2785f5986a973bca6a504fc5bd3" title="清理前的回调">onBeforeCleanup()</a> 清理特定资源， 然后清除节点引用。 </p>
-
-<p>重载 <a class="el" href="classGeoEntity.html#af8cd99fa8ecb25657293866b61f2fe95">GeoEntity</a> .</p>
-
-</div>
-</div>
-<a id="a19f4660117479549a5face0639980479" name="a19f4660117479549a5face0639980479"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19f4660117479549a5face0639980479">&#9670;&#160;</a></span>initialize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void WaypointEntity::initialize </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>初始化航点实体 </p>
-<p>使用基类默认实现，创建节点并设置初始状态。 航点的特定初始化逻辑（如创建 CircleNode 和 PlaceNode）在 createNode() 中完成。 </p>
-
-<p>重载 <a class="el" href="classGeoEntity.html#a443225b2cf103b47f8b73dbb4bd36f1f">GeoEntity</a> .</p>
-
-</div>
-</div>
-<a id="a4293e2785f5986a973bca6a504fc5bd3" name="a4293e2785f5986a973bca6a504fc5bd3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4293e2785f5986a973bca6a504fc5bd3">&#9670;&#160;</a></span>onBeforeCleanup()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void WaypointEntity::onBeforeCleanup </td>
+          <td class="memname">osg::ref_ptr&lt; osg::Node &gt; LineEntity::createNode </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -398,17 +347,81 @@ Protected 成员函数</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>清理前的回调 </p>
-<p>清理前的回调：清除航点特定资源</p>
-<p>在基类 <a class="el" href="classWaypointEntity.html#a36dee7623c9d40c1751e8506e36d81b4" title="清理航点实体">cleanup()</a> 清除节点引用前执行， 用于清理航点特定的节点引用（如 pointGeode_、labelText_ 等）。</p>
-<p>在基类 <a class="el" href="classWaypointEntity.html#a36dee7623c9d40c1751e8506e36d81b4" title="清理航点实体">cleanup()</a> 清除节点引用前执行， 用于清理航点特有的节点引用，避免内存泄漏。 </p>
-
-<p>重载 <a class="el" href="classGeoEntity.html#a9de6fff9b1213eda88b58b74106f409e">GeoEntity</a> .</p>
+<p>实现了 <a class="el" href="classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0">GeoEntity</a>.</p>
 
 </div>
 </div>
-<a id="af5f0fd1a1c3f529d94577513cc7a8940" name="af5f0fd1a1c3f529d94577513cc7a8940"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5f0fd1a1c3f529d94577513cc7a8940">&#9670;&#160;</a></span>onUpdated()</h2>
+<a id="aa624666f08cec7ba09c498d4b1244c71" name="aa624666f08cec7ba09c498d4b1244c71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa624666f08cec7ba09c498d4b1244c71">&#9670;&#160;</a></span>getEndpoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LineEntity::getEndpoints </td>
+          <td>(</td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>startLongitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>startLatitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>startAltitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>endLongitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>endLatitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>endAltitude</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab272e2cbaea6bb53a4582e156a9f94c0" name="ab272e2cbaea6bb53a4582e156a9f94c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab272e2cbaea6bb53a4582e156a9f94c0">&#9670;&#160;</a></span>lengthMeters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double LineEntity::lengthMeters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab37e8bf391e07b90ffa464b0faacd5cc" name="ab37e8bf391e07b90ffa464b0faacd5cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab37e8bf391e07b90ffa464b0faacd5cc">&#9670;&#160;</a></span>onUpdated()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -417,7 +430,7 @@ Protected 成员函数</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void WaypointEntity::onUpdated </td>
+          <td class="memname">void LineEntity::onUpdated </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -430,103 +443,74 @@ Protected 成员函数</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>更新完成后的回调 </p>
-<p>更新完成后的回调：更新标签文本</p>
-<p>在基类 <a class="el" href="classWaypointEntity.html#a4ee61b15368074e6f3685a14ab3ea202" title="更新航点实体">update()</a> 调用 <a class="el" href="classGeoEntity.html#aa7848e03ee53be03c71ffe675bb357cf" title="根据当前状态刷新渲染节点">updateNode()</a> 后执行， 用于更新航点标签文本，使其与位置变化同步。</p>
-<p>当实体位置或属性变化时，基类会调用此方法。 这里用于更新航点的序号标签，使其与当前 labelString_ 同步。 </p>
+<p>更新完成后的回调，子类可重写添加特定更新逻辑 </p>
 
 <p>重载 <a class="el" href="classGeoEntity.html#a8347685965dd2998d0f143c71c3eccfe">GeoEntity</a> .</p>
 
 </div>
 </div>
-<a id="a3050bace5e121072df341be87008940f" name="a3050bace5e121072df341be87008940f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3050bace5e121072df341be87008940f">&#9670;&#160;</a></span>setMapNode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void WaypointEntity::setMapNode </td>
-          <td>(</td>
-          <td class="paramtype">osgEarth::MapNode *&#160;</td>
-          <td class="paramname"><em>mapNode</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>绑定 MapNode（优先使用，避免运行时查找失败） </p>
-
-</div>
-</div>
-<a id="a3af19675e9bb1343afb0b1cf435c3700" name="a3af19675e9bb1343afb0b1cf435c3700"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3af19675e9bb1343afb0b1cf435c3700">&#9670;&#160;</a></span>setOrderLabel()</h2>
+<a id="a173dbc91593f5a2cd43ed70a13658429" name="a173dbc91593f5a2cd43ed70a13658429"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a173dbc91593f5a2cd43ed70a13658429">&#9670;&#160;</a></span>setEndpoints()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void WaypointEntity::setOrderLabel </td>
+          <td class="memname">void LineEntity::setEndpoints </td>
           <td>(</td>
-          <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>text</em></td><td>)</td>
-          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startLongitude</em>, </td>
         </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>设置序号标签内容（如 "1"、"2"） </p>
-
-</div>
-</div>
-<a id="a4ee61b15368074e6f3685a14ab3ea202" name="a4ee61b15368074e6f3685a14ab3ea202"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4ee61b15368074e6f3685a14ab3ea202">&#9670;&#160;</a></span>update()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
         <tr>
-          <td class="memname">void WaypointEntity::update </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startLatitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startAltitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endLongitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endLatitude</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endAltitude</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
-
-<p>更新航点实体 </p>
-<p>使用基类默认实现更新节点变换，然后通过 <a class="el" href="classWaypointEntity.html#af5f0fd1a1c3f529d94577513cc7a8940" title="更新完成后的回调">onUpdated()</a> 回调更新标签。 </p>
-
-<p>重载 <a class="el" href="classGeoEntity.html#ad9348d4bdf3955e77482da960d334158">GeoEntity</a> .</p>
 
 </div>
 </div>
 <hr/>该类的文档由以下文件生成:<ul>
-<li>geo/<a class="el" href="waypointentity_8h_source.html">waypointentity.h</a></li>
-<li>geo/<a class="el" href="waypointentity_8cpp.html">waypointentity.cpp</a></li>
+<li>geo/<a class="el" href="LineEntity_8h_source.html">LineEntity.h</a></li>
+<li>geo/<a class="el" href="LineEntity_8cpp.html">LineEntity.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="classWaypointEntity.html">WaypointEntity</a></li>
+    <li class="navelem"><a class="el" href="classLineEntity.html">LineEntity</a></li>
     <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

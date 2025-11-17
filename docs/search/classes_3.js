@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['navigationhistory_0',['NavigationHistory',['../classNavigationHistory.html',1,'']]]
+  ['mapstateinfo_0',['MapStateInfo',['../structMapStateInfo.html',1,'']]],
+  ['mapstatemanager_1',['MapStateManager',['../classMapStateManager.html',1,'']]]
 ];

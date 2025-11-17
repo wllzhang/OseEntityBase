@@ -12,7 +12,7 @@ var searchData=
   ['closeimplementation_9',['closeImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a507af44156710118a539d400ed83cb1e',1,'osgQt::GraphicsWindowQt']]],
   ['convertresourcepathtofile_10',['convertResourcePathToFile',['../classGeoUtils.html#a5c684b56b65e6f065c2a3af7e64ea725',1,'GeoUtils']]],
   ['createentity_11',['createEntity',['../classGeoEntityManager.html#a9f3cb27640f54e0c38f2619f740541f2',1,'GeoEntityManager']]],
-  ['createnode_12',['createnode',['../classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0',1,'GeoEntity::createNode()'],['../classImageEntity.html#aea0615044d453806891083f270246b2d',1,'ImageEntity::createNode()']]],
+  ['createnode_12',['createnode',['../classGeoEntity.html#ac8e3ca23e7d5ac21b4be1bc68e923bb0',1,'GeoEntity::createNode()'],['../classImageEntity.html#aea0615044d453806891083f270246b2d',1,'ImageEntity::createNode()'],['../classLineEntity.html#a5123d5929a14d674ec625d96d3084e5b',1,'LineEntity::createNode()']]],
   ['createpatnode_13',['createPATNode',['../classGeoEntity.html#a5657253025363aaaf5c01e53d01a7908',1,'GeoEntity']]],
   ['createtraits_14',['createTraits',['../classosgQt_1_1GraphicsWindowQt.html#a1b98603a9a1921e7fc649d3bf67971e8',1,'osgQt::GraphicsWindowQt']]],
   ['createwaypointgroup_15',['createWaypointGroup',['../classGeoEntityManager.html#a4317c1529ab9d02ef84fa55ce91b142c',1,'GeoEntityManager']]],

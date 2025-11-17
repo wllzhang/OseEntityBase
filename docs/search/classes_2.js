@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['mapstateinfo_0',['MapStateInfo',['../structMapStateInfo.html',1,'']]],
-  ['mapstatemanager_1',['MapStateManager',['../classMapStateManager.html',1,'']]]
+  ['lineendpointinfo_0',['LineEndpointInfo',['../structGeoEntityManager_1_1LineEndpointInfo.html',1,'GeoEntityManager']]],
+  ['lineentity_1',['LineEntity',['../classLineEntity.html',1,'']]]
 ];
