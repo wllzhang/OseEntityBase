@@ -776,9 +776,9 @@ void GeoEntityManager::onMousePress(QMouseEvent* event)
     if (event->button() == Qt::LeftButton && blockMapNavigation_) {
         event->accept();
     }
-    qDebug() << "=== GeoEntityManager::onMousePress 被调用 ===";
-    qDebug() << "鼠标位置:" << event->pos();
-    qDebug() << "鼠标按钮:" << event->button();
+    // qDebug() << "=== GeoEntityManager::onMousePress 被调用 ===";
+    // qDebug() << "鼠标位置:" << event->pos();
+    // qDebug() << "鼠标按钮:" << event->button();
     
     if (event->button() == Qt::LeftButton) {
 
