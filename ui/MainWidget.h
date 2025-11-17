@@ -32,6 +32,7 @@ class ModelDeployDialog;
 class WeaponMountDialog;
 class EntityManagementDialog;
 class WaypointEntity;
+class BehaviorPlanningDialog;
 
 /**
  * @brief 应用程序主窗口
@@ -168,6 +169,8 @@ private slots:
      */
     void onAngleMeasureClicked();
 
+    void onBehaviorPlanningClicked();
+
     /**
      * @brief 直线绘制按钮点击：进入直线标绘模式
      */
@@ -270,6 +273,7 @@ private:
     ModelAssemblyDialog *modelAssemblyDialog_;         // 模型组装对话框
     ModelDeployDialog *modelDeployDialog_;            // 模型部署对话框
     EntityManagementDialog *entityManagementDialog_;  // 实体管理对话框
+    BehaviorPlanningDialog* behaviorDialog_;
     
     // 方案文件管理器
     PlanFileManager *planFileManager_;

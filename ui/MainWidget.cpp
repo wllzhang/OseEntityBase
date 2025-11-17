@@ -43,6 +43,8 @@
 #include "../widgets/MapInfoOverlay.h"
 #include "../util/AfsimScriptGenerator.h"
 
+#include "BehaviorPlanningDialog.h"
+
 
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent), currentNavIndex(0)
@@ -54,6 +56,7 @@ MainWidget::MainWidget(QWidget *parent)
     , modelAssemblyDialog_(nullptr)
     , modelDeployDialog_(nullptr)
     , entityManagementDialog_(nullptr)
+    , behaviorDialog_(nullptr)
     , planFileManager_(nullptr)
 {
     //设置窗口属性
@@ -354,6 +357,7 @@ void MainWidget::createSubNavigation()
     targetMatchBtn->setFixedSize(120, 120);
     targetMatchBtn->setObjectName("navToolButton");
     targetMatchBtn->setIconSize(QSize(64, 64));  // 图标大小
+    connect(targetMatchBtn, &QToolButton::clicked, this, &MainWidget::onBehaviorPlanningClicked);
 
     QToolButton *exportPlanBtn = new QToolButton(this);
     exportPlanBtn->setText("导出方案");
@@ -1657,7 +1661,12 @@ void MainWidget::onMapLoaded()
     // 连接方案文件变化信号
     if (planFileManager_) {
         connect(planFileManager_, &PlanFileManager::planFileChanged, this, &MainWidget::updatePlanNameLabel);
-        connect(planFileManager_, &PlanFileManager::planLoaded, this, [this](const QString&){ refreshEntityManagementDialog(); }, Qt::UniqueConnection);
+        connect(planFileManager_, &PlanFileManager::planLoaded, this, [this](const QString&){
+            refreshEntityManagementDialog();
+            if (behaviorDialog_) {
+                behaviorDialog_->refreshEntities();
+            }
+        }, Qt::UniqueConnection);
     }
  
     // 连接实体双击事件 - 打开属性编辑对话框
@@ -1928,6 +1937,11 @@ void MainWidget::onMapLoaded()
     });
     
     qDebug() << "地图事件连接完成";
+
+    if (behaviorDialog_) {
+        behaviorDialog_->setEntityManager(entityManager);
+        behaviorDialog_->refreshEntities();
+    }
 }
 
 void MainWidget::onToggle2D3D()
@@ -2244,12 +2258,18 @@ void MainWidget::onEntityCreated(GeoEntity* entity)
 {
     Q_UNUSED(entity);
     refreshEntityManagementDialog();
+    if (behaviorDialog_) {
+        behaviorDialog_->refreshEntities();
+    }
 }
 
 void MainWidget::onEntityRemoved(const QString& uid)
 {
     Q_UNUSED(uid);
     refreshEntityManagementDialog();
+    if (behaviorDialog_) {
+        behaviorDialog_->refreshEntities();
+    }
 }
 
 void MainWidget::onEntitySelected(GeoEntity* entity)
@@ -2314,5 +2334,28 @@ void MainWidget::onEntityWeaponQuantityChanged(const QString& entityUid,
     }
 
     refreshEntityManagementDialog();
+}
+
+void MainWidget::onBehaviorPlanningClicked()
+{
+    if (!planFileManager_) {
+        QMessageBox::information(this, QString::fromUtf8(u8"提示"), QString::fromUtf8(u8"请先创建或打开方案"));
+        return;
+    }
+    GeoEntityManager* entityManager = osgMapWidget_ ? osgMapWidget_->getEntityManager() : nullptr;
+    if (!entityManager) {
+        QMessageBox::information(this, QString::fromUtf8(u8"提示"), QString::fromUtf8(u8"地图尚未加载或实体管理器不可用"));
+        return;
+    }
+
+    if (!behaviorDialog_) {
+        behaviorDialog_ = new BehaviorPlanningDialog(this);
+    }
+    behaviorDialog_->setEntityManager(entityManager);
+    behaviorDialog_->setPlanFileManager(planFileManager_);
+    behaviorDialog_->refreshEntities();
+    behaviorDialog_->show();
+    behaviorDialog_->raise();
+    behaviorDialog_->activateWindow();
 }
 

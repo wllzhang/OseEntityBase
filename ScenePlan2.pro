@@ -91,7 +91,6 @@ DEPENDPATH += $${OSGDIR}/include
 
 SOURCES += \
     geo/LineEntity.cpp \
-    ui/EntityManagementDialog.cpp\
     geo/WeaponMountDialog.cpp \
     ui/ComponentConfigDialog.cpp \
     ui/MainWidget.cpp \
@@ -99,6 +98,7 @@ SOURCES += \
     ui/ModelAssemblyDialog.cpp \
     ui/ModelDeployDialog.cpp \
     ui/EntityPropertyDialog.cpp \
+    ui/BehaviorPlanningDialog.cpp \
     main.cpp \
     util/AfsimScriptGenerator.cpp \
     widgets/OsgMapWidget.cpp \
@@ -120,7 +120,6 @@ SOURCES += \
 
 HEADERS += \
     geo/LineEntity.h \
-    ui/EntityManagementDialog.h \
     geo/WeaponMountDialog.h \
     ui/ComponentConfigDialog.h \
     ui/EntityManagementDialog.h \
@@ -128,6 +127,7 @@ HEADERS += \
     ui/ModelAssemblyDialog.h \
     ui/ModelDeployDialog.h \
     ui/EntityPropertyDialog.h \
+    ui/BehaviorPlanningDialog.h \
     util/AfsimScriptGenerator.h \
     widgets/OsgMapWidget.h \
     OsgQt/GraphicsWindowQt.h \
