@@ -12,6 +12,7 @@
 #include <QSpinBox>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QTimer>
 
 namespace {
 constexpr int ColumnName = 0;
@@ -28,12 +29,21 @@ EntityManagementDialog::EntityManagementDialog(QWidget* parent)
     , editButton_(new QPushButton("编辑属性", this))
     , deleteButton_(new QPushButton("删除", this))
     , refreshButton_(new QPushButton("刷新", this))
+    , hintLabel_(new QLabel(this))
     , updating_(false)
+    , visibilityChangeTimer_(new QTimer(this))
 {
     setWindowTitle("实体管理");
     resize(580, 420);
 
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
+
+    // 添加说明标签
+    hintLabel_->setText(QString::fromUtf8(u8"提示：勾选框用于控制实体在地图上的显示/隐藏，不影响实体数据"));
+    hintLabel_->setWordWrap(true);
+    hintLabel_->setStyleSheet("QLabel { color: #666; padding: 5px; background-color: #f0f0f0; border-radius: 3px; }");
+    hintLabel_->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    mainLayout->addWidget(hintLabel_);
 
     tree_->setColumnCount(3);
     tree_->setHeaderLabels({"名称", "类型", "UID"});
@@ -46,6 +56,16 @@ EntityManagementDialog::EntityManagementDialog(QWidget* parent)
     tree_->setMouseTracking(true);
     tree_->viewport()->installEventFilter(this);
     mainLayout->addWidget(tree_);
+    
+    // 设置延迟执行定时器（单次触发，延迟50ms执行）
+    visibilityChangeTimer_->setSingleShot(true);
+    visibilityChangeTimer_->setInterval(50);
+    connect(visibilityChangeTimer_, &QTimer::timeout, this, [this]() {
+        if (!pendingVisibilityChange_.uid.isEmpty()) {
+            emit requestVisibilityChange(pendingVisibilityChange_.uid, pendingVisibilityChange_.visible);
+            pendingVisibilityChange_.uid.clear();
+        }
+    });
 
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     focusButton_->setEnabled(false);
@@ -133,7 +153,17 @@ void EntityManagementDialog::handleItemChanged(QTreeWidgetItem* item, int column
     }
 
     bool visible = (item->checkState(ColumnName) == Qt::Checked);
-    emit requestVisibilityChange(uid, visible);
+    
+    // 延迟执行可见性变化，避免在UI事件处理过程中直接修改OSG节点导致崩溃
+    // 停止之前的定时器（如果正在运行）
+    visibilityChangeTimer_->stop();
+    
+    // 保存待执行的可见性变化
+    pendingVisibilityChange_.uid = uid;
+    pendingVisibilityChange_.visible = visible;
+    
+    // 启动定时器，延迟执行
+    visibilityChangeTimer_->start();
 }
 
 void EntityManagementDialog::handleSelectionChanged()

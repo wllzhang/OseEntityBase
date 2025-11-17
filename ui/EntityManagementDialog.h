@@ -6,14 +6,22 @@
 #include <QTreeWidget>
 #include <QString>
 #include <QMap>
+#include <QTimer>
 
 class GeoEntity;
 class QPushButton;
+class QLabel;
 
 struct RouteGroupData {
     QString groupId;
     QString groupName;
     QList<GeoEntity*> waypoints;
+};
+
+// 延迟执行可见性变化的结构体（定义在类外部，避免命名空间解析问题）
+struct PendingVisibilityChange {
+    QString uid;
+    bool visible;
 };
 
 class EntityManagementDialog : public QDialog
@@ -67,8 +75,13 @@ private:
     QPushButton* editButton_;
     QPushButton* deleteButton_;
     QPushButton* refreshButton_;
+    QLabel* hintLabel_;
     bool updating_;
     QString hoveredUid_;
+    
+    // 延迟执行可见性变化，避免渲染冲突
+    QTimer* visibilityChangeTimer_;
+    PendingVisibilityChange pendingVisibilityChange_;
 };
 
 #endif // ENTITYMANAGEMENTDIALOG_H
