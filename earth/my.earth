@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map name="Local 3D Globe" type="geocentric" version="2">
-    <!-- 3D地球模式 -->
-    <options>
-        <terrain>
-            <driver>mp</driver>
-            <tile_size>32</tile_size>
-            <min_tile_range_factor>8</min_tile_range_factor>
-        </terrain>
-        <profile>global-geodetic</profile>
-        <cache_enabled>true</cache_enabled>
-    </options>
+<map name="OpenStreetMap Globe" type="geocentric" version="2">
     
-    <!-- 使用高德格栅地图影像 -->
-    <image name="Amap Raster" driver="xyz">
-        <url>http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x={x}&amp;y={y}&amp;z={z}</url>
+    <!-- <image name="卫星" driver="xyz">
+        <url>https://webst01.is.autonavi.com/appmaptile?style=6&amp;x={x}&amp;y={y}&amp;z={z}</url>
         <profile>spherical-mercator</profile>
         <cache_enabled>true</cache_enabled>
- 
     </image>
+     -->
+    <image name="格栅渲染" driver="xyz">
+        <url>https://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=7&amp;x={x}&amp;y={y}&amp;z={z}</url>
+        <profile>spherical-mercator</profile>
+        <cache_enabled>true</cache_enabled>
+    </image>
+  <!-- <image name="路网" driver="xyz">
+        <url>https://webst01.is.autonavi.com/appmaptile?style=8&amp;x={x}&amp;y={y}&amp;z={z}</url>
+        <profile>spherical-mercator</profile>
+        <cache_enabled>true</cache_enabled>
+    </image> -->
+
+    <!-- <elevation name="高程数据" driver="xyz">
+        <url>https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png</url>
+        <profile>spherical-mercator</profile>
+        <format>terrarium</format> 
+    </elevation> -->
 </map>
