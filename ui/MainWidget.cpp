@@ -68,8 +68,8 @@ MainWidget::MainWidget(QWidget *parent)
     // 创建方案文件管理器
     planFileManager_ = new PlanFileManager(nullptr, this);  // entityManager将在onMapLoaded中设置
     
-    // 启用自动保存（默认启用，2秒间隔）
-    planFileManager_->setAutoSaveEnabled(true, 2000);
+    // 禁用自动保存，只保留未保存提示
+    planFileManager_->setAutoSaveEnabled(false);
     dialogHoverEntity_ = nullptr;
     
     // 加载最近打开的文件列表
@@ -1661,6 +1661,8 @@ void MainWidget::onMapLoaded()
     // 连接方案文件变化信号
     if (planFileManager_) {
         connect(planFileManager_, &PlanFileManager::planFileChanged, this, &MainWidget::updatePlanNameLabel);
+        connect(planFileManager_, &PlanFileManager::planDataChanged, this, &MainWidget::updatePlanNameLabel);
+        connect(planFileManager_, &PlanFileManager::planSaved, this, &MainWidget::updatePlanNameLabel);
         connect(planFileManager_, &PlanFileManager::planLoaded, this, [this](const QString&){
             refreshEntityManagementDialog();
             if (behaviorDialog_) {
@@ -1972,9 +1974,19 @@ void MainWidget::updatePlanNameLabel()
     QString currentPlan = planFileManager_->getCurrentPlanFile();
     if (!currentPlan.isEmpty()) {
         QFileInfo fileInfo(currentPlan);
-        planNameLabel_->setText(QString("当前方案: %1").arg(fileInfo.baseName()));
+        QString planName = fileInfo.baseName();
+        
+        // 检查是否有未保存的更改
+        if (planFileManager_->hasUnsavedChanges()) {
+            planNameLabel_->setText(QString("当前方案: %1 *未保存").arg(planName));
+            planNameLabel_->setStyleSheet("color: #FFA500; font-weight: bold; padding: 0 10px;"); // 橙色提示
+        } else {
+            planNameLabel_->setText(QString("当前方案: %1").arg(planName));
+            planNameLabel_->setStyleSheet("color: white; font-weight: bold; padding: 0 10px;");
+        }
     } else {
         planNameLabel_->setText("当前方案: 未打开");
+        planNameLabel_->setStyleSheet("color: white; font-weight: bold; padding: 0 10px;");
     }
 }
 
