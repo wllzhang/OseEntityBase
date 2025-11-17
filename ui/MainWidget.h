@@ -22,6 +22,7 @@
 #include <QLabel>
 #include "ComponentConfigDialog.h"
 #include "ModelAssemblyDialog.h"
+#include "LocationJumpDialog.h"
 #include "../geo/waypointentity.h"
 #include "../widgets/OsgMapWidget.h"
 
@@ -108,6 +109,13 @@ private slots:
      * @brief 2D/3D切换按钮点击槽函数
      */
     void onToggle2D3D();
+    
+    /**
+     * @brief 定位跳转按钮点击槽函数
+     * 
+     * 显示经纬度输入对话框，并跳转到指定位置
+     */
+    void onLocationJumpClicked();
     
     /**
      * @brief 更新工具栏中的方案名称标签

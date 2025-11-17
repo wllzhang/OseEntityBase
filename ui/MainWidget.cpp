@@ -10,7 +10,9 @@
 #include "ModelDeployDialog.h"
 #include "EntityPropertyDialog.h"
 #include "EntityManagementDialog.h"
+#include "LocationJumpDialog.h"
 #include "../plan/planfilemanager.h"
+#include "../geo/geoutils.h"
 #include <QLabel>
 #include <qt_windows.h>
 #include <QLineEdit>
@@ -177,6 +179,12 @@ void MainWidget::createToolBar()
     // 添加分隔符
     toolBarLayout->addSpacing(10);
     toolBarLayout->addWidget(planNameLabel_);
+    
+    // 添加定位跳转按钮
+    QPushButton *locationJumpBtn = new QPushButton("定位跳转");
+    locationJumpBtn->setStyleSheet("border: none;");
+    connect(locationJumpBtn, &QPushButton::clicked, this, &MainWidget::onLocationJumpClicked);
+    toolBarLayout->addWidget(locationJumpBtn);
     
     // 添加2D/3D切换按钮
     toggle2D3DBtn_ = new QPushButton("切换到2D");
@@ -1963,6 +1971,86 @@ void MainWidget::onToggle2D3D()
         osgMapWidget_->setMode3D();
         qDebug() << "切换到3D模式";
     }
+}
+
+void MainWidget::onLocationJumpClicked()
+{
+    if (!osgMapWidget_) {
+        QMessageBox::warning(this, "错误", "地图未初始化，无法跳转");
+        return;
+    }
+
+    osgViewer::Viewer* viewer = osgMapWidget_->getViewer();
+    if (!viewer) {
+        QMessageBox::warning(this, "错误", "地图查看器未初始化，无法跳转");
+        return;
+    }
+
+    // 从 MapStateManager 获取当前窗口中心的经纬度、高度和视距
+    double currentLongitude = 116.3974; // 默认值：北京经度
+    double currentLatitude = 39.9093;   // 默认值：北京纬度
+    double currentAltitude = 0.0;
+    double currentRange = 10000000.0;   // 默认值：10公里
+
+    auto mapStateManager = osgMapWidget_->getMapStateManager();
+    if (mapStateManager) {
+        const auto& state = mapStateManager->getCurrentState();
+        currentLongitude = state.viewLongitude;
+        currentLatitude = state.viewLatitude;
+        currentAltitude = state.viewAltitude;
+        currentRange = state.range;
+        
+        // 如果高度接近0（椭球面高度），使用默认高度
+        if (currentAltitude < 100.0) {
+            currentAltitude = 0.0;
+        }
+    }
+
+    // 显示定位跳转对话框，使用当前窗口中心作为默认值
+    LocationJumpDialog dialog(currentLongitude, currentLatitude, currentAltitude, currentRange, this);
+    if (dialog.exec() != QDialog::Accepted) {
+        return; // 用户取消
+    }
+
+    // 获取输入的经纬度
+    double longitude = dialog.getLongitude();
+    double latitude = dialog.getLatitude();
+    double altitude = dialog.getAltitude();
+    double range = dialog.getRange();
+
+    // 获取当前的 EarthManipulator
+    osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+    if (!em) {
+        QMessageBox::warning(this, "错误", "无法获取地图操作器，跳转失败");
+        return;
+    }
+
+    // 获取当前的航向角和俯仰角（保持当前视角）
+    osgEarth::Viewpoint currentVp = em->getViewpoint();
+    double heading = 0.0;
+    double pitch = -45.0; // 默认俯仰角
+
+    // 尝试从当前视点获取航向角和俯仰角
+    auto headingOpt = currentVp.heading();
+    if (headingOpt.isSet()) {
+        heading = headingOpt.get().as(osgEarth::Units::DEGREES);
+    }
+    
+    auto pitchOpt = currentVp.pitch();
+    if (pitchOpt.isSet()) {
+        pitch = pitchOpt.get().as(osgEarth::Units::DEGREES);
+    }
+
+    // 如果俯仰角太接近水平（大于-10度），设置为默认的-45度
+    if (pitch > -10.0) {
+        pitch = -45.0;
+    }
+
+    // 创建新的视点并跳转
+    osgEarth::Viewpoint vp("Location Jump", longitude, latitude, altitude, heading, pitch, range);
+    em->setViewpoint(vp, 2.0); // 2秒动画过渡
+
+    qDebug() << "跳转到位置: 经度" << longitude << "纬度" << latitude << "高度" << altitude << "视距" << range;
 }
 
 void MainWidget::updatePlanNameLabel()

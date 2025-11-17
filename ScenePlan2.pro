@@ -99,6 +99,7 @@ SOURCES += \
     ui/ModelDeployDialog.cpp \
     ui/EntityPropertyDialog.cpp \
     ui/BehaviorPlanningDialog.cpp \
+    ui/LocationJumpDialog.cpp \
     main.cpp \
     util/AfsimScriptGenerator.cpp \
     widgets/OsgMapWidget.cpp \
@@ -128,6 +129,7 @@ HEADERS += \
     ui/ModelDeployDialog.h \
     ui/EntityPropertyDialog.h \
     ui/BehaviorPlanningDialog.h \
+    ui/LocationJumpDialog.h \
     util/AfsimScriptGenerator.h \
     widgets/OsgMapWidget.h \
     OsgQt/GraphicsWindowQt.h \
