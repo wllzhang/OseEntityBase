@@ -294,12 +294,9 @@ void OsgMapWidget::setupManipulator()
         });
         
         connect(debounceTimer, &QTimer::timeout, this, [this]() {
-            if (navigationHistory_ && viewer_) {
-                osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer_.get());
-                if (em) {
-                    osgEarth::Viewpoint vp = em->getViewpoint();
-                    navigationHistory_->pushViewpoint(vp);
-                }
+            if (navigationHistory_ && mapStateManager_) {
+                osgEarth::Viewpoint vp = mapStateManager_->getCurrentViewpoint("Auto Save");
+                navigationHistory_->pushViewpoint(vp);
             }
         });
         
@@ -356,12 +353,9 @@ void OsgMapWidget::setMode2D()
     }
     
     // 保存当前视角到导航历史
-    if (navigationHistory_ && viewer_) {
-        osgEarth::Util::EarthManipulator* currentEm = GeoUtils::getEarthManipulator(viewer_.get());
-        if (currentEm) {
-            osgEarth::Viewpoint currentVp = currentEm->getViewpoint();
-            navigationHistory_->pushViewpoint(currentVp);
-        }
+    if (navigationHistory_ && mapStateManager_) {
+        osgEarth::Viewpoint currentVp = mapStateManager_->getCurrentViewpoint("Before 2D Mode");
+        navigationHistory_->pushViewpoint(currentVp);
     }
     
     // 使用EarthManipulator来显示地图
@@ -390,12 +384,9 @@ void OsgMapWidget::setMode3D()
     }
     
     // 保存当前视角到导航历史
-    if (navigationHistory_ && viewer_) {
-        osgEarth::Util::EarthManipulator* currentEm = GeoUtils::getEarthManipulator(viewer_.get());
-        if (currentEm) {
-            osgEarth::Viewpoint currentVp = currentEm->getViewpoint();
-            navigationHistory_->pushViewpoint(currentVp);
-        }
+    if (navigationHistory_ && mapStateManager_) {
+        osgEarth::Viewpoint currentVp = mapStateManager_->getCurrentViewpoint("Before 3D Mode");
+        navigationHistory_->pushViewpoint(currentVp);
     }
     
     // 使用EarthManipulator来显示地图

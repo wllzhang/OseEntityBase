@@ -1294,14 +1294,17 @@ void MainWidget::onOpenPlanClicked()
                     if (osgMapWidget_) {
                         auto viewer = osgMapWidget_->getViewer();
                         if (viewer) {
-                            osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
-                            if (em) {
-                                // 保存当前视角到导航历史（如果存在）
-                                if (osgMapWidget_->getNavigationHistory()) {
-                                    osgEarth::Viewpoint currentVp = em->getViewpoint();
+                            // 保存当前视角到导航历史（如果存在）
+                            if (osgMapWidget_->getNavigationHistory()) {
+                                auto mapStateManager = osgMapWidget_->getMapStateManager();
+                                if (mapStateManager) {
+                                    osgEarth::Viewpoint currentVp = mapStateManager->getCurrentViewpoint("Before Load Plan");
                                     osgMapWidget_->getNavigationHistory()->pushViewpoint(currentVp);
                                 }
-                                
+                            }
+                            
+                            osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+                            if (em) {
                                 osgEarth::Viewpoint vp("Plan", lon, lat, alt, heading, pitch, range);
                                 em->setViewpoint(vp, 2.0);
                                 qDebug() << "恢复相机视角:" << lon << lat << range;
@@ -1334,14 +1337,17 @@ void MainWidget::onOpenPlanClicked()
                     if (osgMapWidget_) {
                         auto viewer = osgMapWidget_->getViewer();
                         if (viewer) {
-                            osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
-                            if (em) {
-                                // 保存当前视角到导航历史（如果存在）
-                                if (osgMapWidget_->getNavigationHistory()) {
-                                    osgEarth::Viewpoint currentVp = em->getViewpoint();
+                            // 保存当前视角到导航历史（如果存在）
+                            if (osgMapWidget_->getNavigationHistory()) {
+                                auto mapStateManager = osgMapWidget_->getMapStateManager();
+                                if (mapStateManager) {
+                                    osgEarth::Viewpoint currentVp = mapStateManager->getCurrentViewpoint("Before Load Plan");
                                     osgMapWidget_->getNavigationHistory()->pushViewpoint(currentVp);
                                 }
-                                
+                            }
+                            
+                            osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+                            if (em) {
                                 osgEarth::Viewpoint vp("Plan", lon, lat, alt, heading, pitch, range);
                                 em->setViewpoint(vp, 2.0);
                                 qDebug() << "恢复相机视角:" << lon << lat << range;
@@ -1632,13 +1638,16 @@ void MainWidget::onMapLoaded()
                 if (osgMapWidget_ && osgMapWidget_->getNavigationHistory()) {
                     auto viewer = osgMapWidget_->getViewer();
                     if (viewer) {
-                        osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
-                        if (em) {
-                            osgEarth::Viewpoint currentVp = em->getViewpoint();
+                        auto mapStateManager = osgMapWidget_->getMapStateManager();
+                        if (mapStateManager) {
+                            osgEarth::Viewpoint currentVp = mapStateManager->getCurrentViewpoint("Current");
                             osgEarth::Viewpoint backVp;
                             if (osgMapWidget_->getNavigationHistory()->goBack(currentVp, backVp)) {
-                                em->setViewpoint(backVp, 1.0);
-                                qDebug() << "导航后退到视角";
+                                osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+                                if (em) {
+                                    em->setViewpoint(backVp, 1.0);
+                                    qDebug() << "导航后退到视角";
+                                }
                             }
                         }
                     }
@@ -1651,13 +1660,16 @@ void MainWidget::onMapLoaded()
                 if (osgMapWidget_ && osgMapWidget_->getNavigationHistory()) {
                     auto viewer = osgMapWidget_->getViewer();
                     if (viewer) {
-                        osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
-                        if (em) {
-                            osgEarth::Viewpoint currentVp = em->getViewpoint();
+                        auto mapStateManager = osgMapWidget_->getMapStateManager();
+                        if (mapStateManager) {
+                            osgEarth::Viewpoint currentVp = mapStateManager->getCurrentViewpoint("Current");
                             osgEarth::Viewpoint forwardVp;
                             if (osgMapWidget_->getNavigationHistory()->goForward(currentVp, forwardVp)) {
-                                em->setViewpoint(forwardVp, 1.0);
-                                qDebug() << "导航前进到视角";
+                                osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+                                if (em) {
+                                    em->setViewpoint(forwardVp, 1.0);
+                                    qDebug() << "导航前进到视角";
+                                }
                             }
                         }
                     }
@@ -2018,32 +2030,27 @@ void MainWidget::onLocationJumpClicked()
     double altitude = dialog.getAltitude();
     double range = dialog.getRange();
 
-    // 获取当前的 EarthManipulator
+    // 获取当前的航向角和俯仰角（保持当前视角）
+    double heading = 0.0;
+    double pitch = -45.0; // 默认俯仰角
+
+    // 从 MapStateManager 获取当前状态（重用之前获取的 mapStateManager）
+    if (mapStateManager) {
+        const MapStateInfo& state = mapStateManager->getCurrentState();
+        heading = state.heading;
+        pitch = state.pitch;
+        
+        // 如果俯仰角太接近水平（大于-10度），设置为默认的-45度
+        if (pitch > -10.0) {
+            pitch = -45.0;
+        }
+    }
+
+    // 获取 EarthManipulator 用于设置视点
     osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
     if (!em) {
         QMessageBox::warning(this, "错误", "无法获取地图操作器，跳转失败");
         return;
-    }
-
-    // 获取当前的航向角和俯仰角（保持当前视角）
-    osgEarth::Viewpoint currentVp = em->getViewpoint();
-    double heading = 0.0;
-    double pitch = -45.0; // 默认俯仰角
-
-    // 尝试从当前视点获取航向角和俯仰角
-    auto headingOpt = currentVp.heading();
-    if (headingOpt.isSet()) {
-        heading = headingOpt.get().as(osgEarth::Units::DEGREES);
-    }
-    
-    auto pitchOpt = currentVp.pitch();
-    if (pitchOpt.isSet()) {
-        pitch = pitchOpt.get().as(osgEarth::Units::DEGREES);
-    }
-
-    // 如果俯仰角太接近水平（大于-10度），设置为默认的-45度
-    if (pitch > -10.0) {
-        pitch = -45.0;
     }
 
     // 创建新的视点并跳转
@@ -2199,19 +2206,16 @@ void MainWidget::focusEntity(GeoEntity* entity)
         return;
     }
 
-    osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
-    if (!em) {
-        return;
-    }
-
     double lon = 0.0, lat = 0.0, alt = 0.0;
     entity->getPosition(lon, lat, alt);
 
-    double heading = em->getViewpoint().getHeading();
+    // 从 MapStateManager 获取当前状态
+    double heading = 0.0;
     double pitch = -45.0;
-    double range = qMax(3000.0, em->getViewpoint().getRange() * 0.5);
+    double range = 10000000.0; // 默认值
 
-    if (auto mapState = osgMapWidget_->getMapStateManager()) {
+    auto mapState = osgMapWidget_->getMapStateManager();
+    if (mapState) {
         const auto& state = mapState->getCurrentState();
         heading = state.heading;
         pitch = state.pitch;
@@ -2219,6 +2223,12 @@ void MainWidget::focusEntity(GeoEntity* entity)
             pitch = -45.0;
         }
         range = qMax(3000.0, state.range * 0.5);
+    }
+
+    // 获取 EarthManipulator 用于设置视点
+    osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+    if (!em) {
+        return;
     }
 
     std::string nameStd = entity->getName().toStdString();

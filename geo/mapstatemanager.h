@@ -105,6 +105,13 @@ public:
     const MapStateInfo& getCurrentState() const { return currentState_; }
     
     /**
+     * @brief 获取当前视点的 Viewpoint 对象
+     * @param name 视点名称（默认为 "Current"）
+     * @return 当前视点的 Viewpoint 对象
+     */
+    osgEarth::Viewpoint getCurrentViewpoint(const QString& name = "Current") const;
+    
+    /**
      * @brief 根据屏幕坐标获取地理坐标（统一接口，避免重复调用）
      * @param screenPos 屏幕坐标
      * @param longitude 输出经度

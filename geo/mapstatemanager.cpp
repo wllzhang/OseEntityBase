@@ -237,6 +237,29 @@ void MapStateManager::updateMouseGeoPosition(QPoint mousePos)
     }
 }
 
+osgEarth::Viewpoint MapStateManager::getCurrentViewpoint(const QString& name) const
+{
+    // 创建 Viewpoint 对象并使用 setter 方法设置属性
+    osgEarth::Viewpoint vp;
+    vp.name() = name.toStdString();
+    
+    // 设置焦点位置（经纬度和高度）
+    osgEarth::GeoPoint focalPoint(
+        osgEarth::SpatialReference::get("wgs84"),
+        currentState_.viewLongitude,
+        currentState_.viewLatitude,
+        currentState_.viewAltitude
+    );
+    vp.focalPoint() = focalPoint;
+    
+    // 设置角度和距离
+    vp.heading() = osgEarth::Angle(currentState_.heading, osgEarth::Units::DEGREES);
+    vp.pitch() = osgEarth::Angle(currentState_.pitch, osgEarth::Units::DEGREES);
+    vp.range() = osgEarth::Distance(currentState_.range, osgEarth::Units::METERS);
+    
+    return vp;
+}
+
 bool MapStateManager::getGeoCoordinatesFromScreen(QPoint screenPos, double& longitude, double& latitude, double& altitude)
 {
     // 使用工具函数进行坐标转换
