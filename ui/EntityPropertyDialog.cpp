@@ -94,7 +94,7 @@ void EntityPropertyDialog::setupUI()
     // 按钮区域
     QHBoxLayout* buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch();
-    QPushButton* saveButton = new QPushButton("保存", this);
+    QPushButton* saveButton = new QPushButton("应用", this);
     QPushButton* cancelButton = new QPushButton("取消", this);
     connect(saveButton, &QPushButton::clicked, this, &EntityPropertyDialog::onSaveClicked);
     connect(cancelButton, &QPushButton::clicked, this, &EntityPropertyDialog::onCancelClicked);

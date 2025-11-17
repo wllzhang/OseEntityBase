@@ -468,7 +468,7 @@ BehaviorPlanningDialog::BehaviorPlanningDialog(QWidget* parent)
     buttonLayout->setContentsMargins(0, 0, 0, 0);
     buttonLayout->setSpacing(10);
     clearButton_ = new QPushButton(QString::fromUtf8(u8"清除行为"), editorPanel);
-    saveButton_ = new QPushButton(QString::fromUtf8(u8"保存"), editorPanel);
+    saveButton_ = new QPushButton(QString::fromUtf8(u8"应用"), editorPanel);
     auto* closeButton = new QPushButton(QString::fromUtf8(u8"关闭"), editorPanel);
     buttonLayout->addWidget(clearButton_);
     buttonLayout->addStretch();
