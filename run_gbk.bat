@@ -15,6 +15,8 @@ if exist "release\ScenePlan2.exe" (
     popd
     exit /b 1
 )
+echo [INFO] 检查并终止正在运行的 ScenePlan2.exe...
+taskkill /F /IM ScenePlan2.exe >nul 2>&1
 
 :: 创建临时批处理文件来运行程序
 set "TEMP_BAT=%TEMP%\run_sceneplan2_gbk_%RANDOM%.bat"
