@@ -446,16 +446,19 @@ osgEarth::ImageLayer* BaseMapManager::createImageLayer(const BaseMapSource& sour
     }
     
     // 对于网络瓦片服务（xyz驱动），设置网络超时和重试参数
-    // 避免无网络时长时间等待导致界面卡死
+    // 避免无网络时长时间等待导致界面卡死，但网络恢复后能自动重试
     if (source.driver == "xyz" || source.url.startsWith("http://") || source.url.startsWith("https://")) {
         // 设置HTTP请求超时（秒）
         layerConfig.set("timeout", "5");
         // 设置连接超时（秒）
         layerConfig.set("connect_timeout", "3");
-        // 设置重试次数
-        layerConfig.set("retries", "1");
+        // 设置重试次数（网络恢复后会自动重试失败的瓦片）
+        // 注意：这个重试次数是针对单次请求的，osgEarth会在渲染时自动重试失败的瓦片
+        layerConfig.set("retries", "2");
         // 设置最大并发请求数（避免过多请求导致阻塞）
         layerConfig.set("max_connections", "4");
+        // 启用自动重试失败的瓦片（osgEarth会在需要时自动重试）
+        layerConfig.set("retry_delay", "2");  // 重试延迟（秒）
     }
     
     // 创建ImageLayerOptions
@@ -464,13 +467,16 @@ osgEarth::ImageLayer* BaseMapManager::createImageLayer(const BaseMapSource& sour
     // 创建ImageLayer
     osgEarth::ImageLayer* layer = new osgEarth::ImageLayer(options);
     
-    if (!layer || !layer->getStatus().isOK()) {
-        qDebug() << "BaseMapManager: ImageLayer创建失败或状态异常";
-        if (layer) {
-            qDebug() << "BaseMapManager: 错误信息:" << layer->getStatus().message().c_str();
-            layer->unref();
-        }
+    if (!layer) {
+        qDebug() << "BaseMapManager: ImageLayer创建失败";
         return nullptr;
+    }
+    
+    // 检查图层状态，但即使状态不是OK也继续（网络恢复后会自动重试）
+    if (!layer->getStatus().isOK()) {
+        qDebug() << "BaseMapManager: ImageLayer初始状态异常（可能是网络问题）:" 
+                 << layer->getStatus().message().c_str();
+        qDebug() << "BaseMapManager: 图层仍会被添加，网络恢复后会自动重试加载";
     }
     
     return layer;
