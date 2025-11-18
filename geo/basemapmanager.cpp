@@ -456,7 +456,7 @@ osgEarth::ImageLayer* BaseMapManager::createImageLayer(const BaseMapSource& sour
         // 注意：这个重试次数是针对单次请求的，osgEarth会在渲染时自动重试失败的瓦片
         layerConfig.set("retries", "2");
         // 设置最大并发请求数（避免过多请求导致阻塞）
-        layerConfig.set("max_connections", "4");
+        layerConfig.set("max_connections", "20");
         // 启用自动重试失败的瓦片（osgEarth会在需要时自动重试）
         layerConfig.set("retry_delay", "2");  // 重试延迟（秒）
     }

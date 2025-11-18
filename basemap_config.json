@@ -1,5 +1,6 @@
 {
     "layerOrder": [
+        "栅格渲染",
         "路网",
         "卫星",
         "本地tif"
@@ -9,11 +10,21 @@
             "cacheEnabled": true,
             "driver": "xyz",
             "format": "",
+            "name": "栅格渲染",
+            "opacity": 100,
+            "profile": "spherical-mercator",
+            "url": "https://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}",
+            "visible": true
+        },
+        {
+            "cacheEnabled": true,
+            "driver": "xyz",
+            "format": "",
             "name": "路网",
             "opacity": 100,
             "profile": "spherical-mercator",
             "url": "https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}",
-            "visible": true
+            "visible": false
         },
         {
             "cacheEnabled": true,
@@ -23,7 +34,7 @@
             "opacity": 100,
             "profile": "spherical-mercator",
             "url": "https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-            "visible": true
+            "visible": false
         },
         {
             "cacheEnabled": false,
@@ -33,7 +44,7 @@
             "opacity": 100,
             "profile": "wgs84",
             "url": "D:/OSG/osgqtlib/earth/world.tif",
-            "visible": true
+            "visible": false
         }
     ]
 }
