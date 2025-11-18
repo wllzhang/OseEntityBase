@@ -176,6 +176,11 @@ private slots:
      * @brief 角度测算按钮点击：进入方位/俯仰角计算模式
      */
     void onAngleMeasureClicked();
+    
+    /**
+     * @brief 底图管理按钮点击：打开底图管理对话框
+     */
+    void onBaseMapManageClicked();
 
     void onBehaviorPlanningClicked();
 

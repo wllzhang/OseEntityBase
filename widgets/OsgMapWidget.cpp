@@ -24,8 +24,10 @@
 #include "../geo/mapstatemanager.h"
 #include "../geo/geoutils.h"
 #include "../geo/navigationhistory.h"
+#include "../geo/basemapmanager.h"
 #include "../plan/planfilemanager.h"
 #include "MapInfoOverlay.h"
+#include <osgEarth/Map>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
@@ -45,6 +47,7 @@ OsgMapWidget::OsgMapWidget(QWidget *parent)
     , planFileManager_(nullptr)
     , mapInfoOverlay_(nullptr)
     , navigationHistory_(nullptr)
+    , baseMapManager_(nullptr)
 {
     // 启用拖放功能
     setAcceptDrops(true);
@@ -186,63 +189,61 @@ void OsgMapWidget::loadMap()
     // 清除现有场景
     root_->removeChildren(0, root_->getNumChildren());
     
-    QString earthPath = ":/earth/my.earth";
+    qDebug() << "开始创建地图（使用BaseMapManager）";
     
-    // 使用工具函数将Qt资源路径转换为文件路径
-    QString errorMsg;
-    QString filePath = GeoUtils::convertResourcePathToFile(earthPath, &errorMsg);
-    if (filePath.isEmpty()) {
-        qDebug() << "无法转换资源路径:" << errorMsg;
-        return;
-    }
+    // 创建osgEarth Map对象（对应my.earth的配置）
+    osg::ref_ptr<osgEarth::Map> map = new osgEarth::Map();
+    map->setName("OpenStreetMap Globe");
     
-    qDebug() << "加载地图:" << earthPath;
+    // 创建底图管理器
+    baseMapManager_ = new BaseMapManager(map.get(), this);
     
-    osg::ref_ptr<osg::Node> node = osgDB::readNodeFile(filePath.toStdString());
-    if (node.valid()) {
-        root_->addChild(node);
-        mapNode_ = osgEarth::MapNode::findMapNode(node.get());
-        if (mapNode_) {
-            qDebug() << "地图加载成功 - MapNode已找到";
-            qDebug() << "地图节点路径:" << filePath;
+    // 设置默认底图（无底图，对应my.earth的默认状态）
+    baseMapManager_->setDefaultBaseMap();
+    
+    // 创建MapNode
+    mapNode_ = new osgEarth::MapNode(map.get());
+    
+    if (mapNode_) {
+        // 将MapNode添加到场景根节点
+        root_->addChild(mapNode_.get());
+        
+        qDebug() << "地图创建成功 - MapNode已创建";
+        
+        // 初始化实体管理器
+        if (!entityManager_) {
+            entityManager_ = new GeoEntityManager(root_.get(), mapNode_.get(), this);
+            entityManager_->setViewer(viewer_.get());
+            qDebug() << "实体管理器初始化完成";
+        }
+        
+        // 初始化地图状态管理器
+        if (!mapStateManager_) {
+            mapStateManager_ = new MapStateManager(viewer_.get(), this);
+            qDebug() << "地图状态管理器初始化完成";
             
-            // 初始化实体管理器
-            if (!entityManager_) {
-                entityManager_ = new GeoEntityManager(root_.get(), mapNode_.get(), this);
-                entityManager_->setViewer(viewer_.get());
-                qDebug() << "实体管理器初始化完成";
+            // 设置GLWidget的管理器
+            if (gw_ && gw_->getGLWidget()) {
+                gw_->getGLWidget()->setMapStateManager(mapStateManager_);
+                gw_->getGLWidget()->setEntityManager(entityManager_);
+                qDebug() << "管理器已设置到GLWidget";
             }
             
-            // 初始化地图状态管理器
-            if (!mapStateManager_) {
-                mapStateManager_ = new MapStateManager(viewer_.get(), this);
-                qDebug() << "地图状态管理器初始化完成";
-                
-                // 设置GLWidget的管理器
-                if (gw_ && gw_->getGLWidget()) {
-                    gw_->getGLWidget()->setMapStateManager(mapStateManager_);
-                    gw_->getGLWidget()->setEntityManager(entityManager_);
-                    qDebug() << "管理器已设置到GLWidget";
-                }
-                
-                // 将MapStateManager注入到EntityManager
-                if (entityManager_ && mapStateManager_) {
-                    entityManager_->setMapStateManager(mapStateManager_);
-                }
+            // 将MapStateManager注入到EntityManager
+            if (entityManager_ && mapStateManager_) {
+                entityManager_->setMapStateManager(mapStateManager_);
             }
-            
-            // 检查OSG渲染状态
-            if (viewer_ && viewer_->getCamera()) {
-                qDebug() << "OSG相机已初始化，清除颜色:" 
-                         << viewer_->getCamera()->getClearColor().r() << ","
-                         << viewer_->getCamera()->getClearColor().g() << ","
-                         << viewer_->getCamera()->getClearColor().b();
-            }
-        } else {
-            qDebug() << "警告：未找到MapNode - 地图可能未正确加载";
+        }
+        
+        // 检查OSG渲染状态
+        if (viewer_ && viewer_->getCamera()) {
+            qDebug() << "OSG相机已初始化，清除颜色:" 
+                     << viewer_->getCamera()->getClearColor().r() << ","
+                     << viewer_->getCamera()->getClearColor().g() << ","
+                     << viewer_->getCamera()->getClearColor().b();
         }
     } else {
-        qDebug() << "错误：地图加载失败 - 无法读取节点文件:" << filePath;
+        qDebug() << "错误：MapNode创建失败";
     }
 }
 
@@ -542,4 +543,14 @@ void OsgMapWidget::dropEvent(QDropEvent* event)
         qDebug() << "OsgMapWidget: 实体创建失败";
         event->ignore();
     }
+}
+
+bool OsgMapWidget::switchBaseMap(const QString& mapName)
+{
+    if (!baseMapManager_) {
+        qDebug() << "OsgMapWidget: BaseMapManager为空，无法切换底图";
+        return false;
+    }
+    
+    return baseMapManager_->switchToBaseMap(mapName);
 }

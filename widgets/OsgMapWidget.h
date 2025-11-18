@@ -33,6 +33,7 @@ namespace osgEarth {
 class GeoEntityManager;
 class MapStateManager;
 class NavigationHistory;
+class BaseMapManager;
 
 /**
  * @brief OSG地图Widget组件
@@ -122,6 +123,19 @@ public:
      * @return 导航历史管理器指针
      */
     NavigationHistory* getNavigationHistory() const { return navigationHistory_; }
+    
+    /**
+     * @brief 获取底图管理器
+     * @return 底图管理器指针
+     */
+    BaseMapManager* getBaseMapManager() const { return baseMapManager_; }
+    
+    /**
+     * @brief 切换底图
+     * @param mapName 底图名称
+     * @return 成功返回true，失败返回false
+     */
+    bool switchBaseMap(const QString& mapName);
 
     /**
      * @brief 合成鼠标释放事件
@@ -191,7 +205,7 @@ private:
     /**
      * @brief 加载osgEarth地图
      * 
-     * 从earth/my.earth文件加载地图配置
+     * 使用BaseMapManager创建地图，不再从文件加载
      */
     void loadMap();
     
@@ -220,6 +234,9 @@ private:
     
     // 导航历史管理器
     NavigationHistory* navigationHistory_;         // 导航历史管理器
+    
+    // 底图管理器
+    BaseMapManager* baseMapManager_;              // 底图管理器
 };
 
 #endif // OSGMAPWIDGET_H

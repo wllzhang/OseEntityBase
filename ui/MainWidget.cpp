@@ -11,6 +11,7 @@
 #include "EntityPropertyDialog.h"
 #include "EntityManagementDialog.h"
 #include "LocationJumpDialog.h"
+#include "BaseMapDialog.h"
 #include "../plan/planfilemanager.h"
 #include "../geo/geoutils.h"
 #include <QLabel>
@@ -519,6 +520,8 @@ void MainWidget::createSubNavigation()
     connect(areaBtn, &QPushButton::clicked, this, &MainWidget::onAreaMeasureClicked);
     // 角度测算
     connect(angleBtn, &QPushButton::clicked, this, &MainWidget::onAngleMeasureClicked);
+    // 底图管理
+    connect(baseMapBtn, &QPushButton::clicked, this, &MainWidget::onBaseMapManageClicked);
 
     // 点标绘按钮
     connect(pointBtn, &QPushButton::clicked, this, [this]() {
@@ -720,6 +723,30 @@ void MainWidget::onLineDrawClicked()
     QMessageBox::information(this, "直线标绘", "请在地图上依次左键点击两个位置绘制直线，右键取消。");
 }
 
+
+void MainWidget::onBaseMapManageClicked()
+{
+    if (!osgMapWidget_) {
+        QMessageBox::warning(this, "底图管理", "地图控件未初始化");
+        return;
+    }
+    
+    BaseMapManager* baseMapManager = osgMapWidget_->getBaseMapManager();
+    if (!baseMapManager) {
+        QMessageBox::warning(this, "底图管理", "底图管理器未初始化");
+        return;
+    }
+    
+    // 创建并显示底图管理对话框
+    BaseMapDialog* dialog = new BaseMapDialog(baseMapManager, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->exec();
+    
+    // 对话框关闭后，恢复焦点到地图窗口，确保相机控制正常
+    if (osgMapWidget_) {
+        osgMapWidget_->setFocus();
+    }
+}
 
 void MainWidget::onAngleMeasureClicked()
 {

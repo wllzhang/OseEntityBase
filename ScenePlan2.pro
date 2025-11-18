@@ -100,6 +100,7 @@ SOURCES += \
     ui/EntityPropertyDialog.cpp \
     ui/BehaviorPlanningDialog.cpp \
     ui/LocationJumpDialog.cpp \
+    ui/BaseMapDialog.cpp \
     main.cpp \
     util/AfsimScriptGenerator.cpp \
     widgets/OsgMapWidget.cpp \
@@ -113,6 +114,7 @@ SOURCES += \
     geo/waypointentity.cpp \
     geo/geoutils.cpp \
     geo/navigationhistory.cpp \
+    geo/basemapmanager.cpp \
     util/databaseutils.cpp \
     plan/planfilemanager.cpp \
     widgets/MapInfoOverlay.cpp \
@@ -130,6 +132,7 @@ HEADERS += \
     ui/EntityPropertyDialog.h \
     ui/BehaviorPlanningDialog.h \
     ui/LocationJumpDialog.h \
+    ui/BaseMapDialog.h \
     util/AfsimScriptGenerator.h \
     widgets/OsgMapWidget.h \
     OsgQt/GraphicsWindowQt.h \
@@ -142,6 +145,7 @@ HEADERS += \
     geo/waypointentity.h \
     geo/geoutils.h \
     geo/navigationhistory.h \
+    geo/basemapmanager.h \
     util/databaseutils.h \
     plan/planfilemanager.h \
     widgets/MapInfoOverlay.h \

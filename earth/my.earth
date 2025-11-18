@@ -7,20 +7,27 @@
         <cache_enabled>true</cache_enabled>
     </image>
      -->
-    <image name="格栅渲染" driver="xyz">
+    <!-- <image name="格栅渲染" driver="xyz">
         <url>https://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=7&amp;x={x}&amp;y={y}&amp;z={z}</url>
         <profile>spherical-mercator</profile>
         <cache_enabled>true</cache_enabled>
-    </image>
+    </image> -->
   <!-- <image name="路网" driver="xyz">
         <url>https://webst01.is.autonavi.com/appmaptile?style=8&amp;x={x}&amp;y={y}&amp;z={z}</url>
         <profile>spherical-mercator</profile>
         <cache_enabled>true</cache_enabled>
     </image> -->
 
+    
+    <!-- 本地图像，随意指定一个world.tif -->
+    <!-- <image name="local tif" driver="gdal">
+        <url>D:/OSG/osgqtlib/osgEarthmy_osgb/earth/world.tif</url>
+    </image> -->
+    
     <!-- <elevation name="高程数据" driver="xyz">
         <url>https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png</url>
         <profile>spherical-mercator</profile>
         <format>terrarium</format> 
     </elevation> -->
+   
 </map>
