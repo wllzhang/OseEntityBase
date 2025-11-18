@@ -445,6 +445,19 @@ osgEarth::ImageLayer* BaseMapManager::createImageLayer(const BaseMapSource& sour
         layerConfig.set("cache_enabled", "true");
     }
     
+    // 对于网络瓦片服务（xyz驱动），设置网络超时和重试参数
+    // 避免无网络时长时间等待导致界面卡死
+    if (source.driver == "xyz" || source.url.startsWith("http://") || source.url.startsWith("https://")) {
+        // 设置HTTP请求超时（秒）
+        layerConfig.set("timeout", "5");
+        // 设置连接超时（秒）
+        layerConfig.set("connect_timeout", "3");
+        // 设置重试次数
+        layerConfig.set("retries", "1");
+        // 设置最大并发请求数（避免过多请求导致阻塞）
+        layerConfig.set("max_connections", "4");
+    }
+    
     // 创建ImageLayerOptions
     osgEarth::ImageLayerOptions options(layerConfig);
     
