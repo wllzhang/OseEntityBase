@@ -10,6 +10,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QList>
 #include <QMap>
 #include <QJsonObject>
@@ -143,6 +144,26 @@ public:
      * @return 成功返回true
      */
     bool loadConfig(const QString& filePath);
+    
+    /**
+     * @brief 将底图图层上移（在叠加顺序中向上移动，显示更上层）
+     * @param mapName 底图名称
+     * @return 成功返回true
+     */
+    bool moveLayerUp(const QString& mapName);
+    
+    /**
+     * @brief 将底图图层下移（在叠加顺序中向下移动，显示更下层）
+     * @param mapName 底图名称
+     * @return 成功返回true
+     */
+    bool moveLayerDown(const QString& mapName);
+    
+    /**
+     * @brief 获取底图图层的叠加顺序（从上到下，索引0是最上层）
+     * @return 底图名称列表，列表第一行（索引0）是最上层
+     */
+    QStringList getLayerOrder() const;
 
 signals:
     /**
@@ -190,10 +211,16 @@ private:
      */
     osgEarth::ImageLayer* findLayerByName(const QString& name) const;
 
+    /**
+     * @brief 重新排序所有图层（根据layerOrder_的顺序）
+     */
+    void reorderLayers();
+    
     osgEarth::Map* map_;                           // osgEarth Map对象
     QList<BaseMapSource> baseMapTemplates_;         // 预定义的底图配置模板
     QMap<QString, osg::ref_ptr<osgEarth::ImageLayer>> loadedLayers_;  // 已加载的底图图层（名称->图层）
     QMap<QString, BaseMapSource> loadedConfigs_;   // 已加载的底图配置（名称->配置）
+    QStringList layerOrder_;                       // 图层顺序列表（从上到下，索引0是最上层，对应列表第一行）
     QString configFilePath_;                       // 配置文件路径
 };
 

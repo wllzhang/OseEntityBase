@@ -86,16 +86,22 @@ void BaseMapDialog::setupUI()
     addFromTemplateButton_ = new QPushButton("从模板添加", this);
     editButton_ = new QPushButton("编辑", this);
     deleteButton_ = new QPushButton("删除", this);
+    moveUpButton_ = new QPushButton("上移", this);
+    moveDownButton_ = new QPushButton("下移", this);
     
     connect(addButton_, &QPushButton::clicked, this, &BaseMapDialog::onAddClicked);
     connect(addFromTemplateButton_, &QPushButton::clicked, this, &BaseMapDialog::onAddFromTemplateClicked);
     connect(editButton_, &QPushButton::clicked, this, &BaseMapDialog::onEditClicked);
     connect(deleteButton_, &QPushButton::clicked, this, &BaseMapDialog::onDeleteClicked);
+    connect(moveUpButton_, &QPushButton::clicked, this, &BaseMapDialog::onMoveUpClicked);
+    connect(moveDownButton_, &QPushButton::clicked, this, &BaseMapDialog::onMoveDownClicked);
     
     buttonLayout->addWidget(addButton_);
     buttonLayout->addWidget(addFromTemplateButton_);
     buttonLayout->addWidget(editButton_);
     buttonLayout->addWidget(deleteButton_);
+    buttonLayout->addWidget(moveUpButton_);
+    buttonLayout->addWidget(moveDownButton_);
     buttonLayout->addStretch();
     
     QPushButton* okButton = new QPushButton("确定", this);
@@ -403,6 +409,52 @@ void BaseMapDialog::onDeleteClicked()
         } else {
             QMessageBox::warning(this, "删除底图", "底图删除失败");
         }
+    }
+}
+
+void BaseMapDialog::onMoveUpClicked()
+{
+    QString mapName = getSelectedBaseMapName();
+    if (mapName.isEmpty()) {
+        QMessageBox::information(this, "上移图层", "请先选择一个底图");
+        return;
+    }
+    
+    if (baseMapManager_->moveLayerUp(mapName)) {
+        updateBaseMapList();  // 刷新列表显示
+        // 保持选中状态
+        for (int i = 0; i < treeWidget_->topLevelItemCount(); ++i) {
+            QTreeWidgetItem* item = treeWidget_->topLevelItem(i);
+            if (item && item->text(0) == mapName) {
+                treeWidget_->setCurrentItem(item);
+                break;
+            }
+        }
+    } else {
+        QMessageBox::information(this, "上移图层", "图层已在最上层，无法继续上移");
+    }
+}
+
+void BaseMapDialog::onMoveDownClicked()
+{
+    QString mapName = getSelectedBaseMapName();
+    if (mapName.isEmpty()) {
+        QMessageBox::information(this, "下移图层", "请先选择一个底图");
+        return;
+    }
+    
+    if (baseMapManager_->moveLayerDown(mapName)) {
+        updateBaseMapList();  // 刷新列表显示
+        // 保持选中状态
+        for (int i = 0; i < treeWidget_->topLevelItemCount(); ++i) {
+            QTreeWidgetItem* item = treeWidget_->topLevelItem(i);
+            if (item && item->text(0) == mapName) {
+                treeWidget_->setCurrentItem(item);
+                break;
+            }
+        }
+    } else {
+        QMessageBox::information(this, "下移图层", "图层已在最下层，无法继续下移");
     }
 }
 

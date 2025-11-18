@@ -124,6 +124,9 @@ bool BaseMapManager::addBaseMapLayer(const BaseMapSource& source)
     loadedLayers_[source.name] = layer;
     loadedConfigs_[source.name] = source;
     
+    // 添加到顺序列表（新图层默认在最上层，即列表第一行）
+    layerOrder_.prepend(source.name);
+    
     qDebug() << "BaseMapManager: 成功添加底图图层:" << source.name;
     emit baseMapAdded(source.name);
     
@@ -144,6 +147,7 @@ bool BaseMapManager::removeBaseMapLayer(const QString& mapName)
     
     loadedLayers_.remove(mapName);
     loadedConfigs_.remove(mapName);
+    layerOrder_.removeAll(mapName);  // 从顺序列表中移除
     
     qDebug() << "BaseMapManager: 成功移除底图图层:" << mapName;
     emit baseMapRemoved(mapName);
@@ -214,10 +218,92 @@ bool BaseMapManager::setBaseMapOpacity(const QString& mapName, int opacity)
 QList<QPair<QString, BaseMapSource>> BaseMapManager::getLoadedBaseMaps() const
 {
     QList<QPair<QString, BaseMapSource>> result;
-    for (auto it = loadedConfigs_.constBegin(); it != loadedConfigs_.constEnd(); ++it) {
-        result.append(qMakePair(it.key(), it.value()));
+    // 按照layerOrder_的顺序返回
+    for (const QString& name : layerOrder_) {
+        if (loadedConfigs_.contains(name)) {
+            result.append(qMakePair(name, loadedConfigs_[name]));
+        }
     }
     return result;
+}
+
+QStringList BaseMapManager::getLayerOrder() const
+{
+    return layerOrder_;
+}
+
+bool BaseMapManager::moveLayerUp(const QString& mapName)
+{
+    if (!hasBaseMap(mapName)) {
+        return false;
+    }
+    
+    int index = layerOrder_.indexOf(mapName);
+    if (index <= 0) {
+        // 已经在列表第一行（最上层）或不存在
+        return false;
+    }
+    
+    // 在列表中向上移动（索引减小）→ 在图层中更上层
+    layerOrder_.swap(index, index - 1);
+    
+    // 重新排序图层
+    reorderLayers();
+    
+    qDebug() << "BaseMapManager: 图层上移:" << mapName;
+    return true;
+}
+
+bool BaseMapManager::moveLayerDown(const QString& mapName)
+{
+    if (!hasBaseMap(mapName)) {
+        return false;
+    }
+    
+    int index = layerOrder_.indexOf(mapName);
+    if (index < 0 || index >= layerOrder_.size() - 1) {
+        // 已经在列表最后一行（最下层）或不存在
+        return false;
+    }
+    
+    // 在列表中向下移动（索引增大）→ 在图层中更下层
+    layerOrder_.swap(index, index + 1);
+    
+    // 重新排序图层
+    reorderLayers();
+    
+    qDebug() << "BaseMapManager: 图层下移:" << mapName;
+    return true;
+}
+
+void BaseMapManager::reorderLayers()
+{
+    if (!map_) {
+        return;
+    }
+    
+    // 移除所有图层
+    for (const QString& name : layerOrder_) {
+        if (loadedLayers_.contains(name)) {
+            osgEarth::ImageLayer* layer = loadedLayers_[name].get();
+            if (layer) {
+                map_->removeLayer(layer);
+            }
+        }
+    }
+    
+    // 按照新顺序重新添加图层
+    // layerOrder_[0] 是最上层（列表第一行），layerOrder_[size-1] 是最下层（列表最后一行）
+    // osgEarth 中后添加的图层在上层，所以从后往前添加（先添加最下层，最后添加最上层）
+    for (int i = layerOrder_.size() - 1; i >= 0; --i) {
+        const QString& name = layerOrder_[i];
+        if (loadedLayers_.contains(name)) {
+            osgEarth::ImageLayer* layer = loadedLayers_[name].get();
+            if (layer) {
+                map_->addLayer(layer);
+            }
+        }
+    }
 }
 
 QList<BaseMapSource> BaseMapManager::getAvailableBaseMapTemplates() const
@@ -243,12 +329,21 @@ bool BaseMapManager::saveConfig(const QString& filePath) const
     QJsonObject root;
     QJsonArray layersArray;
     
-    // 保存所有已加载的底图配置
-    for (auto it = loadedConfigs_.constBegin(); it != loadedConfigs_.constEnd(); ++it) {
-        layersArray.append(it.value().toJson());
+    // 按照layerOrder_的顺序保存图层
+    for (const QString& name : layerOrder_) {
+        if (loadedConfigs_.contains(name)) {
+            layersArray.append(loadedConfigs_[name].toJson());
+        }
     }
     
     root["layers"] = layersArray;
+    
+    // 保存图层顺序
+    QJsonArray orderArray;
+    for (const QString& name : layerOrder_) {
+        orderArray.append(name);
+    }
+    root["layerOrder"] = orderArray;
     
     QJsonDocument doc(root);
     QFile file(filePath);
@@ -291,10 +386,35 @@ bool BaseMapManager::loadConfig(const QString& filePath)
         removeBaseMapLayer(name);
     }
     
+    layerOrder_.clear();  // 清空顺序列表
+    
     // 加载配置的图层
     for (const QJsonValue& value : layersArray) {
         BaseMapSource source = BaseMapSource::fromJson(value.toObject());
         addBaseMapLayer(source);
+    }
+    
+    // 如果配置中有保存的图层顺序，使用保存的顺序
+    if (root.contains("layerOrder")) {
+        QJsonArray orderArray = root["layerOrder"].toArray();
+        QStringList savedOrder;
+        for (const QJsonValue& value : orderArray) {
+            savedOrder.append(value.toString());
+        }
+        
+        // 验证保存的顺序是否有效（所有图层都存在）
+        bool validOrder = true;
+        for (const QString& name : savedOrder) {
+            if (!hasBaseMap(name)) {
+                validOrder = false;
+                break;
+            }
+        }
+        
+        if (validOrder && savedOrder.size() == layerOrder_.size()) {
+            layerOrder_ = savedOrder;
+            reorderLayers();  // 按照保存的顺序重新排序
+        }
     }
     
     configFilePath_ = filePath;

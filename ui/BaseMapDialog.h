@@ -68,6 +68,16 @@ private slots:
     void onDeleteClicked();
     
     /**
+     * @brief 上移按钮点击槽函数（图层向上移动，显示更上层）
+     */
+    void onMoveUpClicked();
+    
+    /**
+     * @brief 下移按钮点击槽函数（图层向下移动，显示更下层）
+     */
+    void onMoveDownClicked();
+    
+    /**
      * @brief 确定按钮点击槽函数
      */
     void onOkClicked();
@@ -140,6 +150,8 @@ private:
     QPushButton* addFromTemplateButton_; // 从模板添加按钮
     QPushButton* editButton_;          // 编辑按钮
     QPushButton* deleteButton_;        // 删除按钮
+    QPushButton* moveUpButton_;        // 上移按钮
+    QPushButton* moveDownButton_;      // 下移按钮
 };
 
 #endif // BASEMAPDIALOG_H
