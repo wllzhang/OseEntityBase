@@ -198,8 +198,8 @@ void OsgMapWidget::loadMap()
     // 创建底图管理器
     baseMapManager_ = new BaseMapManager(map.get(), this);
     
-    // 设置默认底图（无底图，对应my.earth的默认状态）
-    baseMapManager_->setDefaultBaseMap();
+    // 默认无底图（对应my.earth的默认状态）
+    // 用户可以后续通过底图管理对话框添加底图图层
     
     // 创建MapNode
     mapNode_ = new osgEarth::MapNode(map.get());
@@ -547,10 +547,9 @@ void OsgMapWidget::dropEvent(QDropEvent* event)
 
 bool OsgMapWidget::switchBaseMap(const QString& mapName)
 {
-    if (!baseMapManager_) {
-        qDebug() << "OsgMapWidget: BaseMapManager为空，无法切换底图";
-        return false;
-    }
-    
-    return baseMapManager_->switchToBaseMap(mapName);
+    // 此方法已废弃，现在使用叠加模式
+    // 保留此方法以保持兼容性，但实际功能已由BaseMapDialog管理
+    Q_UNUSED(mapName);
+    qDebug() << "OsgMapWidget: switchBaseMap已废弃，请使用BaseMapDialog管理底图";
+    return false;
 }

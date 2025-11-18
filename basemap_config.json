@@ -1,0 +1,34 @@
+{
+    "layers": [
+        {
+            "cacheEnabled": true,
+            "driver": "xyz",
+            "format": "",
+            "name": "卫星",
+            "opacity": 100,
+            "profile": "spherical-mercator",
+            "url": "https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+            "visible": true
+        },
+        {
+            "cacheEnabled": false,
+            "driver": "gdal",
+            "format": "",
+            "name": "本地tif",
+            "opacity": 56,
+            "profile": "wgs84",
+            "url": "D:/OSG/osgqtlib/earth/world.tif",
+            "visible": true
+        },
+        {
+            "cacheEnabled": true,
+            "driver": "xyz",
+            "format": "",
+            "name": "路网",
+            "opacity": 100,
+            "profile": "spherical-mercator",
+            "url": "https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}",
+            "visible": true
+        }
+    ]
+}

@@ -737,15 +737,11 @@ void MainWidget::onBaseMapManageClicked()
         return;
     }
     
-    // 创建并显示底图管理对话框
+    // 创建并显示底图管理对话框（非模态）
     BaseMapDialog* dialog = new BaseMapDialog(baseMapManager, this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->exec();
-    
-    // 对话框关闭后，恢复焦点到地图窗口，确保相机控制正常
-    if (osgMapWidget_) {
-        osgMapWidget_->setFocus();
-    }
+    dialog->setModal(false); // 设置为非模态，允许切换到其他窗口
+    dialog->show();
 }
 
 void MainWidget::onAngleMeasureClicked()

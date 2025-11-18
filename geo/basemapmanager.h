@@ -11,7 +11,13 @@
 #include <QObject>
 #include <QString>
 #include <QList>
+#include <QMap>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QPair>
 #include <osgEarth/Map>
+#include <osg/ref_ptr>
 
 // 前向声明
 namespace osgEarth {
@@ -22,23 +28,31 @@ namespace osgEarth {
  * @brief 底图数据源配置结构
  */
 struct BaseMapSource {
-    QString name;           // 底图名称（如"无底图"、"卫星"、"路网"等）
+    QString name;           // 底图名称（如"卫星"、"路网"等）
     QString driver;         // 驱动类型（"xyz"、"gdal"等）
     QString url;            // 数据源URL
     QString profile;        // 投影配置（如"spherical-mercator"）
     bool cacheEnabled;      // 是否启用缓存
     QString format;         // 格式（用于高程数据等，可选）
+    bool visible;            // 是否可见（用于叠加显示控制）
+    int opacity;             // 透明度（0-100）
     
-    BaseMapSource() : cacheEnabled(false) {}
+    BaseMapSource() : cacheEnabled(false), visible(true), opacity(100) {}
     BaseMapSource(const QString& n, const QString& d, const QString& u, 
-                  const QString& p = "spherical-mercator", bool cache = true)
-        : name(n), driver(d), url(u), profile(p), cacheEnabled(cache) {}
+                  const QString& p = "spherical-mercator", bool cache = true, bool vis = true, int op = 100)
+        : name(n), driver(d), url(u), profile(p), cacheEnabled(cache), visible(vis), opacity(op) {}
+    
+    // 转换为JSON对象
+    QJsonObject toJson() const;
+    // 从JSON对象加载
+    static BaseMapSource fromJson(const QJsonObject& json);
 };
 
 /**
  * @brief 底图管理器
  * 
- * 负责管理底图数据源的配置和切换，支持多种底图数据源类型
+ * 负责管理底图数据源的配置，支持多个底图图层叠加显示
+ * 支持用户新增、修改、删除底图配置，并支持配置的保存和加载
  */
 class BaseMapManager : public QObject
 {
@@ -53,49 +67,114 @@ public:
     explicit BaseMapManager(osgEarth::Map* map, QObject *parent = nullptr);
     
     /**
-     * @brief 设置默认底图（无底图，只有地球）
-     * 
-     * 对应 my.earth 文件的默认状态（所有image层都被注释）
+     * @brief 添加底图图层（叠加显示）
+     * @param source 底图数据源配置
+     * @return 成功返回true，失败返回false
      */
-    void setDefaultBaseMap();
+    bool addBaseMapLayer(const BaseMapSource& source);
     
     /**
-     * @brief 切换到底图
+     * @brief 移除底图图层
      * @param mapName 底图名称
      * @return 成功返回true，失败返回false
      */
-    bool switchToBaseMap(const QString& mapName);
+    bool removeBaseMapLayer(const QString& mapName);
     
     /**
-     * @brief 获取所有可用的底图列表
+     * @brief 更新底图图层配置
+     * @param oldName 原底图名称
+     * @param source 新的底图配置
+     * @return 成功返回true，失败返回false
+     */
+    bool updateBaseMapLayer(const QString& oldName, const BaseMapSource& source);
+    
+    /**
+     * @brief 设置底图图层可见性
+     * @param mapName 底图名称
+     * @param visible 是否可见
+     * @return 成功返回true，失败返回false
+     */
+    bool setBaseMapVisible(const QString& mapName, bool visible);
+    
+    /**
+     * @brief 设置底图图层透明度
+     * @param mapName 底图名称
+     * @param opacity 透明度（0-100）
+     * @return 成功返回true，失败返回false
+     */
+    bool setBaseMapOpacity(const QString& mapName, int opacity);
+    
+    /**
+     * @brief 获取所有已加载的底图图层信息
+     * @return 底图图层信息列表（名称和配置）
+     */
+    QList<QPair<QString, BaseMapSource>> getLoadedBaseMaps() const;
+    
+    /**
+     * @brief 获取所有可用的底图配置模板（预定义）
      * @return 底图数据源列表
      */
-    QList<BaseMapSource> getAvailableBaseMaps() const;
+    QList<BaseMapSource> getAvailableBaseMapTemplates() const;
     
     /**
-     * @brief 获取当前底图名称
-     * @return 当前底图名称，如果没有底图返回"无底图"
+     * @brief 检查底图名称是否已存在
+     * @param name 底图名称
+     * @return 存在返回true
      */
-    QString getCurrentBaseMapName() const;
+    bool hasBaseMap(const QString& name) const;
     
     /**
-     * @brief 添加自定义底图数据源
-     * @param source 底图数据源配置
+     * @brief 获取底图配置
+     * @param name 底图名称
+     * @return 底图配置，不存在返回空配置
      */
-    void addBaseMapSource(const BaseMapSource& source);
+    BaseMapSource getBaseMapConfig(const QString& name) const;
+    
+    /**
+     * @brief 保存配置到文件
+     * @param filePath 配置文件路径
+     * @return 成功返回true
+     */
+    bool saveConfig(const QString& filePath) const;
+    
+    /**
+     * @brief 从文件加载配置
+     * @param filePath 配置文件路径
+     * @return 成功返回true
+     */
+    bool loadConfig(const QString& filePath);
 
 signals:
     /**
-     * @brief 底图切换完成信号
-     * @param mapName 切换后的底图名称
+     * @brief 底图图层添加完成信号
+     * @param mapName 底图名称
      */
-    void baseMapSwitched(const QString& mapName);
+    void baseMapAdded(const QString& mapName);
+    
+    /**
+     * @brief 底图图层移除完成信号
+     * @param mapName 底图名称
+     */
+    void baseMapRemoved(const QString& mapName);
+    
+    /**
+     * @brief 底图图层更新完成信号
+     * @param mapName 底图名称
+     */
+    void baseMapUpdated(const QString& mapName);
+    
+    /**
+     * @brief 底图图层可见性改变信号
+     * @param mapName 底图名称
+     * @param visible 是否可见
+     */
+    void baseMapVisibilityChanged(const QString& mapName, bool visible);
 
 private:
     /**
-     * @brief 初始化预定义的底图数据源
+     * @brief 初始化预定义的底图数据源模板
      */
-    void initializeBaseMapSources();
+    void initializeBaseMapTemplates();
     
     /**
      * @brief 创建ImageLayer
@@ -105,14 +184,17 @@ private:
     osgEarth::ImageLayer* createImageLayer(const BaseMapSource& source);
     
     /**
-     * @brief 移除当前底图图层
+     * @brief 根据名称查找图层
+     * @param name 底图名称
+     * @return ImageLayer指针，不存在返回nullptr
      */
-    void removeCurrentBaseMapLayer();
+    osgEarth::ImageLayer* findLayerByName(const QString& name) const;
 
     osgEarth::Map* map_;                           // osgEarth Map对象
-    QList<BaseMapSource> baseMapSources_;          // 所有可用的底图数据源
-    QString currentBaseMapName_;                   // 当前底图名称
-    osg::ref_ptr<osgEarth::ImageLayer> currentImageLayer_;  // 当前底图图层
+    QList<BaseMapSource> baseMapTemplates_;         // 预定义的底图配置模板
+    QMap<QString, osg::ref_ptr<osgEarth::ImageLayer>> loadedLayers_;  // 已加载的底图图层（名称->图层）
+    QMap<QString, BaseMapSource> loadedConfigs_;   // 已加载的底图配置（名称->配置）
+    QString configFilePath_;                       // 配置文件路径
 };
 
 #endif // BASEMAPMANAGER_H
