@@ -433,15 +433,26 @@ void MainWidget::createSubNavigation()
 
     QToolButton *angleBtn = new QToolButton(this);
     angleBtn->setText("角度测算");
-   angleBtn->setIcon(QIcon(":/images/角度测算.png"));
+    angleBtn->setIcon(QIcon(":/images/角度测算.png"));
     angleBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     angleBtn->setFixedSize(120, 120);
     angleBtn->setObjectName("navToolButton");
     angleBtn->setIconSize(QSize(64, 64));  // 图标大小
 
+
+    // 底图管理
+    QToolButton *baseMapBtn = new QToolButton(this);
+    baseMapBtn->setText("底图管理");
+    baseMapBtn->setIcon(QIcon(":/images/底图管理.png"));
+    baseMapBtn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    baseMapBtn->setFixedSize(120, 120);
+    baseMapBtn->setObjectName("navToolButton");
+    baseMapBtn->setIconSize(QSize(64, 64));  // 图标大小
+
     mapLayout->addWidget(distanceBtn);
     mapLayout->addWidget(areaBtn);
     mapLayout->addWidget(angleBtn);
+    mapLayout->addWidget(baseMapBtn);
     mapLayout->addStretch();
 
     // 4、态势标绘子导航
