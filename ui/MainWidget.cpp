@@ -450,10 +450,11 @@ void MainWidget::createSubNavigation()
     baseMapBtn->setObjectName("navToolButton");
     baseMapBtn->setIconSize(QSize(64, 64));  // 图标大小
 
+    mapLayout->addWidget(baseMapBtn);
     mapLayout->addWidget(distanceBtn);
     mapLayout->addWidget(areaBtn);
     mapLayout->addWidget(angleBtn);
-    mapLayout->addWidget(baseMapBtn);
+   
     mapLayout->addStretch();
 
     // 4、态势标绘子导航
