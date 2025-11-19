@@ -47,6 +47,7 @@
 #include "../util/AfsimScriptGenerator.h"
 
 #include "BehaviorPlanningDialog.h"
+#include "NavigationHistoryDialog.h"
 
 
 MainWidget::MainWidget(QWidget *parent)
@@ -60,6 +61,7 @@ MainWidget::MainWidget(QWidget *parent)
     , modelDeployDialog_(nullptr)
     , entityManagementDialog_(nullptr)
     , behaviorDialog_(nullptr)
+    , navigationHistoryDialog_(nullptr)
     , planFileManager_(nullptr)
 {
     //设置窗口属性
@@ -111,6 +113,9 @@ MainWidget::~MainWidget()
     }
     if (entityManagementDialog_) {
         delete entityManagementDialog_;
+    }
+    if (navigationHistoryDialog_) {
+        delete navigationHistoryDialog_;
     }
     // planFileManager_由Qt父对象管理，自动删除
 }
@@ -186,6 +191,12 @@ void MainWidget::createToolBar()
     locationJumpBtn->setStyleSheet("border: none;");
     connect(locationJumpBtn, &QPushButton::clicked, this, &MainWidget::onLocationJumpClicked);
     toolBarLayout->addWidget(locationJumpBtn);
+    
+    // 添加视角历史按钮
+    QPushButton *historyBtn = new QPushButton("视角历史");
+    historyBtn->setStyleSheet("border: none;");
+    connect(historyBtn, &QPushButton::clicked, this, &MainWidget::onNavigationHistoryClicked);
+    toolBarLayout->addWidget(historyBtn);
     
     // 添加2D/3D切换按钮
     toggle2D3DBtn_ = new QPushButton("切换到2D");
@@ -2502,5 +2513,91 @@ void MainWidget::onBehaviorPlanningClicked()
     behaviorDialog_->show();
     behaviorDialog_->raise();
     behaviorDialog_->activateWindow();
+}
+
+void MainWidget::onNavigationHistoryClicked()
+{
+    if (!osgMapWidget_) {
+        QMessageBox::warning(this, "错误", "地图未初始化");
+        return;
+    }
+    
+    auto navigationHistory = osgMapWidget_->getNavigationHistory();
+    if (!navigationHistory) {
+        QMessageBox::warning(this, "错误", "导航历史管理器未初始化");
+        return;
+    }
+    
+    // 获取当前视角
+    osgEarth::Viewpoint currentVp;
+    auto mapStateManager = osgMapWidget_->getMapStateManager();
+    if (mapStateManager) {
+        currentVp = mapStateManager->getCurrentViewpoint("Current");
+    }
+    
+    // 如果对话框不存在，创建它
+    if (!navigationHistoryDialog_) {
+        navigationHistoryDialog_ = new NavigationHistoryDialog(navigationHistory, currentVp, this);
+        navigationHistoryDialog_->setModal(false);
+        navigationHistoryDialog_->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
+        
+        // 连接跳转信号
+        connect(navigationHistoryDialog_, &NavigationHistoryDialog::jumpToViewpoint, this, [this](const osgEarth::Viewpoint& vp) {
+            if (!osgMapWidget_) {
+                return;
+            }
+            
+            auto viewer = osgMapWidget_->getViewer();
+            if (!viewer) {
+                return;
+            }
+            
+            auto mapStateManager = osgMapWidget_->getMapStateManager();
+            if (!mapStateManager) {
+                return;
+            }
+            
+            // 获取当前视角
+            osgEarth::Viewpoint currentVp = mapStateManager->getCurrentViewpoint("Before Jump");
+            auto navigationHistory = osgMapWidget_->getNavigationHistory();
+            if (!navigationHistory) {
+                return;
+            }
+            
+            // 使用智能跳转方法，只有在目标视角不在历史记录中时才会保存当前视角
+            navigationHistory->jumpToViewpoint(currentVp, vp);
+            
+            // 跳转到目标视角
+            osgEarth::Util::EarthManipulator* em = GeoUtils::getEarthManipulator(viewer);
+            if (em) {
+                em->setViewpoint(vp, 1.0);
+                qDebug() << "跳转到视角历史:" << QString::fromStdString(vp.name().getOrUse(""));
+            }
+            
+            // 刷新历史列表对话框
+            if (navigationHistoryDialog_) {
+                osgEarth::Viewpoint newCurrentVp = mapStateManager->getCurrentViewpoint("Current");
+                navigationHistoryDialog_->refreshHistory(newCurrentVp);
+            }
+        });
+        
+        // 连接对话框关闭信号
+        connect(navigationHistoryDialog_, &QDialog::finished, this, [this](int result) {
+            Q_UNUSED(result);
+            // 对话框关闭时保留指针，下次打开时复用
+        });
+    } else {
+        // 刷新历史记录
+        navigationHistoryDialog_->refreshHistory(currentVp);
+    }
+    
+    // 如果对话框已经打开，激活它（将其置于前台）
+    if (navigationHistoryDialog_->isVisible()) {
+        navigationHistoryDialog_->activateWindow();
+        navigationHistoryDialog_->raise();
+    } else {
+        // 显示非模态对话框，不阻塞主窗口
+        navigationHistoryDialog_->show();
+    }
 }
 

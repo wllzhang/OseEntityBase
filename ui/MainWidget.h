@@ -34,6 +34,7 @@ class WeaponMountDialog;
 class EntityManagementDialog;
 class WaypointEntity;
 class BehaviorPlanningDialog;
+class NavigationHistoryDialog;
 
 /**
  * @brief 应用程序主窗口
@@ -183,6 +184,11 @@ private slots:
     void onBaseMapManageClicked();
 
     void onBehaviorPlanningClicked();
+    
+    /**
+     * @brief 视角历史按钮点击：打开视角历史列表对话框
+     */
+    void onNavigationHistoryClicked();
 
     /**
      * @brief 直线绘制按钮点击：进入直线标绘模式
@@ -287,6 +293,7 @@ private:
     ModelDeployDialog *modelDeployDialog_;            // 模型部署对话框
     EntityManagementDialog *entityManagementDialog_;  // 实体管理对话框
     BehaviorPlanningDialog* behaviorDialog_;
+    NavigationHistoryDialog* navigationHistoryDialog_; // 视角历史列表对话框
     
     // 方案文件管理器
     PlanFileManager *planFileManager_;

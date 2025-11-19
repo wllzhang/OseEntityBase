@@ -11,6 +11,7 @@
 #include <QObject>
 #include <QStack>
 #include <QString>
+#include <QList>
 #include <osgEarth/Viewpoint>
 
 /**
@@ -37,6 +38,8 @@ public:
     /**
      * @brief 添加新的视角到历史记录
      * @param viewpoint 相机视角
+     * 
+     * 会自动检查是否与上一个视角相似，如果相似则不记录（避免重复记录）
      */
     void pushViewpoint(const osgEarth::Viewpoint& viewpoint);
     
@@ -78,6 +81,41 @@ public:
      * @return 历史记录数量
      */
     int getHistoryCount() const;
+    
+    /**
+     * @brief 历史记录项结构
+     */
+    struct HistoryItem {
+        osgEarth::Viewpoint viewpoint;  // 视角
+        int index;                      // 在完整历史中的索引
+        bool isCurrent;                 // 是否为当前视角
+        QString displayName;            // 显示名称
+    };
+    
+    /**
+     * @brief 获取所有历史记录列表
+     * @param currentViewpoint 当前视角（用于标记当前位置）
+     * @return 历史记录列表，按时间顺序排列（最旧的在前面）
+     */
+    QList<HistoryItem> getAllHistory(const osgEarth::Viewpoint& currentViewpoint) const;
+    
+    /**
+     * @brief 检查视角是否在历史记录中
+     * @param viewpoint 要检查的视角
+     * @return 如果在历史记录中返回true，否则返回false
+     */
+    bool isViewpointInHistory(const osgEarth::Viewpoint& viewpoint) const;
+    
+    /**
+     * @brief 跳转到指定视角（智能处理历史记录）
+     * @param currentViewpoint 当前视角
+     * @param targetViewpoint 目标视角
+     * @return 如果目标视角在历史记录中返回true，否则返回false
+     * 
+     * 如果目标视角在历史记录中，不保存当前视角，直接跳转
+     * 如果目标视角不在历史记录中，将当前视角保存到后退栈，清除前进栈
+     */
+    bool jumpToViewpoint(const osgEarth::Viewpoint& currentViewpoint, const osgEarth::Viewpoint& targetViewpoint);
 
 signals:
     /**

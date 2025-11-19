@@ -100,6 +100,7 @@ SOURCES += \
     ui/EntityPropertyDialog.cpp \
     ui/BehaviorPlanningDialog.cpp \
     ui/LocationJumpDialog.cpp \
+    ui/NavigationHistoryDialog.cpp \
     ui/BaseMapDialog.cpp \
     main.cpp \
     util/AfsimScriptGenerator.cpp \
@@ -132,6 +133,7 @@ HEADERS += \
     ui/EntityPropertyDialog.h \
     ui/BehaviorPlanningDialog.h \
     ui/LocationJumpDialog.h \
+    ui/NavigationHistoryDialog.h \
     ui/BaseMapDialog.h \
     util/AfsimScriptGenerator.h \
     widgets/OsgMapWidget.h \
