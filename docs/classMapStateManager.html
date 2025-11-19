@@ -154,6 +154,9 @@ Public 成员函数</h2></td></tr>
 <tr class="separator:ade65c086dd26fe4ee1faafd1a8958c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40beb99443ae8831e3419a63aee4ff51" id="r_a40beb99443ae8831e3419a63aee4ff51"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structMapStateInfo.html">MapStateInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a40beb99443ae8831e3419a63aee4ff51">getCurrentState</a> () const</td></tr>
 <tr class="separator:a40beb99443ae8831e3419a63aee4ff51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66ca602d676ae5293b9a15724b26f0b9" id="r_a66ca602d676ae5293b9a15724b26f0b9"><td class="memItemLeft" align="right" valign="top">osgEarth::Viewpoint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a66ca602d676ae5293b9a15724b26f0b9">getCurrentViewpoint</a> (const QString &amp;name=&quot;Current&quot;) const</td></tr>
+<tr class="memdesc:a66ca602d676ae5293b9a15724b26f0b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取当前视点的 Viewpoint 对象  <br /></td></tr>
+<tr class="separator:a66ca602d676ae5293b9a15724b26f0b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51f4119121484198f620d10020fb0c7b" id="r_a51f4119121484198f620d10020fb0c7b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMapStateManager.html#a51f4119121484198f620d10020fb0c7b">getGeoCoordinatesFromScreen</a> (QPoint screenPos, double &amp;longitude, double &amp;latitude, double &amp;altitude)</td></tr>
 <tr class="memdesc:a51f4119121484198f620d10020fb0c7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">根据屏幕坐标获取地理坐标（统一接口，避免重复调用）  <br /></td></tr>
 <tr class="separator:a51f4119121484198f620d10020fb0c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -246,6 +249,33 @@ Public 成员函数</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a66ca602d676ae5293b9a15724b26f0b9" name="a66ca602d676ae5293b9a15724b26f0b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66ca602d676ae5293b9a15724b26f0b9">&#9670;&#160;</a></span>getCurrentViewpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">osgEarth::Viewpoint MapStateManager::getCurrentViewpoint </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>name</em> = <code>&quot;Current&quot;</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获取当前视点的 Viewpoint 对象 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>视点名称（默认为 "Current"） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>当前视点的 Viewpoint 对象 </dd></dl>
 
 </div>
 </div>

@@ -88,6 +88,7 @@ $(document).ready(function(){initNavTree('classNavigationHistory.html',''); init
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">类</a> &#124;
 <a href="#signals">信号</a> &#124;
 <a href="#pub-methods">Public 成员函数</a> &#124;
 <a href="classNavigationHistory-members.html">所有成员列表</a>  </div>
@@ -106,6 +107,12 @@ $(document).ready(function(){initNavTree('classNavigationHistory.html',''); init
   <img src="classNavigationHistory.png" alt=""/>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structNavigationHistory_1_1HistoryItem.html">HistoryItem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">历史记录项结构  <a href="structNavigationHistory_1_1HistoryItem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="signals" name="signals"></a>
 信号</h2></td></tr>
 <tr class="memitem:a15b668987b2275bc6b2950314c06c70c" id="r_a15b668987b2275bc6b2950314c06c70c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a15b668987b2275bc6b2950314c06c70c">historyStateChanged</a> (bool canBack, bool canForward)</td></tr>
@@ -141,6 +148,15 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:ae3269ed5600b8ac9b804e35786773b43" id="r_ae3269ed5600b8ac9b804e35786773b43"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#ae3269ed5600b8ac9b804e35786773b43">getHistoryCount</a> () const</td></tr>
 <tr class="memdesc:ae3269ed5600b8ac9b804e35786773b43"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取历史记录数量  <br /></td></tr>
 <tr class="separator:ae3269ed5600b8ac9b804e35786773b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a1ae656f8b52f346960f7e7c165886a" id="r_a0a1ae656f8b52f346960f7e7c165886a"><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="structNavigationHistory_1_1HistoryItem.html">HistoryItem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a0a1ae656f8b52f346960f7e7c165886a">getAllHistory</a> (const osgEarth::Viewpoint &amp;currentViewpoint) const</td></tr>
+<tr class="memdesc:a0a1ae656f8b52f346960f7e7c165886a"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取所有历史记录列表  <br /></td></tr>
+<tr class="separator:a0a1ae656f8b52f346960f7e7c165886a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc6c71da433abb016729a1f352be88c1" id="r_abc6c71da433abb016729a1f352be88c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#abc6c71da433abb016729a1f352be88c1">isViewpointInHistory</a> (const osgEarth::Viewpoint &amp;viewpoint) const</td></tr>
+<tr class="memdesc:abc6c71da433abb016729a1f352be88c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">检查视角是否在历史记录中  <br /></td></tr>
+<tr class="separator:abc6c71da433abb016729a1f352be88c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ebf46b8fa01d882bdf254affd9a3cd1" id="r_a2ebf46b8fa01d882bdf254affd9a3cd1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classNavigationHistory.html#a2ebf46b8fa01d882bdf254affd9a3cd1">jumpToViewpoint</a> (const osgEarth::Viewpoint &amp;currentViewpoint, const osgEarth::Viewpoint &amp;targetViewpoint)</td></tr>
+<tr class="memdesc:a2ebf46b8fa01d882bdf254affd9a3cd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">跳转到指定视角（智能处理历史记录）  <br /></td></tr>
+<tr class="separator:a2ebf46b8fa01d882bdf254affd9a3cd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
 <div class="textblock"><p>导航历史管理类 </p>
@@ -256,6 +272,33 @@ Public 成员函数</h2></td></tr>
 </div><div class="memdoc">
 
 <p>清除所有历史记录 </p>
+
+</div>
+</div>
+<a id="a0a1ae656f8b52f346960f7e7c165886a" name="a0a1ae656f8b52f346960f7e7c165886a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a1ae656f8b52f346960f7e7c165886a">&#9670;&#160;</a></span>getAllHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QList&lt; <a class="el" href="structNavigationHistory_1_1HistoryItem.html">NavigationHistory::HistoryItem</a> &gt; NavigationHistory::getAllHistory </td>
+          <td>(</td>
+          <td class="paramtype">const osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>currentViewpoint</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>获取所有历史记录列表 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">currentViewpoint</td><td>当前视角（用于标记当前位置） </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>历史记录列表，按时间顺序排列（最旧的在前面） </dd></dl>
 
 </div>
 </div>
@@ -400,6 +443,72 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
+<a id="abc6c71da433abb016729a1f352be88c1" name="abc6c71da433abb016729a1f352be88c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc6c71da433abb016729a1f352be88c1">&#9670;&#160;</a></span>isViewpointInHistory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NavigationHistory::isViewpointInHistory </td>
+          <td>(</td>
+          <td class="paramtype">const osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>viewpoint</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>检查视角是否在历史记录中 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewpoint</td><td>要检查的视角 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>如果在历史记录中返回true，否则返回false </dd></dl>
+
+</div>
+</div>
+<a id="a2ebf46b8fa01d882bdf254affd9a3cd1" name="a2ebf46b8fa01d882bdf254affd9a3cd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ebf46b8fa01d882bdf254affd9a3cd1">&#9670;&#160;</a></span>jumpToViewpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NavigationHistory::jumpToViewpoint </td>
+          <td>(</td>
+          <td class="paramtype">const osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>currentViewpoint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const osgEarth::Viewpoint &amp;&#160;</td>
+          <td class="paramname"><em>targetViewpoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>跳转到指定视角（智能处理历史记录） </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">currentViewpoint</td><td>当前视角 </td></tr>
+    <tr><td class="paramname">targetViewpoint</td><td>目标视角 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>如果目标视角在历史记录中返回true，否则返回false</dd></dl>
+<p>如果目标视角在历史记录中，不保存当前视角，直接跳转 如果目标视角不在历史记录中，将当前视角保存到后退栈，清除前进栈 </p>
+
+</div>
+</div>
 <a id="afa6cd0a6bf6fffa1b2ffc7798cf34638" name="afa6cd0a6bf6fffa1b2ffc7798cf34638"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afa6cd0a6bf6fffa1b2ffc7798cf34638">&#9670;&#160;</a></span>pushViewpoint()</h2>
 
@@ -419,10 +528,11 @@ Public 成员函数</h2></td></tr>
 <p>添加新的视角到历史记录 </p>
 <dl class="params"><dt>参数</dt><dd>
   <table class="params">
-    <tr><td class="paramname">viewpoint</td><td>相机视角 </td></tr>
+    <tr><td class="paramname">viewpoint</td><td>相机视角</td></tr>
   </table>
   </dd>
 </dl>
+<p>会自动检查是否与上一个视角相似，如果相似则不记录（避免重复记录） </p>
 
 </div>
 </div>

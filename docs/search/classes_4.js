@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['navigationhistory_0',['NavigationHistory',['../classNavigationHistory.html',1,'']]]
+  ['lineendpointinfo_0',['LineEndpointInfo',['../structGeoEntityManager_1_1LineEndpointInfo.html',1,'GeoEntityManager']]],
+  ['lineentity_1',['LineEntity',['../classLineEntity.html',1,'']]]
 ];

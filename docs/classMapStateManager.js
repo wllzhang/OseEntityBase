@@ -3,6 +3,7 @@ var classMapStateManager =
     [ "MapStateManager", "classMapStateManager.html#af8845bc3795072e96f0e6457d1142b26", null ],
     [ "~MapStateManager", "classMapStateManager.html#af620fb087049571249d7f9f8fa0cff19", null ],
     [ "getCurrentState", "classMapStateManager.html#a40beb99443ae8831e3419a63aee4ff51", null ],
+    [ "getCurrentViewpoint", "classMapStateManager.html#a66ca602d676ae5293b9a15724b26f0b9", null ],
     [ "getGeoCoordinatesFromScreen", "classMapStateManager.html#a51f4119121484198f620d10020fb0c7b", null ],
     [ "getHeading", "classMapStateManager.html#afa6bff9929775014b09265622917886c", null ],
     [ "getMouseGeoPosition", "classMapStateManager.html#ade65c086dd26fe4ee1faafd1a8958c61", null ],

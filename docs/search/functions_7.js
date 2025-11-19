@@ -9,5 +9,6 @@ var searchData=
   ['ismapnavigationblocked_6',['isMapNavigationBlocked',['../classGeoEntityManager.html#a31c5d2bf5056ffff60fd56169860be2e',1,'GeoEntityManager']]],
   ['isrealizedimplementation_7',['isRealizedImplementation',['../classosgQt_1_1GraphicsWindowQt.html#a9a2efbb9c34b899485c50bbe4feefc2d',1,'osgQt::GraphicsWindowQt']]],
   ['isselected_8',['isSelected',['../classGeoEntity.html#a702fb0d3febe1ee981d74111ed07fb24',1,'GeoEntity']]],
-  ['isvisible_9',['isVisible',['../classGeoEntity.html#a7415442f3e6f751cefa9636194a2f3e0',1,'GeoEntity']]]
+  ['isviewpointinhistory_9',['isViewpointInHistory',['../classNavigationHistory.html#abc6c71da433abb016729a1f352be88c1',1,'NavigationHistory']]],
+  ['isvisible_10',['isVisible',['../classGeoEntity.html#a7415442f3e6f751cefa9636194a2f3e0',1,'GeoEntity']]]
 ];

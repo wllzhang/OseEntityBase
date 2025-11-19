@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['pitch_0',['pitch',['../structMapStateInfo.html#a156b699ac83c3811315947517cc63b01',1,'MapStateInfo']]],
-  ['properties_5f_1',['properties_',['../classGeoEntity.html#a3bc2b40a65faa0c857cf4b03952cf78d',1,'GeoEntity']]]
+  ['name_0',['name',['../structBaseMapSource.html#a9342f3bdd4b87c73071d5abf9ef2ba86',1,'BaseMapSource::name'],['../structGeoEntityManager_1_1WaypointGroupInfo.html#a9cb9cf58d1b511c7434272343c985566',1,'GeoEntityManager::WaypointGroupInfo::name']]],
+  ['node_5f_1',['node_',['../classGeoEntity.html#a68abb6bb8190349bc2cca94728e5678a',1,'GeoEntity']]]
 ];

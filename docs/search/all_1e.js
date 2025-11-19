@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['主要功能_0',['✨ 主要功能',['../index.html#autotoc_md10',1,'']]]
+  ['✨_20主要功能_0',['✨ 主要功能',['../index.html#autotoc_md10',1,'']]]
 ];

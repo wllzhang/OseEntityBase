@@ -1,0 +1,254 @@
+<!-- HTML header for doxygen 1.9.1-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>数字地图脚手架库: geo/basemapmanager.h 源文件</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','搜索');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function(){initNavTree('basemapmanager_8h_source.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">basemapmanager.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="basemapmanager_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#ifndef BASEMAPMANAGER_H</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#define BASEMAPMANAGER_H</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;QObject&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;QString&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;QStringList&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;QList&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;QMap&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;QJsonObject&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;QJsonArray&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;QJsonDocument&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;QPair&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;osgEarth/Map&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;osg/ref_ptr&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">// 前向声明</span></div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespaceosgEarth.html">   24</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceosgEarth.html">osgEarth</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">class </span>ImageLayer;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structBaseMapSource.html">   31</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structBaseMapSource.html">BaseMapSource</a> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#a9342f3bdd4b87c73071d5abf9ef2ba86">   32</a></span>    QString <a class="code hl_variable" href="structBaseMapSource.html#a9342f3bdd4b87c73071d5abf9ef2ba86">name</a>;           <span class="comment">// 底图名称（如&quot;卫星&quot;、&quot;路网&quot;等）</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#adfb914a05df7695f7f41baa545b2f8ca">   33</a></span>    QString <a class="code hl_variable" href="structBaseMapSource.html#adfb914a05df7695f7f41baa545b2f8ca">driver</a>;         <span class="comment">// 驱动类型（&quot;xyz&quot;、&quot;gdal&quot;等）</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#a4c93ea8715a16411323908010aa15186">   34</a></span>    QString <a class="code hl_variable" href="structBaseMapSource.html#a4c93ea8715a16411323908010aa15186">url</a>;            <span class="comment">// 数据源URL</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#a2693196b02d196320f608e5067e9244c">   35</a></span>    QString <a class="code hl_variable" href="structBaseMapSource.html#a2693196b02d196320f608e5067e9244c">profile</a>;        <span class="comment">// 投影配置（如&quot;spherical-mercator&quot;）</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#aeeb2da79b3f6865d4492ccf2483c300c">   36</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structBaseMapSource.html#aeeb2da79b3f6865d4492ccf2483c300c">cacheEnabled</a>;      <span class="comment">// 是否启用缓存</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#af93ef27025111bc8a186416fb0605a26">   37</a></span>    QString <a class="code hl_variable" href="structBaseMapSource.html#af93ef27025111bc8a186416fb0605a26">format</a>;         <span class="comment">// 格式（用于高程数据等，可选）</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#ad33e4dfc15d7db7ba0bc8bb8397c4838">   38</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structBaseMapSource.html#ad33e4dfc15d7db7ba0bc8bb8397c4838">visible</a>;            <span class="comment">// 是否可见（用于叠加显示控制）</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#adf22bbcf68c55c078fe57704a9f2e12c">   39</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structBaseMapSource.html#adf22bbcf68c55c078fe57704a9f2e12c">opacity</a>;             <span class="comment">// 透明度（0-100）</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#af4905febdcd87d5968e7e8867e8d3c8d">   41</a></span>    <a class="code hl_function" href="structBaseMapSource.html#af4905febdcd87d5968e7e8867e8d3c8d">BaseMapSource</a>() : <a class="code hl_variable" href="structBaseMapSource.html#aeeb2da79b3f6865d4492ccf2483c300c">cacheEnabled</a>(false), <a class="code hl_variable" href="structBaseMapSource.html#ad33e4dfc15d7db7ba0bc8bb8397c4838">visible</a>(true), <a class="code hl_variable" href="structBaseMapSource.html#adf22bbcf68c55c078fe57704a9f2e12c">opacity</a>(100) {}</div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structBaseMapSource.html#adb442c1ea76f21034a5acac1b57b09e3">   42</a></span>    <a class="code hl_function" href="structBaseMapSource.html#adb442c1ea76f21034a5acac1b57b09e3">BaseMapSource</a>(<span class="keyword">const</span> QString&amp; n, <span class="keyword">const</span> QString&amp; d, <span class="keyword">const</span> QString&amp; u, </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                  <span class="keyword">const</span> QString&amp; p = <span class="stringliteral">&quot;spherical-mercator&quot;</span>, <span class="keywordtype">bool</span> cache = <span class="keyword">true</span>, <span class="keywordtype">bool</span> vis = <span class="keyword">true</span>, <span class="keywordtype">int</span> op = 100)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        : <a class="code hl_variable" href="structBaseMapSource.html#a9342f3bdd4b87c73071d5abf9ef2ba86">name</a>(n), <a class="code hl_variable" href="structBaseMapSource.html#adfb914a05df7695f7f41baa545b2f8ca">driver</a>(d), <a class="code hl_variable" href="structBaseMapSource.html#a4c93ea8715a16411323908010aa15186">url</a>(u), <a class="code hl_variable" href="structBaseMapSource.html#a2693196b02d196320f608e5067e9244c">profile</a>(p), <a class="code hl_variable" href="structBaseMapSource.html#aeeb2da79b3f6865d4492ccf2483c300c">cacheEnabled</a>(cache), <a class="code hl_variable" href="structBaseMapSource.html#ad33e4dfc15d7db7ba0bc8bb8397c4838">visible</a>(vis), <a class="code hl_variable" href="structBaseMapSource.html#adf22bbcf68c55c078fe57704a9f2e12c">opacity</a>(op) {}</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">// 转换为JSON对象</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    QJsonObject <a class="code hl_function" href="structBaseMapSource.html#aa30e8b54769ce9f01243af33b2f77c18">toJson</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// 从JSON对象加载</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">static</span> <a class="code hl_struct" href="structBaseMapSource.html">BaseMapSource</a> <a class="code hl_function" href="structBaseMapSource.html#a30e05de8adfc4f15418b4d07ab420d3b">fromJson</a>(<span class="keyword">const</span> QJsonObject&amp; json);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>};</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classBaseMapManager.html">   58</a></span><span class="keyword">class </span><a class="code hl_class" href="classBaseMapManager.html">BaseMapManager</a> : <span class="keyword">public</span> QObject</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>{</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    Q_OBJECT</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classBaseMapManager.html">BaseMapManager</a>(osgEarth::Map* map, QObject *parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#ad6542d8ad444ef8a155cc0f00032dc12">addBaseMapLayer</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBaseMapSource.html">BaseMapSource</a>&amp; source);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#a4dbfcab3b7b286755dd63aadeea8c017">removeBaseMapLayer</a>(<span class="keyword">const</span> QString&amp; mapName);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#aa8bdc1bbbfd64643b99ab1cfd086532c">updateBaseMapLayer</a>(<span class="keyword">const</span> QString&amp; oldName, <span class="keyword">const</span> <a class="code hl_struct" href="structBaseMapSource.html">BaseMapSource</a>&amp; source);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#a08983d34c1102f8ec260d37d106b6746">setBaseMapVisible</a>(<span class="keyword">const</span> QString&amp; mapName, <span class="keywordtype">bool</span> visible);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#a41596498a01ff2415809282bc65c7bcd">setBaseMapOpacity</a>(<span class="keyword">const</span> QString&amp; mapName, <span class="keywordtype">int</span> opacity);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    QList&lt;QPair&lt;QString, BaseMapSource&gt;&gt; <a class="code hl_function" href="classBaseMapManager.html#aced88a559cb5eaa0c001ddb610785f1f">getLoadedBaseMaps</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    QList&lt;BaseMapSource&gt; <a class="code hl_function" href="classBaseMapManager.html#a9057da93ef03125d3e8904ea5c2a6468">getAvailableBaseMapTemplates</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#abdb89252e6d647c1f7ed98c962bf4aec">hasBaseMap</a>(<span class="keyword">const</span> QString&amp; name) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <a class="code hl_struct" href="structBaseMapSource.html">BaseMapSource</a> <a class="code hl_function" href="classBaseMapManager.html#a190b2efc2be5f17b5a9f4ecc62792437">getBaseMapConfig</a>(<span class="keyword">const</span> QString&amp; name) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#a0297925101dee6129ec0d761a79a3f78">saveConfig</a>(<span class="keyword">const</span> QString&amp; filePath) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#aa57c2ce329e39a0dc16c466988eb5f93">loadConfig</a>(<span class="keyword">const</span> QString&amp; filePath);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#af45141256019ad98a433f5b19bc474d9">moveLayerUp</a>(<span class="keyword">const</span> QString&amp; mapName);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classBaseMapManager.html#a9b9bd16260872b7a93af7a574cc6bb07">moveLayerDown</a>(<span class="keyword">const</span> QString&amp; mapName);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    QStringList <a class="code hl_function" href="classBaseMapManager.html#a2deb6fd5aaf141f44f03563afdeed03a">getLayerOrder</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>signals:</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classBaseMapManager.html#a414f8f1b97ad928db71eb65413dd8051">  173</a></span>    <span class="keywordtype">void</span> <a class="code hl_signal" href="classBaseMapManager.html#a414f8f1b97ad928db71eb65413dd8051">baseMapAdded</a>(<span class="keyword">const</span> QString&amp; mapName);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno"><a class="line" href="classBaseMapManager.html#a8744273046404268660464602c813e8f">  179</a></span>    <span class="keywordtype">void</span> <a class="code hl_signal" href="classBaseMapManager.html#a8744273046404268660464602c813e8f">baseMapRemoved</a>(<span class="keyword">const</span> QString&amp; mapName);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classBaseMapManager.html#af58a62fa8e3c1e73757470971c03044b">  185</a></span>    <span class="keywordtype">void</span> <a class="code hl_signal" href="classBaseMapManager.html#af58a62fa8e3c1e73757470971c03044b">baseMapUpdated</a>(<span class="keyword">const</span> QString&amp; mapName);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classBaseMapManager.html#a3fbf4827fff270915d24de41fcfad1be">  192</a></span>    <span class="keywordtype">void</span> <a class="code hl_signal" href="classBaseMapManager.html#a3fbf4827fff270915d24de41fcfad1be">baseMapVisibilityChanged</a>(<span class="keyword">const</span> QString&amp; mapName, <span class="keywordtype">bool</span> visible);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keywordtype">void</span> initializeBaseMapTemplates();</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    osgEarth::ImageLayer* createImageLayer(<span class="keyword">const</span> <a class="code hl_struct" href="structBaseMapSource.html">BaseMapSource</a>&amp; source);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    osgEarth::ImageLayer* findLayerByName(<span class="keyword">const</span> QString&amp; name) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordtype">void</span> reorderLayers();</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    osgEarth::Map* map_;                           <span class="comment">// osgEarth Map对象</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    QList&lt;BaseMapSource&gt; baseMapTemplates_;         <span class="comment">// 预定义的底图配置模板</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    QMap&lt;QString, osg::ref_ptr&lt;osgEarth::ImageLayer&gt;&gt; loadedLayers_;  <span class="comment">// 已加载的底图图层（名称-&gt;图层）</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    QMap&lt;QString, BaseMapSource&gt; loadedConfigs_;   <span class="comment">// 已加载的底图配置（名称-&gt;配置）</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    QStringList layerOrder_;                       <span class="comment">// 图层顺序列表（从上到下，索引0是最上层，对应列表第一行）</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    QString configFilePath_;                       <span class="comment">// 配置文件路径</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>};</div>
+</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="preprocessor">#endif </span><span class="comment">// BASEMAPMANAGER_H</span></div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="ttc" id="aclassBaseMapManager_html"><div class="ttname"><a href="classBaseMapManager.html">BaseMapManager</a></div><div class="ttdoc">底图管理器</div><div class="ttdef"><b>Definition</b> basemapmanager.h:59</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a0297925101dee6129ec0d761a79a3f78"><div class="ttname"><a href="classBaseMapManager.html#a0297925101dee6129ec0d761a79a3f78">BaseMapManager::saveConfig</a></div><div class="ttdeci">bool saveConfig(const QString &amp;filePath) const</div><div class="ttdoc">保存配置到文件</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:327</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a08983d34c1102f8ec260d37d106b6746"><div class="ttname"><a href="classBaseMapManager.html#a08983d34c1102f8ec260d37d106b6746">BaseMapManager::setBaseMapVisible</a></div><div class="ttdeci">bool setBaseMapVisible(const QString &amp;mapName, bool visible)</div><div class="ttdoc">设置底图图层可见性</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:184</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a190b2efc2be5f17b5a9f4ecc62792437"><div class="ttname"><a href="classBaseMapManager.html#a190b2efc2be5f17b5a9f4ecc62792437">BaseMapManager::getBaseMapConfig</a></div><div class="ttdeci">BaseMapSource getBaseMapConfig(const QString &amp;name) const</div><div class="ttdoc">获取底图配置</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:319</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a2deb6fd5aaf141f44f03563afdeed03a"><div class="ttname"><a href="classBaseMapManager.html#a2deb6fd5aaf141f44f03563afdeed03a">BaseMapManager::getLayerOrder</a></div><div class="ttdeci">QStringList getLayerOrder() const</div><div class="ttdoc">获取底图图层的叠加顺序（从上到下，索引0是最上层）</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:230</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a3fbf4827fff270915d24de41fcfad1be"><div class="ttname"><a href="classBaseMapManager.html#a3fbf4827fff270915d24de41fcfad1be">BaseMapManager::baseMapVisibilityChanged</a></div><div class="ttdeci">void baseMapVisibilityChanged(const QString &amp;mapName, bool visible)</div><div class="ttdoc">底图图层可见性改变信号</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a414f8f1b97ad928db71eb65413dd8051"><div class="ttname"><a href="classBaseMapManager.html#a414f8f1b97ad928db71eb65413dd8051">BaseMapManager::baseMapAdded</a></div><div class="ttdeci">void baseMapAdded(const QString &amp;mapName)</div><div class="ttdoc">底图图层添加完成信号</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a41596498a01ff2415809282bc65c7bcd"><div class="ttname"><a href="classBaseMapManager.html#a41596498a01ff2415809282bc65c7bcd">BaseMapManager::setBaseMapOpacity</a></div><div class="ttdeci">bool setBaseMapOpacity(const QString &amp;mapName, int opacity)</div><div class="ttdoc">设置底图图层透明度</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:201</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a4dbfcab3b7b286755dd63aadeea8c017"><div class="ttname"><a href="classBaseMapManager.html#a4dbfcab3b7b286755dd63aadeea8c017">BaseMapManager::removeBaseMapLayer</a></div><div class="ttdeci">bool removeBaseMapLayer(const QString &amp;mapName)</div><div class="ttdoc">移除底图图层</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:136</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a8744273046404268660464602c813e8f"><div class="ttname"><a href="classBaseMapManager.html#a8744273046404268660464602c813e8f">BaseMapManager::baseMapRemoved</a></div><div class="ttdeci">void baseMapRemoved(const QString &amp;mapName)</div><div class="ttdoc">底图图层移除完成信号</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a9057da93ef03125d3e8904ea5c2a6468"><div class="ttname"><a href="classBaseMapManager.html#a9057da93ef03125d3e8904ea5c2a6468">BaseMapManager::getAvailableBaseMapTemplates</a></div><div class="ttdeci">QList&lt; BaseMapSource &gt; getAvailableBaseMapTemplates() const</div><div class="ttdoc">获取所有可用的底图配置模板（预定义）</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:309</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_a9b9bd16260872b7a93af7a574cc6bb07"><div class="ttname"><a href="classBaseMapManager.html#a9b9bd16260872b7a93af7a574cc6bb07">BaseMapManager::moveLayerDown</a></div><div class="ttdeci">bool moveLayerDown(const QString &amp;mapName)</div><div class="ttdoc">将底图图层下移（在叠加顺序中向下移动，显示更下层）</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:257</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_aa57c2ce329e39a0dc16c466988eb5f93"><div class="ttname"><a href="classBaseMapManager.html#aa57c2ce329e39a0dc16c466988eb5f93">BaseMapManager::loadConfig</a></div><div class="ttdeci">bool loadConfig(const QString &amp;filePath)</div><div class="ttdoc">从文件加载配置</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:362</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_aa8bdc1bbbfd64643b99ab1cfd086532c"><div class="ttname"><a href="classBaseMapManager.html#aa8bdc1bbbfd64643b99ab1cfd086532c">BaseMapManager::updateBaseMapLayer</a></div><div class="ttdeci">bool updateBaseMapLayer(const QString &amp;oldName, const BaseMapSource &amp;source)</div><div class="ttdoc">更新底图图层配置</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:158</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_abdb89252e6d647c1f7ed98c962bf4aec"><div class="ttname"><a href="classBaseMapManager.html#abdb89252e6d647c1f7ed98c962bf4aec">BaseMapManager::hasBaseMap</a></div><div class="ttdeci">bool hasBaseMap(const QString &amp;name) const</div><div class="ttdoc">检查底图名称是否已存在</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:314</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_aced88a559cb5eaa0c001ddb610785f1f"><div class="ttname"><a href="classBaseMapManager.html#aced88a559cb5eaa0c001ddb610785f1f">BaseMapManager::getLoadedBaseMaps</a></div><div class="ttdeci">QList&lt; QPair&lt; QString, BaseMapSource &gt; &gt; getLoadedBaseMaps() const</div><div class="ttdoc">获取所有已加载的底图图层信息</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:218</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_ad6542d8ad444ef8a155cc0f00032dc12"><div class="ttname"><a href="classBaseMapManager.html#ad6542d8ad444ef8a155cc0f00032dc12">BaseMapManager::addBaseMapLayer</a></div><div class="ttdeci">bool addBaseMapLayer(const BaseMapSource &amp;source)</div><div class="ttdoc">添加底图图层（叠加显示）</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:89</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_af45141256019ad98a433f5b19bc474d9"><div class="ttname"><a href="classBaseMapManager.html#af45141256019ad98a433f5b19bc474d9">BaseMapManager::moveLayerUp</a></div><div class="ttdeci">bool moveLayerUp(const QString &amp;mapName)</div><div class="ttdoc">将底图图层上移（在叠加顺序中向上移动，显示更上层）</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:235</div></div>
+<div class="ttc" id="aclassBaseMapManager_html_af58a62fa8e3c1e73757470971c03044b"><div class="ttname"><a href="classBaseMapManager.html#af58a62fa8e3c1e73757470971c03044b">BaseMapManager::baseMapUpdated</a></div><div class="ttdeci">void baseMapUpdated(const QString &amp;mapName)</div><div class="ttdoc">底图图层更新完成信号</div></div>
+<div class="ttc" id="anamespaceosgEarth_html"><div class="ttname"><a href="namespaceosgEarth.html">osgEarth</a></div><div class="ttdef"><b>Definition</b> basemapmanager.h:24</div></div>
+<div class="ttc" id="astructBaseMapSource_html"><div class="ttname"><a href="structBaseMapSource.html">BaseMapSource</a></div><div class="ttdoc">底图数据源配置结构</div><div class="ttdef"><b>Definition</b> basemapmanager.h:31</div></div>
+<div class="ttc" id="astructBaseMapSource_html_a2693196b02d196320f608e5067e9244c"><div class="ttname"><a href="structBaseMapSource.html#a2693196b02d196320f608e5067e9244c">BaseMapSource::profile</a></div><div class="ttdeci">QString profile</div><div class="ttdef"><b>Definition</b> basemapmanager.h:35</div></div>
+<div class="ttc" id="astructBaseMapSource_html_a30e05de8adfc4f15418b4d07ab420d3b"><div class="ttname"><a href="structBaseMapSource.html#a30e05de8adfc4f15418b4d07ab420d3b">BaseMapSource::fromJson</a></div><div class="ttdeci">static BaseMapSource fromJson(const QJsonObject &amp;json)</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:33</div></div>
+<div class="ttc" id="astructBaseMapSource_html_a4c93ea8715a16411323908010aa15186"><div class="ttname"><a href="structBaseMapSource.html#a4c93ea8715a16411323908010aa15186">BaseMapSource::url</a></div><div class="ttdeci">QString url</div><div class="ttdef"><b>Definition</b> basemapmanager.h:34</div></div>
+<div class="ttc" id="astructBaseMapSource_html_a9342f3bdd4b87c73071d5abf9ef2ba86"><div class="ttname"><a href="structBaseMapSource.html#a9342f3bdd4b87c73071d5abf9ef2ba86">BaseMapSource::name</a></div><div class="ttdeci">QString name</div><div class="ttdef"><b>Definition</b> basemapmanager.h:32</div></div>
+<div class="ttc" id="astructBaseMapSource_html_aa30e8b54769ce9f01243af33b2f77c18"><div class="ttname"><a href="structBaseMapSource.html#aa30e8b54769ce9f01243af33b2f77c18">BaseMapSource::toJson</a></div><div class="ttdeci">QJsonObject toJson() const</div><div class="ttdef"><b>Definition</b> basemapmanager.cpp:19</div></div>
+<div class="ttc" id="astructBaseMapSource_html_ad33e4dfc15d7db7ba0bc8bb8397c4838"><div class="ttname"><a href="structBaseMapSource.html#ad33e4dfc15d7db7ba0bc8bb8397c4838">BaseMapSource::visible</a></div><div class="ttdeci">bool visible</div><div class="ttdef"><b>Definition</b> basemapmanager.h:38</div></div>
+<div class="ttc" id="astructBaseMapSource_html_adb442c1ea76f21034a5acac1b57b09e3"><div class="ttname"><a href="structBaseMapSource.html#adb442c1ea76f21034a5acac1b57b09e3">BaseMapSource::BaseMapSource</a></div><div class="ttdeci">BaseMapSource(const QString &amp;n, const QString &amp;d, const QString &amp;u, const QString &amp;p=&quot;spherical-mercator&quot;, bool cache=true, bool vis=true, int op=100)</div><div class="ttdef"><b>Definition</b> basemapmanager.h:42</div></div>
+<div class="ttc" id="astructBaseMapSource_html_adf22bbcf68c55c078fe57704a9f2e12c"><div class="ttname"><a href="structBaseMapSource.html#adf22bbcf68c55c078fe57704a9f2e12c">BaseMapSource::opacity</a></div><div class="ttdeci">int opacity</div><div class="ttdef"><b>Definition</b> basemapmanager.h:39</div></div>
+<div class="ttc" id="astructBaseMapSource_html_adfb914a05df7695f7f41baa545b2f8ca"><div class="ttname"><a href="structBaseMapSource.html#adfb914a05df7695f7f41baa545b2f8ca">BaseMapSource::driver</a></div><div class="ttdeci">QString driver</div><div class="ttdef"><b>Definition</b> basemapmanager.h:33</div></div>
+<div class="ttc" id="astructBaseMapSource_html_aeeb2da79b3f6865d4492ccf2483c300c"><div class="ttname"><a href="structBaseMapSource.html#aeeb2da79b3f6865d4492ccf2483c300c">BaseMapSource::cacheEnabled</a></div><div class="ttdeci">bool cacheEnabled</div><div class="ttdef"><b>Definition</b> basemapmanager.h:36</div></div>
+<div class="ttc" id="astructBaseMapSource_html_af4905febdcd87d5968e7e8867e8d3c8d"><div class="ttname"><a href="structBaseMapSource.html#af4905febdcd87d5968e7e8867e8d3c8d">BaseMapSource::BaseMapSource</a></div><div class="ttdeci">BaseMapSource()</div><div class="ttdef"><b>Definition</b> basemapmanager.h:41</div></div>
+<div class="ttc" id="astructBaseMapSource_html_af93ef27025111bc8a186416fb0605a26"><div class="ttname"><a href="structBaseMapSource.html#af93ef27025111bc8a186416fb0605a26">BaseMapSource::format</a></div><div class="ttdeci">QString format</div><div class="ttdef"><b>Definition</b> basemapmanager.h:37</div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="dir_2bcd72cd0b092dad44d5d2bb06eea6c2.html">geo</a></li><li class="navelem"><a class="el" href="basemapmanager_8h.html">basemapmanager.h</a></li>
+    <li class="footer">制作者 <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+  </ul>
+</div>
+</body>
+</html>

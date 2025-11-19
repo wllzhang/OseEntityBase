@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['lasthighlightsize_5f_0',['lastHighlightSize_',['../classGeoEntity.html#ad4966213fe504530612a1081dd469f0b',1,'GeoEntity']]],
-  ['latitude_5f_1',['latitude_',['../classGeoEntity.html#a99c192552234098b00e3293d97ca9f7c',1,'GeoEntity']]],
-  ['linenameconn_2',['lineNameConn',['../structGeoEntityManager_1_1LineEndpointInfo.html#a87dbea6565de4dd40a790c30735d652a',1,'GeoEntityManager::LineEndpointInfo']]],
-  ['longitude_5f_3',['longitude_',['../classGeoEntity.html#a1b4c07cd86aff844e0a6f136f84cabc3',1,'GeoEntity']]]
+  ['imagepath_5f_0',['imagePath_',['../classImageEntity.html#aee69cb223fcf5df638c301f4678ce0ae',1,'ImageEntity']]],
+  ['index_1',['index',['../structNavigationHistory_1_1HistoryItem.html#af8b498d0a444e86039bab202b99b3a9b',1,'NavigationHistory::HistoryItem']]],
+  ['iscurrent_2',['isCurrent',['../structNavigationHistory_1_1HistoryItem.html#a0eeff399608d694e81740aafc9d38cd2',1,'NavigationHistory::HistoryItem']]]
 ];

@@ -1,9 +1,11 @@
 var hierarchy =
 [
+    [ "BaseMapSource", "structBaseMapSource.html", null ],
     [ "GeoUtils", "classGeoUtils.html", null ],
     [ "osgViewer::GraphicsWindow", null, [
       [ "osgQt::GraphicsWindowQt", "classosgQt_1_1GraphicsWindowQt.html", null ]
     ] ],
+    [ "NavigationHistory::HistoryItem", "structNavigationHistory_1_1HistoryItem.html", null ],
     [ "osg::Image", null, [
       [ "osgQt::QWidgetImage", "classosgQt_1_1QWidgetImage.html", null ]
     ] ],
@@ -16,6 +18,7 @@ var hierarchy =
       [ "osgQt::GLWidget", "classosgQt_1_1GLWidget.html", null ]
     ] ],
     [ "QObject", null, [
+      [ "BaseMapManager", "classBaseMapManager.html", null ],
       [ "GeoEntity", "classGeoEntity.html", [
         [ "ImageEntity", "classImageEntity.html", null ],
         [ "LineEntity", "classLineEntity.html", null ],
