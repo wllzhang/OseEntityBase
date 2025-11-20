@@ -19,6 +19,8 @@
 #include <QPair>
 #include <osgEarth/Map>
 #include <osg/ref_ptr>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 // 前向声明
 namespace osgEarth {
@@ -60,18 +62,6 @@ class BaseMapManager : public QObject
     Q_OBJECT
 
 public:
-    /**
-     * @brief 获取默认配置文件路径
-     * @return 配置文件路径
-     */
-    static QString getConfigFilePath();
-    
-    /**
-     * @brief 设置默认配置文件路径（绝对路径）
-     * @param path 配置文件路径
-     */
-    static void setConfigFilePath(const QString& path);
-    
     /**
      * @brief 构造函数
      * @param map osgEarth Map对象
@@ -144,18 +134,16 @@ public:
     BaseMapSource getBaseMapConfig(const QString& name) const;
     
     /**
-     * @brief 保存配置到文件
-     * @param filePath 配置文件路径
+     * @brief 保存配置到数据库
      * @return 成功返回true
      */
-    bool saveConfig(const QString& filePath) const;
+    bool saveConfig() const;
     
     /**
-     * @brief 从文件加载配置
-     * @param filePath 配置文件路径
+     * @brief 从数据库加载配置
      * @return 成功返回true
      */
-    bool loadConfig(const QString& filePath);
+    bool loadConfig();
     
     /**
      * @brief 将底图图层上移（在叠加顺序中向上移动，显示更上层）
@@ -205,6 +193,18 @@ signals:
 
 private:
     /**
+     * @brief 初始化数据库表结构
+     * @return 成功返回true
+     */
+    bool initializeDatabaseTable();
+    
+    /**
+     * @brief 初始化默认配置数据
+     * @return 成功返回true
+     */
+    bool initializeDefaultConfig();
+    
+    /**
      * @brief 初始化预定义的底图数据源模板
      */
     void initializeBaseMapTemplates();
@@ -233,9 +233,6 @@ private:
     QMap<QString, osg::ref_ptr<osgEarth::ImageLayer>> loadedLayers_;  // 已加载的底图图层（名称->图层）
     QMap<QString, BaseMapSource> loadedConfigs_;   // 已加载的底图配置（名称->配置）
     QStringList layerOrder_;                       // 图层顺序列表（从上到下，索引0是最上层，对应列表第一行）
-    QString configFilePath_;                       // 配置文件路径
-    
-    static QString defaultConfigFilePath_;         // 默认配置文件路径（静态成员）
 };
 
 #endif // BASEMAPMANAGER_H

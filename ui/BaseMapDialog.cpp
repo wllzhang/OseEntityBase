@@ -460,11 +460,10 @@ void BaseMapDialog::onMoveDownClicked()
 
 void BaseMapDialog::onOkClicked()
 {
-    // 保存配置
+    // 保存配置到数据库
     if (baseMapManager_) {
-        QString configPath = QDir::currentPath() + "/basemap_config.json";
-        baseMapManager_->saveConfig(configPath);
-        qDebug() << "BaseMapDialog: 配置已保存";
+        baseMapManager_->saveConfig();
+        qDebug() << "BaseMapDialog: 配置已保存到数据库";
     }
     accept();
 }

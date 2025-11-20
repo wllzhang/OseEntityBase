@@ -14,9 +14,8 @@
 #include <QJsonDocument>
 #include <QDir>
 #include <QStandardPaths>
-
-// 静态成员变量初始化
-QString BaseMapManager::defaultConfigFilePath_ = "";
+#include "util/databaseutils.h"
+#include <QSqlError>
 
 // BaseMapSource JSON序列化实现
 QJsonObject BaseMapSource::toJson() const
@@ -47,21 +46,6 @@ BaseMapSource BaseMapSource::fromJson(const QJsonObject& json)
     return source;
 }
 
-QString BaseMapManager::getConfigFilePath()
-{
-    // 如果路径未设置，使用默认路径
-    if (defaultConfigFilePath_.isEmpty()) {
-        return QDir::currentPath() + "/basemap_config.json";
-    }
-    return defaultConfigFilePath_;
-}
-
-void BaseMapManager::setConfigFilePath(const QString& path)
-{
-    defaultConfigFilePath_ = path;
-    qDebug() << "BaseMapManager: 设置配置文件路径为:" << defaultConfigFilePath_;
-}
-
 BaseMapManager::BaseMapManager(osgEarth::Map* map, QObject *parent)
     : QObject(parent)
     , map_(map)
@@ -71,17 +55,118 @@ BaseMapManager::BaseMapManager(osgEarth::Map* map, QObject *parent)
         return;
     }
     
-    // 使用静态配置的路径，如果没有设置则使用默认路径
-    configFilePath_ = getConfigFilePath();
+    // 初始化数据库表结构
+    if (!initializeDatabaseTable()) {
+        qDebug() << "BaseMapManager: 数据库表初始化失败";
+        return;
+    }
     
+    // 初始化预定义模板
     initializeBaseMapTemplates();
     qDebug() << "BaseMapManager初始化完成，可用模板数量:" << baseMapTemplates_.size();
-    qDebug() << "BaseMapManager配置文件路径:" << configFilePath_;
     
-    // 尝试加载保存的配置
-    if (QFile::exists(configFilePath_)) {
-        loadConfig(configFilePath_);
+    // 初始化默认配置（如果数据库为空）
+    if (!initializeDefaultConfig()) {
+        qDebug() << "BaseMapManager: 默认配置初始化失败";
     }
+    
+    // 从数据库加载配置
+    if (!loadConfig()) {
+        qDebug() << "BaseMapManager: 从数据库加载配置失败";
+    }
+}
+
+bool BaseMapManager::initializeDatabaseTable()
+{
+    // 确保数据库连接已打开
+    if (!DatabaseUtils::openDatabase()) {
+        qDebug() << "BaseMapManager: 无法打开数据库";
+        return false;
+    }
+    
+    QSqlDatabase db = DatabaseUtils::getDatabase();
+    QSqlQuery query(db);
+    
+    // 先检查表是否已存在
+    query.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='BaseMapLayers'");
+    if (query.exec() && query.next()) {
+        // 表已存在，跳过创建
+        qDebug() << "BaseMapManager: 数据库表已存在，跳过创建";
+        return true;
+    }
+    
+    // 表不存在，创建底图配置表
+    QString createTableSQL = R"(
+        CREATE TABLE BaseMapLayers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            driver TEXT NOT NULL,
+            url TEXT NOT NULL,
+            profile TEXT DEFAULT 'spherical-mercator',
+            cacheEnabled INTEGER DEFAULT 1,
+            format TEXT,
+            visible INTEGER DEFAULT 1,
+            opacity INTEGER DEFAULT 100,
+            layerOrder INTEGER DEFAULT 0
+        )
+    )";
+    
+    if (!query.exec(createTableSQL)) {
+        qDebug() << "BaseMapManager: 创建表失败:" << query.lastError().text();
+        return false;
+    }
+    
+    qDebug() << "BaseMapManager: 数据库表创建成功";
+    return true;
+}
+
+bool BaseMapManager::initializeDefaultConfig()
+{
+    QSqlDatabase db = DatabaseUtils::getDatabase();
+    QSqlQuery query(db);
+    
+    // 检查是否已有配置数据
+    query.prepare("SELECT COUNT(*) FROM BaseMapLayers");
+    if (!query.exec() || !query.next()) {
+        qDebug() << "BaseMapManager: 检查配置数据失败:" << query.lastError().text();
+        return false;
+    }
+    
+    int count = query.value(0).toInt();
+    if (count > 0) {
+        // 已有配置数据，不需要初始化
+        qDebug() << "BaseMapManager: 数据库已有配置数据，跳过默认配置初始化";
+        return true;
+    }
+    
+    // 插入默认配置
+    DatabaseUtils::beginTransaction();
+    
+    // 插入默认的底图配置（使用模板数据）
+    for (int i = 0; i < baseMapTemplates_.size(); ++i) {
+        const BaseMapSource& source = baseMapTemplates_[i];
+        query.prepare("INSERT INTO BaseMapLayers (name, driver, url, profile, cacheEnabled, format, visible, opacity, layerOrder) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.addBindValue(source.name);
+        query.addBindValue(source.driver);
+        query.addBindValue(source.url);
+        query.addBindValue(source.profile);
+        query.addBindValue(source.cacheEnabled ? 1 : 0);
+        query.addBindValue(source.format);
+        query.addBindValue(source.visible ? 1 : 0);
+        query.addBindValue(source.opacity);
+        query.addBindValue(i);  // 图层顺序
+        
+        if (!query.exec()) {
+            qDebug() << "BaseMapManager: 插入默认配置失败:" << source.name << query.lastError().text();
+            DatabaseUtils::rollbackTransaction();
+            return false;
+        }
+    }
+    
+    DatabaseUtils::commitTransaction();
+    qDebug() << "BaseMapManager: 默认配置初始化成功，插入了" << baseMapTemplates_.size() << "条记录";
+    return true;
 }
 
 void BaseMapManager::initializeBaseMapTemplates()
@@ -343,61 +428,77 @@ BaseMapSource BaseMapManager::getBaseMapConfig(const QString& name) const
     return BaseMapSource();
 }
 
-bool BaseMapManager::saveConfig(const QString& filePath) const
+bool BaseMapManager::saveConfig() const
 {
-    QJsonObject root;
-    QJsonArray layersArray;
+    if (!DatabaseUtils::openDatabase()) {
+        qDebug() << "BaseMapManager: 无法打开数据库";
+        return false;
+    }
+    
+    QSqlDatabase db = DatabaseUtils::getDatabase();
+    QSqlQuery query(db);
+    
+    // 开始事务
+    DatabaseUtils::beginTransaction();
+    
+    // 先删除所有现有配置
+    query.prepare("DELETE FROM BaseMapLayers");
+    if (!query.exec()) {
+        qDebug() << "BaseMapManager: 删除旧配置失败:" << query.lastError().text();
+        DatabaseUtils::rollbackTransaction();
+        return false;
+    }
     
     // 按照layerOrder_的顺序保存图层
-    for (const QString& name : layerOrder_) {
-        if (loadedConfigs_.contains(name)) {
-            layersArray.append(loadedConfigs_[name].toJson());
+    for (int i = 0; i < layerOrder_.size(); ++i) {
+        const QString& name = layerOrder_[i];
+        if (!loadedConfigs_.contains(name)) {
+            continue;
+        }
+        
+        const BaseMapSource& source = loadedConfigs_[name];
+        query.prepare("INSERT INTO BaseMapLayers (name, driver, url, profile, cacheEnabled, format, visible, opacity, layerOrder) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.addBindValue(source.name);
+        query.addBindValue(source.driver);
+        query.addBindValue(source.url);
+        query.addBindValue(source.profile);
+        query.addBindValue(source.cacheEnabled ? 1 : 0);
+        query.addBindValue(source.format);
+        query.addBindValue(source.visible ? 1 : 0);
+        query.addBindValue(source.opacity);
+        query.addBindValue(i);  // 图层顺序
+        
+        if (!query.exec()) {
+            qDebug() << "BaseMapManager: 保存配置失败:" << name << query.lastError().text();
+            DatabaseUtils::rollbackTransaction();
+            return false;
         }
     }
     
-    root["layers"] = layersArray;
-    
-    // 保存图层顺序
-    QJsonArray orderArray;
-    for (const QString& name : layerOrder_) {
-        orderArray.append(name);
-    }
-    root["layerOrder"] = orderArray;
-    
-    QJsonDocument doc(root);
-    QFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly)) {
-        qDebug() << "BaseMapManager: 无法打开配置文件写入:" << filePath;
-        return false;
-    }
-    
-    file.write(doc.toJson());
-    file.close();
-    
-    qDebug() << "BaseMapManager: 配置已保存到:" << filePath;
+    DatabaseUtils::commitTransaction();
+    qDebug() << "BaseMapManager: 配置已保存到数据库，共" << layerOrder_.size() << "个图层";
     return true;
 }
 
-bool BaseMapManager::loadConfig(const QString& filePath)
+bool BaseMapManager::loadConfig()
 {
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "BaseMapManager: 无法打开配置文件读取:" << filePath;
+    if (!DatabaseUtils::openDatabase()) {
+        qDebug() << "BaseMapManager: 无法打开数据库";
         return false;
     }
     
-    QByteArray data = file.readAll();
-    file.close();
+    QSqlDatabase db = DatabaseUtils::getDatabase();
+    QSqlQuery query(db);
     
-    QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
-    if (error.error != QJsonParseError::NoError) {
-        qDebug() << "BaseMapManager: 配置文件解析失败:" << error.errorString();
+    // 从数据库加载配置，按 layerOrder 排序
+    query.prepare("SELECT name, driver, url, profile, cacheEnabled, format, visible, opacity, layerOrder "
+                  "FROM BaseMapLayers ORDER BY layerOrder ASC");
+    
+    if (!query.exec()) {
+        qDebug() << "BaseMapManager: 加载配置失败:" << query.lastError().text();
         return false;
     }
-    
-    QJsonObject root = doc.object();
-    QJsonArray layersArray = root["layers"].toArray();
     
     // 清除现有图层
     QStringList namesToRemove = loadedLayers_.keys();
@@ -407,37 +508,23 @@ bool BaseMapManager::loadConfig(const QString& filePath)
     
     layerOrder_.clear();  // 清空顺序列表
     
-    // 加载配置的图层
-    for (const QJsonValue& value : layersArray) {
-        BaseMapSource source = BaseMapSource::fromJson(value.toObject());
+    // 加载配置的图层（查询结果已按 layerOrder 排序）
+    while (query.next()) {
+        BaseMapSource source;
+        source.name = query.value(0).toString();
+        source.driver = query.value(1).toString();
+        source.url = query.value(2).toString();
+        source.profile = query.value(3).toString();
+        source.cacheEnabled = query.value(4).toInt() != 0;
+        source.format = query.value(5).toString();
+        source.visible = query.value(6).toInt() != 0;
+        source.opacity = query.value(7).toInt();
+        
+        // 直接添加图层（查询结果已按 layerOrder 排序）
         addBaseMapLayer(source);
     }
     
-    // 如果配置中有保存的图层顺序，使用保存的顺序
-    if (root.contains("layerOrder")) {
-        QJsonArray orderArray = root["layerOrder"].toArray();
-        QStringList savedOrder;
-        for (const QJsonValue& value : orderArray) {
-            savedOrder.append(value.toString());
-        }
-        
-        // 验证保存的顺序是否有效（所有图层都存在）
-        bool validOrder = true;
-        for (const QString& name : savedOrder) {
-            if (!hasBaseMap(name)) {
-                validOrder = false;
-                break;
-            }
-        }
-        
-        if (validOrder && savedOrder.size() == layerOrder_.size()) {
-            layerOrder_ = savedOrder;
-            reorderLayers();  // 按照保存的顺序重新排序
-        }
-    }
-    
-    configFilePath_ = filePath;
-    qDebug() << "BaseMapManager: 配置已从文件加载:" << filePath;
+    qDebug() << "BaseMapManager: 配置已从数据库加载，共" << layerOrder_.size() << "个图层";
     return true;
 }
 
