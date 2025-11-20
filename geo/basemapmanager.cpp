@@ -15,6 +15,9 @@
 #include <QDir>
 #include <QStandardPaths>
 
+// 静态成员变量初始化
+QString BaseMapManager::defaultConfigFilePath_ = "";
+
 // BaseMapSource JSON序列化实现
 QJsonObject BaseMapSource::toJson() const
 {
@@ -44,6 +47,21 @@ BaseMapSource BaseMapSource::fromJson(const QJsonObject& json)
     return source;
 }
 
+QString BaseMapManager::getConfigFilePath()
+{
+    // 如果路径未设置，使用默认路径
+    if (defaultConfigFilePath_.isEmpty()) {
+        return QDir::currentPath() + "/basemap_config.json";
+    }
+    return defaultConfigFilePath_;
+}
+
+void BaseMapManager::setConfigFilePath(const QString& path)
+{
+    defaultConfigFilePath_ = path;
+    qDebug() << "BaseMapManager: 设置配置文件路径为:" << defaultConfigFilePath_;
+}
+
 BaseMapManager::BaseMapManager(osgEarth::Map* map, QObject *parent)
     : QObject(parent)
     , map_(map)
@@ -53,11 +71,12 @@ BaseMapManager::BaseMapManager(osgEarth::Map* map, QObject *parent)
         return;
     }
     
-    // 设置默认配置文件路径（在应用程序目录）
-    configFilePath_ = QDir::currentPath() + "/basemap_config.json";
+    // 使用静态配置的路径，如果没有设置则使用默认路径
+    configFilePath_ = getConfigFilePath();
     
     initializeBaseMapTemplates();
     qDebug() << "BaseMapManager初始化完成，可用模板数量:" << baseMapTemplates_.size();
+    qDebug() << "BaseMapManager配置文件路径:" << configFilePath_;
     
     // 尝试加载保存的配置
     if (QFile::exists(configFilePath_)) {

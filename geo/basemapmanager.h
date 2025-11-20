@@ -61,6 +61,18 @@ class BaseMapManager : public QObject
 
 public:
     /**
+     * @brief 获取默认配置文件路径
+     * @return 配置文件路径
+     */
+    static QString getConfigFilePath();
+    
+    /**
+     * @brief 设置默认配置文件路径（绝对路径）
+     * @param path 配置文件路径
+     */
+    static void setConfigFilePath(const QString& path);
+    
+    /**
      * @brief 构造函数
      * @param map osgEarth Map对象
      * @param parent Qt父对象
@@ -222,6 +234,8 @@ private:
     QMap<QString, BaseMapSource> loadedConfigs_;   // 已加载的底图配置（名称->配置）
     QStringList layerOrder_;                       // 图层顺序列表（从上到下，索引0是最上层，对应列表第一行）
     QString configFilePath_;                       // 配置文件路径
+    
+    static QString defaultConfigFilePath_;         // 默认配置文件路径（静态成员）
 };
 
 #endif // BASEMAPMANAGER_H

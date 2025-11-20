@@ -9,6 +9,7 @@
 // #include "mainwindow.h"
 #include <QApplication>
 #include "util/databaseutils.h"
+#include "geo/basemapmanager.h"
 #include <QDebug>
 
 /**
@@ -25,6 +26,11 @@ int main(int argc, char *argv[])
     // 根据实际情况修改为你的项目根目录路径
     DatabaseUtils::setDatabasePath("D:/OSG/MyDatabase.db");
     qDebug() << "数据库路径设置为:" << DatabaseUtils::getDatabasePath();
+    
+    // 设置底图配置文件路径（使用绝对路径）
+    // 根据实际情况修改为你的项目根目录路径
+    BaseMapManager::setConfigFilePath("D:/OSG/osgqtlib/osgEarthmy_osgb/basemap_config.json");
+    qDebug() << "底图配置文件路径设置为:" << BaseMapManager::getConfigFilePath();
     
     MainWidget w;
 //     MainWindow w;
