@@ -1424,8 +1424,9 @@ bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
         return false;
     }
 
+    // 先清除选中/悬停引用，避免删除过程中触发其他逻辑
     if (selectedEntity_ == waypoint) {
-        setSelectedEntity(nullptr);
+        setSelectedEntity(nullptr, false);  // 不发送信号，避免触发自动选中
     }
     if (hoveredEntity_ == waypoint) {
         hoveredEntity_ = nullptr;
@@ -1445,10 +1446,16 @@ bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
     uidToEntity_.remove(wpUid);
 
     it->waypoints.removeAt(index);
+    
+    // 检查删除后组内是否还有航点
+    bool isEmpty = it->waypoints.isEmpty();
 
-    for (int i = 0; i < it->waypoints.size(); ++i) {
-        it->waypoints[i]->setOrderLabel(QString::number(i + 1));
-        it->waypoints[i]->setProperty("waypointOrder", i + 1);
+    // 如果组内还有航点，更新剩余航点的序号标签
+    if (!isEmpty) {
+        for (int i = 0; i < it->waypoints.size(); ++i) {
+            it->waypoints[i]->setOrderLabel(QString::number(i + 1));
+            it->waypoints[i]->setProperty("waypointOrder", i + 1);
+        }
     }
 
     waypoint->setProperty("waypointGroupId", QString());
@@ -1459,10 +1466,30 @@ bool GeoEntityManager::removeWaypointEntity(WaypointEntity* waypoint)
         pendingDeletions_.enqueue(wpUid);
     }
 
-    if (it->waypoints.size() >= 2) {
+    if (isEmpty) {
+        // 组内所有航点已删除，删除航线组
+        qDebug() << "removeWaypointEntity: 航线组内所有航点已删除，删除航线组:" << groupId;
+        
+        // 先清理航线节点
+        if (it->routeNode.valid()) {
+            entityGroup_->removeChild(it->routeNode.get());
+            it->routeNode = nullptr;
+        }
+        
+        // 清理航线绑定关系
+        routeBinding_.remove(groupId);
+        
+        // 从航线组映射中移除（保存groupId后再删除，避免迭代器失效）
+        QString groupIdToRemove = groupId;
+        waypointGroups_.erase(it);
+        
+        qDebug() << "removeWaypointEntity: 航线组已删除:" << groupIdToRemove;
+    } else if (it->waypoints.size() >= 2) {
+        // 还有2个或以上航点，重新生成航线
         const QString model = it->routeModel.isEmpty() ? QStringLiteral("linear") : it->routeModel;
         generateRouteForGroup(groupId, model);
     } else {
+        // 只剩1个航点，移除航线节点（但保留航线组）
         if (it->routeNode.valid()) {
             entityGroup_->removeChild(it->routeNode.get());
             it->routeNode = nullptr;

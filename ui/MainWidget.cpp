@@ -1780,6 +1780,8 @@ void MainWidget::onMapLoaded()
             if (selectedAction == deleteWaypointAction) {
                 int ret = QMessageBox::question(this, "确认删除", "确定要删除选中的航迹点吗？", QMessageBox::Yes | QMessageBox::No);
                 if (ret == QMessageBox::Yes) {
+                    // 删除前先清除选中状态，避免删除后自动选中其他实体
+                    entityManager->setSelectedEntity(nullptr, false);
                     if (entityManager->removeWaypointEntity(waypointEntity)) {
                         if (planFileManager_) {
                             planFileManager_->markPlanModified();
