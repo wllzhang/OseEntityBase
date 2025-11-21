@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QSqlError>
+#include <QFile>
 
 // 静态成员变量初始化
 QString DatabaseUtils::databasePath_ = "";
@@ -83,11 +84,78 @@ bool DatabaseUtils::openDatabase(const QString& connectionName)
         return true;
     }
     
+    QString dbPath = getDatabasePath();
+    if (dbPath.isEmpty()) {
+        qDebug() << "DatabaseUtils: 数据库路径为空，无法打开数据库";
+        return false;
+    }
+    
+    // 检查并修复文件权限
+    QFileInfo fileInfo(dbPath);
+    if (fileInfo.exists()) {
+        // 文件存在，检查是否可写
+        QFile file(dbPath);
+        if (!file.open(QIODevice::ReadWrite)) {
+            qDebug() << "DatabaseUtils: 数据库文件存在但无法以读写模式打开:" << dbPath;
+            
+            // 尝试修复文件权限
+            QFile::Permissions perms = file.permissions();
+            if (!(perms & QFile::WriteUser)) {
+                qDebug() << "DatabaseUtils: 检测到文件缺少写权限，尝试添加写权限...";
+                perms |= QFile::WriteUser | QFile::WriteOwner;
+                if (file.setPermissions(perms)) {
+                    qDebug() << "DatabaseUtils: 已添加写权限，重新尝试打开...";
+                    // 重新尝试打开
+                    if (file.open(QIODevice::ReadWrite)) {
+                        file.close();
+                        qDebug() << "DatabaseUtils: 文件权限修复成功";
+                    } else {
+                        qDebug() << "DatabaseUtils: 添加写权限后仍无法打开文件";
+                        qDebug() << "DatabaseUtils: 请手动检查文件权限或使用管理员权限运行程序";
+                        return false;
+                    }
+                } else {
+                    qDebug() << "DatabaseUtils: 无法修改文件权限，可能需要管理员权限";
+                    qDebug() << "DatabaseUtils: 请手动右键文件->属性->取消只读，或使用管理员权限运行程序";
+                    return false;
+                }
+            } else {
+                qDebug() << "DatabaseUtils: 文件权限错误，请检查文件是否为只读或目录权限";
+                qDebug() << "DatabaseUtils: 文件路径:" << dbPath;
+                return false;
+            }
+        } else {
+            file.close();
+        }
+    } else {
+        // 文件不存在，检查目录是否可写
+        QDir dir = fileInfo.absoluteDir();
+        if (!dir.exists()) {
+            // 目录不存在，尝试创建
+            if (!dir.mkpath(".")) {
+                qDebug() << "DatabaseUtils: 无法创建数据库目录:" << dir.absolutePath();
+                return false;
+            }
+        }
+        
+        // 检查目录是否可写
+        QFileInfo dirInfo(dir.absolutePath());
+        if (!dirInfo.isWritable()) {
+            qDebug() << "DatabaseUtils: 数据库目录不可写:" << dir.absolutePath();
+            qDebug() << "DatabaseUtils: 请检查目录权限";
+            return false;
+        }
+    }
+    
     if (db.open()) {
-        qDebug() << "DatabaseUtils: 成功打开数据库:" << connectionName;
+        qDebug() << "DatabaseUtils: 成功打开数据库:" << connectionName << "路径:" << dbPath;
         return true;
     } else {
-        qDebug() << "DatabaseUtils: 打开数据库失败:" << connectionName << db.lastError().text();
+        QSqlError error = db.lastError();
+        qDebug() << "DatabaseUtils: 打开数据库失败:" << connectionName;
+        qDebug() << "DatabaseUtils: 错误类型:" << error.type();
+        qDebug() << "DatabaseUtils: 错误信息:" << error.text();
+        qDebug() << "DatabaseUtils: 数据库路径:" << dbPath;
         return false;
     }
 }
