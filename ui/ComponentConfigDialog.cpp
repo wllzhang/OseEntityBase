@@ -791,8 +791,8 @@ void ComponentConfigDialog::onSaveButtonClicked()
     // 更新数据库
     QSqlQuery query;
     query.prepare("UPDATE ComponentInformation SET name = ?, type = ?, configinfo = ? WHERE componentid = ?");
-    query.addBindValue(currentComponentInfo.name);
-    query.addBindValue(currentComponentInfo.type);
+    query.addBindValue(nameEdit->text());  // 使用用户输入的新名称
+    query.addBindValue(typeComboBox->currentText());  // 使用用户选择的新类型
     query.addBindValue(QJsonDocument(configInfo).toJson(QJsonDocument::Compact));
     query.addBindValue(currentComponentInfo.componentId);
     if (query.exec()) {
