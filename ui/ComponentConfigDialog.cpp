@@ -597,7 +597,7 @@ QWidget* ComponentConfigDialog::createComponentComboBoxWidget(const QStringList 
     QComboBox *combo = new QComboBox(this);
 
     // 检查输入是否为空
-    if (values.isEmpty() || currentValue.toString() == "") {
+    if (values.isEmpty()) {
         return combo;
     }
 
