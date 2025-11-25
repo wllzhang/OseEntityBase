@@ -81,11 +81,23 @@ void ModelAssemblyDialog::setupUI()
 
     modelSearchEdit->setPlaceholderText("搜索模型名称");
 
+    // 刷新按钮（小按钮，放在左上角）
+    QPushButton *refreshButton = new QPushButton("刷新", this);
+    refreshButton->setMaximumSize(60, 25);
+    refreshButton->setMinimumSize(60, 25);
+
     QWidget *modelTreePanel = new QWidget(this);
     QVBoxLayout *modelTreeLayout = new QVBoxLayout(modelTreePanel);
     modelTreeLayout->setContentsMargins(0, 0, 0, 0);
     modelTreeLayout->setSpacing(6);
-    modelTreeLayout->addWidget(modelSearchEdit);
+    
+    // 顶部：刷新按钮和搜索框
+    QHBoxLayout *topLayout = new QHBoxLayout();
+    topLayout->setContentsMargins(0, 0, 0, 0);
+    topLayout->setSpacing(6);
+    topLayout->addWidget(refreshButton);
+    topLayout->addWidget(modelSearchEdit, 1);
+    modelTreeLayout->addLayout(topLayout);
     modelTreeLayout->addWidget(modelTree, 1);
 
     mainLayout->addWidget(modelTreePanel, 1);
@@ -169,6 +181,8 @@ void ModelAssemblyDialog::setupUI()
             this, &ModelAssemblyDialog::showContextMenu);
     connect(saveButton, &QPushButton::clicked,
             this, &ModelAssemblyDialog::onSaveButtonClicked);
+    connect(refreshButton, &QPushButton::clicked,
+            this, &ModelAssemblyDialog::onRefreshButtonClicked);
     connect(browseIconButton, &QPushButton::clicked,
             this, &ModelAssemblyDialog::onBrowseIconButtonClicked);
     connect(modelSearchEdit, &QLineEdit::textChanged,
@@ -802,4 +816,26 @@ void ModelAssemblyDialog::onBrowseIconButtonClicked()
             QMessageBox::warning(this, "错误", "选择的文件不存在或无效");
         }
     }
+}
+
+void ModelAssemblyDialog::onRefreshButtonClicked()
+{
+    // 清空当前选中的模型信息
+    currentItem = nullptr;
+    currentModelInfo = ModelInfo();
+    
+    // 清空模型基本信息
+    modelNameEdit->clear();
+    modelTypeEdit->clear();
+    modelIconEdit->clear();
+    modelLocationComboBox->setCurrentIndex(0);
+    
+    // 清空组装列表
+    clearAssemblyList();
+    
+    // 重新从数据库加载模型树和组件树
+    loadModelTree();
+    loadComponentTree();
+    
+    QMessageBox::information(this, "刷新完成", "已从数据库重新加载所有模型和组件数据");
 }

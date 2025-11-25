@@ -104,6 +104,13 @@ private slots:
      */
     void onComponentSearchTextChanged(const QString &text);
 
+    /**
+     * @brief 全局刷新槽函数
+     * 
+     * 强制从数据库重新读取所有数据
+     */
+    void onRefreshButtonClicked();
+
 private:
     /**
      * @brief 设置UI界面

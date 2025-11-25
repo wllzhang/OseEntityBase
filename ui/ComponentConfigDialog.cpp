@@ -81,11 +81,24 @@ void ComponentConfigDialog::setupUI()
     componentTree->setUniformRowHeights(true);
     componentSearchEdit = new QLineEdit(this);
     componentSearchEdit->setPlaceholderText("搜索组件名称");
+    
+    // 刷新按钮（小按钮，放在左上角）
+    QPushButton *refreshButton = new QPushButton("刷新", this);
+    refreshButton->setMaximumSize(60, 25);
+    refreshButton->setMinimumSize(60, 25);
+    
     QWidget *componentTreePanel = new QWidget(this);
     QVBoxLayout *componentTreeLayout = new QVBoxLayout(componentTreePanel);
     componentTreeLayout->setContentsMargins(0, 0, 0, 0);
     componentTreeLayout->setSpacing(6);
-    componentTreeLayout->addWidget(componentSearchEdit);
+    
+    // 顶部：刷新按钮和搜索框
+    QHBoxLayout *topLayout = new QHBoxLayout();
+    topLayout->setContentsMargins(0, 0, 0, 0);
+    topLayout->setSpacing(6);
+    topLayout->addWidget(refreshButton);
+    topLayout->addWidget(componentSearchEdit, 1);
+    componentTreeLayout->addLayout(topLayout);
     componentTreeLayout->addWidget(componentTree, 1);
     mainLayout->addWidget(componentTreePanel, 1);
 
@@ -138,6 +151,7 @@ void ComponentConfigDialog::setupUI()
     connect(componentTree, &QTreeWidget::itemClicked, this, &ComponentConfigDialog::onTreeItemClicked);
     connect(componentTree, &QTreeWidget::customContextMenuRequested, this, &ComponentConfigDialog::showContextMenu);
     connect(saveButton, &QPushButton::clicked, this, &ComponentConfigDialog::onSaveButtonClicked);
+    connect(refreshButton, &QPushButton::clicked, this, &ComponentConfigDialog::onRefreshButtonClicked);
 }
 
 void ComponentConfigDialog::loadComponentTree()
@@ -1138,4 +1152,25 @@ QString ComponentConfigDialog::generateComponentId()
 ComponentInfo ComponentConfigDialog::getCurrentComponentInfo() const
 {
     return currentComponentInfo;
+}
+
+void ComponentConfigDialog::onRefreshButtonClicked()
+{
+    // 清空当前选中的组件信息
+    currentItem = nullptr;
+    currentComponentInfo = ComponentInfo();
+    
+    // 清空参数表单
+    clearParameterForm();
+    
+    // 清空通用信息
+    nameEdit->clear();
+    typeComboBox->clear();
+    wsfEdit->clear();
+    commentEdit->clear();
+    
+    // 重新从数据库加载组件树
+    loadComponentTree();
+    
+    QMessageBox::information(this, "刷新完成", "已从数据库重新加载所有组件数据");
 }
