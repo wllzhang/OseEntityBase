@@ -99,14 +99,19 @@ void ComponentConfigDialog::setupUI()
     QGroupBox *generalGroup = new QGroupBox("通用信息", this);
     QFormLayout *generalLayout = new QFormLayout(generalGroup);
     nameEdit = new QLineEdit(this);
-    typeComboBox = new QComboBox(this);
+    typeComboBox = new QLineEdit(this);
     wsfEdit = new QLineEdit(this);
     commentEdit = new QLineEdit(this);
     generalLayout->addRow("组件名称:", nameEdit);
     generalLayout->addRow("组件类型:", typeComboBox);
     generalLayout->addRow("WSF:", wsfEdit);
     generalLayout->addRow("注释:", commentEdit);
-    wsfEdit->setReadOnly(true);
+    wsfEdit->setReadOnly(true);       // WSF不可更改
+    wsfEdit->setEnabled(false);
+    typeComboBox->setReadOnly(true);  // 组件类型不可更改
+    typeComboBox->setEnabled(false);
+    // commentEdit 可编辑，用于保存注释
+    
 
     rightLayout->addWidget(generalGroup);
 
@@ -215,7 +220,7 @@ void ComponentConfigDialog::onTreeItemClicked(QTreeWidgetItem *item, int column)
         QString componentId = item->data(0, Qt::UserRole + 1).toString();
 
         QSqlQuery query;
-        query.prepare("SELECT ci.componentid, ci.name, ci.type, ci.configinfo, "
+        query.prepare("SELECT ci.componentid, ci.name, ci.type, ci.configinfo, ci.comment, "
                       "ct.wsf, ct.subtype, ct.template "
                       "FROM ComponentInformation ci "
                       "JOIN ComponentType ct ON ci.componenttypeid = ct.ctypeid "
@@ -227,19 +232,26 @@ void ComponentConfigDialog::onTreeItemClicked(QTreeWidgetItem *item, int column)
             info.componentId = query.value(0).toString();
             info.name = query.value(1).toString();
             info.type = query.value(2).toString();
-            info.wsf = query.value(4).toString();
-            info.subtype = query.value(5).toString();
+            info.wsf = query.value(5).toString();
+            info.subtype = query.value(6).toString();
 
             // 解析配置信息
             QJsonDocument configDoc = QJsonDocument::fromJson(query.value(3).toString().toUtf8());
             info.configInfo = configDoc.object();
 
             // 解析模板信息
-            QJsonDocument templateDoc = QJsonDocument::fromJson(query.value(6).toString().toUtf8());
+            QJsonDocument templateDoc = QJsonDocument::fromJson(query.value(7).toString().toUtf8());
             info.templateInfo = templateDoc.object();
 
             currentComponentInfo = info;
             updateComponentInfo(info);
+            
+            // 读取注释字段，如果为空则使用 type 作为默认值
+            QString comment = query.value(4).toString();
+            if (comment.isEmpty()) {
+                comment = info.type;
+            }
+            commentEdit->setText(comment);
 
             // 创建参数表单
             clearParameterForm();
@@ -320,9 +332,7 @@ void ComponentConfigDialog::updateComponentInfo(const ComponentInfo &info)
 {
     nameEdit->setText(info.name);
 
-    typeComboBox->clear();
-    typeComboBox->addItem(info.type);
-    typeComboBox->setCurrentText(info.type);
+    typeComboBox->setText(info.type);  // QLineEdit使用setText而不是setCurrentText
 
     wsfEdit->setText(info.wsf);
     commentEdit->setText(info.subtype);
@@ -790,10 +800,11 @@ void ComponentConfigDialog::onSaveButtonClicked()
 
     // 更新数据库
     QSqlQuery query;
-    query.prepare("UPDATE ComponentInformation SET name = ?, type = ?, configinfo = ? WHERE componentid = ?");
+    query.prepare("UPDATE ComponentInformation SET name = ?, type = ?, configinfo = ?, comment = ? WHERE componentid = ?");
     query.addBindValue(nameEdit->text());  // 使用用户输入的新名称
-    query.addBindValue(typeComboBox->currentText());  // 使用用户选择的新类型
+    query.addBindValue(typeComboBox->text());  // 使用类型输入框的文本（QLineEdit使用text()而不是currentText()）
     query.addBindValue(QJsonDocument(configInfo).toJson(QJsonDocument::Compact));
+    query.addBindValue(commentEdit->text());  // 使用用户输入的注释
     query.addBindValue(currentComponentInfo.componentId);
     if (query.exec()) {
         QMessageBox::information(this, "成功", "组件配置已保存");

@@ -232,9 +232,9 @@ private:
 
     // 通用信息控件
     QLineEdit *nameEdit;                    // 名称输入框
-    QComboBox *typeComboBox;                // 类型下拉框
+    QLineEdit *typeComboBox;                // 类型输入框（只读）
     QLineEdit *wsfEdit;                     // WSF文件路径输入框
-    QLineEdit *commentEdit;                 // 注释输入框
+    QLineEdit *commentEdit;                 // 父类型输入框（只读）
 
     // 动态生成的参数控件映射
     QMap<QString, QWidget*> paramWidgets;   // 参数名 -> 控件映射
