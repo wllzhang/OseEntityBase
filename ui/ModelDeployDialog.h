@@ -10,6 +10,7 @@
 
 #include <QDialog>
 #include <QPair>
+#include <QShowEvent>
 
 class DraggableListWidget;
 class QLabel;
@@ -28,6 +29,9 @@ class ModelDeployDialog : public QDialog
 public:
     explicit ModelDeployDialog(QWidget *parent = nullptr);
     ~ModelDeployDialog();
+
+protected:
+    void showEvent(QShowEvent *event) override;
 
 private slots:
     void onModelSelected();

@@ -134,6 +134,15 @@ ModelDeployDialog::~ModelDeployDialog()
 {
 }
 
+void ModelDeployDialog::showEvent(QShowEvent *event)
+{
+    // 每次显示对话框时，重新从数据库加载模型列表
+    loadModelsFromDatabase();
+    populateModelList();
+    
+    QDialog::showEvent(event);
+}
+
 void ModelDeployDialog::setupUI()
 {
     // 创建主布局
