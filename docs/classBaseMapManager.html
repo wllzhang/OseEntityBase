@@ -153,12 +153,12 @@ Public 成员函数</h2></td></tr>
 <tr class="memitem:a190b2efc2be5f17b5a9f4ecc62792437" id="r_a190b2efc2be5f17b5a9f4ecc62792437"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBaseMapSource.html">BaseMapSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBaseMapManager.html#a190b2efc2be5f17b5a9f4ecc62792437">getBaseMapConfig</a> (const QString &amp;name) const</td></tr>
 <tr class="memdesc:a190b2efc2be5f17b5a9f4ecc62792437"><td class="mdescLeft">&#160;</td><td class="mdescRight">获取底图配置  <br /></td></tr>
 <tr class="separator:a190b2efc2be5f17b5a9f4ecc62792437"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0297925101dee6129ec0d761a79a3f78" id="r_a0297925101dee6129ec0d761a79a3f78"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBaseMapManager.html#a0297925101dee6129ec0d761a79a3f78">saveConfig</a> (const QString &amp;filePath) const</td></tr>
-<tr class="memdesc:a0297925101dee6129ec0d761a79a3f78"><td class="mdescLeft">&#160;</td><td class="mdescRight">保存配置到文件  <br /></td></tr>
-<tr class="separator:a0297925101dee6129ec0d761a79a3f78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa57c2ce329e39a0dc16c466988eb5f93" id="r_aa57c2ce329e39a0dc16c466988eb5f93"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBaseMapManager.html#aa57c2ce329e39a0dc16c466988eb5f93">loadConfig</a> (const QString &amp;filePath)</td></tr>
-<tr class="memdesc:aa57c2ce329e39a0dc16c466988eb5f93"><td class="mdescLeft">&#160;</td><td class="mdescRight">从文件加载配置  <br /></td></tr>
-<tr class="separator:aa57c2ce329e39a0dc16c466988eb5f93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a694ce0e740d9bb2712da21c6afdc52c2" id="r_a694ce0e740d9bb2712da21c6afdc52c2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBaseMapManager.html#a694ce0e740d9bb2712da21c6afdc52c2">saveConfig</a> () const</td></tr>
+<tr class="memdesc:a694ce0e740d9bb2712da21c6afdc52c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">保存配置到数据库  <br /></td></tr>
+<tr class="separator:a694ce0e740d9bb2712da21c6afdc52c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d1c4e33fd04a72b66777b8997f0513f" id="r_a7d1c4e33fd04a72b66777b8997f0513f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBaseMapManager.html#a7d1c4e33fd04a72b66777b8997f0513f">loadConfig</a> ()</td></tr>
+<tr class="memdesc:a7d1c4e33fd04a72b66777b8997f0513f"><td class="mdescLeft">&#160;</td><td class="mdescRight">从数据库加载配置  <br /></td></tr>
+<tr class="separator:a7d1c4e33fd04a72b66777b8997f0513f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af45141256019ad98a433f5b19bc474d9" id="r_af45141256019ad98a433f5b19bc474d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBaseMapManager.html#af45141256019ad98a433f5b19bc474d9">moveLayerUp</a> (const QString &amp;mapName)</td></tr>
 <tr class="memdesc:af45141256019ad98a433f5b19bc474d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">将底图图层上移（在叠加顺序中向上移动，显示更上层）  <br /></td></tr>
 <tr class="separator:af45141256019ad98a433f5b19bc474d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -507,8 +507,8 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="aa57c2ce329e39a0dc16c466988eb5f93" name="aa57c2ce329e39a0dc16c466988eb5f93"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa57c2ce329e39a0dc16c466988eb5f93">&#9670;&#160;</a></span>loadConfig()</h2>
+<a id="a7d1c4e33fd04a72b66777b8997f0513f" name="a7d1c4e33fd04a72b66777b8997f0513f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d1c4e33fd04a72b66777b8997f0513f">&#9670;&#160;</a></span>loadConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -516,20 +516,13 @@ Public 成员函数</h2></td></tr>
         <tr>
           <td class="memname">bool BaseMapManager::loadConfig </td>
           <td>(</td>
-          <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>filePath</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>从文件加载配置 </p>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">filePath</td><td>配置文件路径 </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>从数据库加载配置 </p>
 <dl class="section return"><dt>返回</dt><dd>成功返回true </dd></dl>
 
 </div>
@@ -615,8 +608,8 @@ Public 成员函数</h2></td></tr>
 
 </div>
 </div>
-<a id="a0297925101dee6129ec0d761a79a3f78" name="a0297925101dee6129ec0d761a79a3f78"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0297925101dee6129ec0d761a79a3f78">&#9670;&#160;</a></span>saveConfig()</h2>
+<a id="a694ce0e740d9bb2712da21c6afdc52c2" name="a694ce0e740d9bb2712da21c6afdc52c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a694ce0e740d9bb2712da21c6afdc52c2">&#9670;&#160;</a></span>saveConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -624,20 +617,13 @@ Public 成员函数</h2></td></tr>
         <tr>
           <td class="memname">bool BaseMapManager::saveConfig </td>
           <td>(</td>
-          <td class="paramtype">const QString &amp;&#160;</td>
-          <td class="paramname"><em>filePath</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>保存配置到文件 </p>
-<dl class="params"><dt>参数</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">filePath</td><td>配置文件路径 </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>保存配置到数据库 </p>
 <dl class="section return"><dt>返回</dt><dd>成功返回true </dd></dl>
 
 </div>
